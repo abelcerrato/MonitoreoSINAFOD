@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.9a71fbc5.css",
+    "main.js": "/static/js/main.f5494451.js",
+    "static/js/206.8ac086ca.chunk.js": "/static/js/206.8ac086ca.chunk.js",
+    "static/media/logos_CONED.png": "/static/media/logos_CONED.ba4a9c038e4fe0dfeb25.png",
+    "static/media/Logo_DGDP.png": "/static/media/Logo_DGDP.720decb168e46365e72d.png",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.9a71fbc5.css",
+    "static/js/main.f5494451.js"
+  ]
+}
