@@ -161,7 +161,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
             </TableCell>
             {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
            <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Nivel Objetivo</TableCell>
+     
           <TableCell align="right" style={{ fontWeight: "bold" }}>Función al que va Dirigido</TableCell>*/}
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Estado
@@ -235,9 +235,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
            <TableCell style={{ width: 160 }} align="right">
               {row.espaciofisico}
             </TableCell> 
-            <TableCell style={{ width: 160 }} align="right">
-              {row.niveleducactivoobj}
-            </TableCell>
+            
             <TableCell style={{ width: 160 }} align="right">
               {row.funciondirigido}
             </TableCell>*/}

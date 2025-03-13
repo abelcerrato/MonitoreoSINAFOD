@@ -72,8 +72,7 @@ const FormularParticipantes = () => {
       departamentoced: "",
       añosdeservicio: "",
       codigodered: "",
-      tipoadministracion: "",
-      creadopor: prevState.creadopor, // Mantiene el usuario actual
+      creadopor: prevState.creadopor,
     }));
   };
 
@@ -111,10 +110,10 @@ const FormularParticipantes = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name === "añosdeservicio") {
       // Solo permite números positivos en añosdeservicio
-      if (/^\d*$/.test(value)) { 
+      if (/^\d*$/.test(value)) {
         setFormData((prev) => ({ ...prev, [name]: value }));
       }
     } else {
@@ -122,7 +121,7 @@ const FormularParticipantes = () => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
-  
+
 
   // Obtener departamentos al montar el componente
   useEffect(() => {

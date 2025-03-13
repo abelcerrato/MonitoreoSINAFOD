@@ -23,17 +23,17 @@ const Dashboard = ({ children }) => {
         {showTablaActividad && <TablaActividad />}
 
         <Typography
-        variant="body2"
-        color="text.secondary"
-        align="center"
-        sx={{ mt: 5, py: 2 }}
-      >
-        {"Copyright © "}
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          sx={{ mt: 5, py: 2 }}
+        >
+          {"Copyright © "}
 
-        Propiedad intelectual del Consejo Nacional de Educación
-      </Typography>
+          Propiedad intelectual del Consejo Nacional de Educación
+        </Typography>
       </Box>
-      
+
     </Box>
   );
 };

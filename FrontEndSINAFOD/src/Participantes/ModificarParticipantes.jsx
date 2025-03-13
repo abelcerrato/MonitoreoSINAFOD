@@ -49,7 +49,6 @@ const FormularParticipantes = () => {
     idnivelesacademicos: "",
     idgradosacademicos: null,
     zona: "",
-    centrobeneficiarios: "",
     municipioced: "",
     departamentoced: "",
     añosdeservicio: 0,
@@ -191,7 +190,7 @@ const FormularParticipantes = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelesacademicos}`
         );
-      setGrado(response.data);
+        setGrado(response.data);
       } catch (error) {
         console.error("Error al obtener los gardo", error);
       }
@@ -406,15 +405,7 @@ const FormularParticipantes = () => {
                 </RadioGroup>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Centro Beneficiarios</Typography>
-              <TextField
-                fullWidth
-                name="centrobeneficiarios"
-                value={formData.centrobeneficiarios}
-                onChange={handleChange}
-              />
-            </Grid>
+
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth>

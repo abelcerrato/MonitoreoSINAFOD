@@ -181,14 +181,14 @@ export default function SignIn() {
             >
               Ingresar
             </Button>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs></Grid>
               <Grid item>
                 <Link href="#" variant="body2">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Card>
           <Typography
             variant="body2"

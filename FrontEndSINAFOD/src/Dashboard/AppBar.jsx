@@ -57,9 +57,9 @@ const AppBarComponent = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginTop:-24,
-            marginLeft:-25,
-             cursor: "pointer"
+            marginTop: -24,
+            marginLeft: -25,
+            cursor: "pointer"
           }}>
             <img
               src={Logo}
@@ -69,7 +69,7 @@ const AppBarComponent = () => {
             />
           </div>
 
-{/* 
+          {/* 
           <Typography
             variant="h3"
             noWrap

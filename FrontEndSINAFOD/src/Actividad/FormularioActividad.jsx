@@ -34,7 +34,7 @@ const FormulariActividad = () => {
     ambitoformacion: "",
     tipoformacion: "",
     modalidad: "",
-    duracion: "",
+    duracion: 0,
     espaciofisico: "",
     idnivelesacademicos: "",
     cicloacademico: null,
@@ -93,19 +93,12 @@ const FormulariActividad = () => {
       }
 
 
-
-      // Validación de horas y minutos para la duración
-     if (name === "horas" || name === "minutos") {
-      // Permite solo números enteros positivos y vacío
-      if (value === "" || (/^\d+$/.test(value) && parseInt(value) >= 0)) {
-        newData[name] = value;
-      } else {
-        return prevData; // Si el valor no es válido, no actualiza el estado
-      }
-    }
+      const horas = newData.horas || 0;
+      const minutos = newData.minutos || 0;
+      newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
 
 
-    
+
       return newData;
     });
   };
@@ -366,7 +359,7 @@ const FormulariActividad = () => {
                 </Grid>
               </Grid>
             </Grid>
-           
+
 
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Estado</Typography>
@@ -379,7 +372,7 @@ const FormulariActividad = () => {
                   <MenuItem value="Planificada">Planificada</MenuItem>
                   <MenuItem value="En Curso">En Curso</MenuItem>
                   <MenuItem value="Suspendida">Suspendida</MenuItem>
-                  <MenuItem value="Completa">Completa</MenuItem>
+                  <MenuItem value="Completada">Completada</MenuItem>
                   <MenuItem value="Cancelada">Cancelada</MenuItem>
                 </Select>
               </FormControl>
@@ -447,6 +440,18 @@ const FormulariActividad = () => {
             </Grid>
 
 
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1">
+                Participantes Programados
+              </Typography>
+              <TextField
+                fullWidth
+                type="text"
+                name="participantesprog"
+                value={formData.participantesprog || ""}
+                onChange={handleChange}
+              />
+            </Grid>
 
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
@@ -478,19 +483,8 @@ const FormulariActividad = () => {
 
 
 
+
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Participantes Programados
-              </Typography>
-              <TextField
-                fullWidth
-                type="text"
-                name="participantesprog"
-                value={formData.participantesprog || ""}
-                onChange={handleChange}
-              />
-            </Grid>
-             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Espacio Físico</Typography>
               <TextField
                 fullWidth

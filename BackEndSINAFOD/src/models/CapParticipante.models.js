@@ -16,7 +16,7 @@ export const getCapParticipanteIdM = async (id) => {
         const { rows } = await pool.query
         (`
             SELECT cp.id, cp.idinvestigacioncap, i.accionformacion, cp.identificacion, cp.codigosace, cp.nombre, cp.funcion, 
-                    cp.centroeducativo, cp.centrobeneficiarios, d.nombre as nombredep,d.id as departamentoced , m.nombre as municipioced , u.usuario, cp.fechacreacion, 
+                    cp.centroeducativo, d.nombre as nombredep,d.id as departamentoced , m.nombre as municipioced , u.usuario, cp.fechacreacion, 
                     cp.fechamodificacion, cp.zona, cp.idnivelesacademicos, n.nombre as nivel, cp.idciclosacademicos, c.nombre as ciclo, cp.idgradosacademicos, g.nombre as grado, 
                     cp.sexo, cp.añosdeservicio, cp.tipoadministracion, cp.codigodered
             FROM public.capparticipante as cp
@@ -42,7 +42,7 @@ export const getCapParticipanteIdInvestM = async (id) => {
         const { rows } = await pool.query
         (`
             SELECT cp.id, cp.idinvestigacioncap, i.accionformacion, cp.identificacion, cp.codigosace, cp.nombre, cp.funcion, 
-                    cp.centroeducativo, cp.centrobeneficiarios, d.nombre as nombredepto , m.nombre as nombremuni , u.usuario, cp.fechacreacion, 
+                    cp.centroeducativo,  d.nombre as nombredepto , m.nombre as nombremuni , u.usuario, cp.fechacreacion, 
                     cp.fechamodificacion, cp.zona, cp.idnivelesacademicos, n.nombre as nivel, cp.idciclosacademicos, c.nombre as ciclo, cp.idgradosacademicos, g.nombre as grado, 
                     cp.sexo, cp.añosdeservicio, cp.tipoadministracion, cp.codigodered
             FROM public.capparticipante as cp
@@ -64,14 +64,14 @@ export const getCapParticipanteIdInvestM = async (id) => {
 
 
 export const postCapParticipanteM = async (idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-    centrobeneficiarios, departamentoced, municipio, usuario,  idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered) => {
+   departamentoced, municipio, usuario,  idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO capparticipante (idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                                        centrobeneficiarios, departamentoced, municipioced, creadopor, fechacreacion, fechamodificacion, 
+                                        departamentoced, municipioced, creadopor, fechacreacion, fechamodificacion, 
                                         idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered ) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, null, $12, $13, $14, $15, $16, $17, $18 ) RETURNING *`,
-            [idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona, centrobeneficiarios, 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP, null, $11, $12, $13, $14, $15, $16, $17 ) RETURNING *`,
+            [idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona, 
                 departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered])
 
         return rows[0]
@@ -82,7 +82,7 @@ export const postCapParticipanteM = async (idinvestigacioncap, identificacion, c
 
 
 export const putCapParticipanteM = async (idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-    centrobeneficiarios, departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
+   departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
     sexo, añosdeservicio, tipoadministracion, codigodered, id) => {
     try {
         const { rows } = await pool.query(`
@@ -95,22 +95,21 @@ export const putCapParticipanteM = async (idinvestigacioncap, identificacion, co
                 funcion=$5, 
                 centroeducativo=$6, 
                 zona=$7,
-                centrobeneficiarios=$8, 
-                departamentoced=$9, 
-                municipioced=$10, 
-                modificadopor=$11, 
+                departamentoced=$8, 
+                municipioced=$9, 
+                modificadopor=$10, 
                 fechamodificacion=CURRENT_TIMESTAMP,
-                idnivelesacademicos=$12, 
-                idgradosacademicos=$13,
-                idciclosacademicos=$14,
-                sexo=$15, 
-                añosdeservicio=$16, 
-                tipoadministracion=$17, 
-                codigodered=$18
-                WHERE id=$19
+                idnivelesacademicos=$11, 
+                idgradosacademicos=$12,
+                idciclosacademicos=$13,
+                sexo=$14, 
+                añosdeservicio=$15, 
+                tipoadministracion=$16, 
+                codigodered=$17
+                WHERE id=$18
                 RETURNING *`,
             [idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                centrobeneficiarios, departamentoced, municipio, usuario, idnivelesacademicos, 
+               departamentoced, municipio, usuario, idnivelesacademicos, 
                 idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, id])
 
         return rows[0]

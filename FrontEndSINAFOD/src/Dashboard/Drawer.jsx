@@ -9,11 +9,11 @@ const ProjectDrawer = () => {
   const NuevaActividad = () => {
     navigate("/Formulario");
   };
- 
+
   return (
     <Drawer variant="permanent" sx={{ width: 250, flexShrink: 0 }}>
       <Toolbar />
-      <List sx={{ width: 250,top:20 }}>
+      <List sx={{ width: 250, top: 20 }}>
         <Button
           variant="text"
           startIcon={<AddIcon />}
@@ -23,7 +23,7 @@ const ProjectDrawer = () => {
         >
           Nueva Actividad
         </Button>
-       {/*  <Button
+        {/*  <Button
           variant="text"
           startIcon={<AddIcon />}
           onClick={() => Participante()}

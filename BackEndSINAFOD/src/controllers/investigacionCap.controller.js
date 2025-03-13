@@ -37,7 +37,7 @@ export const posInvestigacionCapC = async (req, res) => {
     try {
         const { accionformacion, institucionresponsable, responsablefirmas, 
                 ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
-                duracion, espaciofisico, niveleducactivoobj, funciondirigido, fechainicio, 
+                duracion, espaciofisico, funciondirigido, fechainicio, 
                 fechafinal, participantesprog, participantesrecib, direccion, observacion, 
                 estado, creadopor, idnivelesacademicos,  cicloacademico} = req.body
         console.log(req.body);
@@ -66,7 +66,7 @@ export const posInvestigacionCapC = async (req, res) => {
 
 
         const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
-            niveleducactivoobj, funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos )
+            funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos )
         
         res.json({ message: "Investigacion o Capacitacion agregado", id: investCap.id });
     } catch (error) {
@@ -82,7 +82,7 @@ export const putInvestigacionCapC = async (req, res) => {
         const { id } = req.params;
         const { accionformacion, institucionresponsable, responsablefirmas, 
             ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
-            duracion, espaciofisico, niveleducactivoobj, funciondirigido, fechainicio, 
+            duracion, espaciofisico,funciondirigido, fechainicio, 
             fechafinal, participantesprog, participantesrecib, direccion, observacion, 
             estado, modificadopor, idnivelesacademicos,  cicloacademico } = req.body
 
@@ -101,7 +101,7 @@ export const putInvestigacionCapC = async (req, res) => {
 
         const investCap = await putInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, 
                                                 ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
-                                                duracion, espaciofisico, niveleducactivoobj, funciondirigido, fechainicio, 
+                                                duracion, espaciofisico,funciondirigido, fechainicio, 
                                                 fechafinal, participantesprog, participantesrecib, direccion, observacion, 
                                                 estado, usuario, idnivelesacademicos, idciclosacademicos, id)
         //res.json(investCap)

@@ -431,7 +431,7 @@ const FormulariActividad = () => {
                   <MenuItem value="Planificada">Planificada</MenuItem>
                   <MenuItem value="En Curso">En Curso</MenuItem>
                   <MenuItem value="Suspendida">Suspendida</MenuItem>
-                  <MenuItem value="Completa">Completa</MenuItem>
+                  <MenuItem value="Completada">Completada</MenuItem>
                   <MenuItem value="Cancelada">Cancelada</MenuItem>
                 </Select>
               </FormControl>
@@ -499,6 +499,19 @@ const FormulariActividad = () => {
 
 
             <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1">
+                Participantes Programados
+              </Typography>
+              <TextField
+                fullWidth
+                type="text"
+                name="participantesprog"
+                value={formData.participantesprog || ""}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField
                 fullWidth
@@ -527,19 +540,6 @@ const FormulariActividad = () => {
             </Grid>
 
 
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Participantes Programados
-              </Typography>
-              <TextField
-                fullWidth
-                type="text"
-                name="participantesprog"
-                value={formData.participantesprog || ""}
-                onChange={handleChange}
-              />
-            </Grid>
 
 
             <Grid item xs={12} sm={6}>

@@ -109,7 +109,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}> de Formación</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Tipo de Formación</TableCell>
                     <TableCell >{data.tipoformacion}</TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
@@ -133,7 +133,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                       {data.espaciofisico}
                     </TableCell>
                   </TableRow>
-                 
+
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
                     <TableCell style={{ fontWeight: "bold" }}>Cargo que Desempeña</TableCell>
                     <TableCell style={{ width: 160 }} >
@@ -174,7 +174,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                       {data.participantesprog}
                     </TableCell>
                   </TableRow>
-              {/*     <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
+                  {/*     <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
                     <TableCell style={{ fontWeight: "bold" }}>Participantes que Asistieron</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.participantesrecib}

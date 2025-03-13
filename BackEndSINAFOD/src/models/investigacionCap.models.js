@@ -6,7 +6,7 @@ export const getInvestigacionCapM = async () => {
            SELECT 
     ic.id, ic.accionformacion, ic.institucionresponsable, ic.responsablefirmas, ic.ambitoformacion, 
     ic.tipoformacion, ic.modalidad, ic.formacioninvest, ic.zona, ic.duracion, ic.espaciofisico, 
-    ic.niveleducactivoobj, ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
+ ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
     ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, u.nombre, 
     n.id AS IdNivel, n.nombre AS NivelAcademico, 
     c.id AS IdCiclo, c.nombre AS CicloAcademico
@@ -28,7 +28,7 @@ export const getInvestigacionCapIdInvM = async (id) => {
     try {
         const { rows } = await pool.query(`
             SELECT inc.id, inc.accionformacion, inc.institucionresponsable, inc.responsablefirmas, inc.ambitoformacion, inc.tipoformacion, inc.modalidad, inc.formacioninvest, 
-                    inc.zona, inc.duracion, inc.espaciofisico, inc.niveleducactivoobj, inc.funciondirigido, inc.fechainicio, inc.fechafinal, inc.participantesprog, 
+                    inc.zona, inc.duracion, inc.espaciofisico, inc.funciondirigido, inc.fechainicio, inc.fechafinal, inc.participantesprog, 
                     inc.participantesrecib, inc.direccion, inc.observacion, inc.estado, n.id as idnivelesacademicos,  c.nombre as cicloacademico, n.nombre as nivelacademico
             FROM investigacioncap as inc
             left join nivelesacademicos n on inc.idnivelesacademicos = n.id 
@@ -46,16 +46,16 @@ export const getInvestigacionCapIdInvM = async (id) => {
 
 /////////////////////////////
 export const postInvestigacionCapM = async (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad,
-    formacioninvest, zona, duracion, espaciofisico, niveleducactivoobj, funciondirigido, fechainicio, fechafinal,
+    formacioninvest, zona, duracion, espaciofisico,funciondirigido, fechainicio, fechafinal,
     participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO investigacioncap (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
-                                niveleducactivoobj, funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, creadopor, fechacreacion, fechamodificacion, idnivelesacademicos, idciclosacademicos ) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, CURRENT_TIMESTAMP, null, $21, $22 ) 
+                                funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, creadopor, fechacreacion, fechamodificacion, idnivelesacademicos, idciclosacademicos ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,  CURRENT_TIMESTAMP, null, $20, $21 ) 
             RETURNING id`,
             [accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
-                niveleducactivoobj, funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario,
+                funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario,
                 idnivelesacademicos, idciclosacademicos])
 
         // Log for debugging
@@ -71,7 +71,7 @@ export const postInvestigacionCapM = async (accionformacion, institucionresponsa
 
 
 export const putInvestigacionCapM = async (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion,
-    espaciofisico, niveleducactivoobj, funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion,
+    espaciofisico,funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion,
     estado, usuario, idnivelesacademicos, idciclosacademicos, id) => {
     try {
         const { rows } = await pool.query(`
@@ -87,22 +87,21 @@ export const putInvestigacionCapM = async (accionformacion, institucionresponsab
                 zona=$8, 
                 duracion=$9, 
                 espaciofisico=$10, 
-                niveleducactivoobj=$11, 
-                funciondirigido=$12, 
-                fechainicio=$13, 
-                fechafinal=$14, 
-                participantesprog=$15, 
-                participantesrecib=$16, 
-                direccion=$17, 
-                observacion=$18, 
-                estado=$19, 
-                modificadopor=$20,
-                idnivelesacademicos=$21,
-                idciclosacademicos=$22, 
+                funciondirigido=$11, 
+                fechainicio=$12, 
+                fechafinal=$13, 
+                participantesprog=$14, 
+                participantesrecib=$15, 
+                direccion=$16, 
+                observacion=$17, 
+                estado=$18, 
+                modificadopor=$19,
+                idnivelesacademicos=$20,
+                idciclosacademicos=$21, 
                 fechamodificacion=CURRENT_TIMESTAMP 
-            WHERE id=$23 
+            WHERE id=$22 
             RETURNING *`,
-            [accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, niveleducactivoobj,
+            [accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
                 funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos, id])
 
         return rows[0]
