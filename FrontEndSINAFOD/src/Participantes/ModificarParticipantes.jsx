@@ -190,7 +190,7 @@ const FormularParticipantes = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelesacademicos}`
         );
-        setGrado(response.data);
+      setGrado(response.data);
       } catch (error) {
         console.error("Error al obtener los gardo", error);
       }
@@ -405,7 +405,7 @@ const FormularParticipantes = () => {
                 </RadioGroup>
               </FormControl>
             </Grid>
-
+           
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth>
@@ -415,7 +415,7 @@ const FormularParticipantes = () => {
                   onChange={handleChange}
                 >
                   <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbano</MenuItem>
+                  <MenuItem value="Urbana">Urbana</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

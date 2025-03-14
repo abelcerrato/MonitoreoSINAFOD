@@ -46,7 +46,7 @@ const FormularParticipantes = () => {
     idnivelesacademicos: "",
     idgradosacademicos: null,
     zona: "",
-    centrobeneficiarios: "",
+
     municipioced: "",
     departamentoced: "",
     añosdeservicio: 0,
@@ -67,7 +67,7 @@ const FormularParticipantes = () => {
       idnivelesacademicos: "",
       idgradosacademicos: "",
       zona: "",
-      centrobeneficiarios: "",
+
       municipioced: "",
       departamentoced: "",
       añosdeservicio: "",
@@ -408,15 +408,7 @@ const FormularParticipantes = () => {
                 </RadioGroup>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Centro Beneficiarios</Typography>
-              <TextField
-                fullWidth
-                name="centrobeneficiarios"
-                value={formData.centrobeneficiarios}
-                onChange={handleChange}
-              />
-            </Grid>
+
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth>
@@ -426,7 +418,7 @@ const FormularParticipantes = () => {
                   onChange={handleChange}
                 >
                   <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbano</MenuItem>
+                  <MenuItem value="Urbana">Urbana</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -99,7 +99,7 @@ export const postCapParticipanteC = async (req, res) => {
         // }
 
         const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-           departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered)
+            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered)
         //res.json(CapParticipante
         res.json({ message: "Capacitacion del participante agregada", user: CapParticipante });
     } catch (error) {
@@ -115,7 +115,7 @@ export const putCapParticipanteC = async (req, res) => {
     try {
         const { id } = req.params;
         const { idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipioced, modificadopor, idnivelesacademicos, idgradosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered } = req.body
+           departamentoced, municipioced, modificadopor, idnivelesacademicos, idgradosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered } = req.body
 
         /* 
                 const deptoResponse = await getDepartamentoId(departamentoced);
@@ -152,7 +152,7 @@ export const putCapParticipanteC = async (req, res) => {
 
 
         const CapParticipante = await putCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-             departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
+            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
             sexo, añosdeservicio, tipoadministracion, codigodered, id)
         //res.json(CapParticipante)
         res.json({ message: "Capacitacion del participanteactualizada ", user: CapParticipante });
@@ -163,4 +163,3 @@ export const putCapParticipanteC = async (req, res) => {
 
 
 }
-
