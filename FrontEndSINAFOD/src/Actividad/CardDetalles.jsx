@@ -109,7 +109,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Tipo de Formación</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}> Tipo de Formación</TableCell>
                     <TableCell >{data.tipoformacion}</TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
@@ -135,7 +135,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                   </TableRow>
 
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Cargo que Desempeña</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Población a la que va dirigida</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.funciondirigido}
                     </TableCell>
@@ -169,7 +169,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                     <TableCell > {new Date(data.fechafinal).toLocaleDateString("es-ES")}</TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Participantes Programados</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.participantesprog}
                     </TableCell>

@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import Dashboard from "../Dashboard/dashboard";
 import { useUser } from '../Components/UserContext';
 import TablaActividad from "../Actividad/TablaAcividad";
+import Swal from 'sweetalert2';
 
 const FormulariActividad = () => {
   const navigate = useNavigate();
@@ -133,18 +134,27 @@ const FormulariActividad = () => {
       if (response.status === 200) {
         const investCap = response.data.id; // Captura el id
 
-
-        // Pasa el id al siguiente componente usando navigate con state
-        alert("Datos guardados correctamente");
+        Swal.fire({
+          title: 'Guardado!',
+          text: 'Datos guardados correctamente',
+          icon: 'success',
+          timer: 6000,
+        });
+        
+       
         setIsSaved(true);
         // Navega a '/Participantes' y pasa el id como parte del state
         navigate("/Participantes", { state: { investCap } });
-      } else {
-        alert("Error en la autenticación. Verifique sus credenciales.");
-      }
+      } 
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      alert("Error al guardar los datos");
+      
+      Swal.fire({
+        title: 'Error!',
+        text: 'Error al guardar datos',
+        icon: 'error',
+        timer: 6000,
+      });
     }
   };
 
@@ -205,7 +215,7 @@ const FormulariActividad = () => {
             alignItems="center"
             marginBottom={4}
           >
-            <Typography variant="h5" sx={{ color: color.primary.azul }}>
+            <Typography variant="h3" sx={{ color: color.primary.azul }}>
               Registro de Nueva Actividad - Formativa o de Investigación
             </Typography>
             <Box>
@@ -379,7 +389,7 @@ const FormulariActividad = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
-                Cargo que Desempeña
+                Población a la que va dirigida
               </Typography>
               <TextField
                 fullWidth
@@ -442,7 +452,7 @@ const FormulariActividad = () => {
 
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
-                Participantes Programados
+                Cantidad de Participantes Programados
               </Typography>
               <TextField
                 fullWidth
@@ -511,7 +521,7 @@ const FormulariActividad = () => {
                   onChange={handleChange}
                 >
                   <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbano</MenuItem>
+                  <MenuItem value="Urbana">Urbana</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -122,11 +122,13 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
 
     // Obtener los datos de los participantes después de guardar
     axios
-   
+
       .get(`${process.env.REACT_APP_API_URL}/CapacitacionInvest/${investCap}`)
       .then((response) => {
         setRows(response.data);  // Actualizar las filas con los nuevos datos
         setIsSaved(false);
+        console.log("parr", response.data);
+
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
@@ -170,19 +172,17 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
               Identidad
             </TableCell>
             <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Centro Eduactivo
+              Centro Educativo
             </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Centro Beneficiarios
-            </TableCell>
+
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Zona
             </TableCell>
             <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Departamento Centro Educativo
+              Departamento
             </TableCell>
             <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Municipio Centro Educativo
+              Municipio
             </TableCell>
           </TableRow>
         </TableHead>
@@ -198,7 +198,7 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-            
+
               </TableCell>
               <TableCell style={{ width: 160 }} align="center">
                 {row.idinvestigacioncap}
@@ -219,10 +219,6 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.centroeducativo}
-              </TableCell>
-
-              <TableCell style={{ width: 160 }} align="right">
-                {row.centrobeneficiarios}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.zona}

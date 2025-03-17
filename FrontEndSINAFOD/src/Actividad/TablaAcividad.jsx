@@ -25,6 +25,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { color } from "../Components/color";
 import CardDetalles from "./CardDetalles";
+
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -94,6 +95,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
+
 export default function TablaActividad(isSaved, setIsSaved) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -161,7 +163,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
             </TableCell>
             {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
            <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
-     
+          <TableCell align="right" style={{ fontWeight: "bold" }}>Nivel Objetivo</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Función al que va Dirigido</TableCell>*/}
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Estado
@@ -172,7 +174,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Fecha de Finalización
             </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Participantes Programados</TableCell>
+            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Participantes que Asistieron</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Dirección</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Zona</TableCell>
@@ -235,7 +237,9 @@ export default function TablaActividad(isSaved, setIsSaved) {
            <TableCell style={{ width: 160 }} align="right">
               {row.espaciofisico}
             </TableCell> 
-            
+            <TableCell style={{ width: 160 }} align="right">
+              {row.niveleducactivoobj}
+            </TableCell>
             <TableCell style={{ width: 160 }} align="right">
               {row.funciondirigido}
             </TableCell>*/}
