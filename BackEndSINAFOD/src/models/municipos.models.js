@@ -4,7 +4,7 @@ import { pool } from '../db.js'
 export const getMunicipiosIdM = async (id) => {
     try {
         const { rows } = await pool.query(`
-            select d.nombre as departamento , m.nombre as municipio 
+            select d.nombre as departamento , m.id, m.nombre as municipio 
             from municipio m 
             inner join departamento d on m.iddepartamento = d.id 
             WHERE d.id=$1`, [id])
