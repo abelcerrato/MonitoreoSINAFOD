@@ -4,7 +4,7 @@ import { pool } from '../db.js'
 export const getAldeasIdM = async (id) => {
     try {
         const { rows } = await pool.query(`
-            select a.nombre as aldea , m.nombre as municipio 
+            select a.id, a.nombre as aldea , m.nombre as municipio 
             from aldeas a 
             inner join municipio m on a.idmunicipio = m.id 
             WHERE m.id=$1`, [id])
