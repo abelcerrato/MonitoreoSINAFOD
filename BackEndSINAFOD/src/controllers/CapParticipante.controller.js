@@ -58,7 +58,8 @@ export const postCapParticipanteC = async (req, res) => {
     try {
         const { idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
             departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos, 
-            CicloAcademico, sexo, añosdeservicio, tipoadministracion, codigodered } = req.body
+            CicloAcademico, sexo, añosdeservicio, tipoadministracion, codigodered,
+            deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body
         console.log(req.body);
 
         const muniResponse = await getMunicipioxIdDepto(municipioced);
@@ -99,7 +100,8 @@ export const postCapParticipanteC = async (req, res) => {
         // }
 
         const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered)
+            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
+            deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
         //res.json(CapParticipante
         res.json({ message: "Capacitacion del participante agregada", user: CapParticipante });
     } catch (error) {
@@ -115,7 +117,8 @@ export const putCapParticipanteC = async (req, res) => {
     try {
         const { id } = req.params;
         const { idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-           departamentoced, municipioced, modificadopor, idnivelesacademicos, idgradosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered } = req.body
+            departamentoced, municipioced, modificadopor, idnivelesacademicos, idgradosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
+            deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body
 
         /* 
                 const deptoResponse = await getDepartamentoId(departamentoced);
@@ -153,7 +156,7 @@ export const putCapParticipanteC = async (req, res) => {
 
         const CapParticipante = await putCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
             departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
-            sexo, añosdeservicio, tipoadministracion, codigodered, id)
+            sexo, añosdeservicio, tipoadministracion, codigodered, deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced, id)
         //res.json(CapParticipante)
         res.json({ message: "Capacitacion del participanteactualizada ", user: CapParticipante });
     } catch (error) {
