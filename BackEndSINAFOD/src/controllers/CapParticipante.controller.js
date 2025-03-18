@@ -62,11 +62,11 @@ export const postCapParticipanteC = async (req, res) => {
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body
         console.log(req.body);
 
-        const muniResponse = await getMunicipioxIdDepto(municipioced);
-        if (!muniResponse || muniResponse.length === 0 || !muniResponse[0].id) {
-            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
-        }
-        const municipio = muniResponse[0].id;
+        // const muniResponse = await getMunicipioxIdDepto(municipioced);
+        // if (!muniResponse || muniResponse.length === 0 || !muniResponse[0].id) {
+        //     return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        // }
+        // const municipio = muniResponse[0].id;
 
         const userResponse = await getUsuarioIdM(creadopor);
         if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
@@ -100,7 +100,7 @@ export const postCapParticipanteC = async (req, res) => {
         // }
 
         const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
+            departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
         //res.json(CapParticipante
         res.json({ message: "Capacitacion del participante agregada", user: CapParticipante });
@@ -127,11 +127,11 @@ export const putCapParticipanteC = async (req, res) => {
                 }
                 const departamento = deptoResponse[0].id; */
 
-        const muniResponse = await getMunicipioxIdDepto(municipioced);
+ /*        const muniResponse = await getMunicipioxIdDepto(municipioced);
         if (!muniResponse || muniResponse.length === 0 || !muniResponse[0].id) {
             return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
         }
-        const municipio = muniResponse[0].id;
+        const municipio = muniResponse[0].id; */
 
 
         const userResponse = await getUsuarioIdM(modificadopor);
@@ -155,7 +155,7 @@ export const putCapParticipanteC = async (req, res) => {
 
 
         const CapParticipante = await putCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipio, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
+            departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
             sexo, añosdeservicio, tipoadministracion, codigodered, deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced, id)
         //res.json(CapParticipante)
         res.json({ message: "Capacitacion del participanteactualizada ", user: CapParticipante });
