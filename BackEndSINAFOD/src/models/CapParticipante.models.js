@@ -279,7 +279,7 @@ export const putCapParticipanteM = async (idinvestigacioncap, identificacion, co
                 aldearesidencia=$20,
                 nivelacademicodocente=$21,
                 gradoacademicodocente=$22,
-                aldeaced=$23,
+                aldeaced=$23
                 WHERE id=$24
                 RETURNING *`,
             [idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
