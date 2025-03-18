@@ -81,25 +81,24 @@ export const getCapParticipanteIdM = async (id) => {
 					--datos del participante
 					cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
 					
-					cp.deptoresidencia as iddeptoResidencia,  
-					dr.nombre as nombreDeptoResidencia,
-					cp.municipioresidencia as idMuniResidencia, mr.nombre as nombreMuniResidencia,
-					cp.aldearesidencia as idAldeaResidencia, ar.nombre as nombreAldeaResidencia,
+					cp.deptoresidencia, dr.nombre as nombreDeptoResidencia,
+					cp.municipioresidencia, mr.nombre as nombreMuniResidencia,
+					cp.aldearesidencia, ar.nombre as nombreAldeaResidencia,
 					
-					cp.nivelacademicodocente as idNivelAcademicoDocente, ndo.nombre as nombreNivelDocente,
-					cp.gradoacademicodocente as idGradoAcademicoDocente, gdo.nombre as nombreGradoDocente,
+					cp.nivelacademicodocente, ndo.nombre as nombreNivelDocente,
+					cp.gradoacademicodocente, gdo.nombre as nombreGradoDocente,
 					
 					--datos del centro educativo
                     cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
                     
                     --academico que atiende
-                    cp.idnivelesacademicos as idNivelCed, n.nombre as nombreNivelCed, 
-                    cp.idciclosacademicos as idCicloCed,  c.nombre as nombreCicloCed, 
-                    cp.idgradosacademicos as idGradoCed, g.nombre as nombreGradoCed, 
+                    cp.idnivelesacademicos, n.nombre as nombreNivelCed, 
+                    cp.idciclosacademicos,  c.nombre as nombreCicloCed, 
+                    cp.idgradosacademicos, g.nombre as nombreGradoCed, 
                     
-                    cp.departamentoced as idDeptoCed, dced.nombre as nombreDeptoCed, 
-                    cp.municipioced as idMunicipioCed, mced.nombre nombreMunicipioCed,
-                    cp.aldeaced as idAldeaCed, aced.nombre as nombreAldeaCed, 
+                    cp.departamentoced, dced.nombre as nombreDeptoCed, 
+                    cp.municipioced, mced.nombre nombreMunicipioCed,
+                    cp.aldeaced, aced.nombre as nombreAldeaCed, 
 
                     --datos de auditoria
                     cp.creadopor, u.usuario as CreadoPor,
