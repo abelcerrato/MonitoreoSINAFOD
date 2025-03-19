@@ -3,7 +3,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
+
 import {
   TableContainer,
   Table,
@@ -15,10 +15,11 @@ import {
   TablePagination,
   Paper,
   Tooltip,
-  Typography
+  Typography,
+  Box
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
@@ -97,8 +98,6 @@ TablePaginationActions.propTypes = {
 
 export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -140,10 +139,6 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
     navigate(`/Modificar_Participante/${id}`); // Redirige a la página de edición con el ID
   };
 
-  const handleOpen = (id) => {
-    setSelectedId(id);
-    setOpen(true);
-  };
 
   return (
     <TableContainer component={Paper}>

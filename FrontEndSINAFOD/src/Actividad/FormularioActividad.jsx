@@ -11,6 +11,7 @@ import {
   FormControl,
   InputLabel,
   Box,
+  FormHelperText
 } from "@mui/material";
 import { color } from "../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
@@ -27,6 +28,7 @@ const FormulariActividad = () => {
   const [error, setError] = useState("");
   const [NivelEducativo, setNivelEducativo] = useState([]);
   const [ciclos, setCiclos] = useState([]);
+  const [errorM, setErrorM] = useState("");
   const [formData, setFormData] = useState({
     accionformacion: "",
     formacioninvest: "",
@@ -53,7 +55,6 @@ const FormulariActividad = () => {
     fechainicio: false,
     fechafinal: false,
   });
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     console.log(`Campo cambiado: ${name}, Valor recibido: ${value}`);
@@ -61,58 +62,127 @@ const FormulariActividad = () => {
     setFormData((prevData) => {
       let newData = { ...prevData, [name]: value };
 
+      // Convertimos el valor a string para evitar errores con `.trim()`
+      const valueStr = String(value || "");
+
+      // Quitar error si el usuario llena un campo vacío
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: valueStr.trim() === "" ? true : false,
+      }));
+
       // Validación de fechas
       if (name === "fechainicio" || name === "fechafinal") {
         const formattedDate = new Date(value).toISOString().split("T")[0];
-
         newData[name] = formattedDate;
+
         if (newData.fechainicio && newData.fechafinal) {
           if (new Date(newData.fechainicio) > new Date(newData.fechafinal)) {
             setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
-            setFieldErrors({
-              fechainicio: true,
-              fechafinal: true,
-            });
+            setFieldErrors({ fechainicio: true, fechafinal: true });
           } else {
             setError("");
-            setFieldErrors({
-              fechainicio: false,
-              fechafinal: false,
-            });
+            setFieldErrors({ fechainicio: false, fechafinal: false });
           }
         }
       }
 
-      // Validación para añosdeservicio y participantesprog (solo números positivos)
+      // Validación para participantesprog (solo números positivos)
       else if (name === "participantesprog") {
-        if (value === "" || /^\d+$/.test(value)) {
-          // Permite borrar (valor vacío) o solo números positivos
+        if (valueStr === "" || /^\d+$/.test(valueStr)) {
           newData[name] = value;
         } else {
-          return prevData; // No actualiza el estado si el valor no es válido
+          return prevData;
         }
       }
 
+      // Validar minutos
+      if (name === "minutos" && Number(value) > 59) {
+        setErrorM("Solo se admiten minutos hasta 59.");
+      } else {
+        setErrorM("");
+      }
 
+      // Calcular duración (HH:MM)
       const horas = newData.horas || 0;
       const minutos = newData.minutos || 0;
       newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
-
-
 
       return newData;
     });
   };
 
 
-  const handleSave = async () => {
 
+
+  const handleSave = async () => {
+    // Lista de campos obligatorios
+    const requiredFields = [
+      "accionformacion",
+      "formacioninvest",
+      "institucionresponsable",
+      "responsablefirmas",
+      "ambitoformacion",
+      "tipoformacion",
+      "modalidad",
+      "estado",
+      "funciondirigido",
+      "participantesprog",
+      "fechainicio",
+      "fechafinal",
+      "espaciofisico",
+      "direccion",
+      "zona",
+    ];
+
+    // Detectar campos vacíos
+    let errors = {};
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = true; // Marcar campo como vacío
+      }
+    });
+
+    // Verifica que al menos uno de los campos "horas" o "minutos" esté lleno
+    if (!formData.horas && !formData.minutos) {
+      errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
+      errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
+    }
+
+
+
+
+    // Si hay campos vacíos, actualizar estado y mostrar alerta
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      Swal.fire({
+        title: "Campos obligatorios",
+        text: "Llenar los campos en rojo",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    // Verificación de minutos antes de guardar los datos
+    if (formData.minutos > 59) {
+      Swal.fire({
+        title: 'Advertencia!',
+        text: 'Los minutos no pueden ser mayores a 59.',
+        icon: 'warning',
+        timer: 6000,
+      });
+      return; // Detiene la ejecución si la validación falla
+    }
     // Verificación de la fecha antes de guardar los datos
     if (formData.fechainicio && formData.fechafinal) {
       if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
-        alert(
-          "La fecha de inicio no puede ser posterior a la fecha de finalización."
-        );
+        Swal.fire({
+          title: 'Advertencia!',
+          text: 'La fecha de inicio no puede ser posterior a la fecha de finalización.',
+          icon: 'warning',
+          timer: 6000,
+        });
         return; // No proceder con la solicitud si la validación falla
       }
     }
@@ -140,15 +210,15 @@ const FormulariActividad = () => {
           icon: 'success',
           timer: 6000,
         });
-        
-       
+
+
         setIsSaved(true);
         // Navega a '/Participantes' y pasa el id como parte del state
         navigate("/Participantes", { state: { investCap } });
-      } 
+      }
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      
+
       Swal.fire({
         title: 'Error!',
         text: 'Error al guardar datos',
@@ -209,37 +279,12 @@ const FormulariActividad = () => {
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={4}
-          >
-            <Typography variant="h3" sx={{ color: color.primary.azul }}>
-              Registro de Nueva Actividad - Formativa o de Investigación
-            </Typography>
-            <Box>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: color.primary.azul }}
-                startIcon={<SaveIcon />}
-                onClick={handleSave}
-              >
-                Guardar
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  marginLeft: 2,
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                onClick={() => handleRedirect()}
-              >
-                Cerrar
-              </Button>
-            </Box>
-          </Box>
+
+          <Typography variant="h3" sx={{ color: color.primary.azul }}>
+            Registro de Nueva Actividad - Formativa o de Investigación
+          </Typography>
+
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
@@ -250,6 +295,8 @@ const FormulariActividad = () => {
                 name="accionformacion"
                 value={formData.accionformacion}
                 onChange={handleChange}
+                error={fieldErrors.accionformacion}
+                helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
               />
             </Grid>
 
@@ -257,7 +304,7 @@ const FormulariActividad = () => {
               <Typography variant="subtitle1">
                 Formación o Investigación
               </Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.formacioninvest}>
                 <Select
                   name="formacioninvest"
                   value={formData.formacioninvest}
@@ -277,6 +324,8 @@ const FormulariActividad = () => {
                 name="institucionresponsable"
                 value={formData.institucionresponsable}
                 onChange={handleChange}
+                error={fieldErrors.institucionresponsable}
+                helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -286,6 +335,8 @@ const FormulariActividad = () => {
                 name="responsablefirmas"
                 value={formData.responsablefirmas}
                 onChange={handleChange}
+                error={fieldErrors.responsablefirmas}
+                helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -295,11 +346,13 @@ const FormulariActividad = () => {
                 name="ambitoformacion"
                 value={formData.ambitoformacion}
                 onChange={handleChange}
+                error={fieldErrors.ambitoformacion}
+                helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Tipo de Formación</Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.tipoformacion}>
                 <Select
                   name="tipoformacion"
                   value={formData.tipoformacion}
@@ -310,11 +363,12 @@ const FormulariActividad = () => {
                   <MenuItem value="Curso">Curso</MenuItem>
                   <MenuItem value="Diplomado">Diplomado</MenuItem>
                 </Select>
+                {fieldErrors.tipoformacion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Modalidad</Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.modalidad}>
                 <Select
                   name="modalidad"
                   value={formData.modalidad}
@@ -324,6 +378,7 @@ const FormulariActividad = () => {
                   <MenuItem value="Presencial">Presencial</MenuItem>
                   <MenuItem value="Híbrido">Híbrido</MenuItem>
                 </Select>
+                {fieldErrors.modalidad && <FormHelperText>Este campo es obligatorio</FormHelperText>}
               </FormControl>
             </Grid>
 
@@ -340,7 +395,8 @@ const FormulariActividad = () => {
                     name="horas"
                     value={formData.horas || ""}
                     onChange={handleChange}
-                    inputProps={{ min: 0, max: 23 }} // Limita a 0-23 horas
+                    error={fieldErrors.horas || fieldErrors.minutos}
+                    helperText={fieldErrors.horas || fieldErrors.minutos}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -353,7 +409,10 @@ const FormulariActividad = () => {
                     value={formData.minutos || ""}
                     onChange={handleChange}
                     inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
+                    error={fieldErrors.horas || fieldErrors.minutos}
+                    helperText={fieldErrors.horas || fieldErrors.minutos}
                   />
+                  {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -373,7 +432,7 @@ const FormulariActividad = () => {
 
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Estado</Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.estado}>
                 <Select
                   name="estado"
                   value={formData.estado}
@@ -385,6 +444,7 @@ const FormulariActividad = () => {
                   <MenuItem value="Completada">Completada</MenuItem>
                   <MenuItem value="Cancelada">Cancelada</MenuItem>
                 </Select>
+                {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -396,6 +456,8 @@ const FormulariActividad = () => {
                 name="funciondirigido"
                 value={formData.funciondirigido}
                 onChange={handleChange}
+                error={fieldErrors.funciondirigido}
+                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
               />
             </Grid>
 
@@ -405,7 +467,7 @@ const FormulariActividad = () => {
               <Typography variant="subtitle1">
                 Nivel Educativo
               </Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                 <Select
                   name="idnivelesacademicos"
                   value={formData.idnivelesacademicos || ""}
@@ -449,20 +511,6 @@ const FormulariActividad = () => {
               </FormControl>
             </Grid>
 
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Cantidad de Participantes Programados
-              </Typography>
-              <TextField
-                fullWidth
-                type="text"
-                name="participantesprog"
-                value={formData.participantesprog || ""}
-                onChange={handleChange}
-              />
-            </Grid>
-
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField
@@ -483,13 +531,29 @@ const FormulariActividad = () => {
                 name="fechafinal"
                 value={formData.fechafinal || ""}
                 error={fieldErrors.fechafinal} // Aquí se activa el error
-
+                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
                 inputProps={{
                   min: formData.fechainicio || "",
                 }}
                 onChange={handleChange}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1">
+                Cantidad de Participantes Programados
+              </Typography>
+              <TextField
+                fullWidth
+                type="text"
+                name="participantesprog"
+                value={formData.participantesprog || ""}
+                onChange={handleChange}
+                error={fieldErrors.participantesprog}
+                helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
+              />
+            </Grid>
+
+
 
 
 
@@ -501,6 +565,8 @@ const FormulariActividad = () => {
                 name="espaciofisico"
                 value={formData.espaciofisico}
                 onChange={handleChange}
+                error={fieldErrors.espaciofisico}
+                helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -510,6 +576,8 @@ const FormulariActividad = () => {
                 name="direccion"
                 value={formData.direccion}
                 onChange={handleChange}
+                error={fieldErrors.direccion}
+                helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -547,6 +615,27 @@ const FormulariActividad = () => {
               />
             </Grid> */}
           </Grid>
+          <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: color.primary.azul }}
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+            >
+              Guardar
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                marginLeft: 2,
+                borderColor: color.primary.rojo,
+                color: color.primary.rojo,
+              }}
+              onClick={() => handleRedirect()}
+            >
+              Cerrar
+            </Button>
+          </Box>
         </Paper>
         <TablaActividad isSaved={isSaved} setIsSaved={setIsSaved} />
       </Dashboard>

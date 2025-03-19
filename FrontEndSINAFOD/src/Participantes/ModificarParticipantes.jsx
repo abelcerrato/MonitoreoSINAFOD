@@ -34,30 +34,46 @@ const ModificarParticipante = () => {
   console.log("id", user);
 
   const [isSaved, setIsSaved] = useState(false);
- const [value, setValue] = React.useState("1");
   const navigate = useNavigate();
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
+  const [departamentosRE, setDepartamentosRE] = useState([]);
+  const [municipiosRE, setMunicipiosRE] = useState([]);
   const [NivelEducativo, setNivelEducativo] = useState([]);
   const [gardo, setGrado] = useState([]);
+  const [aldeas, setAldea] = useState([]);
+  const [value, setValue] = React.useState("1");
+  const [NivelEducativoP, setNivelEducativoP] = useState([]);
+  const [aldeasP, setAldeaP] = useState([]);
+  const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
     idinvestigacioncap: "",
+
     identificacion: "",
     codigosace: "",
     nombre: "",
     funcion: "",
     sexo: "",
+    añosdeservicio: 0,
+    codigodered: "",
+    deptoresidencia: "",
+    municipioresidencia: "",
+    aldearesidencia: "",
+    nivelacademicodocente: "",
+    gradoacademicodocente: null,
+
+    aldeaced: "",
     centroeducativo: "",
     idnivelesacademicos: "",
     idgradosacademicos: null,
     zona: "",
     municipioced: "",
     departamentoced: "",
-    añosdeservicio: 0,
-    codigodered: "",
-    tipoadministracion: "",
+    tipoadministracion: "Gubernamental",
+    creadopor: user,
   });
-  
+
+
   const handleChangeValues = (event, newValue) => {
     setValue(newValue);
   };
@@ -70,8 +86,6 @@ const ModificarParticipante = () => {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/CapacitacionP/${id}`);
 
         setFormData(response.data[0]);
-
-        console.log("datos", response.data[0]);
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
@@ -154,7 +168,29 @@ const ModificarParticipante = () => {
     obtenerDepartamentos();
   }, []);
 
-  // Obtener municipios cuando cambia el departamento seleccionado
+
+
+  const handleRedirect = () => {
+    navigate(`/Modificar_Actividad/${formData.idinvestigacioncap}`);
+  };
+
+
+
+  // Obtener departamentos del centro educativo
+  useEffect(() => {
+    const obtenerDepartamentos = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamentos`);
+        setDepartamentos(response.data);
+      } catch (error) {
+        console.error("Error al obtener los departamentos", error);
+      }
+    };
+
+    obtenerDepartamentos();
+  }, []);
+
+  // Obtener municipios del centro educativo
   useEffect(() => {
     if (!formData.departamentoced) return; // Si no hay departamento seleccionado, no hacer la petición
 
@@ -172,13 +208,25 @@ const ModificarParticipante = () => {
     obtenerMunicipios();
   }, [formData.departamentoced]);
 
-  const handleRedirect = () => {
-    navigate(`/Modificar_Actividad/${formData.idinvestigacioncap}`);
-  };
+  // Obtener aldea del centro educativo
+  useEffect(() => {
+    if (!formData.municipioced) return; // Si no hay departamento seleccionado, no hacer la petición
 
+    const obtenerMunicipios = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioced}`
+        );
+        setAldea(response.data);
+      } catch (error) {
+        console.error("Error al obtener los municipios", error);
+      }
+    };
 
+    obtenerMunicipios();
+  }, [formData.municipioced]);
 
-  // Obtener NivelEducativo al montar el componente
+  // Obtener NivelEducativo al que atiende
   useEffect(() => {
     const obtenerNivelEducativo = async () => {
       try {
@@ -192,17 +240,17 @@ const ModificarParticipante = () => {
     obtenerNivelEducativo();
   }, []);
 
-  // Obtener gardo cuando cambia el departamento seleccionado
+
+  // Obtener gardo al que atiende
   useEffect(() => {
     if (!formData.idnivelesacademicos) return;
 
     const obtenergardo = async () => {
       try {
-
-
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelesacademicos}`
         );
+
         setGrado(response.data);
       } catch (error) {
         console.error("Error al obtener los gardo", error);
@@ -212,42 +260,110 @@ const ModificarParticipante = () => {
     obtenergardo();
   }, [formData.idnivelesacademicos]);
 
+  // Obtener aldea del participante 
+  useEffect(() => {
+    if (!formData.municipioresidencia) return; // Si no hay departamento seleccionado, no hacer la petición
+
+    const obtenerMunicipios = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioresidencia}`
+        );
+        setAldeaP(response.data);
+      } catch (error) {
+        console.error("Error al obtener los municipios", error);
+      }
+    };
+
+    obtenerMunicipios();
+  }, [formData.municipioresidencia]);
+
+
+  // Obtener departamentos del participante
+  useEffect(() => {
+    const obtenerDepartamentos = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamentos`);
+        setDepartamentosRE(response.data);
+      } catch (error) {
+        console.error("Error al obtener los departamentos", error);
+      }
+    };
+
+    obtenerDepartamentos();
+  }, []);
+
+  // Obtener municipios del participante
+  useEffect(() => {
+    if (!formData.deptoresidencia) return; // Si no hay departamento seleccionado, no hacer la petición
+
+    const obtenerMunicipios = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/municipios/${formData.deptoresidencia}`
+        );
+        setMunicipiosRE(response.data);
+        console.log("muni", response.data);
+
+      } catch (error) {
+        console.error("Error al obtener los municipios", error);
+      }
+    };
+
+    obtenerMunicipios();
+  }, [formData.deptoresidencia]);
+
+
+
+
+
+  {/* Nivel academico del participante */ }
+  // Obtener NivelEducativo al montar el componente
+  useEffect(() => {
+    const obtenerNivelEducativo = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`);
+        setNivelEducativoP(response.data);
+      } catch (error) {
+        console.error("Error al obtener los NivelEducativo", error);
+      }
+    };
+
+    obtenerNivelEducativo();
+  }, []);
+
+
+  // Obtener gardo cuando cambia el departamento seleccionado
+  useEffect(() => {
+    if (!formData.nivelacademicodocente) return;
+
+    const obtenergardo = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.nivelacademicodocente}`
+        );
+        console.log("gardo", response.data);
+
+
+        setGradoP(response.data);
+      } catch (error) {
+        console.error("Error al obtener los gardo", error);
+      }
+    };
+
+    obtenergardo();
+  }, [formData.nivelacademicodocente]);
 
   return (
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={4}
-          >
-            <Typography variant="h2" sx={{ color: color.primary.azul }}>
-              Actualización de Participantes
-            </Typography>
-            <Box>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: color.primary.azul }}
-                startIcon={<SaveIcon />}
-                onClick={handleSave}
-              >
-                Guardar
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  marginLeft: 2,
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                onClick={() => handleRedirect()}
-              >
-                Cerrar
-              </Button>
-            </Box>
-          </Box>
+
+          <Typography variant="h2" sx={{ color: color.primary.azul }}>
+            Actualización de Participantes
+          </Typography>
+
+
           <TabContext value={value}>
             <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
               <Tab label="Datos Generales del Participante" value="1" />
@@ -286,6 +402,41 @@ const ModificarParticipante = () => {
                     </RadioGroup>
                   </FormControl>
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Nivel Académico</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="nivelacademicodocente"
+                      value={formData.nivelacademicodocente || ""}
+                      onChange={handleChange}>
+                      {NivelEducativoP.length > 0 ? (
+                        NivelEducativoP.map((dep) =>
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.nombre}
+                          </MenuItem>)
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Grado Académico</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="gradoacademicodocente"
+                      value={formData.gradoacademicodocente || ""}
+                      onChange={handleChange}
+                      disabled={!gardoP.length}
+                    >
+                      <MenuItem value="" disabled>Seleccione un grado académico</MenuItem>
+                      {gardoP.map((mun) => (
+                        <MenuItem key={mun.id} value={mun.id}>{mun.grado}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
@@ -299,6 +450,64 @@ const ModificarParticipante = () => {
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Función</Typography>
                   <TextField fullWidth name="funcion" value={formData.funcion} onChange={handleChange} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Departamento de Residencia</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="deptoresidencia"
+                      value={formData.deptoresidencia}
+                      onChange={handleChange}
+                    >
+                      {departamentosRE.length > 0 ? (
+                        departamentosRE.map((dep) =>
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.nombre}
+                          </MenuItem>)
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Municipio de Residencia</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      id="municipioresidencia"
+                      name="municipioresidencia"
+                      value={formData.municipioresidencia || ""}
+                      onChange={handleChange}
+                      disabled={!municipiosRE.length}
+                    >
+                      <MenuItem value="">Seleccione un municipio</MenuItem>
+                      {municipiosRE.map((municipio) => (
+                        <MenuItem key={municipio.id} value={municipio.id}>
+                          {municipio.municipio}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Aldea de Residencia</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="aldearesidencia"
+                      value={formData.aldearesidencia}
+                      onChange={handleChange}
+                      disabled={!aldeasP.length}>
+                      {aldeasP.length > 0 ? (
+                        aldeasP.map((ald) =>
+                          <MenuItem key={ald.id} value={ald.id}>
+                            {ald.aldea}
+                          </MenuItem>)
+                      ) : (
+                        <MenuItem disabled>Seleccione una aldea</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
             </TabPanel>
@@ -322,7 +531,7 @@ const ModificarParticipante = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Grado</Typography>
+                  <Typography variant="subtitle1">Grado Educativo que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
                       name="idgradosacademicos"
@@ -384,11 +593,38 @@ const ModificarParticipante = () => {
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
                   <FormControl fullWidth>
-                    <Select name="municipioced" value={formData.municipioced || ""} onChange={handleChange} disabled={!municipios.length}>
-                      {municipios.length > 0 ? (
-                        municipios.map((mun) => <MenuItem key={mun.id} value={mun.municipio}>{mun.municipio}</MenuItem>)
+                    <Select
+                      id="municipioced"
+                      name="municipioced"
+                      value={formData.municipioced || ""}
+                      onChange={handleChange}
+                      disabled={!municipios.length}
+                    >
+                      <MenuItem value="">Seleccione un municipio</MenuItem>
+                      {municipios.map((municipio) => (
+                        <MenuItem key={municipio.id} value={municipio.id}>
+                          {municipio.municipio}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="aldeaced"
+                      value={formData.aldeaced}
+                      onChange={handleChange}
+                      disabled={!aldeas.length}>
+                      {aldeas.length > 0 ? (
+                        aldeas.map((ald) =>
+                          <MenuItem key={ald.id} value={ald.id}>
+                            {ald.aldea}
+                          </MenuItem>)
                       ) : (
-                        <MenuItem disabled>Seleccione un departamento</MenuItem>
+                        <MenuItem disabled>Seleccione una aldea</MenuItem>
                       )}
                     </Select>
                   </FormControl>
@@ -396,6 +632,27 @@ const ModificarParticipante = () => {
               </Grid>
             </TabPanel>
           </TabContext>
+          <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: color.primary.azul }}
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+            >
+              Guardar
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                marginLeft: 2,
+                borderColor: color.primary.rojo,
+                color: color.primary.rojo,
+              }}
+              onClick={() => handleRedirect()}
+            >
+              Cerrar
+            </Button>
+          </Box>
         </Paper>
 
       </Dashboard>
