@@ -359,10 +359,26 @@ const ModificarParticipante = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
-          <Typography variant="h2" sx={{ color: color.primary.azul }}>
-            Actualización de Participantes
-          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h2" sx={{ color: color.primary.azul }}>
+                Actualización de Participantes
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: color.primary.rojo,
+                  color: color.primary.rojo,
+                }}
+                onClick={() => handleRedirect()}
+              >
+                Cerrar
+              </Button>
+            </Grid>
 
+          </Grid>
 
           <TabContext value={value}>
             <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
@@ -518,9 +534,13 @@ const ModificarParticipante = () => {
 
 
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Nivel Educativo que Atiende</Typography>
+                  <Typography variant="subtitle1">Nivel Académico que Atiende</Typography>
                   <FormControl fullWidth>
-                    <Select name="idnivelesacademicos" value={formData.idnivelesacademicos || ""} onChange={handleChange}>
+                    <Select
+                      name="idnivelesacademicos"
+                      value={formData.idnivelesacademicos || ""}
+                      onChange={handleChange}>
+                      <MenuItem value="" disabled>Seleccione un nivel académico</MenuItem>
                       {NivelEducativo.length > 0 ? (
                         NivelEducativo.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
                       ) : (
@@ -630,29 +650,20 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
               </Grid>
+              <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: color.primary.azul }}
+                  startIcon={<SaveIcon />}
+                  onClick={handleSave}
+                >
+                  Guardar
+                </Button>
+
+              </Box>
             </TabPanel>
           </TabContext>
-          <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.azul }}
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-            >
-              Guardar
-            </Button>
-            <Button
-              variant="outlined"
-              sx={{
-                marginLeft: 2,
-                borderColor: color.primary.rojo,
-                color: color.primary.rojo,
-              }}
-              onClick={() => handleRedirect()}
-            >
-              Cerrar
-            </Button>
-          </Box>
+
         </Paper>
 
       </Dashboard>

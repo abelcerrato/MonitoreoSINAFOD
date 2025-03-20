@@ -75,25 +75,25 @@ const FormularParticipantes = () => {
     setFormData((prevState) => ({
       ...prevState,
       identificacion: "",
-    codigosace: "",
-    nombre: "",
-    funcion: "",
-    sexo: "",
-    añosdeservicio: 0,
-    codigodered: "",
-    deptoresidencia: "",
-    municipioresidencia: "",
-    aldearesidencia: "",
-    nivelacademicodocente: "",
-    gradoacademicodocente: null,
+      codigosace: "",
+      nombre: "",
+      funcion: "",
+      sexo: "",
+      añosdeservicio: 0,
+      codigodered: "",
+      deptoresidencia: "",
+      municipioresidencia: "",
+      aldearesidencia: "",
+      nivelacademicodocente: "",
+      gradoacademicodocente: null,
 
-    aldeaced: "",
-    centroeducativo: "",
-    idnivelesacademicos: "",
-    idgradosacademicos: null,
-    zona: "",
-    municipioced: "",
-    departamentoced: "",
+      aldeaced: "",
+      centroeducativo: "",
+      idnivelesacademicos: "",
+      idgradosacademicos: null,
+      zona: "",
+      municipioced: "",
+      departamentoced: "",
       creadopor: prevState.creadopor,
     }));
   };
@@ -341,12 +341,26 @@ const FormularParticipantes = () => {
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-         
-            <Typography variant="h2" sx={{ color: color.primary.azul }}>
-              Registro de Participantes
-            </Typography>
-         
-         
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h2" sx={{ color: color.primary.azul }}>
+                Registro de Participantes
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: color.primary.rojo,
+                  color: color.primary.rojo,
+                }}
+                onClick={() => handleRedirect()}
+              >
+                Cerrar
+              </Button>
+            </Grid>
+
+          </Grid>
           <TabContext value={value}>
             <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
               <Tab label="Datos Generales del Participante" value="1" />
@@ -442,6 +456,7 @@ const FormularParticipantes = () => {
                       value={formData.deptoresidencia}
                       onChange={handleChange}
                     >
+                      <MenuItem value="" disabled>Seleccione un departamento</MenuItem>
                       {departamentosRE.length > 0 ? (
                         departamentosRE.map((dep) =>
                           <MenuItem key={dep.id} value={dep.id}>
@@ -464,7 +479,7 @@ const FormularParticipantes = () => {
                       onChange={handleChange}
                       disabled={!municipiosRE.length}
                     >
-                      <MenuItem value="">Seleccione un municipio</MenuItem>
+                      <MenuItem value="" disabled>Seleccione un municipio</MenuItem>
                       {municipiosRE.map((municipio) => (
                         <MenuItem key={municipio.id} value={municipio.id}>
                           {municipio.municipio}
@@ -480,7 +495,9 @@ const FormularParticipantes = () => {
                       name="aldearesidencia"
                       value={formData.aldearesidencia}
                       onChange={handleChange}
-                      disabled={!aldeasP.length}>
+                      disabled={!aldeasP.length}
+                    >
+                      <MenuItem value="" disabled>Seleccione una aldea</MenuItem>
                       {aldeasP.length > 0 ? (
                         aldeasP.map((ald) =>
                           <MenuItem key={ald.id} value={ald.id}>
@@ -501,9 +518,13 @@ const FormularParticipantes = () => {
 
 
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Nivel Educativo que Atiende</Typography>
+                  <Typography variant="subtitle1">Nivel Académico que Atiende</Typography>
                   <FormControl fullWidth>
-                    <Select name="idnivelesacademicos" value={formData.idnivelesacademicos || ""} onChange={handleChange}>
+                    <Select
+                      name="idnivelesacademicos"
+                      value={formData.idnivelesacademicos || ""}
+                      onChange={handleChange}>
+                      <MenuItem value="" disabled>Seleccione un nivel académico</MenuItem>
                       {NivelEducativo.length > 0 ? (
                         NivelEducativo.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
                       ) : (
@@ -563,7 +584,12 @@ const FormularParticipantes = () => {
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
                   <FormControl fullWidth>
-                    <Select name="departamentoced" value={formData.departamentoced || ""} onChange={handleChange}>
+                    <Select 
+                    name="departamentoced" 
+                    value={formData.departamentoced || ""} 
+                    onChange={handleChange}
+                    >
+                       <MenuItem value="" disabled>Seleccione un departamento</MenuItem>
                       {departamentos.length > 0 ? (
                         departamentos.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
                       ) : (
@@ -583,7 +609,7 @@ const FormularParticipantes = () => {
                       onChange={handleChange}
                       disabled={!municipios.length}
                     >
-                      <MenuItem value="">Seleccione un municipio</MenuItem>
+                      <MenuItem value="" disabled>Seleccione un municipio</MenuItem>
                       {municipios.map((municipio) => (
                         <MenuItem key={municipio.id} value={municipio.id}>
                           {municipio.municipio}
@@ -600,7 +626,9 @@ const FormularParticipantes = () => {
                       name="aldeaced"
                       value={formData.aldeaced}
                       onChange={handleChange}
-                      disabled={!aldeas.length}>
+                      disabled={!aldeas.length}
+                      >
+                         <MenuItem value="" disabled>Seleccione una aldea</MenuItem>
                       {aldeas.length > 0 ? (
                         aldeas.map((ald) =>
                           <MenuItem key={ald.id} value={ald.id}>
@@ -613,31 +641,22 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
               </Grid>
+
+              <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: color.primary.azul }}
+                  startIcon={<SaveIcon />}
+                  onClick={handleSave}
+                >
+                  Guardar
+                </Button>
+
+              </Box>
             </TabPanel>
           </TabContext>
 
 
-          <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: color.primary.azul }}
-                startIcon={<SaveIcon />}
-                onClick={handleSave}
-              >
-                Guardar
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  marginLeft: 2,
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                onClick={() => handleRedirect()}
-              >
-                Cerrar
-              </Button>
-            </Box>
         </Paper>
         <TablaPacticantes investCap={investCap} isSaved={isSaved} setIsSaved={setIsSaved} />
       </Dashboard>

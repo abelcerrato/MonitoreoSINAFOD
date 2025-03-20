@@ -449,7 +449,7 @@ const FormulariActividad = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
-                Población a la que va dirigida
+              Cargo a la que va dirigido
               </Typography>
               <TextField
                 fullWidth
@@ -460,9 +460,6 @@ const FormulariActividad = () => {
                 helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
               />
             </Grid>
-
-
-
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
                 Nivel Educativo
@@ -488,7 +485,7 @@ const FormulariActividad = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
-                Ciclo
+                Ciclo Académico
               </Typography>
               <FormControl fullWidth>
                 <Select
@@ -552,12 +549,6 @@ const FormulariActividad = () => {
                 helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
               />
             </Grid>
-
-
-
-
-
-
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Espacio Físico</Typography>
               <TextField

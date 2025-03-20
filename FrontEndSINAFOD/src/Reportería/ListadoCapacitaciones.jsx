@@ -272,7 +272,7 @@ const ListadoActividad = () => {
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
                 <Typography variant="h2" sx={{ color: color.primary.azul }}>
-                    Listado de Actividades
+                    Listado de Capacitaciones
                 </Typography>
 
                 <Grid container spacing={2}>
@@ -478,11 +478,14 @@ const ListadoActividad = () => {
                                         {row.estado}
                                     </TableCell>
                                     <TableCell style={{ width: 160 }} align="right">
-                                        {new Date(row.fechainicio).toLocaleDateString("es-ES")}
+                                        {new Date(row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/")}
+
                                     </TableCell>
                                     <TableCell style={{ width: 160 }} align="right">
-                                        {new Date(row.fechafinal).toLocaleDateString("es-ES")}
+                                        {new Date(row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/")}
+
                                     </TableCell>
+
 
                                     <TableCell style={{ width: 160 }} align="right">
                                         {row.participantesprog}

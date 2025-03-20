@@ -149,36 +149,28 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
             <TableCell align="center" style={{ fontWeight: "bold" }}>
               Acciones
             </TableCell>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>
-              ID de la investigación
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Código SACE
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Nombre
-            </TableCell>
-
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Función
-            </TableCell>
-
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Identidad
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Centro Educativo
-            </TableCell>
-
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Zona
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Departamento
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Municipio
-            </TableCell>
+         
+            <TableCell align="right">Código SACE</TableCell>
+            <TableCell align="right">Nombre</TableCell>
+            <TableCell align="right">Identidad</TableCell>
+            <TableCell align="right">Sexo</TableCell>
+            <TableCell align="right">Nivel Académico del Participante</TableCell>
+            <TableCell align="right">Grado Académico del Participante</TableCell>
+            <TableCell align="right">Años de Servicio</TableCell>
+            <TableCell align="right">Código de Red que Pertenece</TableCell>
+            <TableCell align="right">Función</TableCell>
+            <TableCell align="right">Departamento en el que Reside</TableCell>
+            <TableCell align="right">Municipio en el que Reside</TableCell>
+            <TableCell align="right">Aldea en la que Reside</TableCell>
+            <TableCell align="right">Centro Educativo</TableCell>
+            <TableCell align="right">Nivel Académico que Atiende</TableCell>
+            <TableCell align="right">Ciclo Académico que Atiende</TableCell>
+            <TableCell align="right">Grado Académico que Atiende</TableCell>
+            <TableCell align="right">Tipo Administración</TableCell>
+            <TableCell align="right">Zona Centro Educativo</TableCell>
+            <TableCell align="right">Departamento  Centro Educativo</TableCell>
+            <TableCell align="right">Municipio  Centro Educativo</TableCell>
+            <TableCell align="right">Aldea  Centro Educativo</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -195,35 +187,28 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
                 </Tooltip>
 
               </TableCell>
-              <TableCell style={{ width: 160 }} align="center">
-                {row.idinvestigacioncap}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.codigosace}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.nombre}
-              </TableCell>
-
-              <TableCell style={{ width: 160 }} align="right">
-                {row.funcion}
-              </TableCell>
-
-              <TableCell style={{ width: 160 }} align="right">
-                {row.identificacion}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.centroeducativo}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.zona}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.nombredepto}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.nombremuni}
-              </TableCell>
+             
+              <TableCell align="right">{row.codigosace}</TableCell>
+              <TableCell align="right">{row.nombre}</TableCell>
+              <TableCell align="right">{row.identificacion}</TableCell>
+              <TableCell align="right">{row.sexo}</TableCell>
+              <TableCell align="right">{row.nombreniveldocente}</TableCell>
+              <TableCell align="right">{row.nombregradodocente}</TableCell>
+              <TableCell align="right">{row.añosdeservicio}</TableCell>
+              <TableCell align="right">{row.codigodered}</TableCell>
+              <TableCell align="right">{row.funcion}</TableCell>
+              <TableCell align="right">{row.nombredeptoresidencia}</TableCell>
+              <TableCell align="right">{row.nombremuniresidencia}</TableCell>
+              <TableCell align="right">{row.nombrealdearesidencia}</TableCell>
+              <TableCell align="right">{row.centroeducativo}</TableCell>
+              <TableCell align="right">{row.nombrenivelced}</TableCell>
+              <TableCell align="right">{row.nombrecicloced}</TableCell>
+              <TableCell align="right">{row.nombregradoced}</TableCell>
+              <TableCell align="right">{row.tipoadministracion}</TableCell>
+              <TableCell align="right">{row.zona}</TableCell>
+              <TableCell align="right">{row.nombredeptoced}</TableCell>
+              <TableCell align="right">{row.nombremunicipioced}</TableCell>
+              <TableCell align="right">{row.nombrealdeaced}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -236,7 +221,7 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={18}
+              colSpan={23}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
