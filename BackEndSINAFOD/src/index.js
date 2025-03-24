@@ -7,6 +7,7 @@ import Municipios from "./routes/municipos.routes.js"
 import CapacitacionP from "./routes/CapParticipante.routes.js";
 import Academico from "./routes/Academico.routes.js";
 import Aldeas from "./routes/aldeas.routes.js";
+import DocentesDGDP from "./routes/docentesDGDP.routes.js";
 import cors from "cors"
 
 
@@ -24,7 +25,7 @@ app.use(Municipios)
 app.use(CapacitacionP)
 app.use(Academico)
 app.use(Aldeas)
-
+app.use(DocentesDGDP)
 
 console.log("DB_USER:", process.env.DB_USER); // Prueba si se está cargando correctamente
 
