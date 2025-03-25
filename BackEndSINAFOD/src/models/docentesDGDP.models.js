@@ -111,7 +111,9 @@ export const getDocenteIdentificacionM = async (filtro) => {
             left join aldeas as a on dgdp.idaldea = a.id
             left join nivelesacademicos n on dgdp.idnivelesacademicos =n.id 
             left join ciclosacademicos c on dgdp.idciclosacademicos =c.id
-            where dgdp.identificacion=$1`, [filtro])
+            where dgdp.identificacion=$1
+            ORDER BY dgdp.id DESC
+            LIMIT 1`, [filtro])
         console.log(rows);
         if (rows.length === 0) {
             return null
@@ -143,7 +145,9 @@ export const getDocenteCodSACEM = async (filtro) => {
             left join aldeas as a on dgdp.idaldea = a.id
             left join nivelesacademicos n on dgdp.idnivelesacademicos =n.id 
             left join ciclosacademicos c on dgdp.idciclosacademicos =c.id
-            where dgdp.codigosace=$1`, [filtro])
+            where dgdp.codigosace=$1
+            ORDER BY dgdp.id DESC
+            LIMIT 1`, [filtro])
         console.log(rows);
         if (rows.length === 0) {
             return null
