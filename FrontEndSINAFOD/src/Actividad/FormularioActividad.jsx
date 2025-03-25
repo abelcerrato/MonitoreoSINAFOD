@@ -573,7 +573,7 @@ const FormulariActividad = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Zona</Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={fieldErrors.zona}>
                 <Select
                   name="zona"
                   value={formData.zona}
@@ -582,6 +582,7 @@ const FormulariActividad = () => {
                   <MenuItem value="Rural">Rural</MenuItem>
                   <MenuItem value="Urbana">Urbana</MenuItem>
                 </Select>
+                {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
               </FormControl>
             </Grid>
 

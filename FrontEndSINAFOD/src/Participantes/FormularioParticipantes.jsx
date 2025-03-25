@@ -14,7 +14,8 @@ import {
   RadioGroup,
   FormControlLabel,
   Tab,
-  Tabs
+  Tabs,
+  FormHelperText
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -29,6 +30,8 @@ import Swal from 'sweetalert2';
 
 const FormularParticipantes = () => {
   const location = useLocation();
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [errors, setErrors] = useState({});
   const { investCap } = location.state || {};
   const [isSaved, setIsSaved] = useState(false);
   const { user } = useUser();
@@ -56,11 +59,11 @@ const FormularParticipantes = () => {
     codigodered: "",
     deptoresidencia: "",
     municipioresidencia: "",
-    aldearesidencia: "",
+    aldearesidencia:null,
     nivelacademicodocente: "",
     gradoacademicodocente: null,
 
-    aldeaced: "",
+    aldeaced: null,
     centroeducativo: "",
     idnivelesacademicos: "",
     idgradosacademicos: null,
@@ -102,7 +105,52 @@ const FormularParticipantes = () => {
   const handleChangeValues = (event, newValue) => {
     setValue(newValue);
   };
+
+
   const handleSave = async () => {
+    const requiredFields = [
+      "identificacion",
+      "codigosace",
+      "nombre",
+      "funcion",
+      "sexo",
+      "añosdeservicio",
+      "deptoresidencia",
+      "municipioresidencia",
+      "nivelacademicodocente",
+      /*   "gradoacademicodocente" , */
+
+      "centroeducativo",
+      "idnivelesacademicos",
+      /*   "idgradosacademicos" , */
+      "zona",
+      "municipioced",
+      "departamentoced",
+      "tipoadministracion",
+    ];
+    // Detectar campos vacíos
+    let errors = {};
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        errors[field] = true; // Marcar campo como vacío
+      }
+    });
+
+    // Si hay campos vacíos, actualizar estado y mostrar alerta
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      Swal.fire({
+        title: "Campos obligatorios",
+        text: "Llenar los campos en rojo",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+
+
+
     try {
 
       console.log("datos que mando", formData);
@@ -141,18 +189,30 @@ const FormularParticipantes = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
-    if (name === "añosdeservicio") {
-      // Solo permite números positivos en añosdeservicio
-      if (/^\d*$/.test(value)) {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prevData) => {
+      let newData = { ...prevData, [name]: value };
+
+      // Convertimos el valor a string para evitar errores con `.trim()`
+      const valueStr = String(value || "");
+
+      // Quitar error si el usuario llena un campo vacío
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: valueStr.trim() === "" ? true : false,
+      }));
+
+      // Validación para años de servicio (solo números positivos)
+      if (name === "añosdeservicio") {
+        if (!/^\d*$/.test(value)) {
+          return prevData; // Si no es un número positivo, no actualiza el estado
+        }
       }
-    } else {
-      // Para otros campos, no aplicamos la restricción
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+
+      return newData;
+    });
   };
 
 
@@ -372,21 +432,42 @@ const FormularParticipantes = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Código SACE</Typography>
-                  <TextField fullWidth name="codigosace" value={formData.codigosace} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="codigosace"
+                    value={formData.codigosace}
+                    onChange={handleChange}
+                    error={fieldErrors.codigosace}
+                    helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
-                  <TextField fullWidth name="nombre" value={formData.nombre} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    error={fieldErrors.nombre}
+                    helperText={fieldErrors.nombre ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Identidad</Typography>
-                  <TextField fullWidth name="identificacion" value={formData.identificacion} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="identificacion"
+                    value={formData.identificacion}
+                    onChange={handleChange}
+                    error={fieldErrors.identificacion}
+                    helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <FormControl>
+                  <FormControl error={fieldErrors.sexo}>
                     <Typography variant="subtitle1">Sexo</Typography>
                     <RadioGroup
                       row
@@ -397,11 +478,12 @@ const FormularParticipantes = () => {
                       <FormControlLabel value="Mujer" control={<Radio />} label="Mujer" />
                       <FormControlLabel value="Hombre" control={<Radio />} label="Hombre" />
                     </RadioGroup>
+                    {fieldErrors.sexo && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Nivel Académico</Typography>
-                  <FormControl fullWidth>
+                  <Typography variant="subtitle1">Nivel Educativo</Typography>
+                  <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
                     <Select
                       name="nivelacademicodocente"
                       value={formData.nivelacademicodocente || ""}
@@ -415,6 +497,7 @@ const FormularParticipantes = () => {
                         <MenuItem disabled>Cargando...</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
@@ -432,12 +515,20 @@ const FormularParticipantes = () => {
                         <MenuItem key={mun.id} value={mun.id}>{mun.grado}</MenuItem>
                       ))}
                     </Select>
+
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
-                  <TextField fullWidth name="añosdeservicio" value={formData.añosdeservicio || ""} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="añosdeservicio"
+                    value={formData.añosdeservicio || ""}
+                    onChange={handleChange}
+                    error={fieldErrors.añosdeservicio}
+                    helperText={fieldErrors.añosdeservicio ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -446,11 +537,18 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Función</Typography>
-                  <TextField fullWidth name="funcion" value={formData.funcion} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="funcion"
+                    value={formData.funcion}
+                    onChange={handleChange}
+                    error={fieldErrors.funcion}
+                    helperText={fieldErrors.funcion ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Departamento de Residencia</Typography>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                     <Select
                       name="deptoresidencia"
                       value={formData.deptoresidencia}
@@ -466,12 +564,13 @@ const FormularParticipantes = () => {
                         <MenuItem disabled>Cargando...</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.deptoresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Municipio de Residencia</Typography>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={fieldErrors.municipioresidencia}>
                     <Select
                       id="municipioresidencia"
                       name="municipioresidencia"
@@ -486,6 +585,7 @@ const FormularParticipantes = () => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {fieldErrors.municipioresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -518,24 +618,25 @@ const FormularParticipantes = () => {
 
 
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Nivel Académico que Atiende</Typography>
-                  <FormControl fullWidth>
+                  <Typography variant="subtitle1">Nivel Educativo que Atiende</Typography>
+                  <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                     <Select
                       name="idnivelesacademicos"
                       value={formData.idnivelesacademicos || ""}
                       onChange={handleChange}>
-                      <MenuItem value="" disabled>Seleccione un nivel académico</MenuItem>
+                      <MenuItem value="" disabled>Seleccione un nivel educativo</MenuItem>
                       {NivelEducativo.length > 0 ? (
                         NivelEducativo.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
                       ) : (
                         <MenuItem disabled>Cargando...</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.idnivelesacademicos && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Grado Educativo que Atiende</Typography>
+                  <Typography variant="subtitle1">Grado Académico que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
                       name="idgradosacademicos"
@@ -553,11 +654,18 @@ const FormularParticipantes = () => {
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Centro Educativo</Typography>
-                  <TextField fullWidth name="centroeducativo" value={formData.centroeducativo} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="centroeducativo"
+                    value={formData.centroeducativo}
+                    onChange={handleChange}
+                    error={fieldErrors.centroeducativo}
+                    helperText={fieldErrors.centroeducativo ? "Este campo es obligatorio" : ""}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <FormControl>
+                  <FormControl fullWidth >
                     <Typography variant="subtitle1">Tipo de Administración</Typography>
                     <RadioGroup
                       row
@@ -568,40 +676,43 @@ const FormularParticipantes = () => {
                       <FormControlLabel value="Gubernamental" control={<Radio />} label="Gubernamental" />
                       <FormControlLabel value="No Gubernamental" control={<Radio />} label="No Gubernamental" />
                     </RadioGroup>
+                    {fieldErrors.tipoadministracion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Zona Centro Educativo</Typography>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={fieldErrors.zona}>
                     <Select name="zona" value={formData.zona} onChange={handleChange}>
                       <MenuItem value="Rural">Rural</MenuItem>
                       <MenuItem value="Urbana">Urbana</MenuItem>
                     </Select>
+                    {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
-                  <FormControl fullWidth>
-                    <Select 
-                    name="departamentoced" 
-                    value={formData.departamentoced || ""} 
-                    onChange={handleChange}
+                  <FormControl fullWidth error={fieldErrors.departamentoced}>
+                    <Select
+                      name="departamentoced"
+                      value={formData.departamentoced || ""}
+                      onChange={handleChange}
                     >
-                       <MenuItem value="" disabled>Seleccione un departamento</MenuItem>
+                      <MenuItem value="" disabled>Seleccione un departamento</MenuItem>
                       {departamentos.length > 0 ? (
                         departamentos.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
                       ) : (
                         <MenuItem disabled>Cargando...</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.departamentoced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={fieldErrors.municipioced}>
                     <Select
                       id="municipioced"
                       name="municipioced"
@@ -616,7 +727,7 @@ const FormularParticipantes = () => {
                         </MenuItem>
                       ))}
                     </Select>
-
+                    {fieldErrors.municipioced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -627,8 +738,8 @@ const FormularParticipantes = () => {
                       value={formData.aldeaced}
                       onChange={handleChange}
                       disabled={!aldeas.length}
-                      >
-                         <MenuItem value="" disabled>Seleccione una aldea</MenuItem>
+                    >
+                      <MenuItem value="" disabled>Seleccione una aldea</MenuItem>
                       {aldeas.length > 0 ? (
                         aldeas.map((ald) =>
                           <MenuItem key={ald.id} value={ald.id}>
