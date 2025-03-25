@@ -59,7 +59,7 @@ const FormularParticipantes = () => {
     codigodered: "",
     deptoresidencia: "",
     municipioresidencia: "",
-    aldearesidencia:null,
+    aldearesidencia: null,
     nivelacademicodocente: "",
     gradoacademicodocente: null,
 
@@ -361,7 +361,7 @@ const FormularParticipantes = () => {
 
 
 
-  {/* Nivel academico del participante */ }
+  {/* Datos académicos  del participante */ }
   // Obtener NivelEducativo al montar el componente
   useEffect(() => {
     const obtenerNivelEducativo = async () => {
@@ -377,6 +377,7 @@ const FormularParticipantes = () => {
   }, []);
 
 
+
   // Obtener gardo cuando cambia el departamento seleccionado
   useEffect(() => {
     if (!formData.nivelacademicodocente) return;
@@ -386,9 +387,6 @@ const FormularParticipantes = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.nivelacademicodocente}`
         );
-        console.log("gardo", response.data);
-
-
         setGradoP(response.data);
       } catch (error) {
         console.error("Error al obtener los gardo", error);
@@ -397,6 +395,33 @@ const FormularParticipantes = () => {
 
     obtenergardo();
   }, [formData.nivelacademicodocente]);
+
+
+  const obtenerGardo = async () => {
+    if (!formData.identificacion) {
+      alert("Ingrese una identificación.");
+      return;
+    }
+console.log("identificacion",formData.identificacion);
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/docentesDGDP/${formData.identificacion}`
+      );
+
+      if (response.data) {
+        // setDatosDocentes(response.data);
+        alert("Registro encontrado.");
+      } else {
+        alert("No se encontró ningún registro.");
+      }
+    } catch (error) {
+      console.error("Error al obtener los datos", error);
+      alert("Error al buscar la identificación.");
+    }
+  };
+
+
   return (
     <>
       <Dashboard>
@@ -441,7 +466,34 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Identidad</Typography>
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} sm={11}>
+                      <TextField
+                        fullWidth
+                        name="identificacion"
+                        value={formData.identificacion}
+                        onChange={handleChange}
+                        error={fieldErrors.identificacion}
+                        helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={1}>
+                      <Button
+                        variant="contained"
+                        sx={{ backgroundColor: color.primary.azul }}
+                        onClick={obtenerGardo}
+                      >
+                        Buscar
+                      </Button>
 
+                    </Grid>
+
+
+                  </Grid>
+
+                </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
                   <TextField
@@ -454,17 +506,7 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Identidad</Typography>
-                  <TextField
-                    fullWidth
-                    name="identificacion"
-                    value={formData.identificacion}
-                    onChange={handleChange}
-                    error={fieldErrors.identificacion}
-                    helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
-                  />
-                </Grid>
+
 
                 <Grid item xs={12} sm={6}>
                   <FormControl error={fieldErrors.sexo}>

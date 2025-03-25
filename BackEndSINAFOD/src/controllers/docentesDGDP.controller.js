@@ -15,7 +15,7 @@ export const getDocentesC = async (req, res) => {
 
 
 export const getDocentesIdC = async (req, res) => {
-    const { id } = req.params;
+    const { identificacion } = req.params;
     try {
         const docentes = await getDocentesIdM(identificacion);
         if (docentes === null) {
