@@ -1,5 +1,5 @@
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
-import { getCapParticipanteIdInvestM, getCapParticipanteIdM, getCapParticipanteM, postCapParticipanteM, putCapParticipanteM } from "../models/CapParticipante.models.js";
+import { getCapParticipanteIdInvestM, getCapParticipanteIdM, getCapParticipanteM, getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM, putCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDepartamentoId } from "../models/departamentos.models.js";
 import { getMunicipiosIdM, getMunicipioxIdDepto } from "../models/municipos.models.js";
 import { getUsuarioIdM } from "../models/user.models.js";
@@ -165,4 +165,45 @@ export const putCapParticipanteC = async (req, res) => {
     }
 
 
+}
+
+
+
+
+//para buscar por identificacion en tabla de docentesdgdp
+export const getParticipanteIdentificacionC = async (req, res) => {
+    try {
+        const { filtro } = req.params
+        const CapParticipante = await getParticipanteIdentificacionM(filtro);
+
+        if (!CapParticipante) {
+            return res.status(404).json({ message: "Registro no encontrado" });
+        }
+
+        res.json(CapParticipante)
+
+    } catch (error) {
+        console.error('Error al obtener el registro:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+
+//para buscar por codigo SACE en tabla de docentesdgdp
+export const getParticipanteCodSACEC = async (req, res) => {
+    try {
+        const {filtro } = req.params
+        const CapParticipante = await getParticipanteCodSACEM(filtro);
+
+        if (!CapParticipante) {
+            return res.status(404).json({ message: "Registro no encontrado" });
+        }
+
+        res.json(CapParticipante)
+
+    } catch (error) {
+        console.error('Error al obtener el registro:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 }

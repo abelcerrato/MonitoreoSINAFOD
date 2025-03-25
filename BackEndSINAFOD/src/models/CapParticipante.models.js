@@ -36,7 +36,7 @@ export const getCapParticipanteM = async () => {
                     cp.fechacreacion, cp.fechamodificacion
                     
             
-            FROM public.capparticipante as cp
+            FROM capparticipante as cp
             
             left join investigacioncap as i on cp.idinvestigacioncap = i.id 
             
@@ -106,7 +106,7 @@ export const getCapParticipanteIdM = async (id) => {
                     cp.fechacreacion, cp.fechamodificacion
                     
             
-            FROM public.capparticipante as cp
+            FROM capparticipante as cp
             
             left join investigacioncap as i on cp.idinvestigacioncap = i.id 
             
@@ -177,7 +177,7 @@ export const getCapParticipanteIdInvestM = async (id) => {
                     cp.fechacreacion, cp.fechamodificacion
                     
             
-            FROM public.capparticipante as cp
+            FROM capparticipante as cp
             
             left join investigacioncap as i on cp.idinvestigacioncap = i.id 
             
@@ -294,3 +294,145 @@ export const putCapParticipanteM = async (idinvestigacioncap, identificacion, co
     }
 
 }
+
+
+
+//para buscar por identificacion en tabla de docentesdgdp
+
+export const getParticipanteIdentificacionM = async (filtro) => {
+    try {
+        const { rows } = await pool.query
+            (`
+            SELECT 		
+					--datos de la accion formativa
+					cp.id, cp.idinvestigacioncap, i.accionformacion, 
+					
+					--datos del participante
+					cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
+					
+					cp.deptoresidencia as iddeptoResidencia,  
+					dr.nombre as nombreDeptoResidencia,
+					cp.municipioresidencia as idMuniResidencia, mr.nombre as nombreMuniResidencia,
+					cp.aldearesidencia as idAldeaResidencia, ar.nombre as nombreAldeaResidencia,
+					
+					cp.nivelacademicodocente as idNivelAcademicoDocente, ndo.nombre as nombreNivelDocente,
+					cp.gradoacademicodocente as idGradoAcademicoDocente, gdo.nombre as nombreGradoDocente,
+					
+					--datos del centro educativo
+                    cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
+                    
+                    --academico que atiende
+                    cp.idnivelesacademicos as idNivelCed, n.nombre as nombreNivelCed, 
+                    cp.idciclosacademicos as idCicloCed,  c.nombre as nombreCicloCed, 
+                    cp.idgradosacademicos as idGradoCed, g.nombre as nombreGradoCed, 
+                    
+                    cp.departamentoced as idDeptoCed, dced.nombre as nombreDeptoCed, 
+                    cp.municipioced as idMunicipioCed, mced.nombre nombreMunicipioCed,
+                    cp.aldeaced as idAldeaCed, aced.nombre as nombreAldeaCed, 
+
+                    --datos de auditoria
+                    cp.creadopor, u.usuario as CreadoPor,
+                    mp.modificadopor, mp.usuario as ModificadoPor, 
+                    cp.fechacreacion, cp.fechamodificacion
+                    
+            
+            FROM capparticipante as cp
+            
+            left join investigacioncap as i on cp.idinvestigacioncap = i.id 
+            
+            --docente
+            left join departamento as dr on cp.deptoresidencia =dr.id
+            left join municipio as mr on cp.municipioresidencia= mr.id 
+            left join aldeas as ar on cp.aldearesidencia = ar.id
+            left join nivelesacademicos ndo on cp.nivelacademicodocente =ndo.id 
+            left join gradosacademicos gdo on cp.gradoacademicodocente =gdo.id
+            
+            --ced
+            left join departamento as dced on cp.departamentoced =dced.id 
+            left join municipio as mced on cp.municipioced = mced.id 
+            left join aldeas as aced on cp.aldeaced = aced.id
+            
+            left join nivelesacademicos n on cp.idnivelesacademicos =n.id 
+            left join ciclosacademicos c on cp.idciclosacademicos =c.id 
+            left join gradosacademicos g on cp.idgradosacademicos =g.id
+            
+            left join usuario as u on cp.creadopor = u.id 
+            left join usuario as mp on cp.modificadopor = mp.id 
+            WHERE cp.identificacion=$1
+        `, [filtro])
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+//para buscar por codigo SACE en tabla de docentesdgdp
+
+export const getParticipanteCodSACEM = async (filtro) => {
+    try {
+        const { rows } = await pool.query
+            (` SELECT 		
+					--datos de la accion formativa
+					cp.id, cp.idinvestigacioncap, i.accionformacion, 
+					
+					--datos del participante
+					cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
+					
+					cp.deptoresidencia as iddeptoResidencia,  
+					dr.nombre as nombreDeptoResidencia,
+					cp.municipioresidencia as idMuniResidencia, mr.nombre as nombreMuniResidencia,
+					cp.aldearesidencia as idAldeaResidencia, ar.nombre as nombreAldeaResidencia,
+					
+					cp.nivelacademicodocente as idNivelAcademicoDocente, ndo.nombre as nombreNivelDocente,
+					cp.gradoacademicodocente as idGradoAcademicoDocente, gdo.nombre as nombreGradoDocente,
+					
+					--datos del centro educativo
+                    cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
+                    
+                    --academico que atiende
+                    cp.idnivelesacademicos as idNivelCed, n.nombre as nombreNivelCed, 
+                    cp.idciclosacademicos as idCicloCed,  c.nombre as nombreCicloCed, 
+                    cp.idgradosacademicos as idGradoCed, g.nombre as nombreGradoCed, 
+                    
+                    cp.departamentoced as idDeptoCed, dced.nombre as nombreDeptoCed, 
+                    cp.municipioced as idMunicipioCed, mced.nombre nombreMunicipioCed,
+                    cp.aldeaced as idAldeaCed, aced.nombre as nombreAldeaCed, 
+
+                    --datos de auditoria
+                    cp.creadopor, u.usuario as CreadoPor,
+                    mp.modificadopor, mp.usuario as ModificadoPor, 
+                    cp.fechacreacion, cp.fechamodificacion
+                    
+            
+            FROM capparticipante as cp
+            
+            left join investigacioncap as i on cp.idinvestigacioncap = i.id 
+            
+            --docente
+            left join departamento as dr on cp.deptoresidencia =dr.id
+            left join municipio as mr on cp.municipioresidencia= mr.id 
+            left join aldeas as ar on cp.aldearesidencia = ar.id
+            left join nivelesacademicos ndo on cp.nivelacademicodocente =ndo.id 
+            left join gradosacademicos gdo on cp.gradoacademicodocente =gdo.id
+            
+            --ced
+            left join departamento as dced on cp.departamentoced =dced.id 
+            left join municipio as mced on cp.municipioced = mced.id 
+            left join aldeas as aced on cp.aldeaced = aced.id
+            
+            left join nivelesacademicos n on cp.idnivelesacademicos =n.id 
+            left join ciclosacademicos c on cp.idciclosacademicos =c.id 
+            left join gradosacademicos g on cp.idgradosacademicos =g.id
+            
+            left join usuario as u on cp.creadopor = u.id 
+            left join usuario as mp on cp.modificadopor = mp.id 
+            WHERE cp.codigosace=$1
+        `, [filtro])
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+};
