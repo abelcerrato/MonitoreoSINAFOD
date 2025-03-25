@@ -27,12 +27,14 @@ import {
     MenuItem,
     FormControl,
     TextField,
-    Grid
+    Grid,
+    InputLabel
 } from "@mui/material";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
+
 
 const toBase64 = async (url) => {
     const response = await fetch(url);
@@ -123,11 +125,10 @@ const ListadoActividad = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [filterColumn, setFilterColumn] = useState("");
     const [filterValue, setFilterValue] = useState("");
-    const [departamentos, setDepartamentos] = useState([]);
-    const [municipios, setMunicipios] = useState([]);
     const [niveles, setNiveles] = useState([]);
     const [ciclos, setCiclos] = useState([]);
-    const [grados, setGrados] = useState([]);
+    const [fechaInicio, setFechaInicio] = useState("");
+    const [fechaFinal, setFechaFinal] = useState("");
 
 
     const emptyRows =
@@ -159,33 +160,61 @@ const ListadoActividad = () => {
     }, []);
 
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_API_URL}/departamentos`).then(response => setDepartamentos(response.data));
+
         axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`).then(response => setNiveles(response.data));
         axios.get(`${process.env.REACT_APP_API_URL}/ciclosAcademicos`).then(response => setCiclos(response.data));
-        axios.get(`${process.env.REACT_APP_API_URL}/gradosAcademicos`).then(response => setGrados(response.data));
+
     }, []);
 
-    useEffect(() => {
-        if (filterColumn === "municipioced" && filterValue) {
-            axios.get(`${process.env.REACT_APP_API_URL}/municipios/${filterValue}`)
-                .then(response => setMunicipios(response.data));
-        }
-    }, [filterColumn, filterValue]);
+
 
     useEffect(() => {
-        if (!filterColumn || !filterValue) {
+        console.log(" FilterColumn:", filterColumn);
+        console.log(" FilterValue:", filterValue);
+        console.log("📋 Filas originales:", rows);
+
+        if (!filterColumn || (!filterValue && !fechaInicio && !fechaFinal)) {
             setFilteredRows(rows);
         } else {
-            setFilteredRows(rows.filter(row => row[filterColumn]?.toString() === filterValue.toString()));
+            const filtered = rows.filter(row => {
+                if (filterColumn === "fecha") {
+                    const fechaInicioRow = row.fechainicio ? new Date(row.fechainicio).toISOString().split("T")[0] : null;
+                    const fechaFinalRow = row.fechafinal ? new Date(row.fechafinal).toISOString().split("T")[0] : null;
+
+                    const fechaInicioInput = fechaInicio ? new Date(fechaInicio) : null;
+                    const fechaFinalInput = fechaFinal ? new Date(fechaFinal) : null;
+
+                    if (!fechaInicioInput || !fechaFinalInput || !fechaInicioRow || !fechaFinalRow) {
+                        return false;
+                    }
+
+                    const fechaInicioRowDate = new Date(fechaInicioRow);
+                    const fechaFinalRowDate = new Date(fechaFinalRow);
+
+                    const isInRange = fechaInicioRowDate >= fechaInicioInput && fechaFinalRowDate <= fechaFinalInput;
+
+                    return isInRange;
+                } else {
+                    console.log(" Filtrando por:", filterColumn, "con valor:", filterValue);
+                    console.log(" Valor en la fila:", row[filterColumn]);
+
+                    return row[filterColumn]?.toString().toLowerCase().includes(filterValue.toString().toLowerCase());
+                }
+            });
+
+            console.log(" Filas filtradas:", filtered);
+            setFilteredRows(filtered);
         }
-    }, [filterColumn, filterValue, rows]);
+    }, [filterColumn, filterValue, fechaInicio, fechaFinal, rows]);
+
+
 
 
 
     const exportExcel = async () => {
         try {
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Reporte");
+            const worksheet = workbook.addWorksheet("Capacitaciones");
             // Convertir imágenes a base64 (si es necesario)
             const image1Base64 = await toBase64(LogoCONED);
             const image2Base64 = await toBase64(LogoDGDP);
@@ -202,23 +231,23 @@ const ListadoActividad = () => {
             });
 
             // Insertar las imágenes en el archivo Excel
-            worksheet.addImage(image1, "A1:A6");
+            worksheet.addImage(image1, "A1:B7");
             worksheet.addImage(image2, "E1:F5");
 
 
             // Definir el título
-            worksheet.mergeCells("A7:E7");
-            const title = worksheet.getCell("A7");
+            worksheet.mergeCells("A8:F8");
+            const title = worksheet.getCell("A8");
             title.value = "Listado de Capacitaciones";
             title.font = { size: 16, bold: true };
             title.alignment = { horizontal: "center", vertical: "middle" };
 
             // Agregar fecha y hora
             const fechaHoraActual = dayjs().format("DD/MM/YYYY  hh:mm A");
-            worksheet.mergeCells("A8:E8");
-            const title2 = worksheet.getCell("A8");
+            worksheet.mergeCells("A9:E9");
+            const title2 = worksheet.getCell("A9");
             title2.value = ` Fecha y hora de generación: ${fechaHoraActual}`;
-            title2.font = { size: 9, italic: true };
+            title2.font = { size: 10, italic: true };
             title2.alignment = { horizontal: "left", vertical: "middle" };
 
             // Espacio en blanco entre regionales
@@ -226,15 +255,26 @@ const ListadoActividad = () => {
             // Definir encabezados de la tabla
             const headers = [
                 "ID", "Nombre de la Acción o Formación", "Formación o Investigación", "Institución Responsable", "Responsable de Firmas", "Ambito de Formación",
-                "Tipo de Formación", "Modalidad", "Duración", "	Espacio Físico", "Población al que va Dirigido", "Nicel Educativo",
+                "Tipo de Formación", "Modalidad", "Duración", "	Espacio Físico", "Cargo al que va Dirigido", "Nicel Educativo",
                 "Ciclo Académico", "Estado", "Fecha Inicio", "Fecha de Finalización", "Cantidad de Participantes Programados",
                 "Dirección", "Zona", "Observación"
 
             ];
 
+            const colorPrimarioAzul = color.primary.azul;
             // Agregar encabezados a la primera fila
-            worksheet.addRow(headers).font = { bold: true };
+            const headerRow = worksheet.addRow(headers);
+            headerRow.font = { bold: true, color: { argb: "FFFFFF" } }; // Texto en blanco
 
+            // Aplicar color de fondo al encabezado
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: colorPrimarioAzul.replace("#", "") }  // Azul oscuro
+                };
+                cell.alignment = { horizontal: "center", vertical: "middle" }; // Centrar texto
+            });
             // Agregar los datos como filas en la tabla
             filteredRows.forEach(item => {
                 worksheet.addRow([
@@ -246,10 +286,11 @@ const ListadoActividad = () => {
             });
 
             // Ajustar ancho de columnas
-            worksheet.columns.forEach(column => {
-                column.width = 20;
+            worksheet.columns.forEach((column, index) => {
+                column.width = index === 0 ? 5 : 15; // Si es la primera columna (index 0), ancho 5, el resto 20
                 column.alignment = { wrapText: true, vertical: "middle" };
             });
+
 
             // Generar y descargar el archivo
             const buffer = await workbook.xlsx.writeBuffer();
@@ -271,15 +312,19 @@ const ListadoActividad = () => {
         <Dashboard>
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
-                <Typography variant="h2" sx={{ color: color.primary.azul }}>
+                <Typography variant="h2" sx={{ color: color.primary.azul, mb: 5 }}>
                     Listado de Capacitaciones
                 </Typography>
 
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={4}>
                         <FormControl fullWidth>
-                            <Select onChange={(e) => setFilterColumn(e.target.value)}>
-                                <MenuItem value="">Seleccionar columna</MenuItem >
+                            <InputLabel id="demo-simple-select-label">Columna</InputLabel>
+                            <Select
+                                label="Columna"
+                                onChange={(e) => setFilterColumn(e.target.value)}
+                            >
+                                <MenuItem value="" >Seleccionar columna</MenuItem >
                                 <MenuItem value="accionformacion">Nombre de la Acción o Formación</MenuItem >
                                 <MenuItem value="formacioninvest">Formación o Investigación</MenuItem >
                                 <MenuItem value="institucionresponsable">Institución Responsable</MenuItem >
@@ -289,9 +334,9 @@ const ListadoActividad = () => {
                                 <MenuItem value="modalidad">Modalidad</MenuItem >
                                 <MenuItem value="duracion">Duración</MenuItem >
                                 <MenuItem value="espaciofisico">Espacio Físico</MenuItem >
-                                <MenuItem value="funciondirigido">Población a la que va dirigida</MenuItem >
+                                <MenuItem value="funciondirigido">Cargo a la que va dirigido</MenuItem >
                                 <MenuItem value="nivelacademico">Nivel Educativo</MenuItem >
-                                <MenuItem value="cicloacademico">Ciclo</MenuItem >
+                                <MenuItem value="cicloacademico">Ciclo Académico</MenuItem >
                                 <MenuItem value="estado">Estado</MenuItem >
                                 <MenuItem value="fecha">Fecha</MenuItem >
                                 <MenuItem value="participantesprog">Cantidad de Participantes Programados</MenuItem >
@@ -343,18 +388,22 @@ const ListadoActividad = () => {
                                     <MenuItem value="Cancelada">Cancelada</MenuItem>
                                 </Select>
                             </FormControl>
-                        ) : filterColumn === "idnivelesacademicos" ? (
+                        ) : filterColumn === "nivelacademico" ? (
                             <FormControl fullWidth>
-                                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                                    <MenuItem value="">Seleccionar nivel</MenuItem >
-                                    {niveles.map(niv => <MenuItem key={niv.id} value={niv.id}>{niv.nombre}</MenuItem >)}
+                                <Select
+                                    onChange={(e) => setFilterValue(e.target.value)}
+                                >
+                                    <MenuItem value="">Seleccionar un nivel</MenuItem >
+                                    {niveles.map(niv => <MenuItem key={niv.id} value={niv.nombre}>{niv.nombre}</MenuItem >)}
                                 </Select>
                             </FormControl>
-                        ) : filterColumn === "idgradosacademicos" ? (
+                        ) : filterColumn === "cicloacademico" ? (
                             <FormControl fullWidth>
-                                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                                    <MenuItem value="">Seleccionar grado</MenuItem >
-                                    {grados.map(gra => <MenuItem key={gra.id} value={gra.id}>{gra.gradoacademico}</MenuItem >)}
+                                <Select
+                                    onChange={(e) => setFilterValue(e.target.value)}
+                                >
+                                    <MenuItem value="">Seleccionar un ciclo</MenuItem >
+                                    {ciclos.map(cil => <MenuItem key={cil.id} value={cil.nombre}>{cil.nombre}</MenuItem >)}
                                 </Select>
                             </FormControl>
                         ) : filterColumn === "zona" ? (
@@ -365,6 +414,29 @@ const ListadoActividad = () => {
                                     <MenuItem value="Urbana">Urbana</MenuItem >
                                 </Select>
                             </FormControl>
+                        ) : filterColumn === "fecha" ? (
+                            <Grid container spacing={4}>
+                                <Grid item xs={12} sm={5}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            type="date"
+                                            label="Fecha inicio"
+                                            InputLabelProps={{ shrink: true }}
+                                            onChange={(e) => setFechaInicio(e.target.value)}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} sm={5}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            type="date"
+                                            label="Fecha final"
+                                            InputLabelProps={{ shrink: true }}
+                                            onChange={(e) => setFechaFinal(e.target.value)}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
                         ) : (
                             <TextField type="text" placeholder="Ingresar valor" onChange={(e) => setFilterValue(e.target.value)} />
                         )}
@@ -374,8 +446,9 @@ const ListadoActividad = () => {
                             <IconButton
                                 onClick={() => exportExcel(rows)}
                                 aria-label="exportar Excel"
+                                sx={{ fontSize: 40, color: color.primary.azul }}
                             >
-                                <FaRegFileExcel sx={{ fontSize: 100, color: color.primary.azul }} />
+                                <FaRegFileExcel />
                             </IconButton>
                         </Tooltip>
                     </Grid>
@@ -408,7 +481,7 @@ const ListadoActividad = () => {
                                 <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
                                 <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
 
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Población al que va Dirigido</TableCell>
+                                <TableCell align="right" style={{ fontWeight: "bold" }}>Cargo al que va Dirigido</TableCell>
                                 <TableCell align="right" style={{ fontWeight: "bold" }}>Nicel Educativo</TableCell>
                                 <TableCell align="right" style={{ fontWeight: "bold" }}>Ciclo</TableCell>
                                 <TableCell align="right" style={{ fontWeight: "bold" }}>

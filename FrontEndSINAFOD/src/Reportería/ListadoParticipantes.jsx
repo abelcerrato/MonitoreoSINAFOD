@@ -185,7 +185,7 @@ const ListadoParticipantes = () => {
     const exportExcel = async () => {
         try {
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Reporte");
+            const worksheet = workbook.addWorksheet("Participantes");
             // Convertir imágenes a base64 (si es necesario)
             const image1Base64 = await toBase64(LogoCONED);
             const image2Base64 = await toBase64(LogoDGDP);
@@ -202,23 +202,24 @@ const ListadoParticipantes = () => {
             });
 
             // Insertar las imágenes en el archivo Excel
-            worksheet.addImage(image1, "A1:A6");
+            worksheet.addImage(image1, "A1:B7");
             worksheet.addImage(image2, "E1:F5");
 
 
+
             // Definir el título
-            worksheet.mergeCells("A7:E7");
-            const title = worksheet.getCell("A7");
+            worksheet.mergeCells("A8:F8");
+            const title = worksheet.getCell("A8");
             title.value = "Listado de los Participantes";
             title.font = { size: 16, bold: true };
             title.alignment = { horizontal: "center", vertical: "middle" };
 
             // Agregar fecha y hora
             const fechaHoraActual = dayjs().format("DD/MM/YYYY  hh:mm A");
-            worksheet.mergeCells("A8:E8");
-            const title2 = worksheet.getCell("A8");
+            worksheet.mergeCells("A9:E9");
+            const title2 = worksheet.getCell("A9");
             title2.value = ` Fecha y hora de generación: ${fechaHoraActual}`;
-            title2.font = { size: 9, italic: true };
+            title2.font = { size: 10, italic: true };
             title2.alignment = { horizontal: "left", vertical: "middle" };
 
             // Espacio en blanco entre regionales
@@ -226,34 +227,48 @@ const ListadoParticipantes = () => {
             // Definir encabezados de la tabla
             const headers = [
                 "ID", "Nombre de la Acción o Formación", "Código SACE", "Nombre", "Identificación", "Sexo",
-                "Nivel Académico del Participante", "Grado Académico del Participante", 
-                "Años de Servicio", "Código de Red", "Función", "Departamento en el que Reside", "Municipio en el que Reside","Aldea en la que Reside", "Centro Educativo",
+                "Nivel Académico del Participante", "Grado Académico del Participante",
+                "Años de Servicio", "Código de Red", "Función", "Departamento en el que Reside", "Municipio en el que Reside", "Aldea en la que Reside", "Centro Educativo",
                 "Nivel Académico que Atiende", "Ciclo Académico que Atiende", "Grado Académico que Atiende", "Tipo Administración",
-                "Zona Centro Educativo", "Departamento Centro Educativo", "Municipio Centro Educativo","Aldea Centro Educativo",
+                "Zona Centro Educativo", "Departamento Centro Educativo", "Municipio Centro Educativo", "Aldea Centro Educativo",
 
             ];
 
+        
+            const colorPrimarioAzul = color.primary.azul;
             // Agregar encabezados a la primera fila
-            worksheet.addRow(headers).font = { bold: true };
+            const headerRow = worksheet.addRow(headers);
+            headerRow.font = { bold: true, color: { argb: "FFFFFF" } }; // Texto en blanco
 
-            // Agregar los datos como filas en la tabla
-            filteredRows.forEach(item => {
+            // Aplicar color de fondo al encabezado
+            headerRow.eachCell((cell) => {
+                cell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: colorPrimarioAzul.replace("#", "") }  // Azul oscuro
+                };
+                cell.alignment = { horizontal: "center", vertical: "middle" }; // Centrar texto
+            });
+
+             // Agregar los datos como filas en la tabla
+             filteredRows.forEach(item => {
                 worksheet.addRow([
                     item.id, item.accionformacion, item.codigosace, item.nombre, item.identificacion, item.sexo,
                     item.nombreniveldocente ?? "-", item.nombregradodocente ?? "-",
-                    item.añosdeservicio, item.codigodered, item.funcion,item.nombredeptoresidencia,item.nombremuniresidencia,
+                    item.añosdeservicio, item.codigodered, item.funcion, item.nombredeptoresidencia, item.nombremuniresidencia,
                     item.nombrealdearesidencia, item.centroeducativo, item.nombrenivelced ?? "-",
                     item.nombrecicloced ?? "-", item.nombregradoced ?? "-", item.tipoadministracion,
-                    item.zona, item.nombredeptoced, item.nombremunicipioced,item.nombrealdeaced,
+                    item.zona, item.nombredeptoced, item.nombremunicipioced, item.nombrealdeaced,
                 ]);
             });
 
-            // Ajustar ancho de columnas
-            worksheet.columns.forEach(column => {
-                column.width = 20;
+               // Ajustar ancho de columnas
+               worksheet.columns.forEach((column, index) => {
+                column.width = index === 0 ? 5 : 15; // Si es la primera columna (index 0), ancho 5, el resto 20
                 column.alignment = { wrapText: true, vertical: "middle" };
             });
 
+            
             // Generar y descargar el archivo
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/octet-stream" });
@@ -274,7 +289,7 @@ const ListadoParticipantes = () => {
         <Dashboard>
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
-                <Typography variant="h2" sx={{ color: color.primary.azul }}>
+                <Typography variant="h2" sx={{ color: color.primary.azul, mb: 5 }}>
                     Listado de Participantes
                 </Typography>
 
@@ -284,22 +299,27 @@ const ListadoParticipantes = () => {
                             <Select onChange={(e) => setFilterColumn(e.target.value)}>
                                 <MenuItem value="">Seleccionar columna</MenuItem >
                                 <MenuItem value="accionformacion">Nombre de la Acción o Formación</MenuItem >
-                                <MenuItem value="zona">Código SACE</MenuItem >
+                                <MenuItem value="codigosace">Código SACE</MenuItem >
                                 <MenuItem value="nombre">Nombre</MenuItem >
                                 <MenuItem value="identificacion">Identidad</MenuItem >
                                 <MenuItem value="sexo">Sexo</MenuItem >
+                                <MenuItem value="nombreniveldocente">Nivel Académico del Participante</MenuItem >
+                                <MenuItem value="nombregradodocente">Grado Académico del Participante</MenuItem >
                                 <MenuItem value="añosdeservicio">Años de Servicio</MenuItem >
                                 <MenuItem value="codigodered">Código de Red que Pertenece</MenuItem >
                                 <MenuItem value="funcion">Función</MenuItem >
+                                <MenuItem value="nombredeptoresidencia">Departamento en el que Reside</MenuItem >
+                                <MenuItem value="nombremuniresidencia">Municipio en el que Reside</MenuItem >
+                                <MenuItem value="nombrealdearesidencia">Aldea en el que Reside</MenuItem >
                                 <MenuItem value="centroeducativo">Centro Educativo</MenuItem >
-                                <MenuItem value="idnivelesacademicos">Nivel Educativo</MenuItem >
-                                <MenuItem value="idciclosacademicos">Ciclo Académico</MenuItem >
-                                <MenuItem value="idgradosacademicos">Grado Académico</MenuItem >
+                                <MenuItem value="nombrenivelced">Nivel Educativo que Atiende</MenuItem >
+                                <MenuItem value="nombrecicloced">Ciclo Académico que Atiende</MenuItem >
+                                <MenuItem value="nombregradoced">Grado Académico que Atiende</MenuItem >
                                 <MenuItem value="tipoadministracion">Tipo Administración</MenuItem >
-                                <MenuItem value="zona">Zona</MenuItem >
-                                <MenuItem value="departamentoced">Departamento</MenuItem >
-                                <MenuItem value="municipioced">Municipio</MenuItem >
-
+                                <MenuItem value="zona">Zona Centro Educativo</MenuItem >
+                                <MenuItem value="nombredeptoced">Departamento Centro Educativo</MenuItem >
+                                <MenuItem value="nombremunicipioced">Municipio Centro Educativo</MenuItem >
+                                <MenuItem value="nombrealdeaced">Aldea Centro Educativo</MenuItem >
                             </Select>
                         </FormControl>
                     </Grid>
@@ -320,14 +340,16 @@ const ListadoParticipantes = () => {
                                     <MenuItem value="Urbana">Urbana</MenuItem >
                                 </Select>
                             </FormControl>
-                        ) : filterColumn === "departamentoced" ? (
+                        ) : ["nombredeptoresidencia", "nombredeptoced"].includes(filterColumn) ? (
                             <FormControl fullWidth>
                                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                                    <MenuItem value="">Seleccionar departamento</MenuItem >
-                                    {departamentos.map(dep => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem >)}
+                                    <MenuItem value="">Seleccionar departamento</MenuItem>
+                                    {departamentos.map(dep => (
+                                        <MenuItem key={dep.id} value={dep.nombre}>{dep.nombre}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
-                        ) : filterColumn === "municipioced" ? (
+                        ) : ["nombremuniresidencia", "nombremunicipioced"].includes(filterColumn) ? (
                             <FormControl fullWidth>
                                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                                     <MenuItem value="">Seleccionar municipio</MenuItem >
@@ -372,8 +394,9 @@ const ListadoParticipantes = () => {
                             <IconButton
                                 onClick={() => exportExcel(rows)}
                                 aria-label="exportar Excel"
+                                sx={{ fontSize: 40, color: color.primary.azul }}
                             >
-                                <FaRegFileExcel sx={{ fontSize: 100, color: color.primary.azul }} />
+                                <FaRegFileExcel />
                             </IconButton>
                         </Tooltip>
                     </Grid>
@@ -450,7 +473,7 @@ const ListadoParticipantes = () => {
                             <TableRow>
                                 <TablePagination
                                     rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                                    colSpan={18}
+                                    colSpan={23}
                                     count={filteredRows.length}
                                     rowsPerPage={rowsPerPage}
                                     page={page}

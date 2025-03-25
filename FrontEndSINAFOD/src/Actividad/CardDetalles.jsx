@@ -135,7 +135,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                   </TableRow>
 
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Población a la que va dirigida</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Cargo a la que va dirigido</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.funciondirigido}
                     </TableCell>
@@ -147,7 +147,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Ciclo</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ciclo Académico</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.cicloacademico}
                     </TableCell>

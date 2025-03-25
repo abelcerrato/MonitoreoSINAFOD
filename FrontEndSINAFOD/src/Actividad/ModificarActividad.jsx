@@ -506,9 +506,6 @@ const ModificarActividad = () => {
                 helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
               />
             </Grid>
-
-
-
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
                 Nivel Educativo
@@ -534,7 +531,7 @@ const ModificarActividad = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
-                Ciclo
+                Ciclo Académico
               </Typography>
               <FormControl fullWidth>
                 <Select
