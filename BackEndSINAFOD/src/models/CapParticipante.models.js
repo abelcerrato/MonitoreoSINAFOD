@@ -122,13 +122,11 @@ export const getCapParticipanteIdM = async (id) => {
             left join municipio as mced on cp.municipioced = mced.id 
             left join aldeas as aced on cp.aldeaced = aced.id
             
-           
             left join nivelesacademicos n on cp.idnivelesacademicos =n.id 
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            
- 			left join usuario as u on cp.creadopor = u.id 
+            left join usuario as u on cp.creadopor = u.id 
             left join usuario as mp on cp.modificadopor = mp.id 
             WHERE cp.id=$1
         `, [id])
@@ -193,13 +191,11 @@ export const getCapParticipanteIdInvestM = async (id) => {
             left join municipio as mced on cp.municipioced = mced.id 
             left join aldeas as aced on cp.aldeaced = aced.id
             
-           
             left join nivelesacademicos n on cp.idnivelesacademicos =n.id 
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            
- 			left join usuario as u on cp.creadopor = u.id 
+            left join usuario as u on cp.creadopor = u.id 
             left join usuario as mp on cp.modificadopor = mp.id 
             WHERE cp.idinvestigacioncap=$1
         `, [id])
@@ -359,6 +355,8 @@ export const getParticipanteIdentificacionM = async (filtro) => {
             left join usuario as u on cp.creadopor = u.id 
             left join usuario as mp on cp.modificadopor = mp.id 
             WHERE cp.identificacion=$1
+            ORDER BY cp.id DESC
+            LIMIT 1
         `, [filtro])
         //console.log(rows);
         return rows;
@@ -429,6 +427,8 @@ export const getParticipanteCodSACEM = async (filtro) => {
             left join usuario as u on cp.creadopor = u.id 
             left join usuario as mp on cp.modificadopor = mp.id 
             WHERE cp.codigosace=$1
+            ORDER BY cp.id DESC
+            LIMIT 1
         `, [filtro])
         //console.log(rows);
         return rows;
