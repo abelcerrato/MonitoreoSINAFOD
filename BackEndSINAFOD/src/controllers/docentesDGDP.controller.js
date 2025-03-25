@@ -166,3 +166,28 @@ export const getFiltroDocenteC = async (req, res) => {
     }
 };
 
+
+
+
+//filtrar por codigo SACE o por Identificacion
+export const getFiltroDocentesC = async (req, res) => {
+    const { filtro } = req.params;
+    try {
+        const resultados = await Promise.all([
+            getDocenteIdentificacionM(filtro),
+            getDocenteCodSACEM(filtro)
+        ]);
+
+        // Buscar el primer resultado que no esté vacío o null
+        const resultadoValido = resultados.find(item => item && (Array.isArray(item) ? item.length > 0 : Object.keys(item).length > 0));
+
+        if (resultadoValido) {
+            return res.json(resultadoValido);
+        }
+
+        res.status(404).json({ error: 'No se encontraron resultados para el filtro proporcionado' });
+    } catch (error) {
+        console.error('Error al obtener datos:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
