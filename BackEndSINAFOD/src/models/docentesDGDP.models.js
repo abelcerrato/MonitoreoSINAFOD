@@ -98,11 +98,11 @@ export const getDocenteIdentificacionM = async (filtro) => {
 
         const { rows } = await pool.query(`
             SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
-                dgdp.iddepartamento, d.nombre as nombreDeptoCed,
-                dgdp.idmunicipio, m.nombre as nombreMunicipioCed,
-                dgdp.idaldea, a.nombre as nombreAldeaCed,
+                dgdp.iddepartamento as departamentoced, d.nombre as nombreDeptoCed,
+                dgdp.idmunicipio as municipioced, m.nombre as nombreMunicipioCed,
+                dgdp.idaldea as aldeaced, a.nombre as nombreAldeaCed,
                 dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
-                dgdp.idnivelesacademicos, n.nombre as nombreNivelCed, 
+                dgdp.idnivelesacademicos , n.nombre as nombreNivelCed, 
                 dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
                 dgdp.zona 
             FROM docentesdgdp as dgdp
@@ -132,11 +132,11 @@ export const getDocenteCodSACEM = async (filtro) => {
 
         const { rows } = await pool.query(`
             SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
-                dgdp.iddepartamento, d.nombre as nombreDeptoCed,
-                dgdp.idmunicipio, m.nombre as nombreMunicipioCed,
-                dgdp.idaldea, a.nombre as nombreAldeaCed,
+                dgdp.iddepartamento as departamentoced, d.nombre as nombreDeptoCed,
+                dgdp.idmunicipio as municipioced, m.nombre as nombreMunicipioCed,
+                dgdp.idaldea as aldeaced, a.nombre as nombreAldeaCed,
                 dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
-                dgdp.idnivelesacademicos, n.nombre as nombreNivelCed, 
+                dgdp.idnivelesacademicos , n.nombre as nombreNivelCed, 
                 dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
                 dgdp.zona 
             FROM docentesdgdp as dgdp
