@@ -10,4 +10,6 @@ router.post('/CapacitacionP', postCapParticipanteC)
 router.put('/CapacitacionP/:id', putCapParticipanteC)
 
 
+
+
 export default router;
