@@ -88,3 +88,69 @@ export const putDocentesM = async (codigosace, nombre, identificacion, correo, i
         throw error;
     }
 }
+
+
+
+
+//para buscar por identificacion en tabla de docentesdgdp
+export const getDocenteIdentificacionM = async (filtro) => {
+    try {
+
+        const { rows } = await pool.query(`
+            SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
+                dgdp.iddepartamento, d.nombre as nombreDeptoCed,
+                dgdp.idmunicipio, m.nombre as nombreMunicipioCed,
+                dgdp.idaldea, a.nombre as nombreAldeaCed,
+                dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
+                dgdp.idnivelesacademicos, n.nombre as nombreNivelCed, 
+                dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
+                dgdp.zona 
+            FROM docentesdgdp as dgdp
+            left join departamento as d on dgdp.iddepartamento =d.id
+            left join municipio as m on dgdp.idmunicipio= m.id 
+            left join aldeas as a on dgdp.idaldea = a.id
+            left join nivelesacademicos n on dgdp.idnivelesacademicos =n.id 
+            left join ciclosacademicos c on dgdp.idciclosacademicos =c.id
+            where dgdp.identificacion=$1`, [filtro])
+        console.log(rows);
+        if (rows.length === 0) {
+            return null
+        }
+        return rows
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+//para buscar por codigo SACE en tabla de docentesdgdp
+export const getDocenteCodSACEM = async (filtro) => {
+    try {
+
+        const { rows } = await pool.query(`
+            SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
+                dgdp.iddepartamento, d.nombre as nombreDeptoCed,
+                dgdp.idmunicipio, m.nombre as nombreMunicipioCed,
+                dgdp.idaldea, a.nombre as nombreAldeaCed,
+                dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
+                dgdp.idnivelesacademicos, n.nombre as nombreNivelCed, 
+                dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
+                dgdp.zona 
+            FROM docentesdgdp as dgdp
+            left join departamento as d on dgdp.iddepartamento =d.id
+            left join municipio as m on dgdp.idmunicipio= m.id 
+            left join aldeas as a on dgdp.idaldea = a.id
+            left join nivelesacademicos n on dgdp.idnivelesacademicos =n.id 
+            left join ciclosacademicos c on dgdp.idciclosacademicos =c.id
+            where dgdp.codigosace=$1`, [filtro])
+        console.log(rows);
+        if (rows.length === 0) {
+            return null
+        }
+        return rows
+    } catch (error) {
+        throw error;
+    }
+}
+
