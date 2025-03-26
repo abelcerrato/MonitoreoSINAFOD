@@ -420,7 +420,57 @@ console.log("identificacion",formData.identificacion);
       alert("Error al buscar la identificación.");
     }
   };
+  const obtenerDNI = async (campo) => {
+    // Verifica cuál de los campos tiene datos según el parámetro 'campo'
+    const filtro = formData[campo] && formData[campo].trim() !== "" ? formData[campo] : null;
 
+    if (!filtro) {
+      alert("Por favor, ingrese un valor en el campo seleccionado.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/filtroDocentes/${filtro}`
+      );
+
+      if (response.data && response.data.length > 0) {
+        const docente = response.data[0];
+        console.log("Datos de traida Docente", docente);
+
+        setFormData((prev) => ({
+          ...prev,
+          codigosace: docente.codigosace || "",
+          identificacion: docente.identificacion || "",
+          codigosace: docente.codigosace || "",
+          nombre: docente.nombre || "",
+          funcion: docente.funcion || "",
+          sexo: docente.sexo || "",
+          añosdeservicio: docente.añosdeservicio || "",
+          codigodered: docente.codigodered || "",
+          deptoresidencia: docente.iddeptoresidencia || "",
+          municipioresidencia: docente.idmuniresidencia || "",
+          aldearesidencia: docente.idaldearesidencia || "",
+          nivelacademicodocente: docente.idnivelacademicodocente || "",
+          gradoacademicodocente: docente.idgradoacademicodocente || "",
+
+          centroeducativo: docente.centroeducativo || "",
+          idnivelesacademicos: docente.idnivelesacademicos || "",
+          idgradosacademicos: docente.idgradoced || "",
+          zona: docente.zona || "",
+          municipioced: docente.idmunicipioced || "",
+          departamentoced: docente.iddeptoced || "",
+          aldeaced: docente.idaldeaced || "",
+          tipoadministracion: docente.tipoadministracion || "Gubernamental",
+        }));
+
+        alert("Registro encontrado.");
+      }
+    } catch (error) {
+      console.error("Error al obtener los datos", error);
+      alert("No se encontró ningún registro.");
+    }
+  };
 
   return (
     <>
@@ -457,19 +507,32 @@ console.log("identificacion",formData.identificacion);
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Código SACE</Typography>
-                  <TextField
-                    fullWidth
-                    name="codigosace"
-                    value={formData.codigosace}
-                    onChange={handleChange}
-                    error={fieldErrors.codigosace}
-                    helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
-                  />
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} sm={10}>
+                      <TextField
+                        fullWidth
+                        name="codigosace"
+                        value={formData.codigosace}
+                        onChange={handleChange}
+                        error={fieldErrors.codigosace}
+                        helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <Button
+                        variant="contained"
+                        sx={{ backgroundColor: color.primary.azul }}
+                        onClick={() => obtenerDNI('codigosace')}
+                      >
+                        Buscar
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Identidad</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} sm={11}>
+                    <Grid item xs={12} sm={10}>
                       <TextField
                         fullWidth
                         name="identificacion"
@@ -479,11 +542,11 @@ console.log("identificacion",formData.identificacion);
                         helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={1}>
+                    <Grid item xs={12} sm={2}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
-                        onClick={obtenerGardo}
+                        onClick={() => obtenerDNI('identificacion')}
                       >
                         Buscar
                       </Button>
@@ -492,7 +555,6 @@ console.log("identificacion",formData.identificacion);
 
 
                   </Grid>
-
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
