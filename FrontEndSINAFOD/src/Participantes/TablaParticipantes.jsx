@@ -126,8 +126,6 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
       .then((response) => {
         setRows(response.data);  // Actualizar las filas con los nuevos datos
         setIsSaved(false);
-        console.log("parr", response.data);
-
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
@@ -149,7 +147,7 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
             <TableCell align="center" style={{ fontWeight: "bold" }}>
               Acciones
             </TableCell>
-         
+
             <TableCell align="right">Código SACE</TableCell>
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
@@ -187,7 +185,7 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
                 </Tooltip>
 
               </TableCell>
-             
+
               <TableCell align="right">{row.codigosace}</TableCell>
               <TableCell align="right">{row.nombre}</TableCell>
               <TableCell align="right">{row.identificacion}</TableCell>
