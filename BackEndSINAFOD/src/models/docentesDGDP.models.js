@@ -97,15 +97,15 @@ export const getDocenteIdentificacionM = async (filtro) => {
     try {
 
         const { rows } = await pool.query(`
-            SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
-                dgdp.iddepartamento as departamentoced, d.nombre as nombreDeptoCed,
-                dgdp.idmunicipio as municipioced, m.nombre as nombreMunicipioCed,
-                dgdp.idaldea as aldeaced, a.nombre as nombreAldeaCed,
+            select dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
+                dgdp.iddepartamento as departamentoced, d.nombre as nombredeptoced,
+                dgdp.idmunicipio as municipioced, m.nombre as nombremunicipioced,
+                dgdp.idaldea as aldeaced, a.nombre as nombrealdeaced,
                 dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
-                dgdp.idnivelesacademicos , n.nombre as nombreNivelCed, 
-                dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
+                dgdp.idnivelesacademicos , n.nombre as nombrenivelced, 
+                dgdp.idciclosacademicos, c.nombre as nombrecicloced,
                 dgdp.zona 
-            FROM docentesdgdp as dgdp
+            from docentesdgdp as dgdp
             left join departamento as d on dgdp.iddepartamento =d.id
             left join municipio as m on dgdp.idmunicipio= m.id 
             left join aldeas as a on dgdp.idaldea = a.id
@@ -131,15 +131,15 @@ export const getDocenteCodSACEM = async (filtro) => {
     try {
 
         const { rows } = await pool.query(`
-            SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
-                dgdp.iddepartamento as departamentoced, d.nombre as nombreDeptoCed,
-                dgdp.idmunicipio as municipioced, m.nombre as nombreMunicipioCed,
-                dgdp.idaldea as aldeaced, a.nombre as nombreAldeaCed,
+          dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
+                dgdp.iddepartamento as departamentoced, d.nombre as nombredeptoced,
+                dgdp.idmunicipio as municipioced, m.nombre as nombremunicipioced,
+                dgdp.idaldea as aldeaced, a.nombre as nombrealdeaced,
                 dgdp.sexo, dgdp.institucion as centroeducativo, dgdp.institucioncodsace, 
-                dgdp.idnivelesacademicos , n.nombre as nombreNivelCed, 
-                dgdp.idciclosacademicos, c.nombre as nombreCicloCed,
+                dgdp.idnivelesacademicos , n.nombre as nombrenivelced, 
+                dgdp.idciclosacademicos, c.nombre as nombrecicloced,
                 dgdp.zona 
-            FROM docentesdgdp as dgdp
+            from docentesdgdp as dgdp
             left join departamento as d on dgdp.iddepartamento =d.id
             left join municipio as m on dgdp.idmunicipio= m.id 
             left join aldeas as a on dgdp.idaldea = a.id

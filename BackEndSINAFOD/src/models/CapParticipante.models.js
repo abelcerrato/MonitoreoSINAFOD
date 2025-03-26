@@ -300,37 +300,37 @@ export const getParticipanteIdentificacionM = async (filtro) => {
         const { rows } = await pool.query
             (`
             SELECT 		
-					--datos de la accion formativa
-					cp.id, cp.idinvestigacioncap, i.accionformacion, 
-					
-					--datos del participante
-					cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
-					
-					cp.deptoresidencia as iddeptoResidencia,  
-					dr.nombre as nombreDeptoResidencia,
-					cp.municipioresidencia as idMuniResidencia, mr.nombre as nombreMuniResidencia,
-					cp.aldearesidencia as idAldeaResidencia, ar.nombre as nombreAldeaResidencia,
-					
-					cp.nivelacademicodocente as idNivelAcademicoDocente, ndo.nombre as nombreNivelDocente,
-					cp.gradoacademicodocente as idGradoAcademicoDocente, gdo.nombre as nombreGradoDocente,
-					
-					--datos del centro educativo
+				--datos de la accion formativa
+                    cp.id, cp.idinvestigacioncap, i.accionformacion, 
+                    
+                    --datos del participante
+                    cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
+                    
+                    cp.deptoresidencia as iddeptoresidencia,  
+                    dr.nombre as nombredeptoresidencia,
+                    cp.municipioresidencia as idmuniresidencia, mr.nombre as nombremuniresidencia,
+                    cp.aldearesidencia as idaldearesidencia, ar.nombre as nombrealdearesidencia,
+                    
+                    cp.nivelacademicodocente as idnivelacademicodocente, ndo.nombre as nombreniveldocente,
+                    cp.gradoacademicodocente as idgradoacademicodocente, gdo.nombre as nombregradodocente,
+                    
+                    --datos del centro educativo
                     cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
                     
                     --academico que atiende
-                    cp.idnivelesacademicos as idNivelCed, n.nombre as nombreNivelCed, 
-                    cp.idciclosacademicos as idCicloCed,  c.nombre as nombreCicloCed, 
-                    cp.idgradosacademicos as idGradoCed, g.nombre as nombreGradoCed, 
+                    cp.idnivelesacademicos as idnivelced, n.nombre as nombrenivelced, 
+                    cp.idciclosacademicos as idcicloced,  c.nombre as nombrecicloced, 
+                    cp.idgradosacademicos as idgradoced, g.nombre as nombregradoced, 
                     
-                    cp.departamentoced as idDeptoCed, dced.nombre as nombreDeptoCed, 
-                    cp.municipioced as idMunicipioCed, mced.nombre nombreMunicipioCed,
-                    cp.aldeaced as idAldeaCed, aced.nombre as nombreAldeaCed, 
+                    cp.departamentoced as iddeptoced, dced.nombre as nombredeptoced, 
+                    cp.municipioced as idmunicipioced, mced.nombre nombremunicipioced,
+                    cp.aldeaced as idaldeaced, aced.nombre as nombrealdeaced, 
 
                     --datos de auditoria
-                    cp.creadopor, u.usuario as CreadoPor,
-                    mp.modificadopor, mp.usuario as ModificadoPor, 
+                    cp.creadopor, u.usuario as creadopor,
+                    mp.modificadopor, mp.usuario as modificadopor, 
                     cp.fechacreacion, cp.fechamodificacion
-                    
+
             
             FROM capparticipante as cp
             
@@ -372,38 +372,37 @@ export const getParticipanteCodSACEM = async (filtro) => {
     try {
         const { rows } = await pool.query
             (` SELECT 		
-					--datos de la accion formativa
-					cp.id, cp.idinvestigacioncap, i.accionformacion, 
-					
-					--datos del participante
-					cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
-					
-					cp.deptoresidencia as iddeptoResidencia,  
-					dr.nombre as nombreDeptoResidencia,
-					cp.municipioresidencia as idMuniResidencia, mr.nombre as nombreMuniResidencia,
-					cp.aldearesidencia as idAldeaResidencia, ar.nombre as nombreAldeaResidencia,
-					
-					cp.nivelacademicodocente as idNivelAcademicoDocente, ndo.nombre as nombreNivelDocente,
-					cp.gradoacademicodocente as idGradoAcademicoDocente, gdo.nombre as nombreGradoDocente,
-					
-					--datos del centro educativo
+			--datos de la accion formativa
+                    cp.id, cp.idinvestigacioncap, i.accionformacion, 
+                    
+                    --datos del participante
+                    cp.codigosace, cp.nombre, cp.identificacion, cp.sexo, cp.funcion, cp.añosdeservicio,
+                    
+                    cp.deptoresidencia as iddeptoresidencia,  
+                    dr.nombre as nombredeptoresidencia,
+                    cp.municipioresidencia as idmuniresidencia, mr.nombre as nombremuniresidencia,
+                    cp.aldearesidencia as idaldearesidencia, ar.nombre as nombrealdearesidencia,
+                    
+                    cp.nivelacademicodocente as idnivelacademicodocente, ndo.nombre as nombreniveldocente,
+                    cp.gradoacademicodocente as idgradoacademicodocente, gdo.nombre as nombregradodocente,
+                    
+                    --datos del centro educativo
                     cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
                     
                     --academico que atiende
-                    cp.idnivelesacademicos as idNivelCed, n.nombre as nombreNivelCed, 
-                    cp.idciclosacademicos as idCicloCed,  c.nombre as nombreCicloCed, 
-                    cp.idgradosacademicos as idGradoCed, g.nombre as nombreGradoCed, 
+                    cp.idnivelesacademicos as idnivelced, n.nombre as nombrenivelced, 
+                    cp.idciclosacademicos as idcicloced,  c.nombre as nombrecicloced, 
+                    cp.idgradosacademicos as idgradoced, g.nombre as nombregradoced, 
                     
-                    cp.departamentoced as idDeptoCed, dced.nombre as nombreDeptoCed, 
-                    cp.municipioced as idMunicipioCed, mced.nombre nombreMunicipioCed,
-                    cp.aldeaced as idAldeaCed, aced.nombre as nombreAldeaCed, 
+                    cp.departamentoced as iddeptoced, dced.nombre as nombredeptoced, 
+                    cp.municipioced as idmunicipioced, mced.nombre nombremunicipioced,
+                    cp.aldeaced as idaldeaced, aced.nombre as nombrealdeaced, 
 
                     --datos de auditoria
-                    cp.creadopor, u.usuario as CreadoPor,
-                    mp.modificadopor, mp.usuario as ModificadoPor, 
+                    cp.creadopor, u.usuario as creadopor,
+                    mp.modificadopor, mp.usuario as modificadopor, 
                     cp.fechacreacion, cp.fechamodificacion
-                    
-            
+
             FROM capparticipante as cp
             
             left join investigacioncap as i on cp.idinvestigacioncap = i.id 
