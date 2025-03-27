@@ -4,18 +4,18 @@ export const getInvestigacionCapM = async () => {
     try {
         const { rows } = await pool.query(`
            SELECT 
-    ic.id, ic.accionformacion, ic.institucionresponsable, ic.responsablefirmas, ic.ambitoformacion, 
-    ic.tipoformacion, ic.modalidad, ic.formacioninvest, ic.zona, ic.duracion, ic.espaciofisico, 
- ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
-    ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, u.nombre, 
-    n.id AS IdNivel, n.nombre AS NivelAcademico, 
-    c.id AS IdCiclo, c.nombre AS CicloAcademico
-FROM investigacioncap AS ic
-LEFT JOIN usuario u ON ic.creadopor = u.id
-LEFT JOIN nivelesacademicos n ON ic.idnivelesacademicos = n.id 
-LEFT JOIN ciclosacademicos c ON ic.idciclosacademicos = c.id
-ORDER BY ic.id DESC;
- `)
+            ic.id, ic.accionformacion, ic.institucionresponsable, ic.responsablefirmas, ic.ambitoformacion, 
+            ic.tipoformacion, ic.modalidad, ic.formacioninvest, ic.zona, ic.duracion, ic.espaciofisico, 
+            ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
+                ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, u.nombre, 
+                n.id AS IdNivel, n.nombre AS NivelAcademico, 
+                c.id AS IdCiclo, c.nombre AS CicloAcademico
+            FROM investigacioncap AS ic
+            LEFT JOIN usuario u ON ic.creadopor = u.id
+            LEFT JOIN nivelesacademicos n ON ic.idnivelesacademicos = n.id 
+            LEFT JOIN ciclosacademicos c ON ic.idciclosacademicos = c.id
+            ORDER BY ic.id DESC;
+            `)
         // console.log(rows);
         return rows;
     } catch (error) {
@@ -42,7 +42,7 @@ export const getInvestigacionCapIdInvM = async (id) => {
     }
 };
 
-//`
+
 
 /////////////////////////////
 export const postInvestigacionCapM = async (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad,
