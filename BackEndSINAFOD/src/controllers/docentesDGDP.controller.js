@@ -1,5 +1,6 @@
 import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
+import { getUsuarioIdM } from "../models/user.models.js";
 
 
 export const getDocentesC = async (req, res) => {
@@ -183,6 +184,13 @@ export const getFiltroDocentesC = async (req, res) => {
         deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
 
         console.log('respuesta del servidor: ', req.body);
+
+
+        const userResponse = await getUsuarioIdM   (creadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
         
     try {
 
@@ -201,7 +209,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
             //insertar en participante
             const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
                 idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
                 deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
             
@@ -209,7 +217,7 @@ export const getFiltroDocentesC = async (req, res) => {
             return res.status(201).json({
                 message: "Docente agregado y capacitación del participante registrada.",
                 docentes,
-                user: CapParticipante
+                participantes: CapParticipante
             });
 
         } else { //si encuentra registros, pasa a actualizar en docente y agregar participante
@@ -221,14 +229,14 @@ export const getFiltroDocentesC = async (req, res) => {
             
             //insertar en participante
             const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
                 idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
                 deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
 
             return res.status(201).json({
                 message: "Docente actualizado y capacitación del participante registrada.",
                 docentes,
-                user: CapParticipante
+                participantes: CapParticipante
             });
         }
 
