@@ -209,7 +209,7 @@ export const getCapParticipanteIdInvestM = async (id) => {
 
 export const postCapParticipanteM = async (
     idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-    departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+    departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
     idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
     deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced
 ) => {
@@ -229,7 +229,7 @@ export const postCapParticipanteM = async (
             RETURNING *;
         `, [
             idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+            departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
             idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced
         ]);
