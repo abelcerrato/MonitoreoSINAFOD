@@ -57,14 +57,14 @@ export const getDocentesIdM = async (identificacion) => {
 
 
 export const postDocentesM = async (codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
-                                    sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona) => {
+                                    sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO docentesdgdp (codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
                                         sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`, 
             [codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
-                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona])
+                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona])
          // Log for debugging
         //console.log(rows);
         return rows
@@ -75,14 +75,14 @@ export const postDocentesM = async (codigosace, nombre, identificacion, correo, 
 
 
 export const putDocentesM = async (codigosace, nombre, correo, departamentoced, municipioced, aldeaced,
-    sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion) => {
+    sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion) => {
     try {
         const { rows } = await pool.query(`
             UPDATE docentesdgdp SET codigosace=$1, nombre=$2, correo=$3, iddepartamento=$4, idmunicipio=$5, idaldea=$6, 
                                     sexo=$7, institucion=$8, institucioncodsace=$9, idnivelesacademicos=$10, idciclosacademicos=$11, zona=$12
             WHERE identificacion=$13 RETURNING *`, 
             [codigosace, nombre, correo, departamentoced, municipioced, aldeaced, 
-                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion])
+                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion])
         return rows
     } catch (error) {
         throw error;
