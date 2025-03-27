@@ -148,10 +148,10 @@ export const getFiltroDocenteC = async (req, res) => {
     const { filtro } = req.params;
     try {
         const resultados = await Promise.all([
-            getDocenteIdentificacionM(filtro),
-            getDocenteCodSACEM(filtro),
             getParticipanteCodSACEM(filtro),
-            getParticipanteIdentificacionM(filtro)
+            getParticipanteIdentificacionM(filtro),
+            getDocenteIdentificacionM(filtro),
+            getDocenteCodSACEM(filtro)  
         ]);
 
         // Buscar el primer resultado que no esté vacío o null
