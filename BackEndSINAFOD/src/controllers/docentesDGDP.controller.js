@@ -194,11 +194,16 @@ export const getFiltroDocentesC = async (req, res) => {
     const usuario = userResponse[0].id;
 
 
-    const CicloResponse = await getCicloAcademicoM(cicloacademico);
+
     let idciclosacademicos = null; // Por defecto lo dejamos en null
 
-    if (CicloResponse && CicloResponse.length > 0 && CicloResponse[0].id) {
-        idciclosacademicos = CicloResponse[0].id;
+    // Lógica para asignar el valor a idciclosacademicos según idgradosacademicos
+    if (idgradosacademicos >= 1 && idgradosacademicos <= 3) {
+        idciclosacademicos = 1;
+    } else if (idgradosacademicos >= 4 && idgradosacademicos <= 6) {
+        idciclosacademicos = 2;
+    } else if (idgradosacademicos >= 7 && idgradosacademicos <= 9) {
+        idciclosacademicos = 3;
     }
 
     try {
