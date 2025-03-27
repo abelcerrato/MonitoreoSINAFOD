@@ -66,7 +66,7 @@ export const postDocentesM = async (codigosace, nombre, identificacion, correo, 
             [codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
                 sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona])
          // Log for debugging
-        console.log("Id docentesdgdp: " + rows[0].id);
+        //console.log(rows);
         return rows
     } catch (error) {
         throw error;
@@ -74,15 +74,15 @@ export const postDocentesM = async (codigosace, nombre, identificacion, correo, 
 }
 
 
-export const putDocentesM = async (codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
-                                    sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, id) => {
+export const putDocentesM = async (codigosace, nombre, correo, iddepartamento, idmunicipio, idaldea,
+    sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion) => {
     try {
         const { rows } = await pool.query(`
-            UPDATE docentesdgdp SET codigosace=$1, nombre=$2, identificacion=$3, correo=$4, iddepartamento=$5, idmunicipio=$6, idaldea=$7, 
-                                    sexo=$8, institucion=$9, institucioncodsace=$10, idnivelesacademicos=$11, idciclosacademicos=$12, zona=$13
-            WHERE id=$14 RETURNING *`, 
-            [codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
-                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, id])
+            UPDATE docentesdgdp SET codigosace=$1, nombre=$2, correo=$3, iddepartamento=$4, idmunicipio=$5, idaldea=$6, 
+                                    sexo=$7, institucion=$8, institucioncodsace=$9, idnivelesacademicos=$10, idciclosacademicos=$11, zona=$12
+            WHERE identificacion=$13 RETURNING *`, 
+            [codigosace, nombre, correo, iddepartamento, idmunicipio, idaldea, 
+                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion])
         return rows
     } catch (error) {
         throw error;
@@ -114,7 +114,7 @@ export const getDocenteIdentificacionM = async (filtro) => {
             where dgdp.identificacion=$1
             ORDER BY dgdp.id DESC
             LIMIT 1`, [filtro])
-        console.log(rows);
+       // console.log(rows);
         if (rows.length === 0) {
             return null
         }
@@ -131,7 +131,7 @@ export const getDocenteCodSACEM = async (filtro) => {
     try {
 
         const { rows } = await pool.query(`
-          dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
+        SELECT dgdp.id, dgdp.codigosace, dgdp.nombre, dgdp.identificacion, dgdp.correo, 
                 dgdp.iddepartamento as departamentoced, d.nombre as nombredeptoced,
                 dgdp.idmunicipio as municipioced, m.nombre as nombremunicipioced,
                 dgdp.idaldea as aldeaced, a.nombre as nombrealdeaced,
@@ -148,7 +148,7 @@ export const getDocenteCodSACEM = async (filtro) => {
             where dgdp.codigosace=$1
             ORDER BY dgdp.id DESC
             LIMIT 1`, [filtro])
-        console.log(rows);
+       //console.log(rows);
         if (rows.length === 0) {
             return null
         }
