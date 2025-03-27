@@ -1,4 +1,4 @@
-import { getParticipanteCodSACEM, getParticipanteIdentificacionM } from "../models/CapParticipante.models.js";
+import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 
 
@@ -48,13 +48,13 @@ export const postDocentesC = async (req, res) => {
 
 export const putDocentesC = async (req, res) => {
     try {
-        const { id } = req.params;
+        //const { id } = req.params;
         const { codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
             sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona } = req.body;
         console.log(req.body);
 
         const docentes = await putDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
-            sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, id);
+            sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
         res.json({ message: "Docente actualizado", docentes: docentes });
     } catch (error) {
         console.error('Error al actualizar docente:', error);
@@ -162,30 +162,76 @@ export const getFiltroDocenteC = async (req, res) => {
         return res.status(404).json({ mensaje: 'No se encontraron registros para el filtro proporcionado.' });
     } catch (error) {
         console.error('Error al obtener datos:', error);
-        return  res.status(500).json({ mensaje: 'Error interno del servidor' });
+        return res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
 
 
 
 
+
+
+
+
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
-    const { filtro } = req.params;
+
+    const { codigosace, identificacion, nombre, correo, iddepartamento, idmunicipio, idaldea,
+        sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona,
+        idinvestigacioncap, funcion, centroeducativo, departamentoced, municipioced, creadopor,
+        idgradosacademicos, añosdeservicio, tipoadministracion, codigodered,
+        deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
+
+        console.log('respuesta del servidor: ', req.body);
+        
     try {
-        const resultados = await Promise.all([
-            getDocenteIdentificacionM(filtro),
-            getDocenteCodSACEM(filtro)
-        ]);
 
-        // Buscar el primer resultado que no esté vacío o null
-        const resultadoValido = resultados.find(item => item && (Array.isArray(item) ? item.length > 0 : Object.keys(item).length > 0));
+        // Buscar por identificación de docente y por codigo sace
+        const resultado1 = await getDocenteIdentificacionM(identificacion);
+        const resultado2 = await getDocenteCodSACEM(codigosace);
 
-        if (resultadoValido) {
-            return res.json(resultadoValido);
+        //verificar si encuentra algun registro
+        if (resultado1 == null && resultado2 == null) { //si no encuentra registros, pasa a insertar en docente y participante
+            
+            //insertar en docente
+            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
+                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
+            
+
+
+            //insertar en participante
+            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
+                departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
+            
+
+            return res.status(201).json({
+                message: "Docente agregado y capacitación del participante registrada.",
+                docentes,
+                user: CapParticipante
+            });
+
+        } else { //si encuentra registros, pasa a actualizar en docente y agregar participante
+    
+            //actualizar en docente
+            const docentes = await putDocentesM(codigosace, nombre, correo, iddepartamento, idmunicipio, idaldea, 
+                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
+                
+            
+            //insertar en participante
+            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
+                departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
+
+            return res.status(201).json({
+                message: "Docente actualizado y capacitación del participante registrada.",
+                docentes,
+                user: CapParticipante
+            });
         }
 
-        return res.status(404).json({ mensaje: 'No se encontraron resultados para el filtro proporcionado' });
     } catch (error) {
         console.error('Error al obtener datos:', error);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
