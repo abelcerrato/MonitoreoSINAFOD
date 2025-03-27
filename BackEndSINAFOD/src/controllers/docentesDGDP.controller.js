@@ -202,7 +202,7 @@ export const getFiltroDocentesC = async (req, res) => {
         if (resultado1 == null && resultado2 == null) { //si no encuentra registros, pasa a insertar en docente y participante
             
             //insertar en docente
-            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
+            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
                 sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
             
 
@@ -220,10 +220,10 @@ export const getFiltroDocentesC = async (req, res) => {
                 participantes: CapParticipante
             });
 
-        } else { //si encuentra registros, pasa a actualizar en docente y agregar participante
+        } else { //si encuentra registros, pasa a actualizar en docente y agregar participante 
     
             //actualizar en docente
-            const docentes = await putDocentesM(codigosace, nombre, correo, iddepartamento, idmunicipio, idaldea, 
+            const docentes = await putDocentesM(codigosace, nombre, correo, departamentoced, municipioced, aldeaced,
                 sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
                 
             
