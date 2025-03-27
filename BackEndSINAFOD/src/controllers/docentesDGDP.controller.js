@@ -1,3 +1,4 @@
+import { getCicloAcademicoM } from "../models/Academico.models.js";
 import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/user.models.js";
@@ -178,20 +179,28 @@ export const getFiltroDocenteC = async (req, res) => {
 export const getFiltroDocentesC = async (req, res) => {
 
     const { codigosace, identificacion, nombre, correo, iddepartamento, idmunicipio, idaldea,
-        sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona,
+        sexo, institucion, institucioncodsace, idnivelesacademicos, cicloacademico, zona,
         idinvestigacioncap, funcion, centroeducativo, departamentoced, municipioced, creadopor,
         idgradosacademicos, añosdeservicio, tipoadministracion, codigodered,
         deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
 
-        console.log('respuesta del servidor: ', req.body);
+    console.log('respuesta del servidor: ', req.body);
 
 
-        const userResponse = await getUsuarioIdM   (creadopor);
-        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
-            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
-        }
-        const usuario = userResponse[0].id;
-        
+    const userResponse = await getUsuarioIdM(creadopor);
+    if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+        return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+    }
+    const usuario = userResponse[0].id;
+
+
+    const CicloResponse = await getCicloAcademicoM(cicloacademico);
+    let idciclosacademicos = null; // Por defecto lo dejamos en null
+
+    if (CicloResponse && CicloResponse.length > 0 && CicloResponse[0].id) {
+        idciclosacademicos = CicloResponse[0].id;
+    }
+
     try {
 
         // Buscar por identificación de docente y por codigo sace
@@ -200,19 +209,19 @@ export const getFiltroDocentesC = async (req, res) => {
 
         //verificar si encuentra algun registro
         if (resultado1 == null && resultado2 == null) { //si no encuentra registros, pasa a insertar en docente y participante
-            
+
             //insertar en docente
             const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
-                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
-            
+                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
+
 
 
             //insertar en participante
             const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
                 departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
                 deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
-            
+
 
             return res.status(201).json({
                 message: "Docente agregado y capacitación del participante registrada.",
@@ -221,16 +230,16 @@ export const getFiltroDocentesC = async (req, res) => {
             });
 
         } else { //si encuentra registros, pasa a actualizar en docente y agregar participante 
-    
+
             //actualizar en docente
             const docentes = await putDocentesM(codigosace, nombre, correo, departamentoced, municipioced, aldeaced,
-                sexo, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
-                
-            
+                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
+
+
             //insertar en participante
             const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
                 departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
                 deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
 
             return res.status(201).json({
