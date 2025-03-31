@@ -346,8 +346,6 @@ const FormularParticipantes = () => {
           `${process.env.REACT_APP_API_URL}/municipios/${formData.deptoresidencia}`
         );
         setMunicipiosRE(response.data);
-        console.log("muni", response.data);
-
       } catch (error) {
         console.error("Error al obtener los municipios", error);
       }
@@ -380,7 +378,6 @@ const FormularParticipantes = () => {
   // Obtener gardo cuando cambia el departamento seleccionado
   useEffect(() => {
     if (!formData.nivelacademicodocente) return;
-
     const obtenergardo = async () => {
       try {
         const response = await axios.get(
@@ -579,10 +576,10 @@ const FormularParticipantes = () => {
                       )}
                     </Select>
                     {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-                  </FormControl> */}
+                  </FormControl>*/}
                   <FormControl fullWidth error={fieldErrors.zona}>
                     <Select
-                      name="zona"
+                      name="nivelacademicodocente"
                       value={formData.nivelacademicodocente || ""}
                       onChange={handleChange}>
                       <MenuItem value="3">Media</MenuItem>
@@ -680,7 +677,7 @@ const FormularParticipantes = () => {
                   <FormControl fullWidth>
                     <Select
                       name="aldearesidencia"
-                      value={formData.aldearesidencia}
+                      value={formData.aldearesidencia || ""}
                       onChange={handleChange}
                       disabled={!aldeasP.length}
                     >
