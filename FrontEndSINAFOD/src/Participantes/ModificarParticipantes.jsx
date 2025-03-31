@@ -361,7 +361,7 @@ const ModificarParticipante = () => {
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
-              <Typography variant="h2" sx={{ color: color.primary.azul }}>
+              <Typography variant="h3" sx={{ color: color.primary.azul }}>
                 Actualización de Participantes
               </Typography>
             </Grid>
