@@ -159,7 +159,7 @@ const FormulariActividad = () => {
         title: "Campos obligatorios",
         text: "Llenar los campos en rojo",
         icon: "warning",
-        confirmButtonText: "OK",
+        timer: 6000,
       });
       return;
     }
