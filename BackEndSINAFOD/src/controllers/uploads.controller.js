@@ -29,13 +29,17 @@ export const upload = multer({ storage });
 
 // Controlador para manejar la subida de documentos
 export const uploadDocumento = (req, res) => {
-    if (!req.file) {
+    if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: "No se subió ningún archivo" });
     }
 
+    const filesData = req.files.map(file => ({
+        path: file.path,
+        filename: file.originalname,
+    }));
+
     res.json({
         success: true,
-        path: req.file.path,
-        filename: req.file.originalname,
+        files: filesData,
     });
 };
