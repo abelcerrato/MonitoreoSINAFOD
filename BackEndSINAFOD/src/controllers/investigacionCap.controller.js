@@ -1,6 +1,6 @@
 
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
-import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, putInvestigacionCapM } from "../models/investigacionCap.models.js";
+import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacionCap.models.js";
 import {  getUsuarioIdM} from "../models/user.models.js";
 
 export const getInvestigacionCapC = async (req, res) => {
@@ -32,14 +32,17 @@ export const getInvestigacionCapIdInvC = async (req, res) => {
 }
 
 
+
 /////////////////
+
 export const posInvestigacionCapC = async (req, res) => {
     try {
         const { accionformacion, institucionresponsable, responsablefirmas, 
                 ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
                 duracion, espaciofisico, funciondirigido, fechainicio, 
                 fechafinal, participantesprog, participantesrecib, direccion, observacion, 
-                estado, creadopor, idnivelesacademicos,  cicloacademico} = req.body
+                estado, creadopor, idnivelesacademicos,  cicloacademico,
+                tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,} = req.body
         console.log(req.body);
 
 
@@ -66,7 +69,8 @@ export const posInvestigacionCapC = async (req, res) => {
 
 
         const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
-            funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos )
+            funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos,
+            tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl )
         
         res.json({ message: "Investigacion o Capacitacion agregado", id: investCap.id });
     } catch (error) {
@@ -84,7 +88,9 @@ export const putInvestigacionCapC = async (req, res) => {
             ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
             duracion, espaciofisico,funciondirigido, fechainicio, 
             fechafinal, participantesprog, participantesrecib, direccion, observacion, 
-            estado, modificadopor, idnivelesacademicos,  cicloacademico } = req.body
+            estado, modificadopor, idnivelesacademicos,  cicloacademico,
+            tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, 
+            monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl } = req.body
 
         const userResponse = await getUsuarioIdM(modificadopor);
         if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
@@ -103,7 +109,10 @@ export const putInvestigacionCapC = async (req, res) => {
                                                 ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, 
                                                 duracion, espaciofisico,funciondirigido, fechainicio, 
                                                 fechafinal, participantesprog, participantesrecib, direccion, observacion, 
-                                                estado, usuario, idnivelesacademicos, idciclosacademicos, id)
+                                                estado, usuario, idnivelesacademicos, idciclosacademicos,
+                                                tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, 
+                                                monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
+                                                id)
         //res.json(investCap)
         res.json({ message: "Investigacion o capacitacion actualizada ", user: investCap });
     } catch (error) {
@@ -113,4 +122,47 @@ export const putInvestigacionCapC = async (req, res) => {
 
 
 }
+
+
+
+///////////////////////////////////////////////////////
+
+export const postLineamientosC = async (req, res) => {
+    try {
+        const { presentoprotocolo, presentoprotocolourl, estadoprotocolo,
+                monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl} = req.body
+        console.log(req.body);
+
+        const investCap = await postLineamientosM(presentoprotocolo, presentoprotocolourl, estadoprotocolo,
+            monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl)
+        
+        res.json({ message: "Lineamientos de la Investigacion o Capacitacion agregados", id: investCap.id });
+    } catch (error) {
+        console.error('Error al insertar', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+export const putLineamientosC = async (req, res) => {
+
+    try {
+        const { id } = req.params;
+        const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl } = req.body
+
+        
+        const investCap = await putLineamientosM(presentoprotocolo, presentoprotocolourl, estadoprotocolo,
+                                                    monitoreoyevaluacion, monitoreoyevaluacionurl, 
+                                                    aplicacionevaluacion, aplicacionevaluacionurl,
+                                                    id)
+        //res.json(investCap)
+        res.json({ message: "Lineamientos de la Investigacion o capacitacion actualizados ", user: investCap });
+    } catch (error) {
+        console.error('Error al actualizar la investigacion o capaciotacion: ', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+
+
+}
+
 
