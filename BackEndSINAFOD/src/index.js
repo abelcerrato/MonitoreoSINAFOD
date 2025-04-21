@@ -8,15 +8,18 @@ import CapacitacionP from "./routes/CapParticipante.routes.js";
 import Academico from "./routes/Academico.routes.js";
 import Aldeas from "./routes/aldeas.routes.js";
 import DocentesDGDP from "./routes/docentesDGDP.routes.js";
-import cors from "cors"
+import uploadRoutes from "./routes/uploads.routes.js";
 
+import cors from "cors"
 
 import 'dotenv/config'; 
 
 
 const app = express()
-
 app.use(cors());
+
+
+
 app.use(express.json())
 app.use(userRoutes)
 app.use(InvestCap)
@@ -26,6 +29,7 @@ app.use(CapacitacionP)
 app.use(Academico)
 app.use(Aldeas)
 app.use(DocentesDGDP)
+app.use(uploadRoutes)
 
 console.log("DB_USER:", process.env.DB_USER); // Prueba si se está cargando correctamente
 

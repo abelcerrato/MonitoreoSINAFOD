@@ -20,6 +20,21 @@ import Dashboard from "../Dashboard/dashboard";
 import { useUser } from '../Components/UserContext';
 import TablaActividad from "../Actividad/TablaAcividad";
 import Swal from 'sweetalert2';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 
 const FormulariActividad = () => {
   const navigate = useNavigate();
@@ -159,7 +174,7 @@ const FormulariActividad = () => {
         title: "Campos obligatorios",
         text: "Llenar los campos en rojo",
         icon: "warning",
-        confirmButtonText: "OK",
+        timer: 6000,
       });
       return;
     }
@@ -199,7 +214,6 @@ const FormulariActividad = () => {
         }
       );
 
-      console.log("Respuesta de la API:", response.data);
 
       if (response.status === 200) {
         const investCap = response.data.id; // Captura el id
@@ -274,6 +288,42 @@ const FormulariActividad = () => {
   };
 
 
+  const [file, setFile] = useState(null);
+  const [documentoPath, setDocumentoPath] = useState("");
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Por favor selecciona un archivo");
+      return;
+    }
+
+    // Usamos FormData solo para el campo 'documento'
+    const formData = new FormData();
+    formData.append("documento", file);
+
+    try {
+      const response = await fetch("http://localhost:4000/api/upload-documento", {
+        method: "POST",
+        body: formData,  // Envía solo el archivo
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setDocumentoPath(data.path);
+        alert(`Documento subido: ${data.filename}`);
+        // Aquí puedes guardar data.path en tu estado global o contexto
+      }
+    } catch (error) {
+      console.error("Error al subir el documento:", error);
+      alert("Error al subir el documento");
+    }
+  };
+
 
   return (
     <>
@@ -283,22 +333,25 @@ const FormulariActividad = () => {
           <Typography variant="h3" sx={{ color: color.primary.azul }}>
             Registro de Nueva Actividad - Formativa o de Investigación
           </Typography>
-
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Nombre de la Acción o Formación
-              </Typography>
-              <TextField
-                fullWidth
-                name="accionformacion"
-                value={formData.accionformacion}
-                onChange={handleChange}
-                error={fieldErrors.accionformacion}
-                helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
+          <div>
+            <h3>Subir Documento</h3>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx"  // Opcional: restringe formatos
               />
-            </Grid>
+              <Button type="submit">Subir</Button>
+            </form>
+            {documentoPath && (
+              <p>Ruta del documento: <code>{documentoPath}</code></p>
+            )}
+          </div>
+
+
+
+          <Grid container spacing={2} mt={6}>
+
 
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">
@@ -315,297 +368,318 @@ const FormulariActividad = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Institución Responsable
-              </Typography>
-              <TextField
-                fullWidth
-                name="institucionresponsable"
-                value={formData.institucionresponsable}
-                onChange={handleChange}
-                error={fieldErrors.institucionresponsable}
-                helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Responsable de Firmas</Typography>
-              <TextField
-                fullWidth
-                name="responsablefirmas"
-                value={formData.responsablefirmas}
-                onChange={handleChange}
-                error={fieldErrors.responsablefirmas}
-                helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Ambito de Formación</Typography>
-              <TextField
-                fullWidth
-                name="ambitoformacion"
-                value={formData.ambitoformacion}
-                onChange={handleChange}
-                error={fieldErrors.ambitoformacion}
-                helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Tipo de Formación</Typography>
-              <FormControl fullWidth error={fieldErrors.tipoformacion}>
-                <Select
-                  name="tipoformacion"
-                  value={formData.tipoformacion}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="Taller">Taller</MenuItem>
-                  <MenuItem value="Seminario">Seminario</MenuItem>
-                  <MenuItem value="Curso">Curso</MenuItem>
-                  <MenuItem value="Diplomado">Diplomado</MenuItem>
-                </Select>
-                {fieldErrors.tipoformacion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Modalidad</Typography>
-              <FormControl fullWidth error={fieldErrors.modalidad}>
-                <Select
-                  name="modalidad"
-                  value={formData.modalidad}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="Online">Online</MenuItem>
-                  <MenuItem value="Presencial">Presencial</MenuItem>
-                  <MenuItem value="Híbrido">Híbrido</MenuItem>
-                </Select>
-                {fieldErrors.modalidad && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-              </FormControl>
-            </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Duración</Typography>
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
+            {formData.formacioninvest === "Investigacion" && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Título del Proyecto
+                  </Typography>
                   <TextField
-                    variant="outlined"
-                    label="Horas"
                     fullWidth
-                    type="number"
-                    name="horas"
-                    value={formData.horas || ""}
+                    name="accionformacion"
+                    value={formData.accionformacion}
                     onChange={handleChange}
-                    error={fieldErrors.horas || fieldErrors.minutos}
-                    helperText={fieldErrors.horas || fieldErrors.minutos}
+                    error={fieldErrors.accionformacion}
+                    helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+              </>
+
+            )}
+            {formData.formacioninvest === "Formacion" && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Nombre de la Acción o Formación
+                  </Typography>
                   <TextField
-                    variant="outlined"
-                    label="Minutos"
                     fullWidth
-                    type="number"
-                    name="minutos"
-                    value={formData.minutos || ""}
+                    name="accionformacion"
+                    value={formData.accionformacion}
                     onChange={handleChange}
-                    inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
-                    error={fieldErrors.horas || fieldErrors.minutos}
-                    helperText={fieldErrors.horas || fieldErrors.minutos}
+                    error={fieldErrors.accionformacion}
+                    helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
                   />
-                  {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Institución Responsable
+                  </Typography>
                   <TextField
-                    variant="outlined"
-                    label="(HH:MM)"
                     fullWidth
-                    name="duracion"
-                    value={formData.duracion || ""}
-                    InputProps={{
-                      readOnly: true, // Hace el campo solo lectura
+                    name="institucionresponsable"
+                    value={formData.institucionresponsable}
+                    onChange={handleChange}
+                    error={fieldErrors.institucionresponsable}
+                    helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Responsable de Firmas</Typography>
+                  <TextField
+                    fullWidth
+                    name="responsablefirmas"
+                    value={formData.responsablefirmas}
+                    onChange={handleChange}
+                    error={fieldErrors.responsablefirmas}
+                    helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Ambito de Formación</Typography>
+                  <TextField
+                    fullWidth
+                    name="ambitoformacion"
+                    value={formData.ambitoformacion}
+                    onChange={handleChange}
+                    error={fieldErrors.ambitoformacion}
+                    helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Tipo de Formación</Typography>
+                  <FormControl fullWidth error={fieldErrors.tipoformacion}>
+                    <Select
+                      name="tipoformacion"
+                      value={formData.tipoformacion}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Taller">Taller</MenuItem>
+                      <MenuItem value="Seminario">Seminario</MenuItem>
+                      <MenuItem value="Curso">Curso</MenuItem>
+                      <MenuItem value="Diplomado">Diplomado</MenuItem>
+                    </Select>
+                    {fieldErrors.tipoformacion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Modalidad</Typography>
+                  <FormControl fullWidth error={fieldErrors.modalidad}>
+                    <Select
+                      name="modalidad"
+                      value={formData.modalidad}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Online">Online</MenuItem>
+                      <MenuItem value="Presencial">Presencial</MenuItem>
+                      <MenuItem value="Híbrido">Híbrido</MenuItem>
+                    </Select>
+                    {fieldErrors.modalidad && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Duración</Typography>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        label="Horas"
+                        fullWidth
+                        type="number"
+                        name="horas"
+                        value={formData.horas || ""}
+                        onChange={handleChange}
+                        error={fieldErrors.horas || fieldErrors.minutos}
+                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        label="Minutos"
+                        fullWidth
+                        type="number"
+                        name="minutos"
+                        value={formData.minutos || ""}
+                        onChange={handleChange}
+                        inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
+                        error={fieldErrors.horas || fieldErrors.minutos}
+                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                      />
+                      {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        label="(HH:MM)"
+                        fullWidth
+                        name="duracion"
+                        value={formData.duracion || ""}
+                        InputProps={{
+                          readOnly: true, // Hace el campo solo lectura
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Estado</Typography>
+                  <FormControl fullWidth error={fieldErrors.estado}>
+                    <Select
+                      name="estado"
+                      value={formData.estado}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Planificada">Planificada</MenuItem>
+                      <MenuItem value="En Curso">En Curso</MenuItem>
+                      <MenuItem value="Suspendida">Suspendida</MenuItem>
+                      <MenuItem value="Completada">Completada</MenuItem>
+                      <MenuItem value="Cancelada">Cancelada</MenuItem>
+                    </Select>
+                    {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Cargo a la que va dirigido
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="funciondirigido"
+                    value={formData.funciondirigido}
+                    onChange={handleChange}
+                    error={fieldErrors.funciondirigido}
+                    helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Nivel Educativo
+                  </Typography>
+                  <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
+                    <Select
+                      name="idnivelesacademicos"
+                      value={formData.idnivelesacademicos || ""}
+                      onChange={handleChange}
+                      fullWidth
+                    >
+                      {NivelEducativo.length > 0 ? (
+                        NivelEducativo.map((dep) => (
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.nombre}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Ciclo Académico
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="cicloacademico"
+                      value={formData.cicloacademico || null}
+                      onChange={handleChange}
+                      fullWidth
+                      disabled={!ciclos.length} // Deshabilitar si no hay ciclos cargados
+                    >
+                      {ciclos.length > 0 ? (
+                        ciclos.map((mun) => (
+                          <MenuItem key={mun.id} value={mun.ciclo}>
+                            {mun.ciclo}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Seleccione un ciclo</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Fecha Inicio</Typography>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    name="fechainicio"
+                    value={formData.fechainicio || ""}
+                    onChange={handleChange}
+                    error={fieldErrors.fechainicio} // Aquí se activa el error
+                    helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Fecha de Finalización</Typography>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    name="fechafinal"
+                    value={formData.fechafinal || ""}
+                    error={fieldErrors.fechafinal} // Aquí se activa el error
+                    helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
+                    inputProps={{
+                      min: formData.fechainicio || "",
                     }}
+                    onChange={handleChange}
                   />
                 </Grid>
-              </Grid>
-            </Grid>
-
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Estado</Typography>
-              <FormControl fullWidth error={fieldErrors.estado}>
-                <Select
-                  name="estado"
-                  value={formData.estado}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="Planificada">Planificada</MenuItem>
-                  <MenuItem value="En Curso">En Curso</MenuItem>
-                  <MenuItem value="Suspendida">Suspendida</MenuItem>
-                  <MenuItem value="Completada">Completada</MenuItem>
-                  <MenuItem value="Cancelada">Cancelada</MenuItem>
-                </Select>
-                {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Cargo a la que va dirigido
-              </Typography>
-              <TextField
-                fullWidth
-                name="funciondirigido"
-                value={formData.funciondirigido}
-                onChange={handleChange}
-                error={fieldErrors.funciondirigido}
-                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Nivel Educativo
-              </Typography>
-              <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
-                <Select
-                  name="idnivelesacademicos"
-                  value={formData.idnivelesacademicos || ""}
-                  onChange={handleChange}
-                  fullWidth
-                >
-                  {NivelEducativo.length > 0 ? (
-                    NivelEducativo.map((dep) => (
-                      <MenuItem key={dep.id} value={dep.id}>
-                        {dep.nombre}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>Cargando...</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Ciclo Académico
-              </Typography>
-              <FormControl fullWidth>
-                <Select
-                  name="cicloacademico"
-                  value={formData.cicloacademico || null}
-                  onChange={handleChange}
-                  fullWidth
-                  disabled={!ciclos.length} // Deshabilitar si no hay ciclos cargados
-                >
-                  {ciclos.length > 0 ? (
-                    ciclos.map((mun) => (
-                      <MenuItem key={mun.id} value={mun.ciclo}>
-                        {mun.ciclo}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>Seleccione un ciclo</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Fecha Inicio</Typography>
-              <TextField
-                fullWidth
-                type="date"
-                name="fechainicio"
-                value={formData.fechainicio || ""}
-                onChange={handleChange}
-                error={fieldErrors.fechainicio} // Aquí se activa el error
-                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Fecha de Finalización</Typography>
-              <TextField
-                fullWidth
-                type="date"
-                name="fechafinal"
-                value={formData.fechafinal || ""}
-                error={fieldErrors.fechafinal} // Aquí se activa el error
-                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
-                inputProps={{
-                  min: formData.fechainicio || "",
-                }}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
-                Cantidad de Participantes Programados
-              </Typography>
-              <TextField
-                fullWidth
-                type="text"
-                name="participantesprog"
-                value={formData.participantesprog || ""}
-                onChange={handleChange}
-                error={fieldErrors.participantesprog}
-                helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Espacio Físico</Typography>
-              <TextField
-                fullWidth
-                name="espaciofisico"
-                value={formData.espaciofisico}
-                onChange={handleChange}
-                error={fieldErrors.espaciofisico}
-                helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Dirección</Typography>
-              <TextField
-                fullWidth
-                name="direccion"
-                value={formData.direccion}
-                onChange={handleChange}
-                error={fieldErrors.direccion}
-                helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Zona</Typography>
-              <FormControl fullWidth error={fieldErrors.zona}>
-                <Select
-                  name="zona"
-                  value={formData.zona}
-                  onChange={handleChange}
-                >
-                  <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbana</MenuItem>
-                </Select>
-                {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Observación</Typography>
-              <TextField
-                fullWidth
-                name="observacion"
-                value={formData.observacion}
-                onChange={handleChange}
-              />
-            </Grid>
-            {/*   <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Usuario</Typography>
-              <TextField
-                value={user || ""}
-                variant="outlined"
-                fullWidth
-                InputProps={{
-                  readOnly: true, // Hace el campo solo lectura
-                }}
-              />
-            </Grid> */}
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">
+                    Cantidad de Participantes Programados
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    name="participantesprog"
+                    value={formData.participantesprog || ""}
+                    onChange={handleChange}
+                    error={fieldErrors.participantesprog}
+                    helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Espacio Físico</Typography>
+                  <TextField
+                    fullWidth
+                    name="espaciofisico"
+                    value={formData.espaciofisico}
+                    onChange={handleChange}
+                    error={fieldErrors.espaciofisico}
+                    helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Dirección</Typography>
+                  <TextField
+                    fullWidth
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    error={fieldErrors.direccion}
+                    helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Zona</Typography>
+                  <FormControl fullWidth error={fieldErrors.zona}>
+                    <Select
+                      name="zona"
+                      value={formData.zona}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Rural">Rural</MenuItem>
+                      <MenuItem value="Urbana">Urbana</MenuItem>
+                    </Select>
+                    {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle1">Observación</Typography>
+                  <TextField
+                    fullWidth
+                    name="observacion"
+                    value={formData.observacion}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
           <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
             <Button
