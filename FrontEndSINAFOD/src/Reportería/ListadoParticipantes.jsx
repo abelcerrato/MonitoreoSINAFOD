@@ -234,7 +234,7 @@ const ListadoParticipantes = () => {
 
             ];
 
-        
+
             const colorPrimarioAzul = color.primary.azul;
             // Agregar encabezados a la primera fila
             const headerRow = worksheet.addRow(headers);
@@ -250,8 +250,8 @@ const ListadoParticipantes = () => {
                 cell.alignment = { horizontal: "center", vertical: "middle" }; // Centrar texto
             });
 
-             // Agregar los datos como filas en la tabla
-             filteredRows.forEach(item => {
+            // Agregar los datos como filas en la tabla
+            filteredRows.forEach(item => {
                 worksheet.addRow([
                     item.id, item.accionformacion, item.codigosace, item.nombre, item.identificacion, item.sexo,
                     item.nombreniveldocente ?? "-", item.nombregradodocente ?? "-",
@@ -262,13 +262,13 @@ const ListadoParticipantes = () => {
                 ]);
             });
 
-               // Ajustar ancho de columnas
-               worksheet.columns.forEach((column, index) => {
+            // Ajustar ancho de columnas
+            worksheet.columns.forEach((column, index) => {
                 column.width = index === 0 ? 5 : 15; // Si es la primera columna (index 0), ancho 5, el resto 20
                 column.alignment = { wrapText: true, vertical: "middle" };
             });
 
-            
+
             // Generar y descargar el archivo
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/octet-stream" });
@@ -289,7 +289,7 @@ const ListadoParticipantes = () => {
         <Dashboard>
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
-                <Typography variant="h2" sx={{ color: color.primary.azul, mb: 5 }}>
+                <Typography variant="h3" sx={{ color: color.primary.azul, mb: 5 }}>
                     Listado de Participantes
                 </Typography>
 

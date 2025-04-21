@@ -49,7 +49,7 @@ const FormularParticipantes = () => {
   const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
     idinvestigacioncap: investCap,
-
+    correo: "",
     identificacion: "",
     codigosace: "",
     nombre: "",
@@ -148,26 +148,25 @@ const FormularParticipantes = () => {
       return;
     }
 
-
-
-
+    const transformFormData = (data) => {
+      return Object.keys(data).reduce((acc, key) => {
+        acc[key] = data[key] === "" ? null : data[key];
+        return acc;
+      }, {});
+    };
     try {
-
-      console.log("datos que mando", formData);
-
+      //console.log("formData", formData);   
+      const transformedFormData = transformFormData(formData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/CapacitacionP`,
-        formData,
+        transformedFormData,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-
-
-
-      if (response.status === 200) {
+      if (response.status === 201) {
         limpiarCampos();
         Swal.fire({
           title: 'Guardado',
@@ -347,8 +346,6 @@ const FormularParticipantes = () => {
           `${process.env.REACT_APP_API_URL}/municipios/${formData.deptoresidencia}`
         );
         setMunicipiosRE(response.data);
-        console.log("muni", response.data);
-
       } catch (error) {
         console.error("Error al obtener los municipios", error);
       }
@@ -381,7 +378,6 @@ const FormularParticipantes = () => {
   // Obtener gardo cuando cambia el departamento seleccionado
   useEffect(() => {
     if (!formData.nivelacademicodocente) return;
-
     const obtenergardo = async () => {
       try {
         const response = await axios.get(
@@ -397,30 +393,61 @@ const FormularParticipantes = () => {
   }, [formData.nivelacademicodocente]);
 
 
-  const obtenerGardo = async () => {
-    if (!formData.identificacion) {
-      alert("Ingrese una identificación.");
+
+  const obtenerDNI = async (campo) => {
+    // Verifica cuál de los campos tiene datos según el parámetro 'campo'
+    const filtro = formData[campo] && formData[campo].trim() !== "" ? formData[campo] : null;
+
+    if (!filtro) {
+      alert("Por favor, ingrese un valor en el campo seleccionado.");
       return;
     }
-console.log("identificacion",formData.identificacion);
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/docentesDGDP/${formData.identificacion}`
+        `${process.env.REACT_APP_API_URL}/filtroDocentes/${filtro}`
       );
 
-      if (response.data) {
-        // setDatosDocentes(response.data);
-        alert("Registro encontrado.");
-      } else {
-        alert("No se encontró ningún registro.");
+      if (response.data && response.data.length > 0) {
+        const docente = response.data[0];
+        setFormData((prev) => ({
+          ...prev,
+          codigosace: docente.codigosace || "",
+          identificacion: docente.identificacion || "",
+          codigosace: docente.codigosace || "",
+          nombre: docente.nombre || "",
+          funcion: docente.funcion || "",
+          sexo: docente.sexo || "",
+          añosdeservicio: docente.añosdeservicio || "",
+          codigodered: docente.codigodered || "",
+          deptoresidencia: docente.iddeptoresidencia || "",
+          municipioresidencia: docente.idmuniresidencia || "",
+          aldearesidencia: docente.idaldearesidencia || "",
+          nivelacademicodocente: docente.idnivelacademicodocente || "",
+          gradoacademicodocente: docente.idgradoacademicodocente || "",
+
+          centroeducativo: docente.centroeducativo || "",
+          idnivelesacademicos: docente.idnivelesacademicos || "",
+          idgradosacademicos: docente.idgradoced || "",
+          zona: docente.zona || "",
+          municipioced: docente.municipioced || "",
+          departamentoced: docente.departamentoced || "",
+          aldeaced: docente.aldeaced || "",
+          tipoadministracion: docente.tipoadministracion || "Gubernamental",
+        }));
+
+        Swal.fire({
+          title: 'Participante encontrado',
+          text: 'Se encontraron datos del participante',
+          icon: 'success',
+          timer: 6000,
+        });
       }
     } catch (error) {
       console.error("Error al obtener los datos", error);
-      alert("Error al buscar la identificación.");
+      alert("No se encontró ningún registro.");
     }
   };
-
 
   return (
     <>
@@ -428,7 +455,7 @@ console.log("identificacion",formData.identificacion);
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
-              <Typography variant="h2" sx={{ color: color.primary.azul }}>
+              <Typography variant="h3" sx={{ color: color.primary.azul }}>
                 Registro de Participantes
               </Typography>
             </Grid>
@@ -457,19 +484,32 @@ console.log("identificacion",formData.identificacion);
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Código SACE</Typography>
-                  <TextField
-                    fullWidth
-                    name="codigosace"
-                    value={formData.codigosace}
-                    onChange={handleChange}
-                    error={fieldErrors.codigosace}
-                    helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
-                  />
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} sm={9}>
+                      <TextField
+                        fullWidth
+                        name="codigosace"
+                        value={formData.codigosace}
+                        onChange={handleChange}
+                        error={fieldErrors.codigosace}
+                        helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <Button
+                        variant="contained"
+                        sx={{ backgroundColor: color.primary.azul }}
+                        onClick={() => obtenerDNI('codigosace')}
+                      >
+                        Buscar
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Identidad</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} sm={11}>
+                    <Grid item xs={12} sm={9}>
                       <TextField
                         fullWidth
                         name="identificacion"
@@ -479,11 +519,11 @@ console.log("identificacion",formData.identificacion);
                         helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={1}>
+                    <Grid item xs={12} sm={3}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
-                        onClick={obtenerGardo}
+                        onClick={() => obtenerDNI('identificacion')}
                       >
                         Buscar
                       </Button>
@@ -492,7 +532,6 @@ console.log("identificacion",formData.identificacion);
 
 
                   </Grid>
-
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
@@ -505,9 +544,6 @@ console.log("identificacion",formData.identificacion);
                     helperText={fieldErrors.nombre ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-
-
-
                 <Grid item xs={12} sm={6}>
                   <FormControl error={fieldErrors.sexo}>
                     <Typography variant="subtitle1">Sexo</Typography>
@@ -525,7 +561,7 @@ console.log("identificacion",formData.identificacion);
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>
-                  <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
+                  {/* <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
                     <Select
                       name="nivelacademicodocente"
                       value={formData.nivelacademicodocente || ""}
@@ -540,9 +576,17 @@ console.log("identificacion",formData.identificacion);
                       )}
                     </Select>
                     {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                  </FormControl>*/}
+                  <FormControl fullWidth error={fieldErrors.zona}>
+                    <Select
+                      name="nivelacademicodocente"
+                      value={formData.nivelacademicodocente || ""}
+                      onChange={handleChange}>
+                      <MenuItem value="3">Media</MenuItem>
+                      <MenuItem value="4">Superior</MenuItem>
+                    </Select>
                   </FormControl>
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Grado Académico</Typography>
                   <FormControl fullWidth>
@@ -560,7 +604,6 @@ console.log("identificacion",formData.identificacion);
 
                   </FormControl>
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
                   <TextField
@@ -572,13 +615,12 @@ console.log("identificacion",formData.identificacion);
                     helperText={fieldErrors.añosdeservicio ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
                   <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1">Función</Typography>
+                  <Typography variant="subtitle1">Cargo que Desempeña</Typography>
                   <TextField
                     fullWidth
                     name="funcion"
@@ -635,7 +677,7 @@ console.log("identificacion",formData.identificacion);
                   <FormControl fullWidth>
                     <Select
                       name="aldearesidencia"
-                      value={formData.aldearesidencia}
+                      value={formData.aldearesidencia || ""}
                       onChange={handleChange}
                       disabled={!aldeasP.length}
                     >
