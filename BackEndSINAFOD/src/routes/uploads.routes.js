@@ -4,6 +4,10 @@ import { upload, uploadDocumento } from "../controllers/uploads.controller.js";
 
 const router = express.Router();
 
-router.post("/upload-documento", upload.single("documento"), uploadDocumento);
+
+// 'documentos' es el nombre del campo en el formulario, 10 es el límite de archivos
+router.post("/upload-documento", upload.array("documentos", 10), uploadDocumento);
+
+
 
 export default router;
