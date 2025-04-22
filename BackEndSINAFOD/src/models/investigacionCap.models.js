@@ -65,18 +65,18 @@ export const getInvestigacionCapIdInvM = async (id) => {
 export const postInvestigacionCapM = async (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad,
     formacioninvest, zona, duracion, espaciofisico, funciondirigido, fechainicio, fechafinal,
     participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos,
-    tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl) => {
+    tipoactividad, existeconvenio, institucionconvenio) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO investigacioncap (accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
                                 funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, creadopor, fechacreacion, fechamodificacion, idnivelesacademicos, idciclosacademicos,
-                                tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,  CURRENT_TIMESTAMP, null, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31) 
+                                tipoactividad, existeconvenio, institucionconvenio) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,  CURRENT_TIMESTAMP, null, $20, $21, $22, $23, $24) 
             RETURNING id`,
             [accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
                 funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario,
                 idnivelesacademicos, idciclosacademicos,
-                tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl])
+                tipoactividad, existeconvenio, institucionconvenio])
 
 
         console.log("Id investigacionCap: " + rows[0].id);
@@ -151,15 +151,15 @@ export const putInvestigacionCapM = async (accionformacion, institucionresponsab
 ////////////////////////////////////////////////////
 
 export const postLineamientosM = async ( presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-    monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl) => {
+    monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, accionformacion) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO investigacioncap ( presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-                                            monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) 
+                                            monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, accionformacion) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
             RETURNING id`,
             [ presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-                monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl])
+                monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, accionformacion])
 
         console.log("Id investigacionCap de los lineamientos: " + rows[0].id);
 
@@ -173,7 +173,7 @@ export const postLineamientosM = async ( presentoprotocolo, presentoprotocolourl
 
 
 export const putLineamientosM = async ( presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-    monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, id) => {
+    monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, idInvestCap) => {
     try {
         const { rows } = await pool.query(`
             UPDATE investigacioncap 
@@ -188,7 +188,7 @@ export const putLineamientosM = async ( presentoprotocolo, presentoprotocolourl,
             WHERE id=$8
             RETURNING *`,
             [presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, 
-                monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, id])
+                monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl, idInvestCap])
 
         console.log("Id investigacionCap de los lineamientos: " + rows[0].id);
         return rows[0];

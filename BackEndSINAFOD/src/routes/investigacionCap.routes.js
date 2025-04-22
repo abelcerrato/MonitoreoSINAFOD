@@ -1,6 +1,6 @@
 
 import {Router} from "express";
-import { getInvestigacionCapC, getInvestigacionCapIdInvC, posInvestigacionCapC, putInvestigacionCapC } from "../controllers/investigacionCap.controller.js";
+import { getInvestigacionCapC, getInvestigacionCapIdInvC, posInvestigacionCapC, postLineamientosC, putInvestigacionCapC, upload, uploadLineamientos,  } from "../controllers/investigacionCap.controller.js";
 const router=Router();
 
 
@@ -12,5 +12,12 @@ router.get('/investC/:id', getInvestigacionCapIdInvC)
 router.post('/investC', posInvestigacionCapC)
 router.put('/investC/:id', putInvestigacionCapC)
 
+router.post('/lineamientos', uploadLineamientos, postLineamientosC);
+
+
+
 
 export default router;
+
+
+
