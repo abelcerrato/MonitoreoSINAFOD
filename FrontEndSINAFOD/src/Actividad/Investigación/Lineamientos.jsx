@@ -51,7 +51,7 @@ const LineamientosI = () => {
         presentoprotocolourl: null,
         monitoreoyevaluacionurl: null,
         aplicacionevaluacionurl: null,
-        creadopor: user,
+        formacioninvest: ''
     });
     const navigate = useNavigate();
     const handleRedirect = () => {
@@ -102,6 +102,7 @@ const LineamientosI = () => {
         formDataToSend.append('accionformacion', formData.accionformacion);
         formDataToSend.append('estadoprotocolo', formData.estadoprotocolo);
         formDataToSend.append('creadopor', user);
+        formDataToSend.append('formacioninvest', 'Investigacion');
         // Agregar archivos si existen
         if (formData.presentoprotocolourl) {
             formDataToSend.append('presentoprotocolourl', formData.presentoprotocolourl);
@@ -112,7 +113,11 @@ const LineamientosI = () => {
         if (formData.aplicacionevaluacionurl) {
             formDataToSend.append('aplicacionevaluacionurl', formData.aplicacionevaluacionurl);
         }
-        console.log("Datos que envio", formDataToSend);
+        // En el frontend, antes de enviar
+        if (!formData.accionformacion) {
+            Swal.fire('Error', 'El título del proyecto es requerido', 'error');
+            return;
+        }
 
         try {
             const response = await axios.post(
@@ -124,8 +129,8 @@ const LineamientosI = () => {
                     },
                 }
             );
-
-            console.log('Respuesta del servidor:', response.data);
+            const investCap = response.data.id;
+            navigate("/Investigación", { state: { investCap, accionformacion: formData.accionformacion } });
             // Mostrar mensaje de éxito o redireccionar
         } catch (error) {
             console.error('Error al enviar los datos:', error);
@@ -177,8 +182,9 @@ const LineamientosI = () => {
                             <Button
                                 component="label"
                                 variant="contained"
+
                                 startIcon={<CloudUploadIcon />}
-                                sx={{ mb: 2 }}
+                                sx={{ mb: 2, backgroundColor: color.primary.azul }}
                             >
                                 Seleccionar archivo
                                 <VisuallyHiddenInput
@@ -213,7 +219,7 @@ const LineamientosI = () => {
                                 component="label"
                                 variant="contained"
                                 startIcon={<CloudUploadIcon />}
-                                sx={{ mb: 2 }}
+                                sx={{ mb: 2, backgroundColor: color.primary.azul }}
                             >
                                 Seleccionar archivo
                                 <VisuallyHiddenInput
@@ -235,7 +241,7 @@ const LineamientosI = () => {
                                 component="label"
                                 variant="contained"
                                 startIcon={<CloudUploadIcon />}
-                                sx={{ mb: 2 }}
+                                sx={{ mb: 2, backgroundColor: color.primary.azul }}
                             >
                                 Seleccionar archivo
                                 <VisuallyHiddenInput
@@ -253,7 +259,7 @@ const LineamientosI = () => {
                             variant="contained"
                             sx={{ backgroundColor: color.primary.rojo }}
                             startIcon={<SaveIcon />}
-                            onClick={() => navigate("/Lineamientos_De_Investigación")}
+                            onClick={() => navigate("/Investigación")}
                         >
                             Omitir
                         </Button>
@@ -267,12 +273,6 @@ const LineamientosI = () => {
                         </Button>
 
                     </Box>
-
-
-
-
-
-
                 </Paper>
 
             </Dashboard>

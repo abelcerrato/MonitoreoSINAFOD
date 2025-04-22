@@ -23,130 +23,287 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation } from "react-router-dom";
 import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
-import TablaPacticantes from "../../Participantes/TablaParticipantes";
+
 import Swal from 'sweetalert2';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { styled } from '@mui/material/styles';
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
 
 
 
-const FormularParticipantes = () => {
+
+const Investigacion = () => {
     const { user } = useUser();
-    const [value, setValue] = React.useState("1");
+    const location = useLocation();
+    const [investCapId, setInvestCapId] = useState(null);
+    const [NivelEducativo, setNivelEducativo] = useState([]);
+    const [errorM, setErrorM] = useState("");
+    const [error, setError] = useState("");
+    const [isFromLineamientos, setIsFromLineamientos] = useState(false);
     const [formData, setFormData] = useState({
-        accionformacion: '',
-        estadoprotocolo: '',
-        presentoprotocolourl: null,
-        monitoreoyevaluacionurl: null,
-        aplicacionevaluacionurl: null,
+        accionformacion: location.state?.accionformacion || '',
+        formacioninvest: "Investigacion",
+        tipoactividad: "",
+        existeconvenio: null,
+        institucionconvenio: "",
+        costo: "",
+        duracion: 0,
+        idnivelesacademicos: "",
+        funciondirigido: "",
+        fechainicio: "",
+        fechafinal: "",
+        direccion: "",
+        socializaron: null,
+        zona: "",
+        observacion: "",
         creadopor: user,
+        modificadopor: user
     });
+
+    const [fieldErrors, setFieldErrors] = useState({
+        fechainicio: false,
+        fechafinal: false,
+    });
+
+
     const navigate = useNavigate();
     const handleRedirect = () => {
         navigate("/dashboard");
     };
 
-    const handleChangeValues = (event, newValue) => {
-        setValue(newValue);
-    };
-
 
 
     // Manejar cambios en campos de texto y selects
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        // Limpiar campos cuando se cambia de Externa a Interna
+        if (name === 'tipoacctividad' && value === 'Interna') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+                institucionconvenio: '', // Limpia institución
+                existeconvenio: '' // Limpia convenio
+            }));
+            return;
+        }
+
+
+        setFormData((prevData) => {
+            let newData = { ...prevData, [name]: value };
+
+            // Convertimos el valor a string para evitar errores con `.trim()`
+            const valueStr = String(value || "");
+
+            // Quitar error si el usuario llena un campo vacío
+            setFieldErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: valueStr.trim() === "" ? true : false,
+            }));
+
+            // Validación de fechas
+            if (name === "fechainicio" || name === "fechafinal") {
+                const formattedDate = new Date(value).toISOString().split("T")[0];
+                newData[name] = formattedDate;
+
+                if (newData.fechainicio && newData.fechafinal) {
+                    if (new Date(newData.fechainicio) > new Date(newData.fechafinal)) {
+                        setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
+                        setFieldErrors({ fechainicio: true, fechafinal: true });
+                    } else {
+                        setError("");
+                        setFieldErrors({ fechainicio: false, fechafinal: false });
+                    }
+                }
+            }
+
+
+
+            // Validar minutos
+            if (name === "minutos" && Number(value) > 59) {
+                setErrorM("Solo se admiten minutos hasta 59.");
+            } else {
+                setErrorM("");
+            }
+
+            // Calcular duración (HH:MM)
+            const horas = newData.horas || 0;
+            const minutos = newData.minutos || 0;
+            newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+
+            return newData;
+        });
     };
 
-    // Manejar cambios en campos de archivo
-    const [fileNames, setFileNames] = useState({
-        presentoprotocolourl: "",
-        monitoreoyevaluacionurl: "",
-        aplicacionevaluacionurl: "",
-    });
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        const file = files[0];
 
-        // Actualiza formData con el archivo
-        setFormData(prev => ({
-            ...prev,
-            [name]: file,
-        }));
 
-        // Actualiza solo el nombre del archivo correspondiente
-        setFileNames(prev => ({
-            ...prev,
-            [name]: file ? file.name : "",
-        }));
-    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // Obtener NivelEducativo al montar el componente
+    useEffect(() => {
+        const obtenerNivelEducativo = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`);
+                setNivelEducativo(response.data);
+            } catch (error) {
+                console.error("Error al obtener los NivelEducativo", error);
+            }
+        };
 
-        const formDataToSend = new FormData();
+        obtenerNivelEducativo();
+    }, []);
 
-        // Agregar campos de texto
-        formDataToSend.append('accionformacion', formData.accionformacion);
-        formDataToSend.append('estadoprotocolo', formData.estadoprotocolo);
-        formDataToSend.append('creadopor', user);
-        // Agregar archivos si existen
-        if (formData.presentoprotocolourl) {
-            formDataToSend.append('presentoprotocolourl', formData.presentoprotocolourl);
+    // Efecto para capturar el ID si viene del flujo "Guardar"
+
+    useEffect(() => {
+        if (location.state?.investCap) {
+            setInvestCapId(location.state.investCap);
+            setIsFromLineamientos(true);
+            // Si viene con título desde lineamientos, actualiza el formData
+            if (location.state.accionformacion) {
+                setFormData(prev => ({
+                    ...prev,
+                    accionformacion: location.state.accionformacion
+                }));
+            }
         }
-        if (formData.monitoreoyevaluacionurl) {
-            formDataToSend.append('monitoreoyevaluacionurl', formData.monitoreoyevaluacionurl);
+    }, [location.state]);
+
+    const handleSave = async () => {
+        // Lista de campos obligatorios
+        const requiredFields = [
+            "accionformacion",
+
+        ];
+
+        // Detectar campos vacíos
+        let errors = {};
+        requiredFields.forEach((field) => {
+            if (!formData[field]) {
+                errors[field] = true; // Marcar campo como vacío
+            }
+        });
+
+        // Verifica que al menos uno de los campos "horas" o "minutos" esté lleno
+        if (!formData.horas && !formData.minutos) {
+            errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
+            errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
         }
-        if (formData.aplicacionevaluacionurl) {
-            formDataToSend.append('aplicacionevaluacionurl', formData.aplicacionevaluacionurl);
+
+
+
+
+        // Si hay campos vacíos, actualizar estado y mostrar alerta
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            Swal.fire({
+                title: "Campos obligatorios",
+                text: "Llenar los campos en rojo",
+                icon: "warning",
+                timer: 6000,
+            });
+            return;
         }
-        console.log("Datos que envio", formDataToSend);
+
+        // Verificación de minutos antes de guardar los datos
+        if (formData.minutos > 59) {
+            Swal.fire({
+                title: 'Advertencia!',
+                text: 'Los minutos no pueden ser mayores a 59.',
+                icon: 'warning',
+                timer: 6000,
+            });
+            return; // Detiene la ejecución si la validación falla
+        }
+        // Verificación de la fecha antes de guardar los datos
+        if (formData.fechainicio && formData.fechafinal) {
+            if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
+                Swal.fire({
+                    title: 'Advertencia!',
+                    text: 'La fecha de inicio no puede ser posterior a la fecha de finalización.',
+                    icon: 'warning',
+                    timer: 6000,
+                });
+                return; // No proceder con la solicitud si la validación falla
+            }
+        }
+
+        // Convierte strings vacíos a null
+        const cleanedFormData = Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => {
+                // Si el valor es una cadena vacía, lo convierte en null
+                if (value === "") return [key, null];
+                return [key, value];
+            })
+        );
 
         try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/lineamientos`,
-                formDataToSend,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+            let idToUse = investCapId;
+
+            // Si no hay ID (flujo "Omitir"), pedir confirmación
+            if (!idToUse) {
+                const confirmResult = await Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "La investigación se registrará sin lineamientos. ¿Deseas continuar?",
+                    icon: 'warning',
+
+                    showCancelButton: true,
+                    confirmButtonColor: color.primary.azul,
+                    cancelButtonColor: color.primary.rojo,
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'No, cancelar',
+                    reverseButtons: true
+                });
+
+
+                // Si el usuario cancela, no continuar
+                if (!confirmResult.isConfirmed) {
+                    return;
                 }
+
+                // Si confirma, hacer el POST
+                const response = await axios.post(
+                    `${process.env.REACT_APP_API_URL}/investC`,
+                    cleanedFormData,
+                    { headers: { "Content-Type": "application/json" } }
+                );
+                idToUse = response.data.id;
+            }
+
+            // Actualizar el registro
+            const updateResponse = await axios.put(
+                `${process.env.REACT_APP_API_URL}/investC/${idToUse}`,
+                cleanedFormData,
+                { headers: { "Content-Type": "application/json" } }
             );
 
-            console.log('Respuesta del servidor:', response.data);
-            // Mostrar mensaje de éxito o redireccionar
+            // Mostrar mensaje de éxito
+            await Swal.fire(
+                '¡Guardado!',
+                'La investigación ha sido registrada',
+                'success'
+            );
+
+
+            console.log("Datos que envio", formData);
+
+            // Redirigir a Participantes con el ID
+            navigate("/Participantes", { state: { investCap: idToUse } });
+
         } catch (error) {
-            console.error('Error al enviar los datos:', error);
-            // Mostrar mensaje de error
+            console.error("Error al guardar los datos", error);
+            Swal.fire('Error!', 'Error al guardar datos', 'error');
         }
     };
+
+
     return (
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
-                            <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                                Registro de Participantes
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+                    <Box alignItems="center" justifyContent="space-between">
+
+                        <Typography variant="h3" sx={{ color: color.primary.azul }}>
+                            Registro de Datos sobre la Investigación
+                        </Typography>
+
+                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -157,205 +314,254 @@ const FormularParticipantes = () => {
                             >
                                 Cerrar
                             </Button>
+                        </Box>
+
+                    </Box>
+
+                    <Grid container spacing={5} mt={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Título del Proyecto
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                name="accionformacion"
+                                value={formData.accionformacion}
+                                onChange={handleChange}
+                                error={fieldErrors.accionformacion}
+                                helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
+                                disabled={isFromLineamientos} // Deshabilita si viene de lineamientos
+                                InputProps={{
+                                    readOnly: isFromLineamientos, // Hace que sea solo lectura
+                                }}
+                            />
+                            {isFromLineamientos && (
+                                <Typography variant="caption" color="textSecondary">
+                                    Este campo fue definido en los lineamientos
+                                </Typography>
+                            )}
                         </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>
+                            <FormControl fullWidth >
+                                <Select
+                                    name="tipoactividad"
+                                    value={formData.tipoactividad}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Interna">Interna</MenuItem>
+                                    <MenuItem value="Externa">Externa</MenuItem>
+                                </Select>
 
-                    </Grid>
-                    <TabContext value={value}>
-                        <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
-                            <Tab label="Datos Generales del Participante" value="1" />
-                            <Tab label="Datos del Centro Educativo" value="2" />
-                        </Tabs>
-
-                        {/* Tab 1: Datos Generales del Participante */}
-                        <TabPanel value="1">
-                            <Grid container spacing={5}>
+                            </FormControl>
+                        </Grid>
+                        {formData.tipoactividad === "Externa" && (
+                            <>
                                 <Grid item xs={12} sm={6}>
-                                    <Typography variant="subtitle1">
-                                        Título del Proyecto
-                                    </Typography>
+                                    <Typography variant="subtitle1">Nombre de la Institución Asociada</Typography>
                                     <TextField
                                         fullWidth
-                                        name="accionformacion"
-                                        value={formData.accionformacion}
+                                        name="institucionconvenio"
+                                        value={formData.institucionconvenio}
                                         onChange={handleChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}></Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6" gutterBottom>
-                                        Documento del Protocolo del Proyecto de Investigación Educativa
-                                    </Typography>
-                                    <Button
-                                        component="label"
-                                        variant="contained"
-                                        startIcon={<CloudUploadIcon />}
-                                        sx={{ mb: 2 }}
-                                    >
-                                        Seleccionar archivo
-                                        <VisuallyHiddenInput
-                                            type="file"
-                                            name="presentoprotocolourl"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={handleFileChange}
-                                        />
-                                    </Button>
-                                    {formData.presentoprotocolourl && <span>{formData.presentoprotocolourl.name}</span>}
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="subtitle1">
-                                        Estado del Protocolo
-                                    </Typography>
+                                    <Typography variant="subtitle1">Se Tiene Convenio la Institución Asociada</Typography>
                                     <FormControl fullWidth >
                                         <Select
-                                            name="estadoprotocolo"
-                                            value={formData.estadoprotocolo || ""}
+                                            name="existeconvenio"
+                                            value={formData.existeconvenio}
                                             onChange={handleChange}
                                         >
-                                            <MenuItem value="Incompleta">Incompleto</MenuItem>
-                                            <MenuItem value="Completa">Completo</MenuItem>
+                                            <MenuItem value="true">Sí</MenuItem>
+                                            <MenuItem value="false">No</MenuItem>
                                         </Select>
+
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6" gutterBottom>
-                                        Documento de Monitoreo y Evaluación
-                                    </Typography>
-                                    <Button
-                                        component="label"
-                                        variant="contained"
-                                        startIcon={<CloudUploadIcon />}
-                                        sx={{ mb: 2 }}
-                                    >
-                                        Seleccionar archivo
-                                        <VisuallyHiddenInput
-                                            type="file"
-                                            name="monitoreoyevaluacionurl"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={handleFileChange}
-                                        />
-                                    </Button>
-                                    {formData.monitoreoyevaluacionurl && <span>{formData.monitoreoyevaluacionurl.name}</span>}
-
-
+                            </>
+                        )}
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Costo
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                name="costo"
+                                value={formData.costo}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Duración</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="Horas"
+                                        fullWidth
+                                        type="number"
+                                        name="horas"
+                                        value={formData.horas || ""}
+                                        onChange={handleChange}
+                                        error={fieldErrors.horas || fieldErrors.minutos}
+                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                                    />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6" gutterBottom>
-                                        Documento de Aplicación de Evaluación
-                                    </Typography>
-                                    <Button
-                                        component="label"
-                                        variant="contained"
-                                        startIcon={<CloudUploadIcon />}
-                                        sx={{ mb: 2 }}
-                                    >
-                                        Seleccionar archivo
-                                        <VisuallyHiddenInput
-                                            type="file"
-                                            name="aplicacionevaluacionurl"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={handleFileChange}
-                                        />
-                                    </Button>
-                                    {formData.aplicacionevaluacionurl && <span>{formData.aplicacionevaluacionurl.name}</span>}
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="Minutos"
+                                        fullWidth
+                                        type="number"
+                                        name="minutos"
+                                        value={formData.minutos || ""}
+                                        onChange={handleChange}
+                                        inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
+                                        error={fieldErrors.horas || fieldErrors.minutos}
+                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                                    />
+                                    {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                                 </Grid>
-                            </Grid>
-                            <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-                                <Button
-                                    variant="contained"
-                                    sx={{ backgroundColor: color.primary.azul }}
-                                    startIcon={<SaveIcon />}
-                                    onChange={handleChangeValues}
-                                >
-                                    Omitir
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    sx={{ backgroundColor: color.primary.azul }}
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSubmit}
-                                >
-                                    Guardar
-                                </Button>
-
-                            </Box>
-                        </TabPanel>
-
-                        {/* Tab 2: Datos del Centro Educativo */}
-                        <TabPanel value="2">
-                            <Grid container spacing={5} >
-
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="subtitle1">
-                                        ¿La Investigación sera Interna o Externa?
-                                    </Typography>
-                                    <FormControl fullWidth >
-                                        <Select
-                                            name="tipoacctividad"
-                                            value={formData.tipoacctividad || ""}
-                                        >
-                                            <MenuItem value="Interna">Interna</MenuItem>
-                                            <MenuItem value="Externa">Externa</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                {formData.tipoacctividad === "Externa" && (
-                                    <>
-                                        <Grid item xs={12} sm={6}>
-                                            <Typography variant="subtitle1">
-                                                ¿Con que Institucion?
-                                            </Typography>
-                                            <TextField
-                                                fullWidth
-                                                name="institucionconvenio"
-                                                value={formData.institucionconvenio}
-
-
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <Typography variant="subtitle1">
-                                                ¿Tiene Convenio con esa Institución?
-                                            </Typography>
-                                            <RadioGroup
-                                                row
-                                                name="existeconvenio"
-                                                value={formData.existeconvenio}
-                                                onChange={(e) => setFormData({ ...formData, existeconvenio: e.target.value })}
-                                            >
-                                                <FormControlLabel value="Sí" control={<Radio />} label="Sí" />
-                                                <FormControlLabel value="No" control={<Radio />} label="No" />
-                                            </RadioGroup>
-                                        </Grid>
-                                    </>
-                                )}
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="subtitle1">
-                                        ¿Se Realizo Socialización?
-                                    </Typography>
-                                    <RadioGroup
-                                        row
-                                        name="Socialización"
-                                        value={formData.Socialización}
-                                        onChange={(e) => setFormData({ ...formData, Socialización: e.target.value })}
-                                    >
-                                        <FormControlLabel value="Sí" control={<Radio />} label="Sí" />
-                                        <FormControlLabel value="No" control={<Radio />} label="No" />
-                                    </RadioGroup>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="(HH:MM)"
+                                        fullWidth
+                                        name="duracion"
+                                        value={formData.duracion || ""}
+                                        InputProps={{
+                                            readOnly: true, // Hace el campo solo lectura
+                                        }}
+                                    />
                                 </Grid>
                             </Grid>
-                            <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-                                <Button
-                                    variant="contained"
-                                    sx={{ backgroundColor: color.primary.azul }}
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSubmit}
-                                >
-                                    Guardar
-                                </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Población a la que va dirigido
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                name="funciondirigido"
+                                value={formData.funciondirigido}
+                                onChange={handleChange}
+                            />
+                        </Grid>
 
-                            </Box>
-                        </TabPanel>
-                    </TabContext>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Nivel Educativo
+                            </Typography>
+                            <FormControl fullWidth > {/**error={fieldErrors.idnivelesacademicos} */}
+                                <Select
+                                    name="idnivelesacademicos"
+                                    value={formData.idnivelesacademicos || ""}
+                                    onChange={handleChange}
+                                    fullWidth
+                                >
+                                    {NivelEducativo.length > 0 ? (
+                                        NivelEducativo.map((dep) => (
+                                            <MenuItem key={dep.id} value={dep.id}>
+                                                {dep.nombre}
+                                            </MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem disabled>Cargando...</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Fecha Inicio</Typography>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                name="fechainicio"
+                                value={formData.fechainicio || ""}
+                                onChange={handleChange}
+                                error={fieldErrors.fechainicio} // Aquí se activa el error
+                                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error 
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Fecha de Finalización</Typography>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                name="fechafinal"
+                                value={formData.fechafinal || ""}
+                                error={fieldErrors.fechafinal} // Aquí se activa el error
+                                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
+                                inputProps={{
+                                    min: formData.fechainicio || "",
+                                }}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Dirección</Typography>
+                            <TextField
+                                fullWidth
+                                name="direccion"
+                                value={formData.direccion}
+                                onChange={handleChange}
+                            /* error={fieldErrors.direccion}
+                            helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""} */
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Zona</Typography>
+                            <FormControl fullWidth> {/*error={fieldErrors.zona} */}
+                                <Select
+                                    name="zona"
+                                    value={formData.zona}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Rural">Rural</MenuItem>
+                                    <MenuItem value="Urbana">Urbana</MenuItem>
+                                </Select>
+                                {/*  {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>} */}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">¿Se realizó socialización?</Typography>
+                            <FormControl fullWidth >
+                                <Select name="socializaron" value={formData.socializaron} onChange={handleChange}>
+                                    <MenuItem value="true">Sí</MenuItem>
+                                    <MenuItem value="false">No</MenuItem>
+                                </Select>
+
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Observación</Typography>
+                            <TextField
+                                fullWidth
+                                name="observacion"
+                                value={formData.observacion}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
+
+
+                        <Button
+                            variant="contained"
+                            sx={{ backgroundColor: color.primary.azul, ml: 5 }}
+                            startIcon={<SaveIcon />}
+                            onClick={handleSave}
+                        >
+                            Guardar
+                        </Button>
+
+                    </Box>
+
+
+
+
 
 
                 </Paper>
@@ -365,4 +571,4 @@ const FormularParticipantes = () => {
     );
 };
 
-export default FormularParticipantes;
+export default Investigacion;

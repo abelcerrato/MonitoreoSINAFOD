@@ -330,20 +330,94 @@ export const postLineamientosC = async (req, res) => {
 export const putLineamientosC = async (req, res) => {
     const { id } = req.params;
     const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
+        modificadopor,
         criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
     } = req.body
 
+    const files = req.files || {};
+    const d = new Date();
+    const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
+        .map(n => n.toString().padStart(2, '0')).join('-');
+
     try {
 
-        const investCap = await putLineamientosM(presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-            monitoreoyevaluacion, monitoreoyevaluacionurl,
-            aplicacionevaluacion, aplicacionevaluacionurl,
-            criteriosfactibilidad, criteriosfactibilidadurl,
-            requisitostecnicos, requisitostecnicosurl,
-            criterioseticos, criterioseticosurl,
-            id)
-        //res.json(investCap)
-        res.json({ message: "Lineamientos de la Investigacion o capacitacion actualizados ", user: investCap });
+
+        // 1. Validar usuario
+        const userResponse = await getUsuarioIdM(modificadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
+
+        // 3. Procesar archivos y preparar actualizaciones
+        const fileUpdates = {
+            presentoprotocolourl: null,
+            monitoreoyevaluacionurl: null,
+            aplicacionevaluacionurl: null,
+            criteriosfactibilidadurl: null,
+            requisitostecnicosurl: null,
+            criterioseticosurl: null
+        };
+
+        const booleanUpdates = {
+            presentoprotocolo: false,
+            monitoreoyevaluacion: false,
+            aplicacionevaluacion: false,
+            criteriosfactibilidad: false,
+            requisitostecnicos: false,
+            criterioseticos: false
+        };
+
+        // Función para procesar un archivo
+        const processFile = (key) => {
+            if (files[key] && files[key][0]) {
+                const file = files[key][0];
+                const filename = `${id}-${date}-${file.originalname}`;
+                const newPath = path.join(file.destination, filename);
+                fs.renameSync(file.path, newPath);
+                fileUpdates[key] = filename;
+                booleanUpdates[key.replace('url', '')] = true;
+            }
+        };
+
+        // Procesar todos los archivos
+        [
+            'presentoprotocolourl',
+            'monitoreoyevaluacionurl',
+            'aplicacionevaluacionurl',
+            'criteriosfactibilidadurl',
+            'requisitostecnicosurl',
+            'criterioseticosurl'
+        ].forEach(processFile);
+
+
+
+        // Actualizar en la base de datos
+        const updatedLineamientos = await putLineamientosM(
+            booleanUpdates.presentoprotocolo,
+            fileUpdates.presentoprotocolourl,
+            estadoprotocolo,
+            booleanUpdates.monitoreoyevaluacion,
+            fileUpdates.monitoreoyevaluacionurl,
+            booleanUpdates.aplicacionevaluacion,
+            fileUpdates.aplicacionevaluacionurl,
+            booleanUpdates.criteriosfactibilidad,
+            fileUpdates.criteriosfactibilidadurl,
+            booleanUpdates.requisitostecnicos,
+            fileUpdates.requisitostecnicosurl,
+            booleanUpdates.criterioseticos,
+            fileUpdates.criterioseticosurl,
+            usuario,
+            id
+        );
+
+        res.json({
+            success: true,
+            message: "Lineamientos actualizados correctamente",
+            id: id,
+            files: fileUpdates,
+            flags: booleanUpdates
+        });
     } catch (error) {
         console.error('Error al actualizar la investigacion o capaciotacion: ', error);
         res.status(500).json({ error: 'Error interno del servidor' });

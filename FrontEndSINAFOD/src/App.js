@@ -6,6 +6,7 @@ import SignIn from './Login/Sign-in';
 import Dashboard from './Dashboard/dashboard';
 // import Formulario from './Actividad/Investigación/Investigación';
 import LineamientosI from './Actividad/Investigación/Lineamientos';
+import Investigación from './Actividad/Investigación/Investigación';
 import Participantes from './Participantes/FormularioParticipantes';
 import ModificarActividad from './Actividad/ModificarActividad'
 import ModificarParticipante from './Participantes/ModificarParticipantes'
@@ -46,7 +47,8 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
           <Route path="/Lineamientos_De_Investigación" element={<ProtectedRoute><LineamientosI /></ProtectedRoute>} />
-          
+          <Route path="/Lineamientos_De_Investigación/:id" element={<ProtectedRoute><LineamientosI /></ProtectedRoute>} />
+          <Route path="/Investigación" element={<ProtectedRoute><Investigación /></ProtectedRoute>} />
         
           <Route path="/Participantes" element={<ProtectedRoute><Participantes /></ProtectedRoute>} />
           <Route path="/Modificar_Actividad/:id" element={<ProtectedRoute><ModificarActividad /></ProtectedRoute>} />

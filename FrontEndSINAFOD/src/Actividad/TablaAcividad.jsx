@@ -25,6 +25,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { color } from "../Components/color";
 import CardDetalles from "./CardDetalles";
+import ChecklistIcon from '@mui/icons-material/Checklist';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -132,7 +133,9 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const handleEdit = (id) => {
     navigate(`/Modificar_Actividad/${id}`); // Redirige a la página de edición con el ID
   };
-
+  const handleLineamientos = (id) => {
+    navigate(`/Lineamientos_De_Investigación/:id/${id}`); // Redirige a la página de edición con el ID
+  };
   const handleOpen = (id) => {
     setSelectedId(id);
     setOpen(true);
@@ -174,6 +177,9 @@ export default function TablaActividad(isSaved, setIsSaved) {
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Fecha de Finalización
             </TableCell>
+            <TableCell align="right" style={{ fontWeight: "bold" }}>
+              Lineamientos
+            </TableCell>
             {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Participantes que Asistieron</TableCell>
           <TableCell align="right" style={{ fontWeight: "bold" }}>Dirección</TableCell>
@@ -192,6 +198,11 @@ export default function TablaActividad(isSaved, setIsSaved) {
                 <Tooltip title="Editar">
                   <IconButton onClick={() => handleEdit(row.id)} color="action">
                     <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Modificar Lineamientos">
+                  <IconButton onClick={() => handleLineamientos(row.id)} color="success">
+                    <ChecklistIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Ver Detalles">
@@ -267,10 +278,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
             </TableCell>
             <TableCell style={{ width: 160 }} align="right">
               {row.observacion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.creadopor}
-            </TableCell> */}
+            </TableCell>*/}
+              <TableCell style={{ width: 160 }} align="right">
+                {row.estado_lineamientos}
+              </TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
