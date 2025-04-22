@@ -4,7 +4,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SignIn from './Login/Sign-in';
 import Dashboard from './Dashboard/dashboard';
-import Formulario from './Actividad/FormularioActividad';
+import Formulario from './Actividad/Investigación/Investigación';
 import Participantes from './Participantes/FormularioParticipantes';
 import ModificarActividad from './Actividad/ModificarActividad'
 import ModificarParticipante from './Participantes/ModificarParticipantes'

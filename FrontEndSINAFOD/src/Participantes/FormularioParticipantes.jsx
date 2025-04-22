@@ -577,7 +577,7 @@ const FormularParticipantes = () => {
                     </Select>
                     {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>*/}
-                  <FormControl fullWidth error={fieldErrors.zona}>
+                  <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
                     <Select
                       name="nivelacademicodocente"
                       value={formData.nivelacademicodocente || ""}

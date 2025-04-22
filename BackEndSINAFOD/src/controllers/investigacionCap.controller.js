@@ -169,6 +169,7 @@ export const postLineamientosC = async (req, res) => {
         presentoprotocolo, estadoprotocolo,
         monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor
     } = req.body;
+console.log(req.body);
 
     const files = req.files || [];
     const d = new Date();
