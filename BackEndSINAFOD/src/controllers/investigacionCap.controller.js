@@ -67,13 +67,11 @@ export const posInvestigacionCapC = async (req, res) => {
         }
 
 
-        const result = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
+        const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
             funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos,
-            tipoactividad, existeconvenio, institucionconvenio)
-
-
-
-        res.json({ message: "Investigacion o Capacitacion agregado", id: result.id });
+            tipoactividad, existeconvenio, institucionconvenio )
+        
+        res.json({ message: "Investigacion o Capacitacion agregado", id: investCap.id });
     } catch (error) {
         console.error('Error al insertar', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -169,7 +167,7 @@ export const uploadLineamientos = upload.fields([
 export const postLineamientosC = async (req, res) => {
     const {
         presentoprotocolo, estadoprotocolo,
-        monitoreoyevaluacion, aplicacionevaluacion, accionformacion
+        monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor
     } = req.body;
 
     const files = req.files || [];
@@ -182,11 +180,18 @@ export const postLineamientosC = async (req, res) => {
     let aplicacionevaluacionurl = null;
 
     try {
+
+        const userResponse = await getUsuarioIdM(creadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
+
         // Inserción de los lineamientos y obtención del ID
         const result = await postLineamientosM(
             presentoprotocolo, presentoprotocolourl, estadoprotocolo,
             monitoreoyevaluacion, monitoreoyevaluacionurl,
-            aplicacionevaluacion, aplicacionevaluacionurl, accionformacion
+            aplicacionevaluacion, aplicacionevaluacionurl, accionformacion, usuario
         );
 
         const idInvestCap = result.id;  // ID de la investigación obtenida tras la inserción
