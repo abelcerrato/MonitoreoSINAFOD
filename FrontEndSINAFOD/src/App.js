@@ -4,7 +4,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SignIn from './Login/Sign-in';
 import Dashboard from './Dashboard/dashboard';
-import Formulario from './Actividad/Investigación/Investigación';
+// import Formulario from './Actividad/Investigación/Investigación';
+import LineamientosI from './Actividad/Investigación/Lineamientos';
 import Participantes from './Participantes/FormularioParticipantes';
 import ModificarActividad from './Actividad/ModificarActividad'
 import ModificarParticipante from './Participantes/ModificarParticipantes'
@@ -43,7 +44,10 @@ function App() {
         <Routes>
           <Route path="/" element={<SignIn />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/Formulario" element={<ProtectedRoute><Formulario /></ProtectedRoute>} />
+
+          <Route path="/Lineamientos_De_Investigación" element={<ProtectedRoute><LineamientosI /></ProtectedRoute>} />
+          
+        
           <Route path="/Participantes" element={<ProtectedRoute><Participantes /></ProtectedRoute>} />
           <Route path="/Modificar_Actividad/:id" element={<ProtectedRoute><ModificarActividad /></ProtectedRoute>} />
           <Route path="/Modificar_Participante/:id" element={<ProtectedRoute><ModificarParticipante /></ProtectedRoute>} />
