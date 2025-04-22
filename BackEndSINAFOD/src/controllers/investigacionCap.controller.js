@@ -169,67 +169,105 @@ export const postLineamientosC = async (req, res) => {
         presentoprotocolo, estadoprotocolo,
         monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor
     } = req.body;
-console.log(req.body);
 
-    const files = req.files || [];
+    const files = req.files || {};
     const d = new Date();
     const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
         .map(n => n.toString().padStart(2, '0')).join('-');
 
-    let presentoprotocolourl = null;
-    let monitoreoyevaluacionurl = null;
-    let aplicacionevaluacionurl = null;
-
     try {
-
+        // 1. Validar usuario
         const userResponse = await getUsuarioIdM(creadopor);
         if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
             return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
         }
         const usuario = userResponse[0].id;
 
-        // Inserción de los lineamientos y obtención del ID
+        // 2. Insert inicial con valores por defecto
         const result = await postLineamientosM(
-            presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-            monitoreoyevaluacion, monitoreoyevaluacionurl,
-            aplicacionevaluacion, aplicacionevaluacionurl, accionformacion, usuario
+            presentoprotocolo, 
+            null, // presentoprotocolourl
+            estadoprotocolo,
+            monitoreoyevaluacion, 
+            null, // monitoreoyevaluacionurl
+            aplicacionevaluacion, 
+            null, // aplicacionevaluacionurl
+            accionformacion, 
+            usuario
         );
 
-        const idInvestCap = result.id;  // ID de la investigación obtenida tras la inserción
+        const idInvestCap = result.id;
 
-        // Procesar los archivos
-        for (let file of files) {
-            const filename = `${idInvestCap}-${date}-${file.originalname}`; // Renombrar el archivo con el id y la fecha
+        // 3. Procesar archivos y preparar actualizaciones
+        const fileUpdates = {
+            presentoprotocolourl: null,
+            monitoreoyevaluacionurl: null,
+            aplicacionevaluacionurl: null
+        };
+        
+        const booleanUpdates = {
+            presentoprotocolo: false,
+            monitoreoyevaluacion: false,
+            aplicacionevaluacion: false
+        };
+
+        // Procesar cada archivo
+        if (files.presentoprotocolourl && files.presentoprotocolourl[0]) {
+            const file = files.presentoprotocolourl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
             const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath); // Renombrar el archivo
-            console.log(`Archivo renombrado: ${filename}`);// Aquí se almacena la nueva ruta en la base de datos
-
-            // Asociar el archivo a su respectivo campo
-            if (file.fieldname === "presentoprotocolourl") {
-                presentoprotocolourl = filename;
-            } else if (file.fieldname === "monitoreoyevaluacionurl") {
-                monitoreoyevaluacionurl = filename;
-            } else if (file.fieldname === "aplicacionevaluacionurl") {
-                aplicacionevaluacionurl = filename;
-            }
+            fs.renameSync(file.path, newPath);
+            fileUpdates.presentoprotocolourl = filename;
+            booleanUpdates.presentoprotocolo = true; // Marcamos como true si hay archivo
         }
 
-        // Actualizar los lineamientos en la base de datos con los nombres de los archivos
-        const lineamientos = await putLineamientosM(
-            presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-            monitoreoyevaluacion, monitoreoyevaluacionurl,
-            aplicacionevaluacion, aplicacionevaluacionurl,
+        if (files.monitoreoyevaluacionurl && files.monitoreoyevaluacionurl[0]) {
+            const file = files.monitoreoyevaluacionurl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
+            const newPath = path.join(file.destination, filename);
+            fs.renameSync(file.path, newPath);
+            fileUpdates.monitoreoyevaluacionurl = filename;
+            booleanUpdates.monitoreoyevaluacion = true;
+        }
+
+        if (files.aplicacionevaluacionurl && files.aplicacionevaluacionurl[0]) {
+            const file = files.aplicacionevaluacionurl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
+            const newPath = path.join(file.destination, filename);
+            fs.renameSync(file.path, newPath);
+            fileUpdates.aplicacionevaluacionurl = filename;
+            booleanUpdates.aplicacionevaluacion = true;
+        }
+
+        // 4. Actualizar con las rutas de archivos y los booleanos
+        const updatedLineamientos = await putLineamientosM(
+            booleanUpdates.presentoprotocolo, // Enviamos true/false según si hay archivo
+            fileUpdates.presentoprotocolourl, 
+            estadoprotocolo,
+            booleanUpdates.monitoreoyevaluacion,
+            fileUpdates.monitoreoyevaluacionurl,
+            booleanUpdates.aplicacionevaluacion,
+            fileUpdates.aplicacionevaluacionurl,
             idInvestCap
         );
 
-        res.json({ message: "Lineamientos actualizados", id: lineamientos.id });
+        res.json({ 
+            success: true,
+            message: "Lineamientos actualizados correctamente",
+            id: idInvestCap,
+            files: fileUpdates,
+            flags: booleanUpdates
+        });
+
     } catch (error) {
-        console.error("Error al subir archivos", error);
-        res.status(500).json({ error: "Error al subir archivos" });
+        console.error("Error en postLineamientosC:", error);
+        res.status(500).json({ 
+            success: false,
+            error: "Error al procesar los lineamientos",
+            details: error.message 
+        });
     }
 };
-
-
 //-----------------------------------------------------------------------------------------------------------
 // Actualizar lineamientos de investigacion o capacitacion
 // Se actualizan los lineamientos y se suben los archivos correspondientes

@@ -35,8 +35,12 @@ const ProjectDrawer = () => {
     setOpen(!openD);
   };
 
-  const NuevaActividad = () => {
+  const NuevaFormación = () => {
     navigate("/Formulario");
+    setOpen(false); // Cierra el menú después de navegar
+  };
+  const NuevaInvestigacion = () => {
+    navigate("/Lineamientos_De_Investigación");
     setOpen(false); // Cierra el menú después de navegar
   };
 
@@ -66,20 +70,29 @@ const ProjectDrawer = () => {
           <Button
             variant="text"
             startIcon={<AddIcon />}
-            onClick={NuevaActividad}
+            onClick={NuevaFormación}
             size="large"
             sx={{ margin: 2, color: color.primary.azul }}
           >
-            Nueva Actividad
+            Nueva Formación
           </Button>
           <Divider />
-
+          <Button
+            variant="text"
+            startIcon={<AddIcon />}
+            onClick={NuevaInvestigacion}
+            size="large"
+            sx={{ margin: 2, color: color.primary.azul }}
+          >
+            Nueva Investigación
+          </Button>
+          <Divider />
           <Button
             variant="text"
             startIcon={<DescriptionIcon />}
             onClick={handleClick}
             size="large"
-            sx={{ margin: 2, color:  color.primary.azul  }} // Usa tu variable de color si es necesario
+            sx={{ margin: 2, color: color.primary.azul }} // Usa tu variable de color si es necesario
           >
             Reportería
           </Button>
@@ -87,11 +100,11 @@ const ProjectDrawer = () => {
           <Menu anchorEl={anchorEl} open={open} onClose={() => handleClose()}>
             <MenuItem onClick={() => handleClose("/Listado_Capacitaciones")}>
               Listado de Capacitaciones
-            </MenuItem> 
+            </MenuItem>
             <MenuItem onClick={() => handleClose("/Listado_Participantes")}>
               Listado de Participantes
             </MenuItem>
-           
+
           </Menu>
         </List>
       </Drawer>
