@@ -331,7 +331,7 @@ export const putLineamientosC = async (req, res) => {
     const { id } = req.params;
     const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
         criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
-     } = req.body
+    } = req.body
 
     try {
 
