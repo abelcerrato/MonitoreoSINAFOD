@@ -49,7 +49,8 @@ export const posInvestigacionCapC = async (req, res) => {
         duracion, espaciofisico, funciondirigido, fechainicio,
         fechafinal, participantesprog, participantesrecib, direccion, observacion,
         estado, creadopor, idnivelesacademicos, cicloacademico,
-        tipoactividad, existeconvenio, institucionconvenio } = req.body
+        tipoactividad, existeconvenio, institucionconvenio,
+        plataforma, socializaron, costo } = req.body
     console.log(req.body);
 
     try {
@@ -67,10 +68,11 @@ export const posInvestigacionCapC = async (req, res) => {
         }
 
 
-        const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico, 
+        const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
             funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos,
-            tipoactividad, existeconvenio, institucionconvenio )
-        
+            tipoactividad, existeconvenio, institucionconvenio, plataforma, socializaron, costo
+        )
+
         res.json({ message: "Investigacion o Capacitacion agregado", id: investCap.id });
     } catch (error) {
         console.error('Error al insertar', error);
@@ -89,8 +91,8 @@ export const putInvestigacionCapC = async (req, res) => {
         duracion, espaciofisico, funciondirigido, fechainicio,
         fechafinal, participantesprog, participantesrecib, direccion, observacion,
         estado, modificadopor, idnivelesacademicos, cicloacademico,
-        tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-        monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl } = req.body
+        tipoactividad, existeconvenio, institucionconvenio,
+        plataforma, socializaron, costo } = req.body
 
     try {
 
@@ -112,8 +114,8 @@ export const putInvestigacionCapC = async (req, res) => {
             duracion, espaciofisico, funciondirigido, fechainicio,
             fechafinal, participantesprog, participantesrecib, direccion, observacion,
             estado, usuario, idnivelesacademicos, idciclosacademicos,
-            tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-            monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
+            tipoactividad, existeconvenio, institucionconvenio,
+            plataforma, socializaron, costo,
             id)
         //res.json(investCap)
         res.json({ message: "Investigacion o capacitacion actualizada ", user: investCap });
@@ -157,7 +159,10 @@ export const upload = multer({ storage });
 export const uploadLineamientos = upload.fields([
     { name: 'presentoprotocolourl', maxCount: 1 },
     { name: 'monitoreoyevaluacionurl', maxCount: 1 },
-    { name: 'aplicacionevaluacionurl', maxCount: 1 }
+    { name: 'aplicacionevaluacionurl', maxCount: 1 },
+    { name: 'criteriosfactibilidadurl', maxCount: 1 },
+    { name: 'requisitostecnicosurl', maxCount: 1 },
+    { name: 'criterioseticosurl', maxCount: 1 }
 ]);
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -167,7 +172,9 @@ export const uploadLineamientos = upload.fields([
 export const postLineamientosC = async (req, res) => {
     const {
         presentoprotocolo, estadoprotocolo,
-        monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor
+        monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor,
+        formacioninvest, criteriosfactibilidad, criteriosfactibilidadurl,
+        requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
     } = req.body;
 
     const files = req.files || {};
@@ -185,15 +192,23 @@ export const postLineamientosC = async (req, res) => {
 
         // 2. Insert inicial con valores por defecto
         const result = await postLineamientosM(
-            presentoprotocolo, 
+            presentoprotocolo,
             null, // presentoprotocolourl
             estadoprotocolo,
-            monitoreoyevaluacion, 
+            monitoreoyevaluacion,
             null, // monitoreoyevaluacionurl
-            aplicacionevaluacion, 
+            aplicacionevaluacion,
             null, // aplicacionevaluacionurl
-            accionformacion, 
-            usuario
+            accionformacion,
+            usuario,
+            formacioninvest,
+            criteriosfactibilidad,
+            null, //criteriosfactibilidadurl,
+            requisitostecnicos,
+            null, //requisitostecnicosurl,
+            criterioseticos,
+            null, //criterioseticosurl
+
         );
 
         const idInvestCap = result.id;
@@ -202,13 +217,19 @@ export const postLineamientosC = async (req, res) => {
         const fileUpdates = {
             presentoprotocolourl: null,
             monitoreoyevaluacionurl: null,
-            aplicacionevaluacionurl: null
+            aplicacionevaluacionurl: null,
+            criteriosfactibilidadurl: null,
+            requisitostecnicosurl: null,
+            criterioseticosurl: null
         };
-        
+
         const booleanUpdates = {
             presentoprotocolo: false,
             monitoreoyevaluacion: false,
-            aplicacionevaluacion: false
+            aplicacionevaluacion: false,
+            criteriosfactibilidad: false,
+            requisitostecnicos: false,
+            criterioseticos: false
         };
 
         // Procesar cada archivo
@@ -239,19 +260,54 @@ export const postLineamientosC = async (req, res) => {
             booleanUpdates.aplicacionevaluacion = true;
         }
 
+        if (files.criteriosfactibilidadurl && files.criteriosfactibilidadurl[0]) {
+            const file = files.criteriosfactibilidadurl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
+            const newPath = path.join(file.destination, filename);
+            fs.renameSync(file.path, newPath);
+            fileUpdates.criteriosfactibilidadurl = filename;
+            booleanUpdates.criteriosfactibilidad = true;
+        }
+
+        if (files.requisitostecnicosurl && files.requisitostecnicosurl[0]) {
+            const file = files.requisitostecnicosurl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
+            const newPath = path.join(file.destination, filename);
+            fs.renameSync(file.path, newPath);
+            fileUpdates.requisitostecnicosurl = filename;
+            booleanUpdates.requisitostecnicos = true;
+        }
+
+        if (files.criterioseticosurl && files.criterioseticosurl[0]) {
+            const file = files.criterioseticosurl[0];
+            const filename = `${idInvestCap}-${date}-${file.originalname}`;
+            const newPath = path.join(file.destination, filename);
+            fs.renameSync(file.path, newPath);
+            fileUpdates.criterioseticosurl = filename;
+            booleanUpdates.criterioseticos = true;
+        }
+
+
+
         // 4. Actualizar con las rutas de archivos y los booleanos
         const updatedLineamientos = await putLineamientosM(
             booleanUpdates.presentoprotocolo, // Enviamos true/false según si hay archivo
-            fileUpdates.presentoprotocolourl, 
+            fileUpdates.presentoprotocolourl,
             estadoprotocolo,
             booleanUpdates.monitoreoyevaluacion,
             fileUpdates.monitoreoyevaluacionurl,
             booleanUpdates.aplicacionevaluacion,
             fileUpdates.aplicacionevaluacionurl,
+            booleanUpdates.criteriosfactibilidad,
+            fileUpdates.criteriosfactibilidadurl,
+            booleanUpdates.requisitostecnicos,
+            fileUpdates.requisitostecnicosurl,
+            booleanUpdates.criterioseticos,
+            fileUpdates.criterioseticosurl,
             idInvestCap
         );
 
-        res.json({ 
+        res.json({
             success: true,
             message: "Lineamientos actualizados correctamente",
             id: idInvestCap,
@@ -261,10 +317,10 @@ export const postLineamientosC = async (req, res) => {
 
     } catch (error) {
         console.error("Error en postLineamientosC:", error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             error: "Error al procesar los lineamientos",
-            details: error.message 
+            details: error.message
         });
     }
 };
@@ -273,13 +329,18 @@ export const postLineamientosC = async (req, res) => {
 // Se actualizan los lineamientos y se suben los archivos correspondientes
 export const putLineamientosC = async (req, res) => {
     const { id } = req.params;
-    const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl } = req.body
+    const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
+        criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
+     } = req.body
 
     try {
 
         const investCap = await putLineamientosM(presentoprotocolo, presentoprotocolourl, estadoprotocolo,
             monitoreoyevaluacion, monitoreoyevaluacionurl,
             aplicacionevaluacion, aplicacionevaluacionurl,
+            criteriosfactibilidad, criteriosfactibilidadurl,
+            requisitostecnicos, requisitostecnicosurl,
+            criterioseticos, criterioseticosurl,
             id)
         //res.json(investCap)
         res.json({ message: "Lineamientos de la Investigacion o capacitacion actualizados ", user: investCap });
