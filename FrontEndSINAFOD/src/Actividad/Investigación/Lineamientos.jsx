@@ -42,7 +42,10 @@ const VisuallyHiddenInput = styled("input")({
 
 const LineamientosI = () => {
   const { user } = useUser();
-
+  const [errors, setErrors] = useState({
+    accionformacion: false,
+    estadoprotocolo: false
+  });
   const [formData, setFormData] = useState({
     accionformacion: "",
     estadoprotocolo: "",
@@ -92,36 +95,78 @@ const LineamientosI = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Resetear errores
+    const newErrors = {
+      accionformacion: false,
+      estadoprotocolo: false
+    };
+
+    let hasError = false;
+
+    // Validar si se cargó un archivo en presentoprotocolourl
+    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
+      newErrors.estadoprotocolo = true;
+      hasError = true;
+    }
+
+    // Validación del título del proyecto
+    if (!formData.accionformacion) {
+      newErrors.accionformacion = true;
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) {
+      Swal.fire("Error", "Por favor complete los campos requeridos", "error");
+      return;
+    }
+
     const formDataToSend = new FormData();
 
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
-    formDataToSend.append("estadoprotocolo", formData.estadoprotocolo);
+    formDataToSend.append(
+      "estadoprotocolo",
+      formData.presentoprotocolourl ? formData.estadoprotocolo : "No se presentó"
+    );
     formDataToSend.append("creadopor", user);
-    formDataToSend.append("formacioninvest", "Investigacion");
+    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("formacioninvest", "Investigación");
+
+    // Contador de archivos subidos
+    let uploadedFilesCount = 0;
+    const totalRequiredFiles = 3;
+    const fileFields = [
+      "presentoprotocolourl",
+      "monitoreoyevaluacionurl",
+      "aplicacionevaluacionurl",
+    ];
+
     // Agregar archivos si existen
-    if (formData.presentoprotocolourl) {
-      formDataToSend.append(
-        "presentoprotocolourl",
-        formData.presentoprotocolourl
-      );
-    }
-    if (formData.monitoreoyevaluacionurl) {
-      formDataToSend.append(
-        "monitoreoyevaluacionurl",
-        formData.monitoreoyevaluacionurl
-      );
-    }
-    if (formData.aplicacionevaluacionurl) {
-      formDataToSend.append(
-        "aplicacionevaluacionurl",
-        formData.aplicacionevaluacionurl
-      );
-    }
-    // En el frontend, antes de enviar
-    if (!formData.accionformacion) {
-      Swal.fire("Error", "El título del proyecto es requerido", "error");
-      return;
+    fileFields.forEach(field => {
+      if (formData[field]) {
+        formDataToSend.append(field, formData[field]);
+        uploadedFilesCount++;
+      }
+    });
+
+    // Verificar si faltan archivos
+    if (uploadedFilesCount < totalRequiredFiles) {
+      const result = await Swal.fire({
+        title: 'Lineamientos incompletos',
+        text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, registrar',
+        cancelButtonText: 'No, volver atrás',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+      });
+
+      if (!result.isConfirmed) {
+        return; // No continuar si el usuario cancela
+      }
     }
 
     try {
@@ -138,10 +183,9 @@ const LineamientosI = () => {
       navigate("/Investigación", {
         state: { investCap, accionformacion: formData.accionformacion },
       });
-      // Mostrar mensaje de éxito o redireccionar
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      // Mostrar mensaje de error
+      Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
     }
   };
   return (
@@ -181,6 +225,16 @@ const LineamientosI = () => {
                 name="accionformacion"
                 value={formData.accionformacion}
                 onChange={handleChange}
+                error={errors.accionformacion}
+                helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
+                FormHelperTextProps={{ style: { color: 'red' } }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: errors.accionformacion ? 'red' : '',
+                    },
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}></Grid>
@@ -208,15 +262,26 @@ const LineamientosI = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Estado del Protocolo</Typography>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={errors.estadoprotocolo}>
                 <Select
                   name="estadoprotocolo"
                   value={formData.estadoprotocolo || ""}
                   onChange={handleChange}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: errors.estadoprotocolo ? 'red' : '',
+                    },
+                  }}
                 >
-                  <MenuItem value="Incompleta">Incompleto</MenuItem>
-                  <MenuItem value="Completa">Completo</MenuItem>
+                  <MenuItem value="" disabled>Selecione una opción</MenuItem>
+                  <MenuItem value="Incompleto">Incompleto</MenuItem>
+                  <MenuItem value="Completo">Completo</MenuItem>
                 </Select>
+                {errors.estadoprotocolo && (
+                  <FormHelperText style={{ color: 'red' }}>
+                    Debe seleccionar el estado del protocolo
+                  </FormHelperText>
+                )}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>

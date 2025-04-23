@@ -144,7 +144,7 @@ const LineamientosI = () => {
 
     formDataToSend.append("creadopor", user);
     formDataToSend.append("modificadopor", user);
-    formDataToSend.append("formacioninvest", "Investigación");
+    formDataToSend.append("formacioninvest", "Formación");
 
     // Contador de archivos subidos
     let uploadedFilesCount = 0;

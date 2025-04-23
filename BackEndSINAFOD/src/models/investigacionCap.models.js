@@ -14,8 +14,8 @@ export const getInvestigacionCapM = async () => {
     ic.tipoformacion, ic.modalidad, ic.plataforma, ic.zona, ic.duracion, ic.espaciofisico, 
     ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
     ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, u.nombre, 
-    n.id AS IdNivel, n.nombre AS NivelAcademico, 
-    c.id AS IdCiclo, c.nombre AS CicloAcademico,
+    n.id AS idnivelesacademicos, n.nombre AS NivelAcademico, 
+    c.id AS cicloacademico, c.nombre AS ciclo,
     ic.socializaron, ic.costo, 
     ic.presentoprotocolo, ic.presentoprotocolourl, ic.estadoprotocolo, 
     ic.monitoreoyevaluacion, ic.monitoreoyevaluacionurl, 
@@ -75,8 +75,8 @@ export const getInvestigacionCapIdInvM = async (id) => {
                     ic.tipoformacion, ic.modalidad, ic.plataforma,  ic.zona, ic.duracion, ic.espaciofisico, 
                     ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
                     ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, 
-                    n.id AS IdNivel, n.nombre AS NivelAcademico, 
-                    c.id AS IdCiclo, c.nombre AS CicloAcademico,
+                    n.id AS idnivelesacademicos, n.nombre AS NivelAcademico, 
+                    c.id AS cicloacademico, c.nombre AS ciclo,
                     ic.socializaron, ic.costo, 
                     ic.presentoprotocolo, ic.presentoprotocolourl, ic.estadoprotocolo, 
                     ic.monitoreoyevaluacion, ic.monitoreoyevaluacionurl, 
@@ -247,8 +247,8 @@ export const putLineamientosM = async (presentoprotocolo, presentoprotocolourl, 
                 usuario,
                 idInvestCap])
 
-        console.log("Id investigacionCap de los lineamientos: " + rows[0].id);
-        return rows[0];
+
+        return rows[0].id;
     } catch (error) {
         throw error;
     }

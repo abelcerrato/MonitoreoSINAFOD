@@ -11,6 +11,7 @@ import {
     FormControl,
     Box,
     IconButton,
+    FormHelperText
 } from "@mui/material";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
@@ -22,7 +23,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-
+import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
     clipPath: "inset(50%)",
@@ -50,6 +51,10 @@ const LineamientosI = () => {
         presentoprotocolourl: null,
         monitoreoyevaluacionurl: null,
         aplicacionevaluacionurl: null,
+    });
+    const [errors, setErrors] = useState({
+        accionformacion: false,
+        estadoprotocolo: false
     });
     const navigate = useNavigate();
 
@@ -189,7 +194,9 @@ const LineamientosI = () => {
         formDataToSend.append("modificadopor", user);
         formDataToSend.append("formacioninvest", "Investigacion");
 
-        // Manejo de archivos - solo enviar los modificados o mantener los existentes
+        // Contador de archivos subidos
+        let uploadedFilesCount = 0;
+        const totalRequiredFiles = 3;
         const fileFields = [
             "presentoprotocolourl",
             "monitoreoyevaluacionurl",
@@ -197,21 +204,35 @@ const LineamientosI = () => {
         ];
 
         fileFields.forEach((field) => {
-            // Si hay un archivo nuevo, lo agregamos
             if (formData[field]) {
                 formDataToSend.append(field, formData[field]);
-            }
-            // Si no hay archivo nuevo pero hay uno existente, mantenemos el existente
-            else if (existingFiles[field]) {
+                uploadedFilesCount++;
+            } else if (existingFiles[field]) {
                 formDataToSend.append(field, existingFiles[field]);
-            }
-            // Si no hay ni nuevo ni existente, enviamos null (para borrar)
-            else {
+                uploadedFilesCount++;
+            } else {
                 formDataToSend.append(field, "null");
             }
         });
-        console.log("formData:", formData);
-        console.log("existingFiles:", existingFiles);
+
+        // Verificar si faltan archivos
+        if (uploadedFilesCount < totalRequiredFiles) {
+            const result = await Swal.fire({
+                title: 'Lineamientos incompletos',
+                text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con la actualización?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, actualizar',
+                cancelButtonText: 'No, volver atrás',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            });
+
+            if (!result.isConfirmed) {
+                return; // No continuar si el usuario cancela
+            }
+        }
+
         try {
             const response = await axios.put(
                 `${process.env.REACT_APP_API_URL}/lineamientos/${id}`,
@@ -223,8 +244,8 @@ const LineamientosI = () => {
                 }
             );
 
-            Swal.fire("Éxito", "Documentos actualizados correctamente", "success");
-            navigate("/Investigación");
+            Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
+            navigate(`/Actualizar_Investigación/${id}`);
         } catch (error) {
             console.error("Error al enviar los datos:", error);
             Swal.fire("Error", "Hubo un problema al guardar los datos", "error");
@@ -239,7 +260,7 @@ const LineamientosI = () => {
         const getDisplayName = (filePath) => {
             if (!filePath) return "";
             // Extrae solo el nombre del archivo (elimina la ruta si existe)
-            return filePath.split("/").pop().split("-").slice(3).join("-");
+            return filePath.split("/").pop().split("-").slice(4).join("-");
         };
 
         return (
@@ -343,6 +364,16 @@ const LineamientosI = () => {
                             name="accionformacion"
                             value={formData.accionformacion}
                             onChange={handleChange}
+                            error={errors.accionformacion}
+                            helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
+                            FormHelperTextProps={{ style: { color: 'red' } }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: errors.accionformacion ? 'red' : '',
+                                    },
+                                },
+                            }}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}></Grid>
@@ -354,15 +385,26 @@ const LineamientosI = () => {
 
                     <Grid item xs={12} sm={6}>
                         <Typography variant="subtitle1">Estado del Protocolo</Typography>
-                        <FormControl fullWidth>
+                        <FormControl fullWidth error={errors.estadoprotocolo}>
                             <Select
                                 name="estadoprotocolo"
                                 value={formData.estadoprotocolo || ""}
                                 onChange={handleChange}
+                                sx={{
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: errors.estadoprotocolo ? 'red' : '',
+                                    },
+                                }}
                             >
-                                <MenuItem value="Incompleta">Incompleto</MenuItem>
-                                <MenuItem value="Completa">Completo</MenuItem>
+                                <MenuItem value="" disabled>Selecione una opción</MenuItem>
+                                <MenuItem value="Incompleto">Incompleto</MenuItem>
+                                <MenuItem value="Completo">Completo</MenuItem>
                             </Select>
+                            {errors.estadoprotocolo && (
+                                <FormHelperText style={{ color: 'red' }}>
+                                    Debe seleccionar el estado del protocolo
+                                </FormHelperText>
+                            )}
                         </FormControl>
                     </Grid>
 
@@ -377,14 +419,14 @@ const LineamientosI = () => {
                 </Grid>
 
                 <Box sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}>
-                    <Button
+                    {/*  <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.rojo }}
-                        startIcon={<SaveIcon />}
+                        startIcon={<FastForwardOutlinedIcon />}
                         onClick={() => navigate("/Investigación")}
                     >
                         Omitir
-                    </Button>
+                    </Button> */}
                     <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul, ml: 5 }}
