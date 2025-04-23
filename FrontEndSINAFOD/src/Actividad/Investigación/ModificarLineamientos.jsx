@@ -162,10 +162,11 @@ const LineamientosI = () => {
             text: "¿Quieres eliminar este archivo?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
+            confirmButtonColor: color.primary.azul,
+            cancelButtonColor: color.primary.rojo,
+            confirmButtonText: 'Sí, Eliminar',
+            cancelButtonText: 'No, cancelar',
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
                 setExistingFiles((prev) => ({
@@ -222,10 +223,11 @@ const LineamientosI = () => {
                 text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con la actualización?`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Sí, actualizar',
-                cancelButtonText: 'No, volver atrás',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: color.primary.azul,
+                cancelButtonColor: color.primary.rojo,
+                confirmButtonText: 'Sí, Actualizar',
+                cancelButtonText: 'No, cancelar',
+                reverseButtons: true
             });
 
             if (!result.isConfirmed) {

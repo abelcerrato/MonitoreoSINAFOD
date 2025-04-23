@@ -281,11 +281,11 @@ const Investigacion = () => {
                     icon: 'warning',
 
                     showCancelButton: true,
-                    confirmButtonColor: color.primary.azul,
-                    cancelButtonColor: color.primary.rojo,
-                    confirmButtonText: 'Sí, guardar',
-                    cancelButtonText: 'No, cancelar',
-                    reverseButtons: true
+                confirmButtonColor: color.primary.azul,
+                cancelButtonColor: color.primary.rojo,
+                confirmButtonText: 'Sí, Registrar',
+                cancelButtonText: 'No, cancelar',
+                reverseButtons: true
                 });
 
 

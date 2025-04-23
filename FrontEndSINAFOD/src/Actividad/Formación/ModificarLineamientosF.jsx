@@ -161,7 +161,7 @@ const LineamientosM = () => {
             confirmButtonColor: color.primary.azul,
             cancelButtonColor: color.primary.rojo,
             confirmButtonText: 'Sí, Eliminar',
-            cancelButtonText: 'No, cancelar',
+            cancelButtonText: 'No, Cancelar',
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
