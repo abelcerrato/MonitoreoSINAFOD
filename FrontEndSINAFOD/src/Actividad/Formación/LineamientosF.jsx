@@ -16,11 +16,12 @@ import {
   Tab,
   Tabs,
   FormHelperText,
+  IconButton
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
 import TablaPacticantes from "../../Participantes/TablaParticipantes";
@@ -28,6 +29,9 @@ import Swal from "sweetalert2";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
+import DeleteIcon from "@mui/icons-material/Delete";
+
+
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -42,17 +46,22 @@ const VisuallyHiddenInput = styled("input")({
 
 const LineamientosI = () => {
   const { user } = useUser();
-  const [errors, setErrors] = useState({
-    accionformacion: false,
-    estadoprotocolo: false
-  });
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     accionformacion: "",
-    estadoprotocolo: "",
-    presentoprotocolourl: null,
-    monitoreoyevaluacionurl: null,
-    aplicacionevaluacionurl: null,
+    criteriosfactibilidadurl: null,
+    requisitostecnicosurl: null,
+    criterioseticosurl: null,
     formacioninvest: "",
+  });
+  const [errors, setErrors] = useState({
+    accionformacion: false,
+    criterioseticosurl: false
+  });
+  const [fileNames, setFileNames] = useState({
+    criteriosfactibilidadurl: "",
+    requisitostecnicosurl: "",
+    criterioseticosurl: "",
   });
   const navigate = useNavigate();
   const handleRedirect = () => {
@@ -68,28 +77,39 @@ const LineamientosI = () => {
     }));
   };
 
-  // Manejar cambios en campos de archivo
-  const [fileNames, setFileNames] = useState({
-    presentoprotocolourl: "",
-    monitoreoyevaluacionurl: "",
-    aplicacionevaluacionurl: "",
-  });
+  const handleRemoveFile = (fieldName) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: null,
+    }));
+
+    setFileNames(prev => ({
+      ...prev,
+      [fieldName]: ""
+    }));
+  };
+
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
 
-    // Actualiza formData con el archivo
     setFormData((prev) => ({
       ...prev,
       [name]: file,
     }));
 
-    // Actualiza solo el nombre del archivo correspondiente
     setFileNames((prev) => ({
       ...prev,
       [name]: file ? file.name : "",
     }));
+  };
+
+
+  const fileInputRefs = {
+    criteriosfactibilidadurl: React.useRef(null),
+    requisitostecnicosurl: React.useRef(null),
+    criterioseticosurl: React.useRef(null)
   };
 
   const handleSubmit = async (e) => {
@@ -98,16 +118,11 @@ const LineamientosI = () => {
     // Resetear errores
     const newErrors = {
       accionformacion: false,
-      estadoprotocolo: false
+
     };
 
     let hasError = false;
 
-    // Validar si se cargó un archivo en presentoprotocolourl
-    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
-      newErrors.estadoprotocolo = true;
-      hasError = true;
-    }
 
     // Validación del título del proyecto
     if (!formData.accionformacion) {
@@ -126,21 +141,18 @@ const LineamientosI = () => {
 
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
-    formDataToSend.append(
-      "estadoprotocolo",
-      formData.presentoprotocolourl ? formData.estadoprotocolo : "No se presentó"
-    );
+
     formDataToSend.append("creadopor", user);
     formDataToSend.append("modificadopor", user);
-    formDataToSend.append("formacioninvest", "Investigación");
+    formDataToSend.append("formacioninvest", "Formación");
 
     // Contador de archivos subidos
     let uploadedFilesCount = 0;
     const totalRequiredFiles = 3;
     const fileFields = [
-      "presentoprotocolourl",
-      "monitoreoyevaluacionurl",
-      "aplicacionevaluacionurl",
+      "criteriosfactibilidadurl",
+      "requisitostecnicosurl",
+      "criterioseticosurl",
     ];
 
     // Agregar archivos si existen
@@ -158,10 +170,12 @@ const LineamientosI = () => {
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, registrar',
-        cancelButtonText: 'No, volver atrás',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        showCancelButton: true,
+        confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: 'Sí, Registar',
+        cancelButtonText: 'No, cancelar',
+        reverseButtons: true
       });
 
       if (!result.isConfirmed) {
@@ -180,7 +194,7 @@ const LineamientosI = () => {
         }
       );
       const investCap = response.data.id;
-      navigate("/Investigación", {
+      navigate("/Formación", {
         state: { investCap, accionformacion: formData.accionformacion },
       });
     } catch (error) {
@@ -188,6 +202,7 @@ const LineamientosI = () => {
       Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
     }
   };
+
   return (
     <>
       <Dashboard>
@@ -195,7 +210,7 @@ const LineamientosI = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Lineamientos para Investigación
+                Registro de Lineamientos para Formación
               </Typography>
             </Grid>
             <Grid
@@ -219,7 +234,7 @@ const LineamientosI = () => {
 
           <Grid container spacing={5} mt={2}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Título del Proyecto</Typography>
+              <Typography variant="subtitle1">   Nombre de la Formación</Typography>
               <TextField
                 fullWidth
                 name="accionformacion"
@@ -240,7 +255,7 @@ const LineamientosI = () => {
             <Grid item xs={12} sm={6}></Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
-                Documento del Protocolo del Proyecto de Investigación Educativa
+                Documento de Cumplimientos de los Criterios de Factibilidad
               </Typography>
               <Button
                 component="label"
@@ -251,42 +266,29 @@ const LineamientosI = () => {
                 Seleccionar archivo
                 <VisuallyHiddenInput
                   type="file"
-                  name="presentoprotocolourl"
+                  name="criteriosfactibilidadurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.criteriosfactibilidadurl}
                 />
               </Button>
-              {formData.presentoprotocolourl && (
-                <span>{formData.presentoprotocolourl.name}</span>
+              {formData.criteriosfactibilidadurl && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <span>{formData.criteriosfactibilidadurl.name}</span>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('criteriosfactibilidadurl')}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               )}
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Estado del Protocolo</Typography>
-              <FormControl fullWidth error={errors.estadoprotocolo}>
-                <Select
-                  name="estadoprotocolo"
-                  value={formData.estadoprotocolo || ""}
-                  onChange={handleChange}
-                  sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: errors.estadoprotocolo ? 'red' : '',
-                    },
-                  }}
-                >
-                  <MenuItem value="" disabled>Selecione una opción</MenuItem>
-                  <MenuItem value="Incompleto">Incompleto</MenuItem>
-                  <MenuItem value="Completo">Completo</MenuItem>
-                </Select>
-                {errors.estadoprotocolo && (
-                  <FormHelperText style={{ color: 'red' }}>
-                    Debe seleccionar el estado del protocolo
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
+
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
-                Documento de Monitoreo y Evaluación
+                Documento de Cumplimiento de los Requisitos Técnicos
               </Typography>
               <Button
                 component="label"
@@ -297,18 +299,28 @@ const LineamientosI = () => {
                 Seleccionar archivo
                 <VisuallyHiddenInput
                   type="file"
-                  name="monitoreoyevaluacionurl"
+                  name="requisitostecnicosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.requisitostecnicosurl}
                 />
               </Button>
-              {formData.monitoreoyevaluacionurl && (
-                <span>{formData.monitoreoyevaluacionurl.name}</span>
+              {formData.requisitostecnicosurl && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <span>{formData.requisitostecnicosurl.name}</span>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('requisitostecnicosurl')}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
-                Documento de Aplicación de Evaluación
+                Documento de Cumplimientos de los Criterios Éticos
               </Typography>
               <Button
                 component="label"
@@ -319,13 +331,24 @@ const LineamientosI = () => {
                 Seleccionar archivo
                 <VisuallyHiddenInput
                   type="file"
-                  name="aplicacionevaluacionurl"
+                  name="criterioseticosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.criterioseticosurl}
                 />
               </Button>
-              {formData.aplicacionevaluacionurl && (
-                <span>{formData.aplicacionevaluacionurl.name}</span>
+              {formData.criterioseticosurl && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <span>{formData.criterioseticosurl.name}</span>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('criterioseticosurl')}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+
+                </Box>
               )}
             </Grid>
           </Grid>
@@ -336,7 +359,7 @@ const LineamientosI = () => {
               variant="contained"
               sx={{ backgroundColor: color.primary.rojo }}
               startIcon={<FastForwardOutlinedIcon />}
-              onClick={() => navigate("/Investigación")}
+              onClick={() => navigate("/Formación")}
             >
               Omitir
             </Button>

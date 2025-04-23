@@ -20,10 +20,10 @@ import {
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
-
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import Swal from 'sweetalert2';
 
 
@@ -31,15 +31,16 @@ import Swal from 'sweetalert2';
 
 const Investigacion = () => {
     const { user } = useUser();
-    const location = useLocation();
-    const [investCapId, setInvestCapId] = useState(null);
+
+    const { id } = useParams();
+
     const [NivelEducativo, setNivelEducativo] = useState([]);
     const [errorM, setErrorM] = useState("");
     const [error, setError] = useState("");
-    const [isFromLineamientos, setIsFromLineamientos] = useState(false);
+
     const [formData, setFormData] = useState({
-        accionformacion: location.state?.accionformacion || '',
-        formacioninvest: "Investigacion",
+        accionformacion: '',
+        formacioninvest: "",
         tipoactividad: "",
         existeconvenio: null,
         institucionconvenio: "",
@@ -69,67 +70,100 @@ const Investigacion = () => {
     };
 
 
+    useEffect(() => {
+        const obtenerDetalles = async () => {
+            try {
+
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/investC/${id}`);
+                const data = response.data[0];
+                const horas = data.duracion?.hours || 0;
+                const minutos = data.duracion?.minutes || 0;
+
+                setFormData({
+                    ...data,
+                    horas: data.duracion?.hours || 0,
+                    minutos: data.duracion?.minutes || 0,
+                    duracion: `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`,
+                    fechainicio: data.fechainicio ? data.fechainicio.split("T")[0] : "",
+                    fechafinal: data.fechafinal ? data.fechafinal.split("T")[0] : "",
+                });
+
+                console.log(response.data);
+
+            } catch (error) {
+                console.error("Error al obtener los datos", error);
+            }
+        };
+
+        obtenerDetalles();
+    }, [id]);
+
 
     // Manejar cambios en campos de texto y selects
     const handleChange = (event) => {
         const { name, value } = event.target;
-        // Limpiar campos cuando se cambia de Externa a Interna
-        if (name === 'tipoacctividad' && value === 'Interna') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value,
-                institucionconvenio: '', // Limpia institución
-                existeconvenio: '' // Limpia convenio
-            }));
-            return;
-        }
-
-
+      
         setFormData((prevData) => {
-            let newData = { ...prevData, [name]: value };
-
-            // Convertimos el valor a string para evitar errores con `.trim()`
-            const valueStr = String(value || "");
-
-            // Quitar error si el usuario llena un campo vacío
-            setFieldErrors((prevErrors) => ({
-                ...prevErrors,
-                [name]: valueStr.trim() === "" ? true : false,
+          // Construimos la nueva data base
+          let newData = { 
+            ...prevData, 
+            [name]: value 
+          };
+      
+          // Validación rápida de errores de campo vacío
+          const isEmpty = String(value || "").trim() === "";
+          setFieldErrors((prev) => ({
+            ...prev,
+            [name]: isEmpty,
+          }));
+      
+          // Si cambiamos a "Interna", limpiamos los campos de convenio
+          if (name === "tipoactividad" && value === "Interna") {
+            newData.institucionconvenio = "";
+            newData.existeconvenio = "";
+            setFieldErrors((prev) => ({
+              ...prev,
+              institucionconvenio: false,
+              existeconvenio: false,
             }));
-
-            // Validación de fechas
-            if (name === "fechainicio" || name === "fechafinal") {
-                const formattedDate = new Date(value).toISOString().split("T")[0];
-                newData[name] = formattedDate;
-
-                if (newData.fechainicio && newData.fechafinal) {
-                    if (new Date(newData.fechainicio) > new Date(newData.fechafinal)) {
-                        setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
-                        setFieldErrors({ fechainicio: true, fechafinal: true });
-                    } else {
-                        setError("");
-                        setFieldErrors({ fechainicio: false, fechafinal: false });
-                    }
-                }
-            }
-
-
-
-            // Validar minutos
-            if (name === "minutos" && Number(value) > 59) {
-                setErrorM("Solo se admiten minutos hasta 59.");
+          }
+      
+          // Validación de fechas
+          if (name === "fechainicio" || name === "fechafinal") {
+            // Formatear a YYYY-MM-DD
+            newData[name] = new Date(value).toISOString().split("T")[0];
+            const { fechainicio, fechafinal } = newData;
+            if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
+              setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
+              setFieldErrors({ fechainicio: true, fechafinal: true });
             } else {
-                setErrorM("");
+              setError("");
+              setFieldErrors((prev) => ({
+                ...prev,
+                fechainicio: false,
+                fechafinal: false,
+              }));
             }
-
-            // Calcular duración (HH:MM)
-            const horas = newData.horas || 0;
-            const minutos = newData.minutos || 0;
-            newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
-
-            return newData;
+          }
+      
+          // Validación de minutos
+          if (name === "minutos") {
+            if (Number(value) > 59) {
+              setErrorM("Solo se admiten minutos hasta 59.");
+            } else {
+              setErrorM("");
+            }
+          }
+      
+          // Recalcular duración en HH:MM
+          const horas = Number(newData.horas) || 0;
+          const minutos = Number(newData.minutos) || 0;
+          newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+      
+          return newData;
         });
-    };
+      };
+      
 
 
 
@@ -149,27 +183,13 @@ const Investigacion = () => {
         obtenerNivelEducativo();
     }, []);
 
-    // Efecto para capturar el ID si viene del flujo "Guardar"
 
-    useEffect(() => {
-        if (location.state?.investCap) {
-            setInvestCapId(location.state.investCap);
-            setIsFromLineamientos(true);
-            // Si viene con título desde lineamientos, actualiza el formData
-            if (location.state.accionformacion) {
-                setFormData(prev => ({
-                    ...prev,
-                    accionformacion: location.state.accionformacion
-                }));
-            }
-        }
-    }, [location.state]);
+
 
     const handleSave = async () => {
         // Lista de campos obligatorios
         const requiredFields = [
             "accionformacion",
-
         ];
 
         // Detectar campos vacíos
@@ -185,9 +205,6 @@ const Investigacion = () => {
             errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
             errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
         }
-
-
-
 
         // Si hay campos vacíos, actualizar estado y mostrar alerta
         if (Object.keys(errors).length > 0) {
@@ -211,6 +228,7 @@ const Investigacion = () => {
             });
             return; // Detiene la ejecución si la validación falla
         }
+
         // Verificación de la fecha antes de guardar los datos
         if (formData.fechainicio && formData.fechafinal) {
             if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
@@ -224,9 +242,36 @@ const Investigacion = () => {
             }
         }
 
-        // Convierte strings vacíos a null
+        // Verificar los campos booleanos
+        const { presentoprotocolo, monitoreoyevaluacion, aplicacionevaluacion } = formData;
+        const trueCount = [presentoprotocolo, monitoreoyevaluacion, aplicacionevaluacion]
+            .filter(value => value === true).length;
+
+        if (trueCount < 3) {
+            const result = await Swal.fire({
+                title: 'Confirmación',
+                text: `¿Está seguro de actualizar esta investigación con solo ${trueCount} de los 3 lineamientos requeridos?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: color.primary.azul,
+                cancelButtonColor: color.primary.rojo,
+                confirmButtonText: 'Sí, Actualizar',
+                cancelButtonText: 'No, cancelar',
+                reverseButtons: true
+            });
+
+            if (!result.isConfirmed) {
+                return; // No proceder si el usuario cancela
+            }
+        }
+
+
+        // Convierte strings vacíos a null y actualiza el campo modificadopor
         const cleanedFormData = Object.fromEntries(
-            Object.entries(formData).map(([key, value]) => {
+            Object.entries({
+                ...formData,
+                modificadopor: user // Asegúrate de incluir el usuario actual aquí
+            }).map(([key, value]) => {
                 // Si el valor es una cadena vacía, lo convierte en null
                 if (value === "") return [key, null];
                 return [key, value];
@@ -234,64 +279,30 @@ const Investigacion = () => {
         );
 
         try {
-            let idToUse = investCapId;
-
-            // Si no hay ID (flujo "Omitir"), pedir confirmación
-            if (!idToUse) {
-                const confirmResult = await Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "La investigación se registrará sin lineamientos. ¿Deseas continuar?",
-                    icon: 'warning',
-
-                    showCancelButton: true,
-                    confirmButtonColor: color.primary.azul,
-                    cancelButtonColor: color.primary.rojo,
-                    confirmButtonText: 'Sí, guardar',
-                    cancelButtonText: 'No, cancelar',
-                    reverseButtons: true
-                });
-
-
-                // Si el usuario cancela, no continuar
-                if (!confirmResult.isConfirmed) {
-                    return;
-                }
-
-                // Si confirma, hacer el POST
-                const response = await axios.post(
-                    `${process.env.REACT_APP_API_URL}/investC`,
-                    cleanedFormData,
-                    { headers: { "Content-Type": "application/json" } }
-                );
-                idToUse = response.data.id;
-            }
-
             // Actualizar el registro
             const updateResponse = await axios.put(
-                `${process.env.REACT_APP_API_URL}/investC/${idToUse}`,
+                `${process.env.REACT_APP_API_URL}/investC/${id}`,
                 cleanedFormData,
                 { headers: { "Content-Type": "application/json" } }
             );
 
             // Mostrar mensaje de éxito
             await Swal.fire(
-                '¡Guardado!',
-                'La investigación ha sido registrada',
+                'Actualización!',
+                'La investigación ha sido actualizada',
                 'success'
             );
-
 
             console.log("Datos que envio", formData);
 
             // Redirigir a Participantes con el ID
-            navigate("/Participantes", { state: { investCap: idToUse } });
+            navigate("/Participantes", { state: { investCap: id } });
 
         } catch (error) {
             console.error("Error al guardar los datos", error);
             Swal.fire('Error!', 'Error al guardar datos', 'error');
         }
     };
-
 
     return (
         <>
@@ -300,10 +311,18 @@ const Investigacion = () => {
                     <Box alignItems="center" justifyContent="space-between">
 
                         <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                            Registro de Datos sobre la Investigación
+                            Actualizar Datos sobre la Investigación
                         </Typography>
 
                         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
+                            <Button
+                                variant="contained"
+                                sx={{ backgroundColor: color.primary.azul, mr: 3 }}
+                                startIcon={<ChecklistIcon />}
+                                onClick={() => navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`)}
+                            >
+                                Lineamientos
+                            </Button>
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -330,16 +349,8 @@ const Investigacion = () => {
                                 onChange={handleChange}
                                 error={fieldErrors.accionformacion}
                                 helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
-                                disabled={isFromLineamientos} // Deshabilita si viene de lineamientos
-                                InputProps={{
-                                    readOnly: isFromLineamientos, // Hace que sea solo lectura
-                                }}
                             />
-                            {isFromLineamientos && (
-                                <Typography variant="caption" color="textSecondary">
-                                    Este campo fue definido en los lineamientos
-                                </Typography>
-                            )}
+
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>

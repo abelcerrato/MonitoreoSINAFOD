@@ -31,7 +31,7 @@ const ModificarParticipante = () => {
   const { user } = useUser();
 
   const { id } = useParams();
-  console.log("id", user);
+
 
   const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();

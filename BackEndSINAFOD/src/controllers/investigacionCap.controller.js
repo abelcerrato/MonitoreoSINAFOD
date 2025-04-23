@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import multer from "multer";
-
+import { pool } from '../db.js'
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
 import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacionCap.models.js";
 import { getUsuarioIdM } from "../models/user.models.js";
@@ -170,130 +170,68 @@ export const uploadLineamientos = upload.fields([
 // Crear investigacion o capacitacion con lineamientos
 // Se actualizan los lineamientos y se suben los archivos correspondientes
 export const postLineamientosC = async (req, res) => {
-    const {
-        presentoprotocolo, estadoprotocolo,
-        monitoreoyevaluacion, aplicacionevaluacion, accionformacion, creadopor,
-        formacioninvest, criteriosfactibilidad, criteriosfactibilidadurl,
-        requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
-    } = req.body;
+    const { body, files } = req;
 
-    const files = req.files || {};
-    const d = new Date();
-    const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
-        .map(n => n.toString().padStart(2, '0')).join('-');
+    console.log("Cuerpo de la petición:", body);
+    console.log("Archivos recibidos:", files);
 
     try {
         // 1. Validar usuario
-        const userResponse = await getUsuarioIdM(creadopor);
-        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
-            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        const userResponse = await getUsuarioIdM(body.creadopor);
+        if (!userResponse?.[0]?.id) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
-        const usuario = userResponse[0].id;
 
-        // 2. Insert inicial con valores por defecto
+        // 2. Insertar datos básicos
         const result = await postLineamientosM(
-            presentoprotocolo,
-            null, // presentoprotocolourl
-            estadoprotocolo,
-            monitoreoyevaluacion,
-            null, // monitoreoyevaluacionurl
-            aplicacionevaluacion,
-            null, // aplicacionevaluacionurl
-            accionformacion,
-            usuario,
-            formacioninvest,
-            criteriosfactibilidad,
-            null, //criteriosfactibilidadurl,
-            requisitostecnicos,
-            null, //requisitostecnicosurl,
-            criterioseticos,
-            null, //criterioseticosurl
-
+            body.presentoprotocolo === 'true',
+            null, // URL se actualizará después
+            body.estadoprotocolo,
+            body.monitoreoyevaluacion === 'true',
+            null,
+            body.aplicacionevaluacion === 'true',
+            null,
+            body.accionformacion,
+            userResponse[0].id,
+            body.formacioninvest,
+            body.criteriosfactibilidad === 'true',
+            null,
+            body.requisitostecnicos === 'true',
+            null,
+            body.criterioseticos === 'true',
+            null
         );
 
-        const idInvestCap = result.id;
+        // 3. Procesar archivos
+        const fileUpdates = {};
+        const booleanUpdates = {};
 
-        // 3. Procesar archivos y preparar actualizaciones
-        const fileUpdates = {
-            presentoprotocolourl: null,
-            monitoreoyevaluacionurl: null,
-            aplicacionevaluacionurl: null,
-            criteriosfactibilidadurl: null,
-            requisitostecnicosurl: null,
-            criterioseticosurl: null
-        };
+        // Mapeo de campos de archivo
+        const fileFields = [
+            'presentoprotocolourl',
+            'monitoreoyevaluacionurl',
+            'aplicacionevaluacionurl',
+            'criteriosfactibilidadurl',
+            'requisitostecnicosurl',
+            'criterioseticosurl'
+        ];
 
-        const booleanUpdates = {
-            presentoprotocolo: false,
-            monitoreoyevaluacion: false,
-            aplicacionevaluacion: false,
-            criteriosfactibilidad: false,
-            requisitostecnicos: false,
-            criterioseticos: false
-        };
+        fileFields.forEach(field => {
+            if (files[field]?.[0]) {
+                const file = files[field][0];
+                fileUpdates[field] = file.filename; // Usamos el nombre que generó multer
+                booleanUpdates[field.replace('url', '')] = true;
+            } else {
+                fileUpdates[field] = null;
+                booleanUpdates[field.replace('url', '')] = false;
+            }
+        });
 
-        // Procesar cada archivo
-        if (files.presentoprotocolourl && files.presentoprotocolourl[0]) {
-            const file = files.presentoprotocolourl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.presentoprotocolourl = filename;
-            booleanUpdates.presentoprotocolo = true; // Marcamos como true si hay archivo
-        }
-
-        if (files.monitoreoyevaluacionurl && files.monitoreoyevaluacionurl[0]) {
-            const file = files.monitoreoyevaluacionurl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.monitoreoyevaluacionurl = filename;
-            booleanUpdates.monitoreoyevaluacion = true;
-        }
-
-        if (files.aplicacionevaluacionurl && files.aplicacionevaluacionurl[0]) {
-            const file = files.aplicacionevaluacionurl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.aplicacionevaluacionurl = filename;
-            booleanUpdates.aplicacionevaluacion = true;
-        }
-
-        if (files.criteriosfactibilidadurl && files.criteriosfactibilidadurl[0]) {
-            const file = files.criteriosfactibilidadurl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.criteriosfactibilidadurl = filename;
-            booleanUpdates.criteriosfactibilidad = true;
-        }
-
-        if (files.requisitostecnicosurl && files.requisitostecnicosurl[0]) {
-            const file = files.requisitostecnicosurl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.requisitostecnicosurl = filename;
-            booleanUpdates.requisitostecnicos = true;
-        }
-
-        if (files.criterioseticosurl && files.criterioseticosurl[0]) {
-            const file = files.criterioseticosurl[0];
-            const filename = `${idInvestCap}-${date}-${file.originalname}`;
-            const newPath = path.join(file.destination, filename);
-            fs.renameSync(file.path, newPath);
-            fileUpdates.criterioseticosurl = filename;
-            booleanUpdates.criterioseticos = true;
-        }
-
-
-
-        // 4. Actualizar con las rutas de archivos y los booleanos
-        const updatedLineamientos = await putLineamientosM(
-            booleanUpdates.presentoprotocolo, // Enviamos true/false según si hay archivo
+        // 4. Actualizar con las rutas de archivos
+        const updated = await putLineamientosM(
+            booleanUpdates.presentoprotocolo,
             fileUpdates.presentoprotocolourl,
-            estadoprotocolo,
+            body.estadoprotocolo,
             booleanUpdates.monitoreoyevaluacion,
             fileUpdates.monitoreoyevaluacionurl,
             booleanUpdates.aplicacionevaluacion,
@@ -304,23 +242,21 @@ export const postLineamientosC = async (req, res) => {
             fileUpdates.requisitostecnicosurl,
             booleanUpdates.criterioseticos,
             fileUpdates.criterioseticosurl,
-            idInvestCap
+            result.id,
+            userResponse[0].id
         );
 
         res.json({
             success: true,
-            message: "Lineamientos actualizados correctamente",
-            id: idInvestCap,
-            files: fileUpdates,
-            flags: booleanUpdates
+            data: updated,
+            files: fileUpdates
         });
 
     } catch (error) {
-        console.error("Error en postLineamientosC:", error);
+        console.error("Error completo:", error);
         res.status(500).json({
             success: false,
-            error: "Error al procesar los lineamientos",
-            details: error.message
+            error: error.message
         });
     }
 };
@@ -329,27 +265,130 @@ export const postLineamientosC = async (req, res) => {
 // Se actualizan los lineamientos y se suben los archivos correspondientes
 export const putLineamientosC = async (req, res) => {
     const { id } = req.params;
-    const { presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl,
-        criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl
-    } = req.body
+    const {
+        estadoprotocolo,
+        modificadopor,
+        // Campos para mantener URLs existentes
+        presentoprotocolourl,
+        monitoreoyevaluacionurl,
+        aplicacionevaluacionurl,
+        // Campos booleanos para documentos
+        presentoprotocolo,
+        monitoreoyevaluacion,
+        aplicacionevaluacion
+    } = req.body;
+    console.log(req.body);
+
+    const files = req.files || {};
+    console.log(req.files);
+    const d = new Date();
+    const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
+        .map(n => n.toString().padStart(2, '0')).join('-');
 
     try {
+        // 1. Validar usuario
+        const userResponse = await getUsuarioIdM(modificadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
 
-        const investCap = await putLineamientosM(presentoprotocolo, presentoprotocolourl, estadoprotocolo,
-            monitoreoyevaluacion, monitoreoyevaluacionurl,
-            aplicacionevaluacion, aplicacionevaluacionurl,
-            criteriosfactibilidad, criteriosfactibilidadurl,
-            requisitostecnicos, requisitostecnicosurl,
-            criterioseticos, criterioseticosurl,
-            id)
-        //res.json(investCap)
-        res.json({ message: "Lineamientos de la Investigacion o capacitacion actualizados ", user: investCap });
+        // 2. Obtener datos actuales usando tu función existente
+        const currentDataResponse = await pool.query(
+            'SELECT * FROM investigacioncap WHERE id = $1',
+            [id]
+        );
+        const currentData = currentDataResponse.rows[0];
+
+        if (!currentData) {
+            return res.status(404).json({ message: "Registro no encontrado" });
+        }
+
+        // 3. Preparar valores para la actualización
+        const updateValues = {
+            // Valores por defecto (actuales)
+            presentoprotocolo: currentData.presentoprotocolo,
+            presentoprotocolourl: currentData.presentoprotocolourl,
+            monitoreoyevaluacion: currentData.monitoreoyevaluacion,
+            monitoreoyevaluacionurl: currentData.monitoreoyevaluacionurl,
+            aplicacionevaluacion: currentData.aplicacionevaluacion,
+            aplicacionevaluacionurl: currentData.aplicacionevaluacionurl,
+            // Otros campos
+            estadoprotocolo: estadoprotocolo || currentData.estadoprotocolo,
+            criteriosfactibilidad: currentData.criteriosfactibilidad,
+            criteriosfactibilidadurl: currentData.criteriosfactibilidadurl,
+            requisitostecnicos: currentData.requisitostecnicos,
+            requisitostecnicosurl: currentData.requisitostecnicosurl,
+            criterioseticos: currentData.criterioseticos,
+            criterioseticosurl: currentData.criterioseticosurl
+        };
+
+        // 4. Procesar archivos subidos
+        const processFile = (fieldName) => {
+            if (files[fieldName] && files[fieldName][0]) {
+                const file = files[fieldName][0];
+                const filename = `${id}-${date}-${file.originalname}`;
+                const newPath = path.join(uploadDir, filename);
+
+                // Mover el archivo subido
+                fs.renameSync(file.path, newPath);
+
+                // Actualizar valores
+                updateValues[fieldName] = filename;
+                updateValues[fieldName.replace('url', '')] = true;
+            } else if (req.body[fieldName] === 'null') {
+                // Si se solicita eliminar el archivo
+                updateValues[fieldName] = null;
+                updateValues[fieldName.replace('url', '')] = false;
+
+                // Eliminar el archivo físico si existe
+                if (currentData[fieldName]) {
+                    const filePath = path.join(uploadDir, currentData[fieldName]);
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                }
+            }
+            // Si no se envía nada, mantiene los valores actuales
+        };
+
+        // Procesar los archivos de documentos principales
+        [
+            'presentoprotocolourl',
+            'monitoreoyevaluacionurl',
+            'aplicacionevaluacionurl'
+        ].forEach(processFile);
+
+        // 5. Llamar a tu función putLineamientosM
+        const updatedData = await putLineamientosM(
+            updateValues.presentoprotocolo,
+            updateValues.presentoprotocolourl,
+            updateValues.estadoprotocolo,
+            updateValues.monitoreoyevaluacion,
+            updateValues.monitoreoyevaluacionurl,
+            updateValues.aplicacionevaluacion,
+            updateValues.aplicacionevaluacionurl,
+            updateValues.criteriosfactibilidad,
+            updateValues.criteriosfactibilidadurl,
+            updateValues.requisitostecnicos,
+            updateValues.requisitostecnicosurl,
+            updateValues.criterioseticos,
+            updateValues.criterioseticosurl,
+            usuario,
+            id
+        );
+
+        res.json({
+            success: true,
+            message: "Lineamientos actualizados correctamente",
+            data: updatedData
+        });
+
     } catch (error) {
-        console.error('Error al actualizar la investigacion o capaciotacion: ', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error al actualizar lineamientos:', error);
+        res.status(500).json({
+            error: 'Error interno del servidor',
+            details: error.message
+        });
     }
-
-
-}
-
-
+};

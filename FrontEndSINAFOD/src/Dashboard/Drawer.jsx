@@ -36,7 +36,7 @@ const ProjectDrawer = () => {
   };
 
   const NuevaFormación = () => {
-    navigate("/Formulario");
+    navigate("/Lineamientos_De_Formación");
     setOpen(false); // Cierra el menú después de navegar
   };
   const NuevaInvestigacion = () => {

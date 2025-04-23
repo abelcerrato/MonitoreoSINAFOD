@@ -36,16 +36,15 @@ const Investigacion = () => {
     const [NivelEducativo, setNivelEducativo] = useState([]);
     const [errorM, setErrorM] = useState("");
     const [error, setError] = useState("");
+    const [ciclos, setCiclos] = useState([]);
     const [isFromLineamientos, setIsFromLineamientos] = useState(false);
     const [formData, setFormData] = useState({
         accionformacion: location.state?.accionformacion || '',
-        formacioninvest: "Investigacion",
+        formacioninvest: "Formación",
         tipoactividad: "",
         existeconvenio: null,
         institucionconvenio: "",
-        costo: "",
         duracion: 0,
-        idnivelesacademicos: "",
         funciondirigido: "",
         fechainicio: "",
         fechafinal: "",
@@ -54,7 +53,19 @@ const Investigacion = () => {
         zona: "",
         observacion: "",
         creadopor: user,
-        modificadopor: user
+        modificadopor: user,
+        institucionresponsable: "",
+        responsablefirmas: "",
+        ambitoformacion: "",
+        tipoformacion: "",
+        modalidad: "",
+        duracion: 0,
+        espaciofisico: "",
+        idnivelesacademicos: "",
+        cicloacademico: null,
+        estado: "",
+        participantesprog: 0,
+        plataforma: ""
     });
 
     const [fieldErrors, setFieldErrors] = useState({
@@ -73,58 +84,55 @@ const Investigacion = () => {
     // Manejar cambios en campos de texto y selects
     const handleChange = (event) => {
         const { name, value } = event.target;
-        // Limpiar campos cuando se cambia de Externa a Interna
-        if (name === 'tipoacctividad' && value === 'Interna') {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value,
-                institucionconvenio: '', // Limpia institución
-                existeconvenio: '' // Limpia convenio
-            }));
-            return;
-        }
-
 
         setFormData((prevData) => {
+            // 1) Base de la nueva data
             let newData = { ...prevData, [name]: value };
 
-            // Convertimos el valor a string para evitar errores con `.trim()`
-            const valueStr = String(value || "");
-
-            // Quitar error si el usuario llena un campo vacío
+            // 2) Validación de campo vacío
+            const isEmpty = String(value || "").trim() === "";
             setFieldErrors((prevErrors) => ({
                 ...prevErrors,
-                [name]: valueStr.trim() === "" ? true : false,
+                [name]: isEmpty,
             }));
 
-            // Validación de fechas
+            // 3) Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
-                const formattedDate = new Date(value).toISOString().split("T")[0];
-                newData[name] = formattedDate;
-
-                if (newData.fechainicio && newData.fechafinal) {
-                    if (new Date(newData.fechainicio) > new Date(newData.fechafinal)) {
-                        setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
-                        setFieldErrors({ fechainicio: true, fechafinal: true });
-                    } else {
-                        setError("");
-                        setFieldErrors({ fechainicio: false, fechafinal: false });
-                    }
+                newData[name] = new Date(value).toISOString().split("T")[0];
+                const { fechainicio, fechafinal } = newData;
+                if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
+                    setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
+                    setFieldErrors({ fechainicio: true, fechafinal: true });
+                } else {
+                    setError("Este campo es obligatorio");
+                    setFieldErrors({ fechainicio: false, fechafinal: false });
                 }
             }
 
-
-
-            // Validar minutos
-            if (name === "minutos" && Number(value) > 59) {
-                setErrorM("Solo se admiten minutos hasta 59.");
-            } else {
-                setErrorM("");
+            // 4) Limpiar campos de convenio cuando pasamos a Interna
+            if (name === "tipoactividad" && value === "Interna") {
+                newData.institucionconvenio = "";
+                newData.existeconvenio = "";
+                // También limpiamos errores si los tuvieras
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    institucionconvenio: false,
+                    existeconvenio: false,
+                }));
             }
 
-            // Calcular duración (HH:MM)
-            const horas = newData.horas || 0;
-            const minutos = newData.minutos || 0;
+            // 5) Validación de minutos
+            if (name === "minutos") {
+                if (Number(value) > 59) {
+                    setErrorM("Solo se admiten minutos hasta 59.");
+                } else {
+                    setErrorM("");
+                }
+            }
+
+            // 6) Recalcular duración en HH:MM
+            const horas = Number(newData.horas) || 0;
+            const minutos = Number(newData.minutos) || 0;
             newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
 
             return newData;
@@ -149,6 +157,32 @@ const Investigacion = () => {
         obtenerNivelEducativo();
     }, []);
 
+
+    // Obtener ciclos cuando cambia el departamento seleccionado
+    useEffect(() => {
+        if (!formData.idnivelesacademicos) return; // Si no hay departamento seleccionado, no hacer la petición
+
+        const obtenerciclos = async () => {
+            try {
+
+
+                const response = await axios.get(
+
+                    `${process.env.REACT_APP_API_URL}/cicloAcademicoNivel/${formData.idnivelesacademicos}`
+                );
+                console.log("Ciclos obtenidos:", response.data);
+
+                setCiclos(response.data);
+            } catch (error) {
+                console.error("Error al obtener los ciclos", error);
+            }
+        };
+
+        obtenerciclos();
+    }, [formData.idnivelesacademicos]);
+
+
+
     // Efecto para capturar el ID si viene del flujo "Guardar"
 
     useEffect(() => {
@@ -169,7 +203,10 @@ const Investigacion = () => {
         // Lista de campos obligatorios
         const requiredFields = [
             "accionformacion",
-
+            "tipoactividad",
+            "fechainicio",
+            "fechafinal",
+            "socializaron"
         ];
 
         // Detectar campos vacíos
@@ -300,7 +337,7 @@ const Investigacion = () => {
                     <Box alignItems="center" justifyContent="space-between">
 
                         <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                            Registro de Datos sobre la Investigación
+                            Registro de Datos sobre la Formación
                         </Typography>
 
                         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
@@ -321,7 +358,7 @@ const Investigacion = () => {
                     <Grid container spacing={5} mt={2}>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Título del Proyecto
+                                Nombre de la Formación
                             </Typography>
                             <TextField
                                 fullWidth
@@ -343,7 +380,7 @@ const Investigacion = () => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>
-                            <FormControl fullWidth >
+                            <FormControl fullWidth error={fieldErrors.tipoactividad}>
                                 <Select
                                     name="tipoactividad"
                                     value={formData.tipoactividad}
@@ -352,7 +389,11 @@ const Investigacion = () => {
                                     <MenuItem value="Interna">Interna</MenuItem>
                                     <MenuItem value="Externa">Externa</MenuItem>
                                 </Select>
-
+                                {fieldErrors.tipoactividad && (
+                                    <FormHelperText style={{ color: 'red' }}>
+                                        Debe seleccionar una opción
+                                    </FormHelperText>
+                                )}
                             </FormControl>
                         </Grid>
                         {formData.tipoactividad === "Externa" && (
@@ -384,17 +425,87 @@ const Investigacion = () => {
                         )}
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Costo
+                                Institución Responsable
                             </Typography>
                             <TextField
                                 fullWidth
-                                name="costo"
-                                value={formData.costo}
+                                name="institucionresponsable"
+                                value={formData.institucionresponsable}
                                 onChange={handleChange}
+                                error={fieldErrors.institucionresponsable}
+                                helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Responsable de Firmas</Typography>
+                            <TextField
+                                fullWidth
+                                name="responsablefirmas"
+                                value={formData.responsablefirmas}
+                                onChange={handleChange}
+                                error={fieldErrors.responsablefirmas}
+                                helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Ambito de Formación</Typography>
+                            <TextField
+                                fullWidth
+                                name="ambitoformacion"
+                                value={formData.ambitoformacion}
+                                onChange={handleChange}
+                                error={fieldErrors.ambitoformacion}
+                                helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Tipo de Formación</Typography>
+                            <FormControl fullWidth error={fieldErrors.tipoformacion}>
+                                <Select
+                                    name="tipoformacion"
+                                    value={formData.tipoformacion}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Taller">Taller</MenuItem>
+                                    <MenuItem value="Seminario">Seminario</MenuItem>
+                                    <MenuItem value="Curso">Curso</MenuItem>
+                                    <MenuItem value="Diplomado">Diplomado</MenuItem>
+                                </Select>
+                                {fieldErrors.tipoformacion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Modalidad</Typography>
+                            <FormControl fullWidth error={fieldErrors.modalidad}>
+                                <Select
+                                    name="modalidad"
+                                    value={formData.modalidad}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Online">Online</MenuItem>
+                                    <MenuItem value="Presencial">Presencial</MenuItem>
+                                    <MenuItem value="Híbrido">Híbrido</MenuItem>
+                                </Select>
+                                {fieldErrors.modalidad && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                            </FormControl>
+                        </Grid>
+                        {(formData.modalidad === "Online" || formData.modalidad === "Híbrido") && (
+                            <Grid item xs={12} sm={6}>
+                                <Typography variant="subtitle1">Plataforma en la que se Relizara la Actividad</Typography>
+                                <TextField
+                                    fullWidth
+                                    name="plataforma"
+                                    value={formData.plataforma}
+                                    onChange={handleChange}
+                                    error={fieldErrors.plataforma}
+                                    helperText={fieldErrors.plataforma ? "Este campo es obligatorio" : ""}
+                                />
+                            </Grid>
+                        )}
+                        <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Duración</Typography>
+
                             <Grid container spacing={2}>
                                 <Grid item xs={12} sm={4}>
                                     <TextField
@@ -439,22 +550,40 @@ const Investigacion = () => {
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Estado</Typography>
+                            <FormControl fullWidth error={fieldErrors.estado}>
+                                <Select
+                                    name="estado"
+                                    value={formData.estado}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Planificada">Planificada</MenuItem>
+                                    <MenuItem value="En Curso">En Curso</MenuItem>
+                                    <MenuItem value="Suspendida">Suspendida</MenuItem>
+                                    <MenuItem value="Completada">Completada</MenuItem>
+                                    <MenuItem value="Cancelada">Cancelada</MenuItem>
+                                </Select>
+                                {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Población a la que va dirigido
+                                Cargo a la que va dirigido
                             </Typography>
                             <TextField
                                 fullWidth
                                 name="funciondirigido"
                                 value={formData.funciondirigido}
                                 onChange={handleChange}
+                                error={fieldErrors.funciondirigido}
+                                helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
                                 Nivel Educativo
                             </Typography>
-                            <FormControl fullWidth > {/**error={fieldErrors.idnivelesacademicos} */}
+                            <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                                 <Select
                                     name="idnivelesacademicos"
                                     value={formData.idnivelesacademicos || ""}
@@ -474,6 +603,30 @@ const Investigacion = () => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Ciclo Académico
+                            </Typography>
+                            <FormControl fullWidth>
+                                <Select
+                                    name="cicloacademico"
+                                    value={formData.cicloacademico || null}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    disabled={!ciclos.length} // Deshabilitar si no hay ciclos cargados
+                                >
+                                    {ciclos.length > 0 ? (
+                                        ciclos.map((mun) => (
+                                            <MenuItem key={mun.id} value={mun.ciclo}>
+                                                {mun.ciclo}
+                                            </MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem disabled>Seleccione un ciclo</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Fecha Inicio</Typography>
                             <TextField
                                 fullWidth
@@ -482,7 +635,7 @@ const Investigacion = () => {
                                 value={formData.fechainicio || ""}
                                 onChange={handleChange}
                                 error={fieldErrors.fechainicio} // Aquí se activa el error
-                                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error 
+                                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -501,19 +654,44 @@ const Investigacion = () => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">
+                                Cantidad de Participantes Programados
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                type="text"
+                                name="participantesprog"
+                                value={formData.participantesprog || ""}
+                                onChange={handleChange}
+                                error={fieldErrors.participantesprog}
+                                helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Espacio Físico</Typography>
+                            <TextField
+                                fullWidth
+                                name="espaciofisico"
+                                value={formData.espaciofisico}
+                                onChange={handleChange}
+                                error={fieldErrors.espaciofisico}
+                                helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Dirección</Typography>
                             <TextField
                                 fullWidth
                                 name="direccion"
                                 value={formData.direccion}
                                 onChange={handleChange}
-                            /* error={fieldErrors.direccion}
-                            helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""} */
+                                error={fieldErrors.direccion}
+                                helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Zona</Typography>
-                            <FormControl fullWidth> {/*error={fieldErrors.zona} */}
+                            <FormControl fullWidth error={fieldErrors.zona}>
                                 <Select
                                     name="zona"
                                     value={formData.zona}
@@ -522,17 +700,22 @@ const Investigacion = () => {
                                     <MenuItem value="Rural">Rural</MenuItem>
                                     <MenuItem value="Urbana">Urbana</MenuItem>
                                 </Select>
-                                {/*  {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>} */}
+                                {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">¿Se realizó socialización?</Typography>
-                            <FormControl fullWidth >
+                            <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron} onChange={handleChange}>
                                     <MenuItem value="true">Sí</MenuItem>
                                     <MenuItem value="false">No</MenuItem>
                                 </Select>
-
+                                {fieldErrors.socializaron && (
+                                    <FormHelperText style={{ color: 'red' }}>
+                                        Debe seleccionar una opción
+                                    </FormHelperText>
+                                )}
                             </FormControl>
                         </Grid>
                         <Grid item xs={12} sm={6}>
