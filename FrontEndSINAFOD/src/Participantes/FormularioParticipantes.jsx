@@ -44,7 +44,6 @@ const FormularParticipantes = () => {
   const [gardo, setGrado] = useState([]);
   const [aldeas, setAldea] = useState([]);
   const [value, setValue] = React.useState("1");
-  const [NivelEducativoP, setNivelEducativoP] = useState([]);
   const [aldeasP, setAldeaP] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
@@ -359,20 +358,7 @@ const FormularParticipantes = () => {
 
 
   {/* Datos académicos  del participante */ }
-  // Obtener NivelEducativo al montar el componente
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`);
-        setNivelEducativoP(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
-
+  
 
 
   // Obtener gardo cuando cambia el departamento seleccionado

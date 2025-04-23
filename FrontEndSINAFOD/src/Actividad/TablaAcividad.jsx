@@ -134,7 +134,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     navigate(`/Modificar_Actividad/${id}`); // Redirige a la página de edición con el ID
   };
   const handleLineamientos = (id) => {
-    navigate(`/Lineamientos_De_Investigación/:id/${id}`); // Redirige a la página de edición con el ID
+    navigate(`/Lineamientos_De_Investigación/${id}`); // Redirige a la página de edición con el ID
   };
   const handleOpen = (id) => {
     setSelectedId(id);

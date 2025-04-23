@@ -74,7 +74,7 @@ export const getInvestigacionCapIdInvM = async (id) => {
             SELECT  ic.id, ic.formacioninvest, ic.accionformacion, ic.tipoactividad, ic.existeconvenio, ic.institucionconvenio, ic.institucionresponsable, ic.responsablefirmas, ic.ambitoformacion,  
                     ic.tipoformacion, ic.modalidad, ic.plataforma,  ic.zona, ic.duracion, ic.espaciofisico, 
                     ic.funciondirigido, ic.fechainicio, ic.fechafinal, ic.participantesprog, 
-                    ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, u.nombre, 
+                    ic.participantesrecib, ic.direccion, ic.observacion, ic.estado, 
                     n.id AS IdNivel, n.nombre AS NivelAcademico, 
                     c.id AS IdCiclo, c.nombre AS CicloAcademico,
                     ic.socializaron, ic.costo, 
@@ -84,10 +84,10 @@ export const getInvestigacionCapIdInvM = async (id) => {
                     ic.criteriosfactibilidad, ic.criteriosfactibilidadurl,
                     ic.requisitostecnicos, ic.requisitostecnicosurl,
                     ic.criterioseticos, ic.criterioseticosurl 
-            FROM investigacioncap as inc
-            left join nivelesacademicos n on inc.idnivelesacademicos = n.id 
-            left join ciclosacademicos c on inc.idciclosacademicos =c.id 
-            WHERE inc.id=$1`, [id])
+            FROM investigacioncap as ic
+            left join nivelesacademicos n on ic.idnivelesacademicos = n.id 
+            left join ciclosacademicos c on ic.idciclosacademicos =c.id 
+            WHERE ic.id=$1`, [id])
 
         return rows;
     } catch (error) {
