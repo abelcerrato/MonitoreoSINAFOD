@@ -173,10 +173,22 @@ const LineamientosI = () => {
                     ...prev,
                     [fieldName]: null,
                 }));
-                setFormData((prev) => ({
-                    ...prev,
-                    [fieldName]: null,
-                }));
+
+                setFormData((prev) => {
+                    const newData = {
+                        ...prev,
+                        [fieldName]: null,
+                    };
+
+                    // Si se elimina el archivo de presentación, limpia el estado del protocolo
+                    if (fieldName === 'presentoprotocolourl') {
+                        newData.estadoprotocolo = '';
+                    }
+
+                    return newData;
+                });
+
+
             }
         });
     };

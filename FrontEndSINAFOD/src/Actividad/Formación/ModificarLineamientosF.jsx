@@ -200,17 +200,21 @@ const LineamientosM = () => {
         ];
 
         fileFields.forEach((field) => {
-            if (formData[field]) {
+            // Si hay un nuevo archivo, lo agregamos
+            if (formData[field] instanceof File) {
                 formDataToSend.append(field, formData[field]);
                 uploadedFilesCount++;
-            } else if (existingFiles[field]) {
+            }
+            // Si hay un archivo existente y no se ha subido uno nuevo, lo mantenemos
+            else if (existingFiles[field] && !formData[field]) {
                 formDataToSend.append(field, existingFiles[field]);
                 uploadedFilesCount++;
-            } else {
+            }
+            // Si no hay ninguno, enviamos "null" como string
+            else {
                 formDataToSend.append(field, "null");
             }
         });
-
         // Verificar si faltan archivos
         if (uploadedFilesCount < totalRequiredFiles) {
             const result = await Swal.fire({
