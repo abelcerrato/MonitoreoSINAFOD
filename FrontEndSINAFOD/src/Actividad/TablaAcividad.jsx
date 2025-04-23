@@ -130,11 +130,20 @@ export default function TablaActividad(isSaved, setIsSaved) {
       });
   }, [isSaved]);
 
-  const handleEdit = (id) => {
-    navigate(`/Modificar_Actividad/${id}`); // Redirige a la página de edición con el ID
+  const handleInvestigación = (id) => {
+    navigate(`/Actualizar_Investigación/${id}`);
   };
-  const handleLineamientos = (id) => {
-    navigate(`/Lineamientos_De_Investigación/${id}`); // Redirige a la página de edición con el ID
+
+  const handleLineamientosInvesticagicon = (id) => {
+    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
+  };
+
+  const handleFormacion = (id) => {
+    navigate(`/Actualizar_Formación/${id}`);
+  };
+
+  const handleLineamientosFormacion = (id) => {
+    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
   };
   const handleOpen = (id) => {
     setSelectedId(id);
@@ -157,17 +166,11 @@ export default function TablaActividad(isSaved, setIsSaved) {
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Formación o Investigación
             </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Institución Responsable</TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>Responsable de Firmas</TableCell> 
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Ambito de Formación</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Tipo de Formación</TableCell>*/}
+
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Modalidad
             </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
-           <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Nivel Objetivo</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Función al que va Dirigido</TableCell>*/}
+
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Estado
             </TableCell>
@@ -180,12 +183,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
             <TableCell align="right" style={{ fontWeight: "bold" }}>
               Lineamientos
             </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Participantes que Asistieron</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Dirección</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Zona</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Observación</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Usuario</TableCell> */}
+
           </TableRow>
         </TableHead>
         <TableBody>
@@ -195,16 +193,34 @@ export default function TablaActividad(isSaved, setIsSaved) {
           ).map((row) => (
             <TableRow key={row.name}>
               <TableCell style={{ width: 160 }} align="center">
-                <Tooltip title="Editar">
-                  <IconButton onClick={() => handleEdit(row.id)} color="action">
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Modificar Lineamientos">
-                  <IconButton onClick={() => handleLineamientos(row.id)} color="success">
-                    <ChecklistIcon />
-                  </IconButton>
-                </Tooltip>
+                {row.formacioninvest === "Investigación" ? (
+                  <>
+                    <Tooltip title="Editar">
+                      <IconButton onClick={() => handleInvestigación(row.id)} color="action">
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Actualizar Lineamientos">
+                      <IconButton onClick={() => handleLineamientosInvesticagicon(row.id)} color="success">
+                        <ChecklistIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                ) : (
+                  <>
+                    <Tooltip title="Editar">
+                      <IconButton onClick={() => handleFormacion(row.id)} color="action">
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Actualizar Lineamientos">
+                      <IconButton onClick={() => handleLineamientosFormacion(row.id)} color="success">
+                        <ChecklistIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                )}
+
                 <Tooltip title="Ver Detalles">
                   <IconButton onClick={() => handleOpen(row.id)} color="info">
                     <RemoveRedEyeIcon />
@@ -225,35 +241,11 @@ export default function TablaActividad(isSaved, setIsSaved) {
               <TableCell style={{ width: 160 }} align="right">
                 {row.formacioninvest}
               </TableCell>
-              {/*  <TableCell style={{ width: 160 }} align="right">
-              {row.institucionresponsable}
-            </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-              {row.responsablefirmas}
-            </TableCell> 
-            <TableCell style={{ width: 160 }} align="right">
-              {row.ambitoformacion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.tipoformacion}
-            </TableCell>*/}
 
               <TableCell style={{ width: 160 }} align="right">
                 {row.modalidad}
               </TableCell>
-              {/*    <TableCell cstyle={{ width: 160 }} align="right">
-              {`${row.duracion.hours ?? 0}h ${row.duracion.minutes ?? 0}m`}
-            </TableCell>
 
-           <TableCell style={{ width: 160 }} align="right">
-              {row.espaciofisico}
-            </TableCell> 
-            <TableCell style={{ width: 160 }} align="right">
-              {row.niveleducactivoobj}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.funciondirigido}
-            </TableCell>*/}
               <TableCell style={{ width: 160 }} align="right">
                 {row.estado}
               </TableCell>
@@ -264,21 +256,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
                 {new Date(row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/")}
               </TableCell>
 
-              {/*    <TableCell style={{ width: 160 }} align="right">
-              {row.participantesprog}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.participantesrecib}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.direccion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.zona}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.observacion}
-            </TableCell>*/}
+
               <TableCell style={{ width: 160 }} align="right">
                 {row.estado_lineamientos}
               </TableCell>

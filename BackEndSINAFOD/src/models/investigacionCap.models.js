@@ -26,7 +26,7 @@ export const getInvestigacionCapM = async () => {
 
     CASE
         -- Para formación en investigación
-        WHEN ic.formacioninvest = 'Investigacion' THEN
+        WHEN ic.formacioninvest = 'Investigación' THEN
             CASE 
                 WHEN ic.presentoprotocolo = TRUE AND ic.monitoreoyevaluacion = TRUE AND ic.aplicacionevaluacion = TRUE THEN 'Lineamientos Completos'
                 WHEN (ic.presentoprotocolo = TRUE AND ic.monitoreoyevaluacion = TRUE)
@@ -39,7 +39,7 @@ export const getInvestigacionCapM = async () => {
             END
 
         -- Para formación
-        WHEN ic.formacioninvest = 'Formacion' THEN
+        WHEN ic.formacioninvest = 'Formación' THEN
             CASE 
                 WHEN ic.criterioseticos = TRUE AND ic.requisitostecnicos = TRUE AND ic.criteriosfactibilidad = TRUE THEN 'Lineamientos Completos'
                 WHEN (ic.criterioseticos = TRUE AND ic.requisitostecnicos = TRUE)
