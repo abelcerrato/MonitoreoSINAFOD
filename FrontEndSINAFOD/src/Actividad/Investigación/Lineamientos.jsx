@@ -10,14 +10,10 @@ import {
   MenuItem,
   FormControl,
   Box,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Tab,
-  Tabs,
+  IconButton,
   FormHelperText,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -92,6 +88,33 @@ const LineamientosI = () => {
     }));
   };
 
+  // Referencias para los inputs de archivo
+  const fileInputRefs = {
+    presentoprotocolourl: React.useRef(null),
+    monitoreoyevaluacionurl: React.useRef(null),
+    aplicacionevaluacionurl: React.useRef(null)
+  };
+
+  // ... (otros estados y funciones)
+
+  const handleRemoveFile = (fieldName) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: null,
+      ...(fieldName === 'presentoprotocolourl' && { estadoprotocolo: "" })
+    }));
+
+    setFileNames(prev => ({
+      ...prev,
+      [fieldName]: ""
+    }));
+
+    // Resetea el input file
+    if (fileInputRefs[fieldName].current) {
+      fileInputRefs[fieldName].current.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -158,16 +181,18 @@ const LineamientosI = () => {
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, registrar',
-        cancelButtonText: 'No, volver atrás',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: 'Sí, Registrar',
+        cancelButtonText: 'No, cancelar',
+        reverseButtons: true
       });
 
       if (!result.isConfirmed) {
         return; // No continuar si el usuario cancela
       }
     }
+    console.log("Datos que envio", formData);
 
     try {
       const response = await axios.post(
@@ -254,10 +279,31 @@ const LineamientosI = () => {
                   name="presentoprotocolourl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.presentoprotocolourl}
                 />
               </Button>
               {formData.presentoprotocolourl && (
-                <span>{formData.presentoprotocolourl.name}</span>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
+                  <Typography variant="body2">
+                    {formData.presentoprotocolourl.name}
+                  </Typography>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('presentoprotocolourl')}
+                    sx={{ ml: 'auto' }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               )}
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -300,10 +346,32 @@ const LineamientosI = () => {
                   name="monitoreoyevaluacionurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.monitoreoyevaluacionurl}
                 />
               </Button>
+
               {formData.monitoreoyevaluacionurl && (
-                <span>{formData.monitoreoyevaluacionurl.name}</span>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
+                  <Typography variant="body2">
+                    {formData.monitoreoyevaluacionurl.name}
+                  </Typography>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('monitoreoyevaluacionurl')}
+                    sx={{ ml: 'auto' }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               )}
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -322,10 +390,32 @@ const LineamientosI = () => {
                   name="aplicacionevaluacionurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  ref={fileInputRefs.aplicacionevaluacionurl}
                 />
               </Button>
+
               {formData.aplicacionevaluacionurl && (
-                <span>{formData.aplicacionevaluacionurl.name}</span>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
+                  <Typography variant="body2">
+                    {formData.aplicacionevaluacionurl.name}
+                  </Typography>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleRemoveFile('aplicacionevaluacionurl')}
+                    sx={{ ml: 'auto' }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               )}
             </Grid>
           </Grid>

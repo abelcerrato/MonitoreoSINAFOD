@@ -248,7 +248,7 @@ export const putLineamientosM = async (presentoprotocolo, presentoprotocolourl, 
                 idInvestCap])
 
 
-        return rows[0].id;
+        return rows[0];
     } catch (error) {
         throw error;
     }
