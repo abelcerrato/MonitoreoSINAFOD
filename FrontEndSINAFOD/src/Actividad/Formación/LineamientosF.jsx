@@ -94,11 +94,51 @@ const LineamientosI = () => {
     const { name, files } = e.target;
     const file = files[0];
 
+    // Validar tipo de archivo (nueva validación)
+    if (file) {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      const fileType = file.type;
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+
+      // Verificar si el tipo o extensión están permitidos
+      if (!allowedTypes.includes(fileType) &&
+        !['pdf', 'jpg', 'jpeg', 'png'].includes(fileExtension)) {
+        // Mostrar alerta de error
+        Swal.fire({
+          title: 'Tipo de archivo no permitido',
+          text: 'Solo se permiten archivos PDF, JPG, JPEG o PNG.',
+          icon: 'error',
+          confirmButtonColor: color.primary.azul,
+        });
+
+        // Limpiar el input file
+        e.target.value = '';
+        return;
+      }
+
+      // Validación opcional de tamaño (descomenta si lo necesitas)
+      /*
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          title: 'Archivo demasiado grande',
+          text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+          icon: 'error',
+          confirmButtonColor: color.primary.azul,
+        });
+        e.target.value = '';
+        return;
+      }
+      */
+    }
+
+    // Actualiza formData con el archivo (esto ya lo tenías)
     setFormData((prev) => ({
       ...prev,
       [name]: file,
     }));
 
+    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
     setFileNames((prev) => ({
       ...prev,
       [name]: file ? file.name : "",
@@ -352,7 +392,7 @@ const LineamientosI = () => {
                   name="criterioseticosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
-                  
+
                   ref={fileInputRefs.criterioseticosurl}
                 />
               </Button>
