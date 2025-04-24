@@ -25,6 +25,8 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { color } from "../Components/color";
 import CardDetalles from "./CardDetalles";
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import { DataGrid } from '@mui/x-data-grid';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -98,24 +100,23 @@ TablePaginationActions.propTypes = {
 
 export default function TablaActividad(isSaved, setIsSaved) {
   const navigate = useNavigate();
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
+
+
+  const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [rows, setRows] = useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleOpen = (id) => {
+    setSelectedId(id);
+    setOpen(true);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+
+
 
   useEffect(() => {
     axios
@@ -129,179 +130,126 @@ export default function TablaActividad(isSaved, setIsSaved) {
       });
   }, [isSaved]);
 
-  const handleEdit = (id) => {
-    navigate(`/Modificar_Actividad/${id}`); // Redirige a la página de edición con el ID
+  const handleInvestigación = (id) => {
+    navigate(`/Actualizar_Investigación/${id}`);
   };
 
-  const handleOpen = (id) => {
-    setSelectedId(id);
-    setOpen(true);
+  const handleLineamientosInvesticagicon = (id) => {
+    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
   };
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-        <TableHead sx={{ backgroundColor: color.primary.azul }}>
-          <TableRow>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>
-              Acciones
-            </TableCell>
-            <TableCell align="center" style={{ fontWeight: "bold" }}>
-              ID
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Nombre de la Acción o Formación
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Formación o Investigación
-            </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Institución Responsable</TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>Responsable de Firmas</TableCell> 
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Ambito de Formación</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Tipo de Formación</TableCell>*/}
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Modalidad
-            </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
-           <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Nivel Objetivo</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Función al que va Dirigido</TableCell>*/}
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Estado
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Fecha Inicio
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold" }}>
-              Fecha de Finalización
-            </TableCell>
-            {/*  <TableCell align="right" style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Participantes que Asistieron</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Dirección</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Zona</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Observación</TableCell>
-          <TableCell align="right" style={{ fontWeight: "bold" }}>Usuario</TableCell> */}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
-            <TableRow key={row.name}>
-              <TableCell style={{ width: 160 }} align="center">
+
+  const handleFormacion = (id) => {
+    navigate(`/Actualizar_Formación/${id}`);
+  };
+
+  const handleLineamientosFormacion = (id) => {
+    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
+  };
+
+
+  const columns = [
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      width: 200,
+      renderCell: (params) => {
+        const row = params.row;
+        return (
+          <>
+            {row.formacioninvest === "Investigación" ? (
+              <>
                 <Tooltip title="Editar">
-                  <IconButton onClick={() => handleEdit(row.id)} color="action">
+                  <IconButton onClick={() => handleInvestigación(row.id)} color="action">
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Ver Detalles">
-                  <IconButton onClick={() => handleOpen(row.id)} color="info">
-                    <RemoveRedEyeIcon />
+                <Tooltip title="Actualizar Lineamientos">
+                  <IconButton onClick={() => handleLineamientosInvesticagicon(row.id)} color="success">
+                    <ChecklistIcon />
                   </IconButton>
                 </Tooltip>
-                <CardDetalles
-                  open={open}
-                  handleClose={() => setOpen(false)}
-                  id={selectedId}
-                />
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="center">
-                {row.id}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.accionformacion}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.formacioninvest}
-              </TableCell>
-              {/*  <TableCell style={{ width: 160 }} align="right">
-              {row.institucionresponsable}
-            </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-              {row.responsablefirmas}
-            </TableCell> 
-            <TableCell style={{ width: 160 }} align="right">
-              {row.ambitoformacion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.tipoformacion}
-            </TableCell>*/}
+              </>
+            ) : (
+              <>
+                <Tooltip title="Editar">
+                  <IconButton onClick={() => handleFormacion(row.id)} color="action">
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Actualizar Lineamientos">
+                  <IconButton onClick={() => handleLineamientosFormacion(row.id)} color="success">
+                    <ChecklistIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+            <Tooltip title="Ver Detalles">
+              <IconButton onClick={() => handleOpen(row.id)} color="info">
+                <RemoveRedEyeIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      },
+    },
+    { field: "id", headerName: "ID", width: 90 },
+    { field: "accionformacion", headerName: "Nombre de la Acción o Formación", width: 230 },
+    { field: "formacioninvest", headerName: "Formación o Investigación", width: 200 },
+    { field: "modalidad", headerName: "Modalidad", width: 150 },
+    { field: "estado", headerName: "Estado", width: 120 },
+    {
+      field: "fechainicio",
+      headerName: "Fecha Inicio",
+      width: 150,
+      valueGetter: (params) =>
+        new Date(params.row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/"),
+    },
+    {
+      field: "fechafinal",
+      headerName: "Fecha de Finalización",
+      width: 180,
+      valueGetter: (params) =>
+        new Date(params.row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/"),
+    },
+    {
+      field: "estado_lineamientos",
+      headerName: "Lineamientos",
+      width: 260,
+    },
+  ];
 
-              <TableCell style={{ width: 160 }} align="right">
-                {row.modalidad}
-              </TableCell>
-              {/*    <TableCell cstyle={{ width: 160 }} align="right">
-              {`${row.duracion.hours ?? 0}h ${row.duracion.minutes ?? 0}m`}
-            </TableCell>
+  return (
+    <Paper >
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSizeOptions={[5, 10, 25]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        autoHeight
+        sx={{
+         
+          border: 0,
+          backgroundColor: "#fff",
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: color.primary.azul,
+            color: "#fff",
+          },
+          "& .MuiDataGrid-columnHeader": {
+            justifyContent: "center",
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            textAlign: "center",
+            width: "100%",
+            fontWeight: "bold",
+          },
+          "& .MuiDataGrid-cell": {
+            textAlign: "right",
+          },
+        }}
+      />
 
-           <TableCell style={{ width: 160 }} align="right">
-              {row.espaciofisico}
-            </TableCell> 
-            <TableCell style={{ width: 160 }} align="right">
-              {row.niveleducactivoobj}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.funciondirigido}
-            </TableCell>*/}
-              <TableCell style={{ width: 160 }} align="right">
-                {row.estado}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {new Date(row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/")}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {new Date(row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/")}
-              </TableCell>
-
-              {/*    <TableCell style={{ width: 160 }} align="right">
-              {row.participantesprog}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.participantesrecib}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.direccion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.zona}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.observacion}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="right">
-              {row.creadopor}
-            </TableCell> */}
-            </TableRow>
-          ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={18}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              slotProps={{
-                select: {
-                  inputProps: {
-                    "aria-label": "Filas por página",
-                  },
-                  native: true,
-                },
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+      <CardDetalles open={open} handleClose={() => setOpen(false)} id={selectedId} />
+    </Paper>
   );
 }
