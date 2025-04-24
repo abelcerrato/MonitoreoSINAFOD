@@ -188,7 +188,7 @@ const LineamientosM = () => {
         const formDataToSend = new FormData();
         formDataToSend.append("accionformacion", formData.accionformacion);
         formDataToSend.append("modificadopor", user);
-        formDataToSend.append("formacioninvest", "Formación");
+        formDataToSend.append("formacioninvest", "Investigacion");
 
         // Contador de archivos subidos
         let uploadedFilesCount = 0;
@@ -197,7 +197,7 @@ const LineamientosM = () => {
             "criteriosfactibilidadurl",
             "requisitostecnicosurl",
             "criterioseticosurl",
-        ];
+          ];
 
         fileFields.forEach((field) => {
             if (formData[field]) {
@@ -283,7 +283,15 @@ const LineamientosM = () => {
 
                 {/* Mostrar archivo existente o nuevo */}
                 {(existingFile || newFile) && (
-                    <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                     <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mt: 1,
+                        p: 1,
+                        backgroundColor: '#f5f5f5',
+                        borderRadius: 1
+                      }}>
                         <Typography variant="body2" sx={{ mr: 2 }}>
                             {existingFile ? getDisplayName(existingFile) : newFile.name}
                         </Typography>
@@ -303,6 +311,7 @@ const LineamientosM = () => {
                             onClick={() => handleDownload(existingFile)}
                             color="primary"
                             size="small"
+                            sx={{ ml: 'auto' }}
                         >
                             <DownloadIcon />
                         </IconButton>
@@ -310,6 +319,7 @@ const LineamientosM = () => {
                         <IconButton
                             color="error"
                             size="small"
+                            sx={{ ml: 'auto' }}
                             onClick={() => {
                                 if (existingFile) {
                                     handleDeleteFile(fieldName);

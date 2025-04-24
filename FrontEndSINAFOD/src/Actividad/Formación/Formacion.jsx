@@ -98,17 +98,29 @@ const Investigacion = () => {
 
             // 3) Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
-                newData[name] = new Date(value).toISOString().split("T")[0];
+                const isValidDate = value && !isNaN(new Date(value).getTime());
+            
+                if (isValidDate) {
+                    newData[name] = new Date(value).toISOString().split("T")[0];
+                } else {
+                    newData[name] = "";
+                }
+            
                 const { fechainicio, fechafinal } = newData;
+            
                 if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
                     setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
                     setFieldErrors({ fechainicio: true, fechafinal: true });
                 } else {
                     setError("Este campo es obligatorio");
-                    setFieldErrors({ fechainicio: false, fechafinal: false });
+                    setFieldErrors((prevErrors) => ({
+                        ...prevErrors,
+                        fechainicio: !fechainicio,
+                        fechafinal: !fechafinal,
+                    }));
                 }
             }
-
+            
             // 4) Limpiar campos de convenio cuando pasamos a Interna
             if (name === "tipoactividad" && value === "Interna") {
                 newData.institucionconvenio = "";
@@ -369,11 +381,11 @@ const Investigacion = () => {
                                 helperText={fieldErrors.accionformacion ? "Este campo es obligatorio" : ""}
                                 disabled={isFromLineamientos} // Deshabilita si viene de lineamientos
                                 InputProps={{
-                                    readOnly: isFromLineamientos, // Hace que sea solo lectura
+                                    readOnly: isFromLineamientos,
                                 }}
                             />
                             {isFromLineamientos && (
-                                <Typography variant="caption" color="textSecondary">
+                                <Typography variant="caption" color="info">
                                     Este campo fue definido en los lineamientos
                                 </Typography>
                             )}
