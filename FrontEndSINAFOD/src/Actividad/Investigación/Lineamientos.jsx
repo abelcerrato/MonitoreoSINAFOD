@@ -12,6 +12,9 @@ import {
   Box,
   IconButton,
   FormHelperText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { color } from "../../Components/color";
@@ -24,6 +27,10 @@ import Swal from "sweetalert2";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
+import DescriptionIcon from '@mui/icons-material/Description';
+
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -38,6 +45,9 @@ const VisuallyHiddenInput = styled("input")({
 
 const LineamientosI = () => {
   const { user } = useUser();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewContent, setPreviewContent] = useState(null);
+  const [currentPreviewField, setCurrentPreviewField] = useState('');
   const [errors, setErrors] = useState({
     accionformacion: false,
     estadoprotocolo: false
@@ -75,13 +85,51 @@ const LineamientosI = () => {
     const { name, files } = e.target;
     const file = files[0];
 
-    // Actualiza formData con el archivo
+    // Validar tipo de archivo (nueva validación)
+    if (file) {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      const fileType = file.type;
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+
+      // Verificar si el tipo o extensión están permitidos
+      if (!allowedTypes.includes(fileType) &&
+        !['pdf', 'jpg', 'jpeg', 'png'].includes(fileExtension)) {
+        // Mostrar alerta de error
+        Swal.fire({
+          title: 'Tipo de archivo no permitido',
+          text: 'Solo se permiten archivos PDF, JPG, JPEG o PNG.',
+          icon: 'error',
+          confirmButtonColor: color.primary.azul,
+        });
+
+        // Limpiar el input file
+        e.target.value = '';
+        return;
+      }
+
+      // Validación opcional de tamaño (descomenta si lo necesitas)
+      /*
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          title: 'Archivo demasiado grande',
+          text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+          icon: 'error',
+          confirmButtonColor: color.primary.azul,
+        });
+        e.target.value = '';
+        return;
+      }
+      */
+    }
+
+    // Actualiza formData con el archivo (esto ya lo tenías)
     setFormData((prev) => ({
       ...prev,
       [name]: file,
     }));
 
-    // Actualiza solo el nombre del archivo correspondiente
+    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
     setFileNames((prev) => ({
       ...prev,
       [name]: file ? file.name : "",
@@ -213,6 +261,38 @@ const LineamientosI = () => {
       Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
     }
   };
+
+  const handlePreview = (fieldName) => {
+    const file = formData[fieldName];
+
+    if (!file) return;
+
+    setCurrentPreviewField(fieldName);
+
+    if (file instanceof File) {
+      const fileType = file.type.split('/')[0];
+      const url = URL.createObjectURL(file);
+
+      if (fileType === 'application' && file.name.endsWith('.pdf')) {
+        setPreviewContent({ type: 'pdf', url });
+      } else if (fileType === 'image') {
+        setPreviewContent({ type: 'image', url });
+      } else {
+        setPreviewContent({ type: 'other', name: file.name });
+      }
+    } else {
+      // Si es una URL de un archivo existente
+      if (file.endsWith('.pdf')) {
+        setPreviewContent({ type: 'pdf', url: `${process.env.REACT_APP_API_URL}/${file}` });
+      } else if (file.match(/\.(jpg|jpeg|png|gif)$/)) {
+        setPreviewContent({ type: 'image', url: `${process.env.REACT_APP_API_URL}/${file}` });
+      } else {
+        setPreviewContent({ type: 'other', name: file.split('/').pop() });
+      }
+    }
+
+    setPreviewOpen(true);
+  };
   return (
     <>
       <Dashboard>
@@ -277,7 +357,7 @@ const LineamientosI = () => {
                 <VisuallyHiddenInput
                   type="file"
                   name="presentoprotocolourl"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
                   ref={fileInputRefs.presentoprotocolourl}
                 />
@@ -296,10 +376,17 @@ const LineamientosI = () => {
                     {formData.presentoprotocolourl.name}
                   </Typography>
                   <IconButton
+                    sx={{ color: color.primary.azul, ml: 'auto' }}
+                    size="small"
+                    onClick={() => handlePreview('presentoprotocolourl')}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
                     color="error"
                     size="small"
                     onClick={() => handleRemoveFile('presentoprotocolourl')}
-                    sx={{ ml: 'auto' }}
+
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
@@ -344,12 +431,11 @@ const LineamientosI = () => {
                 <VisuallyHiddenInput
                   type="file"
                   name="monitoreoyevaluacionurl"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
                   ref={fileInputRefs.monitoreoyevaluacionurl}
                 />
               </Button>
-
               {formData.monitoreoyevaluacionurl && (
                 <Box sx={{
                   display: 'flex',
@@ -364,15 +450,22 @@ const LineamientosI = () => {
                     {formData.monitoreoyevaluacionurl.name}
                   </Typography>
                   <IconButton
+                    sx={{ color: color.primary.azul, ml: 'auto' }}
+                    size="small"
+                    onClick={() => handlePreview('monitoreoyevaluacionurl')}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
                     color="error"
                     size="small"
                     onClick={() => handleRemoveFile('monitoreoyevaluacionurl')}
-                    sx={{ ml: 'auto' }}
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Box>
               )}
+
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
@@ -388,7 +481,7 @@ const LineamientosI = () => {
                 <VisuallyHiddenInput
                   type="file"
                   name="aplicacionevaluacionurl"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
                   ref={fileInputRefs.aplicacionevaluacionurl}
                 />
@@ -408,15 +501,22 @@ const LineamientosI = () => {
                     {formData.aplicacionevaluacionurl.name}
                   </Typography>
                   <IconButton
+                    color="primary"
+                    sx={{ background: color.azul, ml: 'auto' }}
+                    onClick={() => handlePreview('aplicacionevaluacionurl')}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
                     color="error"
                     size="small"
                     onClick={() => handleRemoveFile('aplicacionevaluacionurl')}
-                    sx={{ ml: 'auto' }}
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Box>
               )}
+
             </Grid>
           </Grid>
           <Box
@@ -439,6 +539,71 @@ const LineamientosI = () => {
               Guardar
             </Button>
           </Box>
+          {/* Modal de vista previa */}
+          <Dialog
+            open={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle>
+              Vista previa del documento
+              <IconButton
+                onClick={() => setPreviewOpen(false)}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              {previewContent?.type === 'pdf' && (
+                <iframe
+                  src={previewContent.url}
+                  width="100%"
+                  height="500px"
+                  style={{ border: 'none' }}
+                  title="Vista previa PDF"
+                />
+              )}
+              {previewContent?.type === 'image' && (
+                <img
+                  src={previewContent.url}
+                  alt="Vista previa"
+                  style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
+                />
+              )}
+              {previewContent?.type === 'other' && (
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '200px',
+                  textAlign: 'center'
+                }}>
+                  <DescriptionIcon sx={{ fontSize: 60, color: color.primary.azul }} />
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    {previewContent.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    No hay vista previa disponible para este tipo de archivo
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2, backgroundColor: color.primary.azul }}
+                    onClick={() => window.open(previewContent.url, '_blank')}
+                  >
+                    Descargar archivo
+                  </Button>
+                </Box>
+              )}
+            </DialogContent>
+          </Dialog>
         </Paper>
       </Dashboard>
     </>

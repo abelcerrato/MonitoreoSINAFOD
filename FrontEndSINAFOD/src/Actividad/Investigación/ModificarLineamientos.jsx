@@ -15,7 +15,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-DialogTitle
+    DialogTitle
 } from "@mui/material";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
@@ -103,11 +103,49 @@ const LineamientosI = () => {
             [name]: value,
         }));
     };
-
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         const file = files[0];
 
+        // Validar tipo de archivo (nueva validación)
+        if (file) {
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            const fileType = file.type;
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            // Verificar si el tipo o extensión están permitidos
+            if (!allowedTypes.includes(fileType) &&
+                !['pdf', 'jpg', 'jpeg', 'png'].includes(fileExtension)) {
+                // Mostrar alerta de error
+                Swal.fire({
+                    title: 'Tipo de archivo no permitido',
+                    text: 'Solo se permiten archivos PDF, JPG, JPEG o PNG.',
+                    icon: 'error',
+                    confirmButtonColor: color.primary.azul,
+                });
+
+                // Limpiar el input file
+                e.target.value = '';
+                return;
+            }
+
+            // Validación opcional de tamaño (descomenta si lo necesitas)
+            /*
+            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+            if (file.size > MAX_FILE_SIZE) {
+              Swal.fire({
+                title: 'Archivo demasiado grande',
+                text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+                icon: 'error',
+                confirmButtonColor: color.primary.azul,
+              });
+              e.target.value = '';
+              return;
+            }
+            */
+        }
+
+        // Actualiza formData con el archivo (esto ya lo tenías)
         setFormData((prev) => ({
             ...prev,
             [name]: file,
@@ -304,7 +342,7 @@ const LineamientosI = () => {
                 }
             } else {
                 const fileUrl = `${process.env.REACT_APP_API_URL}/uploads/${file}`;
-                
+
                 if (file.endsWith('.pdf')) {
                     setPreviewContent({
                         type: 'pdf',
@@ -353,24 +391,24 @@ const LineamientosI = () => {
                     <VisuallyHiddenInput
                         type="file"
                         name={fieldName}
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        accept=".pdf,.jpg,.jpeg,.png"
                         onChange={handleFileChange}
                     />
                 </Button>
 
                 {(existingFile || newFile) && (
-                  <Box sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    mt: 1,
-                    p: 1,
-                    backgroundColor: '#f5f5f5',
-                    borderRadius: 1
-                  }}>
-                        <Typography 
-                            variant="body2" 
-                            sx={{ 
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mt: 1,
+                        p: 1,
+                        backgroundColor: '#f5f5f5',
+                        borderRadius: 1
+                    }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
                                 mr: 2,
                                 cursor: 'pointer',
                                 '&:hover': {
@@ -385,21 +423,21 @@ const LineamientosI = () => {
 
                         <IconButton
                             onClick={() => handlePreview(existingFile || newFile, fieldName)}
-                          
+
                             size="small"
-                            sx={{ ml: 'auto',color:color.primary.azul }}
+                            sx={{ ml: 'auto', color: color.primary.azul }}
                         >
                             <VisibilityIcon />
                         </IconButton>
 
                         <IconButton
                             onClick={() => handleDownload(existingFile)}
-                            sx={{ color:color.primary.azul }}
+                            sx={{ color: color.primary.azul }}
                             size="small"
                         >
                             <DownloadIcon />
                         </IconButton>
-                        
+
                         <IconButton
                             color="error"
                             size="small"
@@ -527,8 +565,8 @@ const LineamientosI = () => {
                     </Button>
                 </Box>
 
-                 {/* Modal de vista previa */}
-                 <Dialog
+                {/* Modal de vista previa */}
+                <Dialog
                     open={previewOpen}
                     onClose={() => setPreviewOpen(false)}
                     maxWidth="md"
@@ -550,27 +588,27 @@ const LineamientosI = () => {
                     </DialogTitle>
                     <DialogContent dividers>
                         {previewContent?.type === 'pdf' && (
-                            <iframe 
-                                src={previewContent.url} 
-                                width="100%" 
-                                height="500px" 
+                            <iframe
+                                src={previewContent.url}
+                                width="100%"
+                                height="500px"
                                 style={{ border: 'none' }}
                                 title="Vista previa PDF"
                             />
                         )}
                         {previewContent?.type === 'image' && (
-                            <img 
-                                src={previewContent.url} 
-                                alt="Vista previa" 
+                            <img
+                                src={previewContent.url}
+                                alt="Vista previa"
                                 style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
                             />
                         )}
                         {previewContent?.type === 'other' && (
-                            <Box sx={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                alignItems: 'center', 
-                                justifyContent: 'center', 
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                                 height: '200px',
                                 textAlign: 'center'
                             }}>
@@ -581,13 +619,13 @@ const LineamientosI = () => {
                                 <Typography variant="body2" sx={{ mt: 1 }}>
                                     No hay vista previa disponible para este tipo de archivo
                                 </Typography>
-                                <Button 
-                                    variant="contained" 
+                                <Button
+                                    variant="contained"
                                     sx={{ mt: 2, backgroundColor: color.primary.azul }}
                                     onClick={() => handleDownload(
-                                        existingFiles[currentPreviewField] || 
-                                        (formData[currentPreviewField] instanceof File ? 
-                                            formData[currentPreviewField].name : 
+                                        existingFiles[currentPreviewField] ||
+                                        (formData[currentPreviewField] instanceof File ?
+                                            formData[currentPreviewField].name :
                                             formData[currentPreviewField])
                                     )}
                                 >
