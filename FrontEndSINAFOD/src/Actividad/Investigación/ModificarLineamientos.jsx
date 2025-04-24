@@ -319,6 +319,7 @@ const LineamientosI = () => {
         setCurrentPreviewField(fieldName);
         try {
             if (file instanceof File) {
+                // Procesamiento para archivos nuevos (sin cambios)
                 if (file.type === "application/pdf") {
                     const fileUrl = URL.createObjectURL(file);
                     setPreviewContent({
@@ -341,14 +342,30 @@ const LineamientosI = () => {
                     });
                 }
             } else {
-                const fileUrl = `${process.env.REACT_APP_API_URL}/uploads/${file}`;
+                // Procesamiento para archivos existentes (corregido)
+                let fileUrl;
 
-                if (file.endsWith('.pdf')) {
+                // Primero decodifica el URI para manejar caracteres especiales
+                const decodedFileName = decodeURIComponent(file);
+
+                // Elimina espacios adicionales y caracteres problemáticos
+                const cleanedFileName = decodedFileName.trim();
+
+                // Verifica si la URL ya es completa (empieza con http)
+                if (cleanedFileName.startsWith('http')) {
+                    fileUrl = cleanedFileName;
+                } else {
+                    // Construye la URL correctamente
+                    fileUrl = `${process.env.REACT_APP_API_URL}/preview/${encodeURIComponent(cleanedFileName)}`
+                }
+
+                // Determina el tipo de archivo
+                if (cleanedFileName.toLowerCase().endsWith('.pdf')) {
                     setPreviewContent({
                         type: 'pdf',
                         url: fileUrl
                     });
-                } else if (file.match(/\.(jpg|jpeg|png|gif)$/)) {
+                } else if (cleanedFileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
                     setPreviewContent({
                         type: 'image',
                         url: fileUrl
@@ -356,7 +373,7 @@ const LineamientosI = () => {
                 } else {
                     setPreviewContent({
                         type: 'other',
-                        name: file
+                        name: cleanedFileName.split('/').pop() || cleanedFileName
                     });
                 }
             }

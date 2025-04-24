@@ -11,6 +11,10 @@ import {
     FormControl,
     Box,
     IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle
 } from "@mui/material";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
@@ -23,7 +27,9 @@ import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -52,6 +58,9 @@ const LineamientosM = () => {
         requisitostecnicosurl: null,
         criterioseticosurl: null,
     });
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewContent, setPreviewContent] = useState(null);
+    const [currentPreviewField, setCurrentPreviewField] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -288,16 +297,14 @@ const LineamientosM = () => {
         }
     };
 
+
     const renderFileField = (fieldName, label) => {
         const existingFile = existingFiles[fieldName];
         const newFile = formData[fieldName];
 
-        // Función para extraer el nombre legible del archivo
         const getDisplayName = (filePath) => {
             if (!filePath) return "";
-            const parts = filePath.split("/").pop().split("-");
-            // Elimina los primeros 4 elementos (id, día, mes, año)
-            return parts.slice(4).join("-");
+            return filePath.split("/").pop().split("-").slice(4).join("-");
         };
 
         return (
@@ -315,12 +322,11 @@ const LineamientosM = () => {
                     <VisuallyHiddenInput
                         type="file"
                         name={fieldName}
-                        accept=".pdf,.doc,.docx"
+                        accept=".pdf,.jpg,.jpeg,.png"
                         onChange={handleFileChange}
                     />
                 </Button>
 
-                {/* Mostrar archivo existente o nuevo */}
                 {(existingFile || newFile) && (
                     <Box sx={{
                         display: 'flex',
@@ -331,34 +337,41 @@ const LineamientosM = () => {
                         backgroundColor: '#f5f5f5',
                         borderRadius: 1
                     }}>
-                        <Typography variant="body2" sx={{ mr: 2 }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                mr: 2,
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    textDecoration: 'underline',
+                                    color: color.primary.azul
+                                }
+                            }}
+                            onClick={() => handlePreview(existingFile || newFile, fieldName)}
+                        >
                             {existingFile ? getDisplayName(existingFile) : newFile.name}
                         </Typography>
 
-                        {/* Mostrar botón de descarga solo para archivos existentes
-            {existingFile && !newFile && (
-              <IconButton
-                onClick={() => handleDownload(existingFile)}
-                color="primary"
-                size="small"
-              >
-                <DownloadIcon />
-              </IconButton>
-            )}
- */}
+                        <IconButton
+                            onClick={() => handlePreview(existingFile || newFile, fieldName)}
+
+                            size="small"
+                            sx={{ ml: 'auto', color: color.primary.azul }}
+                        >
+                            <VisibilityIcon />
+                        </IconButton>
+
                         <IconButton
                             onClick={() => handleDownload(existingFile)}
-                            color="primary"
+                            sx={{ color: color.primary.azul }}
                             size="small"
-                            sx={{ ml: 'auto' }}
                         >
                             <DownloadIcon />
                         </IconButton>
-                        {/* Botón de eliminar */}
+
                         <IconButton
                             color="error"
                             size="small"
-                            sx={{ ml: 'auto' }}
                             onClick={() => {
                                 if (existingFile) {
                                     handleDeleteFile(fieldName);
@@ -373,6 +386,75 @@ const LineamientosM = () => {
                 )}
             </Grid>
         );
+    };
+
+    const handlePreview = async (file, fieldName) => {
+        setCurrentPreviewField(fieldName);
+        try {
+            if (file instanceof File) {
+                // Procesamiento para archivos nuevos (sin cambios)
+                if (file.type === "application/pdf") {
+                    const fileUrl = URL.createObjectURL(file);
+                    setPreviewContent({
+                        type: 'pdf',
+                        url: fileUrl
+                    });
+                } else if (file.type.includes("image/")) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setPreviewContent({
+                            type: 'image',
+                            url: e.target.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    setPreviewContent({
+                        type: 'other',
+                        name: file.name
+                    });
+                }
+            } else {
+                // Procesamiento para archivos existentes (corregido)
+                let fileUrl;
+
+                // Primero decodifica el URI para manejar caracteres especiales
+                const decodedFileName = decodeURIComponent(file);
+
+                // Elimina espacios adicionales y caracteres problemáticos
+                const cleanedFileName = decodedFileName.trim();
+
+                // Verifica si la URL ya es completa (empieza con http)
+                if (cleanedFileName.startsWith('http')) {
+                    fileUrl = cleanedFileName;
+                } else {
+                    // Construye la URL correctamente
+                    fileUrl = `${process.env.REACT_APP_API_URL}/preview/${encodeURIComponent(cleanedFileName)}`
+                }
+
+                // Determina el tipo de archivo
+                if (cleanedFileName.toLowerCase().endsWith('.pdf')) {
+                    setPreviewContent({
+                        type: 'pdf',
+                        url: fileUrl
+                    });
+                } else if (cleanedFileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    setPreviewContent({
+                        type: 'image',
+                        url: fileUrl
+                    });
+                } else {
+                    setPreviewContent({
+                        type: 'other',
+                        name: cleanedFileName.split('/').pop() || cleanedFileName
+                    });
+                }
+            }
+            setPreviewOpen(true);
+        } catch (error) {
+            console.error("Error al generar vista previa:", error);
+            Swal.fire("Error", "No se pudo generar la vista previa", "error");
+        }
     };
 
     return (
@@ -448,6 +530,78 @@ const LineamientosM = () => {
                         Guardar
                     </Button>
                 </Box>
+
+                {/* Modal de vista previa */}
+                <Dialog
+                    open={previewOpen}
+                    onClose={() => setPreviewOpen(false)}
+                    maxWidth="md"
+                    fullWidth
+                >
+                    <DialogTitle>
+                        Vista previa del documento
+                        <IconButton
+                            onClick={() => setPreviewOpen(false)}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                                color: (theme) => theme.palette.grey[500],
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        {previewContent?.type === 'pdf' && (
+                            <iframe
+                                src={previewContent.url}
+                                width="100%"
+                                height="500px"
+                                style={{ border: 'none' }}
+                                title="Vista previa PDF"
+                            />
+                        )}
+                        {previewContent?.type === 'image' && (
+                            <img
+                                src={previewContent.url}
+                                alt="Vista previa"
+                                style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
+                            />
+                        )}
+                        {previewContent?.type === 'other' && (
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '200px',
+                                textAlign: 'center'
+                            }}>
+                                <DescriptionIcon sx={{ fontSize: 60, color: color.primary.azul }} />
+                                <Typography variant="h6" sx={{ mt: 2 }}>
+                                    {previewContent.name}
+                                </Typography>
+                                <Typography variant="body2" sx={{ mt: 1 }}>
+                                    No hay vista previa disponible para este tipo de archivo
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{ mt: 2, backgroundColor: color.primary.azul }}
+                                    onClick={() => handleDownload(
+                                        existingFiles[currentPreviewField] ||
+                                        (formData[currentPreviewField] instanceof File ?
+                                            formData[currentPreviewField].name :
+                                            formData[currentPreviewField])
+                                    )}
+                                >
+                                    Descargar archivo
+                                </Button>
+                            </Box>
+                        )}
+                    </DialogContent>
+                </Dialog>
+
             </Paper>
         </Dashboard>
     );
