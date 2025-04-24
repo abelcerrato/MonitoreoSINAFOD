@@ -29,10 +29,9 @@ import {
     TextField,
     Grid
 } from "@mui/material";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
+import { DataGrid } from '@mui/x-data-grid';
+
+
 
 const toBase64 = async (url) => {
     const response = await fetch(url);
@@ -43,75 +42,6 @@ const toBase64 = async (url) => {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
     });
-};
-
-function TablePaginationActions(props) {
-    const theme = useTheme();
-    const { count, page, rowsPerPage, onPageChange } = props;
-
-    const handleFirstPageButtonClick = (event) => {
-        onPageChange(event, 0);
-    };
-
-    const handleBackButtonClick = (event) => {
-        onPageChange(event, page - 1);
-    };
-
-    const handleNextButtonClick = (event) => {
-        onPageChange(event, page + 1);
-    };
-
-    const handleLastPageButtonClick = (event) => {
-        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    };
-
-    return (
-        <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-                aria-label="first page"
-            >
-                {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-            </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-                aria-label="previous page"
-            >
-                {theme.direction === "rtl" ? (
-                    <KeyboardArrowRight />
-                ) : (
-                    <KeyboardArrowLeft />
-                )}
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="next page"
-            >
-                {theme.direction === "rtl" ? (
-                    <KeyboardArrowLeft />
-                ) : (
-                    <KeyboardArrowRight />
-                )}
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="last page"
-            >
-                {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-            </IconButton>
-        </Box>
-    );
-}
-
-TablePaginationActions.propTypes = {
-    count: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
 };
 
 
@@ -129,18 +59,6 @@ const ListadoParticipantes = () => {
     const [ciclos, setCiclos] = useState([]);
     const [grados, setGrados] = useState([]);
 
-
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
 
     useEffect(() => {
@@ -284,6 +202,31 @@ const ListadoParticipantes = () => {
         }
     };
 
+    const columns = [
+        { field: "accionformacion", headerName: "Nombre de la Acción", width: 180 },
+        { field: "codigosace", headerName: "Código SACE", width: 180 },
+        { field: "nombre", headerName: "Nombre", width: 180 },
+        { field: "identificacion", headerName: "Identidad", width: 180 },
+        { field: "sexo", headerName: "Sexo", width: 180 },
+        { field: "nombreniveldocente", headerName: "Nivel Académico del Participante", width: 230 },
+        { field: "nombregradodocente", headerName: "Grado Académico del Participante", width: 230 },
+        { field: "añosdeservicio", headerName: "Años de Servicio", width: 180 },
+        { field: "codigodered", headerName: "Código de Red que Pertenece", width: 230 },
+        { field: "funcion", headerName: "Función", width: 180 },
+        { field: "nombredeptoresidencia", headerName: "Departamento en el que Reside", width: 230 },
+        { field: "nombremuniresidencia", headerName: "Municipio en el que Reside", width: 230 },
+        { field: "nombrealdearesidencia", headerName: "Aldea en la que Reside", width: 180 },
+        { field: "centroeducativo", headerName: "Centro Educativo", width: 180 },
+        { field: "nombrenivelced", headerName: "Nivel Académico que Atiende", width: 200 },
+        { field: "nombrecicloced", headerName: "Ciclo Académico que Atiende", width: 230 },
+        { field: "nombregradoced", headerName: "Grado Académico que Atiende", width: 230 },
+        { field: "tipoadministracion", headerName: "Tipo Administración", width: 180 },
+        { field: "zona", headerName: "Zona Centro Educativo", width: 180 },
+        { field: "nombredeptoced", headerName: "Departamento Centro Educativo", width: 230 },
+        { field: "nombremunicipioced", headerName: "Municipio Centro Educativo", width: 200 },
+        { field: "nombrealdeaced", headerName: "Aldea Centro Educativo", width: 180 },
+    ];
+
 
     return (
         <Dashboard>
@@ -394,7 +337,7 @@ const ListadoParticipantes = () => {
                             <IconButton
                                 onClick={() => exportExcel(rows)}
                                 aria-label="exportar Excel"
-                                sx={{ fontSize: 40, color: color.primary.azul }}
+                                sx={{ fontSize: 30, color: color.primary.azul }}
                             >
                                 <FaRegFileExcel />
                             </IconButton>
@@ -404,95 +347,40 @@ const ListadoParticipantes = () => {
 
 
                 </Grid>
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns}
+                    getRowId={(row) => row.idinvestigacioncap}
+                    pageSizeOptions={[5, 10, 25]}
+                    paginationModel={{ page, pageSize: rowsPerPage }}
+                    onPaginationModelChange={({ page, pageSize }) => {
+                        setPage(page);
+                        setRowsPerPage(pageSize);
+                    }}
+                    autoHeight
+                    sx={{
+                        mt: 5,
+                        border: 0,
+                        backgroundColor: "#fff",
+                        "& .MuiDataGrid-columnHeaders": {
+                            backgroundColor: color.primary.azul,
+                            color: "#fff",
+                        },
+                        "& .MuiDataGrid-columnHeader": {
+                            justifyContent: "center",
+                        },
+                        "& .MuiDataGrid-columnHeaderTitle": {
+                            textAlign: "center",
 
-                <TableContainer component={Paper} sx={{ marginTop: 5 }}>
-
-                    <Table sx={{ minWidth: 500 }}>
-                        <TableHead sx={{ backgroundColor: color.primary.azul }}>
-                            <TableRow>
-                                <TableCell align="center">Nombre de la Acción o Formación</TableCell>
-                                <TableCell align="right">Código SACE</TableCell>
-                                <TableCell align="right">Nombre</TableCell>
-                                <TableCell align="right">Identidad</TableCell>
-                                <TableCell align="right">Sexo</TableCell>
-                                <TableCell align="right">Nivel Académico del Participante</TableCell>
-                                <TableCell align="right">Grado Académico del Participante</TableCell>
-                                <TableCell align="right">Años de Servicio</TableCell>
-                                <TableCell align="right">Código de Red que Pertenece</TableCell>
-                                <TableCell align="right">Función</TableCell>
-                                <TableCell align="right">Departamento en el que Reside</TableCell>
-                                <TableCell align="right">Municipio en el que Reside</TableCell>
-                                <TableCell align="right">Aldea en la que Reside</TableCell>
-                                <TableCell align="right">Centro Educativo</TableCell>
-                                <TableCell align="right">Nivel Académico que Atiende</TableCell>
-                                <TableCell align="right">Ciclo Académico que Atiende</TableCell>
-                                <TableCell align="right">Grado Académico que Atiende</TableCell>
-                                <TableCell align="right">Tipo Administración</TableCell>
-                                <TableCell align="right">Zona Centro Educativo</TableCell>
-                                <TableCell align="right">Departamento  Centro Educativo</TableCell>
-                                <TableCell align="right">Municipio  Centro Educativo</TableCell>
-                                <TableCell align="right">Aldea  Centro Educativo</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                            fontWeight: "bold",
+                        },
+                        "& .MuiDataGrid-cell": {
+                            textAlign: "right",
+                        },
+                    }}
+                />
 
 
-                                <TableRow key={row.idinvestigacioncap}>
-                                    <TableCell align="center">{row.accionformacion}</TableCell>
-                                    <TableCell align="right">{row.codigosace}</TableCell>
-                                    <TableCell align="right">{row.nombre}</TableCell>
-                                    <TableCell align="right">{row.identificacion}</TableCell>
-                                    <TableCell align="right">{row.sexo}</TableCell>
-                                    <TableCell align="right">{row.nombreniveldocente}</TableCell>
-                                    <TableCell align="right">{row.nombregradodocente}</TableCell>
-                                    <TableCell align="right">{row.añosdeservicio}</TableCell>
-                                    <TableCell align="right">{row.codigodered}</TableCell>
-                                    <TableCell align="right">{row.funcion}</TableCell>
-                                    <TableCell align="right">{row.nombredeptoresidencia}</TableCell>
-                                    <TableCell align="right">{row.nombremuniresidencia}</TableCell>
-                                    <TableCell align="right">{row.nombrealdearesidencia}</TableCell>
-                                    <TableCell align="right">{row.centroeducativo}</TableCell>
-                                    <TableCell align="right">{row.nombrenivelced}</TableCell>
-                                    <TableCell align="right">{row.nombrecicloced}</TableCell>
-                                    <TableCell align="right">{row.nombregradoced}</TableCell>
-                                    <TableCell align="right">{row.tipoadministracion}</TableCell>
-                                    <TableCell align="right">{row.zona}</TableCell>
-                                    <TableCell align="right">{row.nombredeptoced}</TableCell>
-                                    <TableCell align="right">{row.nombremunicipioced}</TableCell>
-                                    <TableCell align="right">{row.nombrealdeaced}</TableCell>
-                                </TableRow>
-                            ))}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                                    colSpan={23}
-                                    count={filteredRows.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    slotProps={{
-                                        select: {
-                                            inputProps: {
-                                                "aria-label": "Filas por página",
-                                            },
-                                            native: true,
-                                        },
-                                    }}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </TableContainer>
             </Paper>
 
         </Dashboard>

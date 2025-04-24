@@ -248,7 +248,7 @@ const LineamientosI = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} sm={9}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Registro de Lineamientos para Formación
               </Typography>
@@ -256,7 +256,7 @@ const LineamientosI = () => {
             <Grid
               item
               xs={12}
-              sm={4}
+              sm={3}
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Button

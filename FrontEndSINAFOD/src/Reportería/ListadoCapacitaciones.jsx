@@ -34,7 +34,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-
+import { DataGrid } from '@mui/x-data-grid';
 
 const toBase64 = async (url) => {
     const response = await fetch(url);
@@ -47,74 +47,6 @@ const toBase64 = async (url) => {
     });
 };
 
-function TablePaginationActions(props) {
-    const theme = useTheme();
-    const { count, page, rowsPerPage, onPageChange } = props;
-
-    const handleFirstPageButtonClick = (event) => {
-        onPageChange(event, 0);
-    };
-
-    const handleBackButtonClick = (event) => {
-        onPageChange(event, page - 1);
-    };
-
-    const handleNextButtonClick = (event) => {
-        onPageChange(event, page + 1);
-    };
-
-    const handleLastPageButtonClick = (event) => {
-        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    };
-
-    return (
-        <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-                aria-label="first page"
-            >
-                {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-            </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-                aria-label="previous page"
-            >
-                {theme.direction === "rtl" ? (
-                    <KeyboardArrowRight />
-                ) : (
-                    <KeyboardArrowLeft />
-                )}
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="next page"
-            >
-                {theme.direction === "rtl" ? (
-                    <KeyboardArrowLeft />
-                ) : (
-                    <KeyboardArrowRight />
-                )}
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="last page"
-            >
-                {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-            </IconButton>
-        </Box>
-    );
-}
-
-TablePaginationActions.propTypes = {
-    count: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-};
 
 
 
@@ -130,18 +62,6 @@ const ListadoActividad = () => {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFinal, setFechaFinal] = useState("");
 
-
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
 
     useEffect(() => {
@@ -169,9 +89,6 @@ const ListadoActividad = () => {
 
 
     useEffect(() => {
-        console.log(" FilterColumn:", filterColumn);
-        console.log(" FilterValue:", filterValue);
-        console.log("📋 Filas originales:", rows);
 
         if (!filterColumn || (!filterValue && !fechaInicio && !fechaFinal)) {
             setFilteredRows(rows);
@@ -255,7 +172,7 @@ const ListadoActividad = () => {
             // Definir encabezados de la tabla
             const headers = [
                 "ID", "Nombre de la Acción o Formación", "Formación o Investigación", "Institución Responsable", "Responsable de Firmas", "Ambito de Formación",
-                "Tipo de Formación", "Modalidad", "Duración", "	Espacio Físico", "Cargo al que va Dirigido", "Nicel Educativo",
+                "Tipo de Formación", "Modalidad", "Duración", "	Espacio Físico", "Nicel Educativo",
                 "Ciclo Académico", "Estado", "Fecha Inicio", "Fecha de Finalización", "Cantidad de Participantes Programados",
                 "Dirección", "Zona", "Observación"
 
@@ -275,10 +192,11 @@ const ListadoActividad = () => {
                 };
                 cell.alignment = { horizontal: "center", vertical: "middle" }; // Centrar texto
             });
+            
             // Agregar los datos como filas en la tabla
             filteredRows.forEach(item => {
                 worksheet.addRow([
-                    item.id, item.accionformacion, item.formacioninvest, item.institucionresponsable, item.responsablefirmas, item.ambitoformacion,
+                    item.id, item.accionformacion, item.formacioninvest, item.institucionresponsable, item.responsablefirmas,
                     item.tipoformacion, item.modalidad, item.duracion ? `${item.duracion?.hours ?? 0}h ${item.duracion?.minutes ?? 0}m` : "0h 0m", item.espaciofisico, item.funciondirigido,
                     item.nivelacademico ?? "-", item.cicloacademico ?? "-", item.estado, item.fechainicio ? new Date(item.fechainicio).toLocaleDateString("es-ES") : "-", item.fechafinal ? new Date(item.fechafinal).toLocaleDateString("es-ES") : "-",
                     item.participantesprog, item.direccion, item.zona, item.observacion,
@@ -307,6 +225,46 @@ const ListadoActividad = () => {
         }
     };
 
+    const columns = [
+        { field: "id", headerName: "ID", width: 100, headerAlign: "center", align: "center" },
+        { field: "accionformacion", headerName: "Nombre de la Acción", width: 200 },
+        { field: "formacioninvest", headerName: "Formación o Investigación", width: 200 },
+        { field: "institucionresponsable", headerName: "Institución Responsable", width: 200 },
+        { field: "responsablefirmas", headerName: "Responsable de Firmas", width: 200 },
+        { field: "tipoformacion", headerName: "Ambito de Formación", width: 180 },
+        { field: "modalidad", headerName: "Tipo de Formación", width: 180 },
+        {
+            field: "duracion",
+            headerName: "Duración",
+            width: 150,
+            valueGetter: (params) =>
+                params.row.duracion
+                    ? `${params.row.duracion.hours ?? 0}h ${params.row.duracion.minutes ?? 0}m`
+                    : "0h 0m",
+        },
+        { field: "espaciofisico", headerName: "Espacio Físico", width: 180 },
+        { field: "funciondirigido", headerName: "Nicel Educativo", width: 180 },
+        { field: "nivelacademico", headerName: "Nivel Educativo", width: 180 },
+        { field: "cicloacademico", headerName: "Ciclo", width: 150 },
+        { field: "estado", headerName: "Estado", width: 150 },
+        {
+            field: "fechainicio",
+            headerName: "Fecha Inicio",
+            width: 150,
+            valueGetter: (params) =>
+                new Date(params.row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/"),
+        },
+        {
+            field: "fechafinal",
+            headerName: "Fecha de Finalización",
+            width: 180,
+            valueGetter: (params) =>
+                new Date(params.row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/"),
+        },
+        { field: "participantesprog", headerName: "Cantidad de Participantes Programados", width: 290 },
+        { field: "direccion", headerName: "Dirección", width: 200 },
+        { field: "zona", headerName: "Zona", width: 150 },
+    ];
 
     return (
         <Dashboard>
@@ -334,7 +292,6 @@ const ListadoActividad = () => {
                                 <MenuItem value="modalidad">Modalidad</MenuItem >
                                 <MenuItem value="duracion">Duración</MenuItem >
                                 <MenuItem value="espaciofisico">Espacio Físico</MenuItem >
-                                <MenuItem value="funciondirigido">Cargo a la que va dirigido</MenuItem >
                                 <MenuItem value="nivelacademico">Nivel Educativo</MenuItem >
                                 <MenuItem value="cicloacademico">Ciclo Académico</MenuItem >
                                 <MenuItem value="estado">Estado</MenuItem >
@@ -446,162 +403,47 @@ const ListadoActividad = () => {
                             <IconButton
                                 onClick={() => exportExcel(rows)}
                                 aria-label="exportar Excel"
-                                sx={{ fontSize: 40, color: color.primary.azul }}
+                                sx={{ fontSize: 30, color: color.primary.azul }}
                             >
                                 <FaRegFileExcel />
                             </IconButton>
                         </Tooltip>
                     </Grid>
 
-
-
                 </Grid>
 
-                <TableContainer component={Paper} sx={{ marginTop: 5 }}>
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns}
+                    pageSizeOptions={[5, 10, 25]}
+                    paginationModel={{ page, pageSize: rowsPerPage }}
+                    onPaginationModelChange={({ page, pageSize }) => {
+                        setPage(page);
+                        setRowsPerPage(pageSize);
+                    }}
+                    autoHeight
+                    sx={{
+                        mt: 5,
+                        border: 0,
+                        backgroundColor: "#fff",
+                        "& .MuiDataGrid-columnHeaders": {
+                            backgroundColor: color.primary.azul,
+                            color: "#fff",
+                        },
+                        "& .MuiDataGrid-columnHeader": {
+                            justifyContent: "center",
+                        },
+                        "& .MuiDataGrid-columnHeaderTitle": {
+                            textAlign: "center",
+                            width: "100%",
+                            fontWeight: "bold",
+                        },
+                        "& .MuiDataGrid-cell": {
+                            textAlign: "right",
+                        },
+                    }}
+                />
 
-                    <Table sx={{ minWidth: 500 }}>
-                        <TableHead sx={{ backgroundColor: color.primary.azul }}>
-                            <TableRow>
-                                <TableCell align="center" style={{ fontWeight: "bold" }}>
-                                    ID
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Nombre de la Acción o Formación
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Formación o Investigación
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Institución Responsable</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Responsable de Firmas</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Ambito de Formación</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Tipo de Formación</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Modalidad
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Duración</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Espacio Físico</TableCell>
-
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Cargo al que va Dirigido</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Nicel Educativo</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Ciclo</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Estado
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Fecha Inicio
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                                    Fecha de Finalización
-                                </TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Cantidad de Participantes Programados</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Dirección</TableCell>
-                                <TableCell align="right" style={{ fontWeight: "bold" }}>Zona</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-
-
-                                <TableRow key={row.idinvestigacioncap}>
-                                    <TableCell style={{ width: 160 }} align="center">
-                                        {row.id}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.accionformacion}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.formacioninvest}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.institucionresponsable}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.responsablefirmas}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.ambitoformacion}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.tipoformacion}
-                                    </TableCell>
-
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.modalidad}
-                                    </TableCell>
-                                    <TableCell cstyle={{ width: 160 }} align="right">
-                                        {
-                                            row.duracion ? `${row.duracion?.hours ?? 0}h ${row.duracion?.minutes ?? 0}m` : "0h 0m"
-                                        }
-                                    </TableCell>
-
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.espaciofisico}
-                                    </TableCell>
-
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.funciondirigido}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.nivelacademico}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.cicloacademico}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.estado}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {new Date(row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/")}
-
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {new Date(row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/")}
-
-                                    </TableCell>
-
-
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.participantesprog}
-                                    </TableCell>
-
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.direccion}
-                                    </TableCell>
-                                    <TableCell style={{ width: 160 }} align="right">
-                                        {row.zona}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                                    colSpan={18}
-                                    count={filteredRows.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    slotProps={{
-                                        select: {
-                                            inputProps: {
-                                                "aria-label": "Filas por página",
-                                            },
-                                            native: true,
-                                        },
-                                    }}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </TableContainer>
             </Paper>
 
         </Dashboard>

@@ -1,114 +1,349 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Drawer,
   List,
-  ListItem,
-  Button,
-  Toolbar,
-  IconButton,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
   Divider,
-  useMediaQuery,
-  Menu, MenuItem
+  Menu,
+  MenuItem as MuiMenuItem,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AddIcon from "@mui/icons-material/Add";
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+
+import { useNavigate, useLocation } from "react-router-dom";
+
+import Groups3OutlinedIcon from '@mui/icons-material/Groups3Outlined';
+import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
+import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+
+
+import { useUser } from "../Components/UserContext";
 import { color } from "../Components/color";
-import { useNavigate } from "react-router-dom";
-import DescriptionIcon from "@mui/icons-material/Description";
+import { styled } from '@mui/material/styles';
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: color.primary.azul,
+    boxShadow: theme.shadows[1],
+    fontSize: 15,
+  },
+}));
 
-const ProjectDrawer = () => {
+
+
+const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
-  const [openD, setOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width:600px)");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const location = useLocation();
+  const { permissions } = useUser();
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  // Estados separados para cada menú
+  const [openRepoeteria, setOpenReporteria] = useState(false);
+
+
+  // Refs y estados para los menús flotantes
+  const reporteriaAnchorRef = useRef(null);
+
+  const [reporteriaMenuOpen, setReporteriaMenuOpen] = useState(false);
+
+
+  const handelReporteriaMenuOpen = (event) => {
+    if (!open) {
+      setReporteriaMenuOpen(true);
+    }
   };
 
-  const handleClose = (path) => {
-    setAnchorEl(null);
-    if (path) navigate(path);
-  };
-  const toggleDrawer = () => {
-    setOpen(!openD);
+
+  const handleMenuClose = () => {
+    setReporteriaMenuOpen(false);
   };
 
-  const NuevaFormación = () => {
-    navigate("/Lineamientos_De_Formación");
-    setOpen(false); // Cierra el menú después de navegar
-  };
-  const NuevaInvestigacion = () => {
-    navigate("/Lineamientos_De_Investigación");
-    setOpen(false); // Cierra el menú después de navegar
+  const handleItemClick = (path) => {
+    navigate(path);
+    handleMenuClose();
   };
 
-  return (
-    <>
-      {isMobile && (
-        <IconButton
-          onClick={toggleDrawer}
-          sx={{ position: "fixed", top: 20, left: 5, zIndex: 1300 }}
-        >
-          <MenuIcon />
-        </IconButton>
-      )}
+  const isActive = (path) => {
+    // Decodifica tanto la ruta actual como la ruta que estamos comparando
+    const decodedCurrentPath = decodeURIComponent(location.pathname);
+    const decodedComparePath = decodeURIComponent(path);
+    return decodedCurrentPath === decodedComparePath;
+  };
+  const isReporteriaActive =
+    isActive("/Reportería/Listado_Capacitaciones") ||
+    isActive("/Reportería/Listado_Participantes") ||
+    isActive("/Reportería/Aldeas") ||
+    isActive("/Reportería/Etnias") ||
+    isActive("/Reportería/Área-Formación") ||
+    isActive("/Reportería/Tipo-Educador") ||
+    isActive("/Reportería/Discapacidades") ||
+    isActive("/Reportería/Niveles-Académicos") ||
+    isActive("/Reportería/Grados-Académicos") ||
+    isActive("/Reportería/Nacionalidades")
+    ;
 
-      <Drawer
-        variant={isMobile ? "temporary" : "permanent"}
-        open={open}
-        onClose={toggleDrawer}
+
+
+  const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
+    const active = isParent ? parentActive : isActive(path);
+
+    return {
+      justifyContent: open ? "initial" : "center",
+      px: 2.5,
+      borderRadius: 2,
+      mx: 1,
+      backgroundColor: active ? color.primary.azul : "inherit",
+      "&:hover": {
+        backgroundColor: active
+          ? "#88CFE0"
+          : !open
+            ? color.primary.azul
+            : "rgba(0, 0, 0, 0.04)",
+        "& .MuiListItemIcon-root, & .MuiListItemText-root": {
+          color: active || !open ? "white" : "inherit",
+        },
+      },
+      "& .MuiListItemIcon-root": {
+        color: active ? "white" : "inherit",
+      },
+      "& .MuiListItemText-root": {
+        color: active ? "white" : "inherit",
+      },
+    };
+  };
+
+  const MenuItem = ({ path, icon, text, onClick, isParent, parentActive, menuRef, onMouseEnter, onMouseLeave }) => (
+    <ListItemButton
+      onClick={onClick}
+      sx={getMenuItemStyles(path, isParent, parentActive)}
+      ref={menuRef}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <ListItemIcon
         sx={{
-          width: isMobile ? "auto" : 250,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": { width: 244 },
+          minWidth: 0,
+          mr: open ? 3 : "auto",
+          justifyContent: "center",
+          "& .MuiSvgIcon-root": {
+            fontSize: open ? "1.5rem" : "2rem",
+          },
         }}
       >
-        <Toolbar />
-        <List>
-          <Button
-            variant="text"
-            startIcon={<AddIcon />}
-            onClick={NuevaFormación}
-            size="large"
-            sx={{ margin: 2, color: color.primary.azul }}
-          >
-            Nueva Formación
-          </Button>
-          <Divider />
-          <Button
-            variant="text"
-            startIcon={<AddIcon />}
-            onClick={NuevaInvestigacion}
-            size="large"
-            sx={{ margin: 2, color: color.primary.azul }}
-          >
-            Nueva Investigación
-          </Button>
-          <Divider />
-          <Button
-            variant="text"
-            startIcon={<DescriptionIcon />}
-            onClick={handleClick}
-            size="large"
-            sx={{ margin: 2, color: color.primary.azul }} // Usa tu variable de color si es necesario
-          >
-            Reportería
-          </Button>
+        {icon}
+      </ListItemIcon>
+      {open && <ListItemText primary={text} />}
+      {open && isParent === "reporteria" && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
 
-          <Menu anchorEl={anchorEl} open={open} onClose={() => handleClose()}>
-            <MenuItem onClick={() => handleClose("/Listado_Capacitaciones")}>
-              Listado de Capacitaciones
-            </MenuItem>
-            <MenuItem onClick={() => handleClose("/Listado_Participantes")}>
-              Listado de Participantes
-            </MenuItem>
+    </ListItemButton>
+  );
+
+
+  const tienePermisosModulo = (idModulo) => {
+    return permissions?.some(p => p.idmodulo === idModulo && p.consultar);
+  };
+
+  const tienePermiso = (idobjeto) => {
+    const permiso = permissions?.find(p => p.idobjeto === idobjeto);
+    return permiso?.consultar === true;
+  };
+
+
+  return (
+    <Drawer
+      variant="permanent"
+      open={open}
+      sx={{
+        width: open ? 225 : 75,
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        "& .MuiDrawer-paper": {
+          width: open ? 230 : 80,
+          overflowX: "hidden",
+          alignItems: open ? "" : "center",
+          transition: (theme) =>
+            theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: open
+                ? theme.transitions.duration.enteringScreen
+                : theme.transitions.duration.leavingScreen,
+            }),
+          boxShadow: "none",
+          border: "none",
+        },
+      }}
+    >
+      {/* Dashboard */}
+      <List sx={{ marginTop: 12 }}>
+        <MenuItem
+          path="/dashboard"
+          icon={<DashboardOutlinedIcon />}
+          text="Dashboard"
+          onClick={() => navigate("/dashboard")}
+        />
+      </List>
+
+      {open && <Divider />}
+      {/* Formación */}
+      <List>
+
+        <LightTooltip title="Nueva Formación" placement="right" disableHoverListener={open} >
+          <div>
+            <MenuItem
+              path="/Lineamientos_De_Formación"
+              icon={<PostAddOutlinedIcon />}
+              text=" Nueva Formación"
+              onClick={() => navigate("/Lineamientos_De_Formación")}
+            />
+          </div>
+        </LightTooltip >
+
+      </List>
+
+      {open && <Divider />}
+      {/* Investigación */}
+      <List>
+        <LightTooltip title="Nueva Investigación" placement="right" disableHoverListener={open}>
+          <div>
+            <MenuItem
+              path="/Lineamientos_De_Investigación"
+              icon={<ZoomInIcon />}
+              text="Nueva Investigación"
+              onClick={() => navigate("/Lineamientos_De_Investigación")}
+            />
+          </div>
+        </LightTooltip>
+      </List>
+
+
+      <>
+        {open && <Divider />}
+        {/* Reportería con menú flotante */}
+        <List>
+          <MenuItem
+            path="/Reportería"
+            icon={<TextSnippetOutlinedIcon />}
+            text="Reportería"
+            onClick={() => (open ? setOpenReporteria(!openRepoeteria) : null)}
+            isParent="reporteria"
+            parentActive={isReporteriaActive}
+            menuRef={reporteriaAnchorRef}
+            onMouseEnter={handelReporteriaMenuOpen}
+            onMouseLeave={handleMenuClose}
+          />
+
+          {open && (
+            <Collapse in={openRepoeteria} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
+              <List component="div" disablePadding>
+
+
+                <MenuItem
+                  path="/Reportería/Listado_Capacitaciones"
+                  icon={<TextSnippetOutlinedIcon />}
+                  text={
+                    <>
+                      Listado de<br />Capacitaciones
+                    </>
+                  }
+                  onClick={() => navigate("/Reportería/Listado_Capacitaciones")}
+                />
+
+
+                <MenuItem
+                  path="/Reportería/Listado_Participantes"
+                  icon={<TextSnippetOutlinedIcon />}
+                  text={
+                    <>
+                      Listado de<br />Participantes
+                    </>
+                  }
+                  onClick={() => navigate("/Reportería/Listado_Participantes")}
+                />
+              </List>
+            </Collapse>
+          )}
+
+          {/* Menú flotante de Reportería */}
+          <Menu
+            anchorEl={reporteriaAnchorRef.current}
+            open={reporteriaMenuOpen && !open}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "center",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "center",
+              horizontal: "left",
+            }}
+            PaperProps={{
+              sx: {
+                marginTop: 35,
+                ml: 10,
+                boxShadow: 3,
+                minWidth: 200,
+              },
+            }}
+            disableAutoFocusItem
+          >
+
+            <MuiMenuItem
+              onClick={() => handleItemClick("/Reportería/Listado_Capacitaciones")}
+
+            >
+              <ListItemIcon>
+                <TextSnippetOutlinedIcon
+                  fontSize="small"
+                  color={isActive("/Reportería/Listado_Capacitaciones") ? color.primary.azul : "inherit"}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="Listado de Capacitaciones"
+                primaryTypographyProps={{
+                  color: isActive("/Reportería/Listado_Capacitaciones") ? color.primary.azul : "inherit",
+                }}
+              />
+            </MuiMenuItem>
+
+
+            <MuiMenuItem
+              onClick={() => handleItemClick("/Reportería/Listado_Participantes")}
+
+            >
+              <ListItemIcon>
+                <TextSnippetOutlinedIcon
+                  fontSize="small"
+                  color={isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit"}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="Listado de Participantes"
+                primaryTypographyProps={{
+                  color: isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit",
+                }}
+              />
+            </MuiMenuItem>
+
+
+
 
           </Menu>
         </List>
-      </Drawer>
-    </>
+      </>
+
+
+
+
+      {open && <Divider />}
+    </Drawer>
   );
 };
 
