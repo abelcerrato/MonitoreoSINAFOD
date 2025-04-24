@@ -1,6 +1,6 @@
 // routes/uploadRoutes.js
 import express from "express";
-import { upload, uploadDocumento,downloadDocumento,deleteDocumento } from "../controllers/uploads.controller.js";
+import { previewDocumento, upload, uploadDocumento, downloadDocumento, deleteDocumento } from "../controllers/uploads.controller.js";
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ const router = express.Router();
 router.post("/upload-documento", upload.array("documentos", 10), uploadDocumento);
 router.get('/download/:filename', downloadDocumento);
 router.delete('/delete/:filename', deleteDocumento);
+router.get('/preview/:filename', previewDocumento);
 
 export default router;
