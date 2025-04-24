@@ -18,7 +18,6 @@ import ActualizarFormacion from './Actividad/Formación/ModificarFormación'
 
 
 import Participantes from './Participantes/FormularioParticipantes';
-import ModificarActividad from './Actividad/ModificarActividad'
 import ModificarParticipante from './Participantes/ModificarParticipantes'
 import ListadoParticipantes from './Reportería/ListadoParticipantes'
 import ListadoActividad from './Reportería/ListadoCapacitaciones'
@@ -73,10 +72,10 @@ function App() {
 
 
           <Route path="/Participantes" element={<ProtectedRoute><Participantes /></ProtectedRoute>} />
-          <Route path="/Modificar_Actividad/:id" element={<ProtectedRoute><ModificarActividad /></ProtectedRoute>} />
           <Route path="/Modificar_Participante/:id" element={<ProtectedRoute><ModificarParticipante /></ProtectedRoute>} />
-          <Route path="/Listado_Participantes" element={<ProtectedRoute><ListadoParticipantes /></ProtectedRoute>} />
-          <Route path="/Listado_Capacitaciones" element={<ProtectedRoute><ListadoActividad /></ProtectedRoute>} />
+         
+          <Route path="/Reportería/Listado_Participantes" element={<ProtectedRoute><ListadoParticipantes /></ProtectedRoute>} />
+          <Route path="/Reportería/Listado_Capacitaciones" element={<ProtectedRoute><ListadoActividad /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
 

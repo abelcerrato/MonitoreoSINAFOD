@@ -99,15 +99,15 @@ const Investigacion = () => {
             // 3) Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
                 const isValidDate = value && !isNaN(new Date(value).getTime());
-            
+
                 if (isValidDate) {
                     newData[name] = new Date(value).toISOString().split("T")[0];
                 } else {
                     newData[name] = "";
                 }
-            
+
                 const { fechainicio, fechafinal } = newData;
-            
+
                 if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
                     setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
                     setFieldErrors({ fechainicio: true, fechafinal: true });
@@ -120,7 +120,7 @@ const Investigacion = () => {
                     }));
                 }
             }
-            
+
             // 4) Limpiar campos de convenio cuando pasamos a Interna
             if (name === "tipoactividad" && value === "Interna") {
                 newData.institucionconvenio = "";
@@ -293,11 +293,11 @@ const Investigacion = () => {
                     icon: 'warning',
 
                     showCancelButton: true,
-                confirmButtonColor: color.primary.azul,
-                cancelButtonColor: color.primary.rojo,
-                confirmButtonText: 'Sí, Registrar',
-                cancelButtonText: 'No, cancelar',
-                reverseButtons: true
+                    confirmButtonColor: color.primary.azul,
+                    cancelButtonColor: color.primary.rojo,
+                    confirmButtonText: 'Sí, Registrar',
+                    cancelButtonText: 'No, cancelar',
+                    reverseButtons: true
                 });
 
 
@@ -346,13 +346,18 @@ const Investigacion = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Box alignItems="center" justifyContent="space-between">
-
-                        <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                            Registro de Datos sobre la Formación
-                        </Typography>
-
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={9}>
+                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                                Registro de Datos sobre la Formación
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            item
+                            xs={12}
+                            sm={3}
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
+                        >
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -363,9 +368,8 @@ const Investigacion = () => {
                             >
                                 Cerrar
                             </Button>
-                        </Box>
-
-                    </Box>
+                        </Grid>
+                    </Grid>
 
                     <Grid container spacing={5} mt={2}>
                         <Grid item xs={12} sm={6}>
