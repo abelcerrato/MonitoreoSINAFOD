@@ -130,21 +130,29 @@ const Investigacion = () => {
       
           // Validación de fechas
           if (name === "fechainicio" || name === "fechafinal") {
-            // Formatear a YYYY-MM-DD
-            newData[name] = new Date(value).toISOString().split("T")[0];
-            const { fechainicio, fechafinal } = newData;
-            if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
-              setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
-              setFieldErrors({ fechainicio: true, fechafinal: true });
+            const isValidDate = value && !isNaN(new Date(value).getTime());
+        
+            if (isValidDate) {
+                newData[name] = new Date(value).toISOString().split("T")[0];
             } else {
-              setError("");
-              setFieldErrors((prev) => ({
-                ...prev,
-                fechainicio: false,
-                fechafinal: false,
-              }));
+                newData[name] = "";
             }
-          }
+        
+            const { fechainicio, fechafinal } = newData;
+        
+            if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
+                setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
+                setFieldErrors({ fechainicio: true, fechafinal: true });
+            } else {
+                setError("Este campo es obligatorio");
+                setFieldErrors((prevErrors) => ({
+                    ...prevErrors,
+                    fechainicio: !fechainicio,
+                    fechafinal: !fechafinal,
+                }));
+            }
+        }
+        
       
           // Validación de minutos
           if (name === "minutos") {

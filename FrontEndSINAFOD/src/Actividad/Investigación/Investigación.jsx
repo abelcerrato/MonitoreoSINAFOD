@@ -39,7 +39,7 @@ const Investigacion = () => {
     const [isFromLineamientos, setIsFromLineamientos] = useState(false);
     const [formData, setFormData] = useState({
         accionformacion: location.state?.accionformacion || '',
-        formacioninvest: "Investigacion",
+        formacioninvest: "Investigación",
         tipoactividad: "",
         existeconvenio: null,
         institucionconvenio: "",
@@ -99,20 +99,29 @@ const Investigacion = () => {
 
             // Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
-                const formattedDate = new Date(value).toISOString().split("T")[0];
-                newData[name] = formattedDate;
-
-                if (newData.fechainicio && newData.fechafinal) {
-                    if (new Date(newData.fechainicio) > new Date(newData.fechafinal)) {
-                        setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
-                        setFieldErrors({ fechainicio: true, fechafinal: true });
-                    } else {
-                        setError("");
-                        setFieldErrors({ fechainicio: false, fechafinal: false });
-                    }
+                const isValidDate = value && !isNaN(new Date(value).getTime());
+            
+                if (isValidDate) {
+                    newData[name] = new Date(value).toISOString().split("T")[0];
+                } else {
+                    newData[name] = "";
+                }
+            
+                const { fechainicio, fechafinal } = newData;
+            
+                if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
+                    setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
+                    setFieldErrors({ fechainicio: true, fechafinal: true });
+                } else {
+                    setError("Este campo es obligatorio");
+                    setFieldErrors((prevErrors) => ({
+                        ...prevErrors,
+                        fechainicio: !fechainicio,
+                        fechafinal: !fechafinal,
+                    }));
                 }
             }
-
+            
 
 
             // Validar minutos

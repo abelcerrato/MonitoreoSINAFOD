@@ -273,11 +273,20 @@ const LineamientosI = () => {
                 />
               </Button>
               {formData.criteriosfactibilidadurl && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
                   <span>{formData.criteriosfactibilidadurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
+                    sx={{ ml: 'auto' }}
                     onClick={() => handleRemoveFile('criteriosfactibilidadurl')}
                   >
                     <DeleteIcon />
@@ -306,11 +315,20 @@ const LineamientosI = () => {
                 />
               </Button>
               {formData.requisitostecnicosurl && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
                   <span>{formData.requisitostecnicosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
+                    sx={{ ml: 'auto' }}
                     onClick={() => handleRemoveFile('requisitostecnicosurl')}
                   >
                     <DeleteIcon />
@@ -334,15 +352,25 @@ const LineamientosI = () => {
                   name="criterioseticosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
+                  
                   ref={fileInputRefs.criterioseticosurl}
                 />
               </Button>
               {formData.criterioseticosurl && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mt: 1,
+                  p: 1,
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: 1
+                }}>
                   <span>{formData.criterioseticosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
+                    sx={{ ml: 'auto' }}
                     onClick={() => handleRemoveFile('criterioseticosurl')}
                   >
                     <DeleteIcon />

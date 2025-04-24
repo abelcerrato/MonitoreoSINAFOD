@@ -333,19 +333,21 @@ export const postLineamientosC = async (req, res) => {
 export const putLineamientosC = async (req, res) => {
     const { id } = req.params;
     const {
-        estadoprotocolo,
+        accionformacion,
         modificadopor,
+        formacioninvest,
         // Campos para mantener URLs existentes
         presentoprotocolourl,
         monitoreoyevaluacionurl,
         aplicacionevaluacionurl,
-        // Campos booleanos para documentos
-        presentoprotocolo,
-        monitoreoyevaluacion,
-        aplicacionevaluacion
+        // Campos para los nuevos archivos que envías desde el frontend
+        criteriosfactibilidadurl,
+        requisitostecnicosurl,
+        criterioseticosurl
     } = req.body;
+    
     console.log(req.body);
-
+    console.log(req.params);
     const files = req.files || {};
     console.log(req.files);
     const d = new Date();
@@ -381,7 +383,7 @@ export const putLineamientosC = async (req, res) => {
             aplicacionevaluacion: currentData.aplicacionevaluacion,
             aplicacionevaluacionurl: currentData.aplicacionevaluacionurl,
             // Otros campos
-            estadoprotocolo: estadoprotocolo || currentData.estadoprotocolo,
+            estadoprotocolo: currentData.estadoprotocolo,
             criteriosfactibilidad: currentData.criteriosfactibilidad,
             criteriosfactibilidadurl: currentData.criteriosfactibilidadurl,
             requisitostecnicos: currentData.requisitostecnicos,
@@ -419,11 +421,14 @@ export const putLineamientosC = async (req, res) => {
             // Si no se envía nada, mantiene los valores actuales
         };
 
-        // Procesar los archivos de documentos principales
+        // Procesar todos los posibles archivos
         [
             'presentoprotocolourl',
             'monitoreoyevaluacionurl',
-            'aplicacionevaluacionurl'
+            'aplicacionevaluacionurl',
+            'criteriosfactibilidadurl',
+            'requisitostecnicosurl',
+            'criterioseticosurl'
         ].forEach(processFile);
 
         // 5. Llamar a tu función putLineamientosM
