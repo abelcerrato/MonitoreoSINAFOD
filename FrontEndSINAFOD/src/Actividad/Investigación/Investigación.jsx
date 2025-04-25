@@ -100,15 +100,15 @@ const Investigacion = () => {
             // Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
                 const isValidDate = value && !isNaN(new Date(value).getTime());
-            
+
                 if (isValidDate) {
                     newData[name] = new Date(value).toISOString().split("T")[0];
                 } else {
                     newData[name] = "";
                 }
-            
+
                 const { fechainicio, fechafinal } = newData;
-            
+
                 if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
                     setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
                     setFieldErrors({ fechainicio: true, fechafinal: true });
@@ -121,7 +121,7 @@ const Investigacion = () => {
                     }));
                 }
             }
-            
+
 
 
             // Validar minutos
@@ -131,20 +131,20 @@ const Investigacion = () => {
                 setErrorM("");
             }
 
-             // Validación de mes
-          if (name === "mes") {
-            if (Number(value) > 59) {
-              setErrorM("Solo se admiten mes hasta 59.");
-            } else {
-              setErrorM("");
+            // Validación de mes
+            if (name === "mes") {
+                if (Number(value) > 59) {
+                    setErrorM("Solo se admiten mes hasta 59.");
+                } else {
+                    setErrorM("");
+                }
             }
-          }
-      
-          // Recalcular duración en HH:MM
-          const dia = Number(newData.dia) || 0;
-          const mes = Number(newData.mes) || 0;
-          const año = Number(newData.año) || 0;
-          newData.duracion = `${String(dia).padStart(2, "0")}:${String(mes).padStart(2, "0")}:${String(año).padStart(2, "0")}`;
+
+            // Recalcular duración en HH:MM
+            const dia = Number(newData.dia) || 0;
+            const mes = Number(newData.mes) || 0;
+            const año = Number(newData.año) || 0;
+            newData.duracion = `${String(dia).padStart(2, "0")}:${String(mes).padStart(2, "0")}:${String(año).padStart(2, "0")}`;
 
             return newData;
         });
@@ -199,27 +199,19 @@ const Investigacion = () => {
             }
         });
 
-        // Verifica que al menos uno de los campos "horas" o "minutos" esté lleno
-        if (!formData.horas && !formData.minutos) {
-            errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
-            errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
-        }
 
-
-
-
-        // Si hay campos vacíos, actualizar estado y mostrar alerta
-        if (Object.keys(errors).length > 0) {
-            setFieldErrors(errors);
-            Swal.fire({
-                title: "Campos obligatorios",
-                text: "Llenar los campos en rojo",
-                icon: "warning",
-                timer: 6000,
-            });
-            return;
-        }
-
+        /*     // Si hay campos vacíos, actualizar estado y mostrar alerta
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                Swal.fire({
+                    title: "Campos obligatorios",
+                    text: "Llenar los campos en rojo",
+                    icon: "warning",
+                    timer: 6000,
+                });
+                return;
+            }
+     */
 
         // Verificación de la fecha antes de guardar los datos
         if (formData.fechainicio && formData.fechafinal) {
@@ -394,7 +386,7 @@ const Investigacion = () => {
                         )}
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Costo
+                                Presupuesto
                             </Typography>
                             <TextField
                                 fullWidth
@@ -403,61 +395,61 @@ const Investigacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                      <Grid item xs={12} sm={6}>
-                                                  <Typography variant="subtitle1">Duración</Typography>
-                                                  <Grid container spacing={2}>
-                                                      <Grid item xs={12} sm={3}>
-                                                          <TextField
-                                                              variant="outlined"
-                                                              label="Días"
-                                                              fullWidth
-                                                              type="number"
-                                                              name="dia"
-                                                              value={formData.dia || ""}
-                                                              onChange={handleChange}
-                                         
-                                                          />
-                                                      </Grid>
-                                                      <Grid item xs={12} sm={3}>
-                                                          <TextField
-                                                              variant="outlined"
-                                                              label="Meses"
-                                                              fullWidth
-                                                              type="number"
-                                                              name="mes"
-                                                              value={formData.mes || ""}
-                                                              onChange={handleChange}
-                                                        
-                                                          />
-                                                          {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
-                                                      </Grid>
-                                                      <Grid item xs={12} sm={3}>
-                                                          <TextField
-                                                              variant="outlined"
-                                                              label="Años"
-                                                              fullWidth
-                                                              type="number"
-                                                              name="año"
-                                                              value={formData.año || ""}
-                                                              onChange={handleChange}
-                                                        
-                                                          />
-                                                          {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
-                                                      </Grid>
-                                                      <Grid item xs={12} sm={3}>
-                                                          <TextField
-                                                              variant="outlined"
-                                                              label="(D:M:A)"
-                                                              fullWidth
-                                                              name="duracion"
-                                                              value={formData.duracion || ""}
-                                                              InputProps={{
-                                                                  readOnly: true, // Hace el campo solo lectura
-                                                              }}
-                                                          />
-                                                      </Grid>
-                                                  </Grid>
-                                              </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Duración</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="Días"
+                                        fullWidth
+                                        type="number"
+                                        name="dia"
+                                        value={formData.dia || ""}
+                                        onChange={handleChange}
+
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="Meses"
+                                        fullWidth
+                                        type="number"
+                                        name="mes"
+                                        value={formData.mes || ""}
+                                        onChange={handleChange}
+
+                                    />
+                                    {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="Años"
+                                        fullWidth
+                                        type="number"
+                                        name="año"
+                                        value={formData.año || ""}
+                                        onChange={handleChange}
+
+                                    />
+                                    {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="(D:M:A)"
+                                        fullWidth
+                                        name="duracion"
+                                        value={formData.duracion || ""}
+                                        InputProps={{
+                                            readOnly: true, // Hace el campo solo lectura
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
                                 Población Objetivo
@@ -521,7 +513,7 @@ const Investigacion = () => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle1">Dirección</Typography>
+                            <Typography variant="subtitle1">Ubicación</Typography>
                             <TextField
                                 fullWidth
                                 name="direccion"

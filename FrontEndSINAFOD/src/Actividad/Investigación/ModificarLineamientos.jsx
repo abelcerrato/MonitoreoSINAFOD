@@ -553,7 +553,7 @@ const LineamientosI = () => {
                         )}
                         {renderFileField(
                             "aplicacionevaluacionurl",
-                            "Documento de Aplicación de Evaluación"
+                            "Documento de Aplicación de Investigación"
                         )}
                     </Grid>
 

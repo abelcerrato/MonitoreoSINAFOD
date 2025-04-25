@@ -136,7 +136,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     const selectedRow = rows.find(row => row.id === id);
     
     if (selectedRow && 
-        (selectedRow.estado_lineamientos === "No Tiene Lineamientos" )) {
+        (selectedRow.estado_lineamientos === "No Lleno Lineamientos" )) {
       
       await Swal.fire({
         title: '¡Advertencia!',

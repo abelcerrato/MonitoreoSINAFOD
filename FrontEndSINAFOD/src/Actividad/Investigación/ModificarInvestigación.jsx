@@ -211,11 +211,6 @@ const Investigacion = () => {
             }
         });
 
-        // Verifica que al menos uno de los campos "dia" o "mes" esté lleno
-        if (!formData.dia && !formData.mes) {
-            errors.dia = 'Debe llenar al menos uno de los campos: dia o mes';
-            errors.mes = 'Debe llenar al menos uno de los campos: dia o mes';
-        }
 
         // Si hay campos vacíos, actualizar estado y mostrar alerta
         if (Object.keys(errors).length > 0) {
@@ -397,7 +392,7 @@ const Investigacion = () => {
                         )}
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Costo
+                            Presupuesto
                             </Typography>
                             <TextField
                                 fullWidth
@@ -524,7 +519,7 @@ const Investigacion = () => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle1">Dirección</Typography>
+                            <Typography variant="subtitle1">Ubicación</Typography>
                             <TextField
                                 fullWidth
                                 name="direccion"
