@@ -76,14 +76,16 @@ const Investigacion = () => {
 
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/investC/${id}`);
                 const data = response.data[0];
-                const horas = data.duracion?.hours || 0;
-                const minutos = data.duracion?.minutes || 0;
+                const dia = data.duracion?.hours || 0;
+                const mes = data.duracion?.minutes || 0;
+                const año = data.duracion?.seconds || 0;
 
                 setFormData({
                     ...data,
-                    horas: data.duracion?.hours || 0,
-                    minutos: data.duracion?.minutes || 0,
-                    duracion: `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`,
+                    dia: data.duracion?.hours || 0,
+                    mes: data.duracion?.minutes || 0,
+                    año: data.duracion?.seconds || 0,
+                    duracion: `${String(dia).padStart(2, '0')}:${String(mes).padStart(2, '0')}:${String(año).padStart(2, '0')}`,
                     fechainicio: data.fechainicio ? data.fechainicio.split("T")[0] : "",
                     fechafinal: data.fechafinal ? data.fechafinal.split("T")[0] : "",
                 });
@@ -154,19 +156,20 @@ const Investigacion = () => {
         }
         
       
-          // Validación de minutos
-          if (name === "minutos") {
+          // Validación de mes
+          if (name === "mes") {
             if (Number(value) > 59) {
-              setErrorM("Solo se admiten minutos hasta 59.");
+              setErrorM("Solo se admiten mes hasta 59.");
             } else {
               setErrorM("");
             }
           }
       
           // Recalcular duración en HH:MM
-          const horas = Number(newData.horas) || 0;
-          const minutos = Number(newData.minutos) || 0;
-          newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+          const dia = Number(newData.dia) || 0;
+          const mes = Number(newData.mes) || 0;
+          const año = Number(newData.año) || 0;
+          newData.duracion = `${String(dia).padStart(2, "0")}:${String(mes).padStart(2, "0")}:${String(año).padStart(2, "0")}`;
       
           return newData;
         });
@@ -208,10 +211,10 @@ const Investigacion = () => {
             }
         });
 
-        // Verifica que al menos uno de los campos "horas" o "minutos" esté lleno
-        if (!formData.horas && !formData.minutos) {
-            errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
-            errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
+        // Verifica que al menos uno de los campos "dia" o "mes" esté lleno
+        if (!formData.dia && !formData.mes) {
+            errors.dia = 'Debe llenar al menos uno de los campos: dia o mes';
+            errors.mes = 'Debe llenar al menos uno de los campos: dia o mes';
         }
 
         // Si hay campos vacíos, actualizar estado y mostrar alerta
@@ -226,16 +229,7 @@ const Investigacion = () => {
             return;
         }
 
-        // Verificación de minutos antes de guardar los datos
-        if (formData.minutos > 59) {
-            Swal.fire({
-                title: 'Advertencia!',
-                text: 'Los minutos no pueden ser mayores a 59.',
-                icon: 'warning',
-                timer: 6000,
-            });
-            return; // Detiene la ejecución si la validación falla
-        }
+      
 
         // Verificación de la fecha antes de guardar los datos
         if (formData.fechainicio && formData.fechafinal) {
@@ -318,7 +312,7 @@ const Investigacion = () => {
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
                     <Box alignItems="center" justifyContent="space-between">
 
-                        <Typography variant="h3" sx={{ color: color.primary.azul }}>
+                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
                             Actualizar Datos sobre la Investigación
                         </Typography>
 
@@ -415,38 +409,48 @@ const Investigacion = () => {
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Duración</Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="Horas"
+                                        label="Días"
                                         fullWidth
                                         type="number"
-                                        name="horas"
-                                        value={formData.horas || ""}
+                                        name="dia"
+                                        value={formData.dia || ""}
                                         onChange={handleChange}
-                                        error={fieldErrors.horas || fieldErrors.minutos}
-                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                   
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="Minutos"
+                                        label="Meses"
                                         fullWidth
                                         type="number"
-                                        name="minutos"
-                                        value={formData.minutos || ""}
+                                        name="mes"
+                                        value={formData.mes || ""}
                                         onChange={handleChange}
-                                        inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
-                                        error={fieldErrors.horas || fieldErrors.minutos}
-                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+                                  
                                     />
                                     {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                                 </Grid>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="(HH:MM)"
+                                        label="Años"
+                                        fullWidth
+                                        type="number"
+                                        name="año"
+                                        value={formData.año || ""}
+                                        onChange={handleChange}
+                                  
+                                    />
+                                    {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="(D:M:A)"
                                         fullWidth
                                         name="duracion"
                                         value={formData.duracion || ""}
@@ -459,7 +463,7 @@ const Investigacion = () => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Población a la que va dirigido
+                                Población Objetivo
                             </Typography>
                             <TextField
                                 fullWidth
