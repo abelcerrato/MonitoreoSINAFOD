@@ -290,7 +290,8 @@ const LineamientosM = () => {
             );
 
             Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
-            navigate(`/Actualizar_Formación/${id}`);
+            // navigate(`/Actualizar_Formación/${id}`);
+            navigate("/dashboard")
         } catch (error) {
             console.error("Error al enviar los datos:", error);
             Swal.fire("Error", "Hubo un problema al guardar los datos", "error");

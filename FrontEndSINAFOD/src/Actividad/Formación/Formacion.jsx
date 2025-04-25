@@ -288,8 +288,8 @@ const Investigacion = () => {
             // Si no hay ID (flujo "Omitir"), pedir confirmación
             if (!idToUse) {
                 const confirmResult = await Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "La investigación se registrará sin lineamientos. ¿Deseas continuar?",
+                    title: 'Advertencia!',
+                    text: "La formación se registrará sin lineamientos.",
                     icon: 'warning',
 
                     showCancelButton: true,

@@ -304,8 +304,8 @@ const Investigacion = () => {
             console.log("Datos que envio", formData);
 
             // Redirigir a Participantes con el ID
-            navigate("/Participantes", { state: { investCap: id } });
-
+            // navigate("/Participantes", { state: { investCap: id } });
+            navigate("/dashboard")
         } catch (error) {
             console.error("Error al guardar los datos", error);
             Swal.fire('Error!', 'Error al guardar datos', 'error');

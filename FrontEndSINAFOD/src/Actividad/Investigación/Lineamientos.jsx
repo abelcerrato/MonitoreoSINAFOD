@@ -175,11 +175,11 @@ const LineamientosI = () => {
     let hasError = false;
 
     // Validar si se cargó un archivo en presentoprotocolourl
-    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
+ /*    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
       newErrors.estadoprotocolo = true;
       hasError = true;
     }
-
+ */
     // Validación del título del proyecto
     if (!formData.accionformacion) {
       newErrors.accionformacion = true;
@@ -199,8 +199,11 @@ const LineamientosI = () => {
     formDataToSend.append("accionformacion", formData.accionformacion);
     formDataToSend.append(
       "estadoprotocolo",
-      formData.presentoprotocolourl ? formData.estadoprotocolo : "No se presentó"
+      formData.presentoprotocolourl
+        ? (formData.estadoprotocolo || "Completo")
+        : "No se presentó"
     );
+    
     formDataToSend.append("creadopor", user);
     formDataToSend.append("modificadopor", user);
     formDataToSend.append("formacioninvest", "Investigación");
@@ -226,13 +229,13 @@ const LineamientosI = () => {
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
         title: 'Lineamientos incompletos',
-        text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+        text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
-        confirmButtonText: 'Sí, Registrar',
-        cancelButtonText: 'No, cancelar',
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
         reverseButtons: true
       });
 
@@ -296,14 +299,9 @@ const LineamientosI = () => {
   return (
     <>
       <Dashboard>
-        <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={8}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Lineamientos para Investigación
-              </Typography>
-            </Grid>
-            <Grid
+
+        <Paper sx={{ padding: 5, marginBottom: 3 }}>
+           <Grid
               item
               xs={12}
               sm={4}
@@ -320,6 +318,14 @@ const LineamientosI = () => {
                 Cerrar
               </Button>
             </Grid>
+        <Paper sx={{ padding: 3, marginBottom: 3, mt:2 }}  elevation={3}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                Registro de Lineamientos para Investigación
+              </Typography>
+            </Grid>
+           
           </Grid>
 
           <Grid container spacing={5} mt={2}>
@@ -342,7 +348,7 @@ const LineamientosI = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}></Grid>
+         
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
                 Documento del Protocolo del Proyecto de Investigación Educativa
@@ -393,7 +399,7 @@ const LineamientosI = () => {
                 </Box>
               )}
             </Grid>
-            <Grid item xs={12} sm={6}>
+           {/*  <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1">Estado del Protocolo</Typography>
               <FormControl fullWidth error={errors.estadoprotocolo}>
                 <Select
@@ -416,7 +422,92 @@ const LineamientosI = () => {
                   </FormHelperText>
                 )}
               </FormControl>
+            </Grid> */}
+          
+            
+             
+
+         
+          </Grid>
+       
+          {/* Modal de vista previa */}
+          <Dialog
+            open={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle>
+              Vista previa del documento
+              <IconButton
+                onClick={() => setPreviewOpen(false)}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              {previewContent?.type === 'pdf' && (
+                <iframe
+                  src={previewContent.url}
+                  width="100%"
+                  height="500px"
+                  style={{ border: 'none' }}
+                  title="Vista previa PDF"
+                />
+              )}
+              {previewContent?.type === 'image' && (
+                <img
+                  src={previewContent.url}
+                  alt="Vista previa"
+                  style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
+                />
+              )}
+              {previewContent?.type === 'other' && (
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '200px',
+                  textAlign: 'center'
+                }}>
+                  <DescriptionIcon sx={{ fontSize: 60, color: color.primary.azul }} />
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    {previewContent.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    No hay vista previa disponible para este tipo de archivo
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2, backgroundColor: color.primary.azul }}
+                    onClick={() => window.open(previewContent.url, '_blank')}
+                  >
+                    Descargar archivo
+                  </Button>
+                </Box>
+              )}
+            </DialogContent>
+          </Dialog>
+        </Paper>
+        <Paper sx={{ padding: 3, marginBottom: 3 }} elevation={3} >
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                Monitoreo y Seguimiento de la Investigación
+              </Typography>
             </Grid>
+            
+          </Grid>
+
+          <Grid container spacing={5} mt={2}>
+           
             <Grid item xs={12} sm={6}>
               <Typography variant="h6" gutterBottom>
                 Documento de Monitoreo y Evaluación
@@ -519,26 +610,7 @@ const LineamientosI = () => {
 
             </Grid>
           </Grid>
-          <Box
-            sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
-          >
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.rojo }}
-              startIcon={<FastForwardOutlinedIcon />}
-              onClick={() => navigate("/Investigación")}
-            >
-              Omitir
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.azul, ml: 5 }}
-              startIcon={<SaveIcon />}
-              onClick={handleSubmit}
-            >
-              Guardar
-            </Button>
-          </Box>
+    
           {/* Modal de vista previa */}
           <Dialog
             open={previewOpen}
@@ -604,6 +676,27 @@ const LineamientosI = () => {
               )}
             </DialogContent>
           </Dialog>
+        </Paper>
+        <Box
+            sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
+          >
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: color.primary.rojo }}
+              startIcon={<FastForwardOutlinedIcon />}
+              onClick={() => navigate("/Investigación")}
+            >
+              Omitir
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: color.primary.azul, ml: 5 }}
+              startIcon={<SaveIcon />}
+              onClick={handleSubmit}
+            >
+              Guardar
+            </Button>
+          </Box>
         </Paper>
       </Dashboard>
     </>
