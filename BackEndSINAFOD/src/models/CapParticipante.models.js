@@ -230,7 +230,7 @@ export const postCapParticipanteM = async (
         `, [
             idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
             departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-            idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+            idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced
         ]);
 
@@ -280,7 +280,7 @@ export const putCapParticipanteM = async (idinvestigacioncap, identificacion, co
                 RETURNING *`,
             [idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
                 departamentoced, municipio, usuario, idnivelesacademicos,
-                idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered, 
+                idgradosacademicos, idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
                 deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced,
                 id])
 
@@ -318,13 +318,13 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                     cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
                     
                     --academico que atiende
-                    cp.idnivelesacademicos as idnivelced, n.nombre as nombrenivelced, 
+                    cp.idnivelesacademicos as idnivelesacademicos, n.nombre as nombrenivelced, 
                     cp.idciclosacademicos as idcicloced,  c.nombre as nombrecicloced, 
-                    cp.idgradosacademicos as idgradoced, g.nombre as nombregradoced, 
+                    cp.idgradosacademicos as idgradosacademicos, g.nombre as nombregradoced, 
                     
-                    cp.departamentoced as iddeptoced, dced.nombre as nombredeptoced, 
-                    cp.municipioced as idmunicipioced, mced.nombre nombremunicipioced,
-                    cp.aldeaced as idaldeaced, aced.nombre as nombrealdeaced, 
+                    cp.departamentoced , dced.nombre as nombredeptoced, 
+                    cp.municipioced, mced.nombre nombremunicipioced,
+                    cp.aldeaced, aced.nombre as nombrealdeaced, 
 
                     --datos de auditoria
                     cp.creadopor, u.usuario as creadopor,
@@ -390,13 +390,13 @@ export const getParticipanteCodSACEM = async (filtro) => {
                     cp.codigodered, cp.centroeducativo, cp.tipoadministracion,  cp.zona,
                     
                     --academico que atiende
-                    cp.idnivelesacademicos as idnivelced, n.nombre as nombrenivelced, 
+                    cp.idnivelesacademicos as idnivelesacademicos, n.nombre as nombrenivelced, 
                     cp.idciclosacademicos as idcicloced,  c.nombre as nombrecicloced, 
-                    cp.idgradosacademicos as idgradoced, g.nombre as nombregradoced, 
+                    cp.idgradosacademicos as idgradosacademicos, g.nombre as nombregradoced, 
                     
-                    cp.departamentoced as iddeptoced, dced.nombre as nombredeptoced, 
-                    cp.municipioced as idmunicipioced, mced.nombre nombremunicipioced,
-                    cp.aldeaced as idaldeaced, aced.nombre as nombrealdeaced, 
+                    cp.departamentoced, dced.nombre as nombredeptoced, 
+                    cp.municipioced, mced.nombre nombremunicipioced,
+                    cp.aldeaced, aced.nombre as nombrealdeaced, 
 
                     --datos de auditoria
                     cp.creadopor, u.usuario as creadopor,
