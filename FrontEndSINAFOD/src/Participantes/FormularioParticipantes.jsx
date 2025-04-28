@@ -413,7 +413,7 @@ const FormularParticipantes = () => {
 
           centroeducativo: docente.centroeducativo || "",
           idnivelesacademicos: docente.idnivelesacademicos || "",
-          idgradosacademicos: docente.idgradoced || "",
+          idgradosacademicos: docente.idgradosacademicos || "",
           zona: docente.zona || "",
           municipioced: docente.municipioced || "",
           departamentoced: docente.departamentoced || "",
