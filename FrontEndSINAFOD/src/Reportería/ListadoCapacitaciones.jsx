@@ -236,12 +236,25 @@ const ListadoActividad = () => {
         {
             field: "duracion",
             headerName: "Duración",
-            width: 150,
-            valueGetter: (params) =>
-                params.row.duracion
-                    ? `${params.row.duracion.hours ?? 0}h ${params.row.duracion.minutes ?? 0}m`
-                    : "0h 0m",
-        },
+            width: 200,
+            valueGetter: (params) => {
+              const tipo = params.row.formacioninvest;
+              const duracion = params.row.duracion;
+          
+              if (!duracion) {
+                return tipo === "Investigación"
+                  ? "0 Días 0 Meses 0 Años"
+                  : "0h 0m";
+              }
+          
+              if (tipo === "Investigación") {
+                return `${duracion.hours ?? 0} Días ${duracion.minutes ?? 0} Meses ${duracion.seconds ?? 0} Años`;
+              } else {
+                return `${duracion.hours ?? 0}h ${duracion.minutes ?? 0}m`;
+              }
+            },
+          },
+          
         { field: "espaciofisico", headerName: "Espacio Físico", width: 180 },
         { field: "funciondirigido", headerName: "Nicel Educativo", width: 180 },
         { field: "nivelacademico", headerName: "Nivel Educativo", width: 180 },
