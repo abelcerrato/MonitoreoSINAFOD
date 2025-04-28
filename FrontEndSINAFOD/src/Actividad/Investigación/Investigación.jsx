@@ -100,15 +100,15 @@ const Investigacion = () => {
             // Validación de fechas
             if (name === "fechainicio" || name === "fechafinal") {
                 const isValidDate = value && !isNaN(new Date(value).getTime());
-            
+
                 if (isValidDate) {
                     newData[name] = new Date(value).toISOString().split("T")[0];
                 } else {
                     newData[name] = "";
                 }
-            
+
                 const { fechainicio, fechafinal } = newData;
-            
+
                 if (fechainicio && fechafinal && new Date(fechainicio) > new Date(fechafinal)) {
                     setError("La fecha de inicio no puede ser posterior a la fecha de finalización.");
                     setFieldErrors({ fechainicio: true, fechafinal: true });
@@ -121,7 +121,7 @@ const Investigacion = () => {
                     }));
                 }
             }
-            
+
 
 
             // Validar minutos
@@ -131,10 +131,20 @@ const Investigacion = () => {
                 setErrorM("");
             }
 
-            // Calcular duración (HH:MM)
-            const horas = newData.horas || 0;
-            const minutos = newData.minutos || 0;
-            newData.duracion = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+            // Validación de mes
+            if (name === "mes") {
+                if (Number(value) > 59) {
+                    setErrorM("Solo se admiten mes hasta 59.");
+                } else {
+                    setErrorM("");
+                }
+            }
+
+            // Recalcular duración en HH:MM
+            const dia = Number(newData.dia) || 0;
+            const mes = Number(newData.mes) || 0;
+            const año = Number(newData.año) || 0;
+            newData.duracion = `${String(dia).padStart(2, "0")}:${String(mes).padStart(2, "0")}:${String(año).padStart(2, "0")}`;
 
             return newData;
         });
@@ -189,37 +199,20 @@ const Investigacion = () => {
             }
         });
 
-        // Verifica que al menos uno de los campos "horas" o "minutos" esté lleno
-        if (!formData.horas && !formData.minutos) {
-            errors.horas = 'Debe llenar al menos uno de los campos: Horas o Minutos';
-            errors.minutos = 'Debe llenar al menos uno de los campos: Horas o Minutos';
-        }
 
+        /*     // Si hay campos vacíos, actualizar estado y mostrar alerta
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                Swal.fire({
+                    title: "Campos obligatorios",
+                    text: "Llenar los campos en rojo",
+                    icon: "warning",
+                    timer: 6000,
+                });
+                return;
+            }
+     */
 
-
-
-        // Si hay campos vacíos, actualizar estado y mostrar alerta
-        if (Object.keys(errors).length > 0) {
-            setFieldErrors(errors);
-            Swal.fire({
-                title: "Campos obligatorios",
-                text: "Llenar los campos en rojo",
-                icon: "warning",
-                timer: 6000,
-            });
-            return;
-        }
-
-        // Verificación de minutos antes de guardar los datos
-        if (formData.minutos > 59) {
-            Swal.fire({
-                title: 'Advertencia!',
-                text: 'Los minutos no pueden ser mayores a 59.',
-                icon: 'warning',
-                timer: 6000,
-            });
-            return; // Detiene la ejecución si la validación falla
-        }
         // Verificación de la fecha antes de guardar los datos
         if (formData.fechainicio && formData.fechafinal) {
             if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
@@ -248,15 +241,15 @@ const Investigacion = () => {
             // Si no hay ID (flujo "Omitir"), pedir confirmación
             if (!idToUse) {
                 const confirmResult = await Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "La investigación se registrará sin lineamientos. ¿Deseas continuar?",
+                    title: 'Advertencia!',
+                    text: "La investigación se registrará sin lineamientos.",
                     icon: 'warning',
 
                     showCancelButton: true,
                     confirmButtonColor: color.primary.azul,
                     cancelButtonColor: color.primary.rojo,
-                    confirmButtonText: 'Sí, guardar',
-                    cancelButtonText: 'No, cancelar',
+                    confirmButtonText: 'Guardar',
+                    cancelButtonText: 'Cancelar',
                     reverseButtons: true
                 });
 
@@ -393,7 +386,7 @@ const Investigacion = () => {
                         )}
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Costo
+                                Presupuesto
                             </Typography>
                             <TextField
                                 fullWidth
@@ -405,38 +398,48 @@ const Investigacion = () => {
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">Duración</Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="Horas"
+                                        label="Días"
                                         fullWidth
                                         type="number"
-                                        name="horas"
-                                        value={formData.horas || ""}
+                                        name="dia"
+                                        value={formData.dia || ""}
                                         onChange={handleChange}
-                                        error={fieldErrors.horas || fieldErrors.minutos}
-                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="Minutos"
+                                        label="Meses"
                                         fullWidth
                                         type="number"
-                                        name="minutos"
-                                        value={formData.minutos || ""}
+                                        name="mes"
+                                        value={formData.mes || ""}
                                         onChange={handleChange}
-                                        inputProps={{ min: 0, max: 59 }} // Limita a 0-59 minutos
-                                        error={fieldErrors.horas || fieldErrors.minutos}
-                                        helperText={fieldErrors.horas || fieldErrors.minutos}
+
                                     />
                                     {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                                 </Grid>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={3}>
                                     <TextField
                                         variant="outlined"
-                                        label="(HH:MM)"
+                                        label="Años"
+                                        fullWidth
+                                        type="number"
+                                        name="año"
+                                        value={formData.año || ""}
+                                        onChange={handleChange}
+
+                                    />
+                                    {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <TextField
+                                        variant="outlined"
+                                        label="(D:M:A)"
                                         fullWidth
                                         name="duracion"
                                         value={formData.duracion || ""}
@@ -449,7 +452,7 @@ const Investigacion = () => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography variant="subtitle1">
-                                Población a la que va dirigido
+                                Población Objetivo
                             </Typography>
                             <TextField
                                 fullWidth
@@ -510,7 +513,7 @@ const Investigacion = () => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle1">Dirección</Typography>
+                            <Typography variant="subtitle1">Ubicación</Typography>
                             <TextField
                                 fullWidth
                                 name="direccion"

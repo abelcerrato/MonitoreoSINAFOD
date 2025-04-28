@@ -15,7 +15,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle
+    DialogTitle,
 } from "@mui/material";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
@@ -27,10 +27,10 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CloseIcon from '@mui/icons-material/Close';
-import DescriptionIcon from '@mui/icons-material/Description';
+import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import CloseIcon from "@mui/icons-material/Close";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -62,7 +62,7 @@ const LineamientosI = () => {
     });
     const [errors, setErrors] = useState({
         accionformacion: false,
-        estadoprotocolo: false
+        estadoprotocolo: false,
     });
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewContent, setPreviewContent] = useState(null);
@@ -109,40 +109,47 @@ const LineamientosI = () => {
 
         // Validar tipo de archivo (nueva validación)
         if (file) {
-            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            const allowedTypes = [
+                "application/pdf",
+                "image/jpeg",
+                "image/jpg",
+                "image/png",
+            ];
             const fileType = file.type;
-            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const fileExtension = file.name.split(".").pop().toLowerCase();
 
             // Verificar si el tipo o extensión están permitidos
-            if (!allowedTypes.includes(fileType) &&
-                !['pdf', 'jpg', 'jpeg', 'png'].includes(fileExtension)) {
+            if (
+                !allowedTypes.includes(fileType) &&
+                !["pdf", "jpg", "jpeg", "png"].includes(fileExtension)
+            ) {
                 // Mostrar alerta de error
                 Swal.fire({
-                    title: 'Tipo de archivo no permitido',
-                    text: 'Solo se permiten archivos PDF, JPG, JPEG o PNG.',
-                    icon: 'error',
+                    title: "Tipo de archivo no permitido",
+                    text: "Solo se permiten archivos PDF, JPG, JPEG o PNG.",
+                    icon: "error",
                     confirmButtonColor: color.primary.azul,
                 });
 
                 // Limpiar el input file
-                e.target.value = '';
+                e.target.value = "";
                 return;
             }
 
             // Validación opcional de tamaño (descomenta si lo necesitas)
             /*
-            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-            if (file.size > MAX_FILE_SIZE) {
-              Swal.fire({
-                title: 'Archivo demasiado grande',
-                text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
-                icon: 'error',
-                confirmButtonColor: color.primary.azul,
-              });
-              e.target.value = '';
-              return;
-            }
-            */
+                  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+                  if (file.size > MAX_FILE_SIZE) {
+                    Swal.fire({
+                      title: 'Archivo demasiado grande',
+                      text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+                      icon: 'error',
+                      confirmButtonColor: color.primary.azul,
+                    });
+                    e.target.value = '';
+                    return;
+                  }
+                  */
         }
 
         // Actualiza formData con el archivo (esto ya lo tenías)
@@ -213,9 +220,9 @@ const LineamientosI = () => {
             showCancelButton: true,
             confirmButtonColor: color.primary.azul,
             cancelButtonColor: color.primary.rojo,
-            confirmButtonText: 'Sí, Eliminar',
-            cancelButtonText: 'No, cancelar',
-            reverseButtons: true
+            confirmButtonText: "Sí, Eliminar",
+            cancelButtonText: "No, cancelar",
+            reverseButtons: true,
         }).then((result) => {
             if (result.isConfirmed) {
                 setExistingFiles((prev) => ({
@@ -230,14 +237,12 @@ const LineamientosI = () => {
                     };
 
                     // Si se elimina el archivo de presentación, limpia el estado del protocolo
-                    if (fieldName === 'presentoprotocolourl') {
-                        newData.estadoprotocolo = '';
+                    if (fieldName === "presentoprotocolourl") {
+                        newData.estadoprotocolo = "";
                     }
 
                     return newData;
                 });
-
-
             }
         });
     };
@@ -280,15 +285,15 @@ const LineamientosI = () => {
         // Verificar si faltan archivos
         if (uploadedFilesCount < totalRequiredFiles) {
             const result = await Swal.fire({
-                title: 'Lineamientos incompletos',
+                title: "Lineamientos incompletos",
                 text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con la actualización?`,
-                icon: 'warning',
+                icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: color.primary.azul,
                 cancelButtonColor: color.primary.rojo,
-                confirmButtonText: 'Sí, Actualizar',
-                cancelButtonText: 'No, cancelar',
-                reverseButtons: true
+                confirmButtonText: "Sí, Actualizar",
+                cancelButtonText: "No, cancelar",
+                reverseButtons: true,
             });
 
             if (!result.isConfirmed) {
@@ -308,7 +313,8 @@ const LineamientosI = () => {
             );
 
             Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
-            navigate(`/Actualizar_Investigación/${id}`);
+            //   navigate(`/Actualizar_Investigación/${id}`);
+            navigate("/dashboard")
         } catch (error) {
             console.error("Error al enviar los datos:", error);
             Swal.fire("Error", "Hubo un problema al guardar los datos", "error");
@@ -323,22 +329,22 @@ const LineamientosI = () => {
                 if (file.type === "application/pdf") {
                     const fileUrl = URL.createObjectURL(file);
                     setPreviewContent({
-                        type: 'pdf',
-                        url: fileUrl
+                        type: "pdf",
+                        url: fileUrl,
                     });
                 } else if (file.type.includes("image/")) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         setPreviewContent({
-                            type: 'image',
-                            url: e.target.result
+                            type: "image",
+                            url: e.target.result,
                         });
                     };
                     reader.readAsDataURL(file);
                 } else {
                     setPreviewContent({
-                        type: 'other',
-                        name: file.name
+                        type: "other",
+                        name: file.name,
                     });
                 }
             } else {
@@ -352,28 +358,29 @@ const LineamientosI = () => {
                 const cleanedFileName = decodedFileName.trim();
 
                 // Verifica si la URL ya es completa (empieza con http)
-                if (cleanedFileName.startsWith('http')) {
+                if (cleanedFileName.startsWith("http")) {
                     fileUrl = cleanedFileName;
                 } else {
                     // Construye la URL correctamente
-                    fileUrl = `${process.env.REACT_APP_API_URL}/preview/${encodeURIComponent(cleanedFileName)}`
+                    fileUrl = `${process.env.REACT_APP_API_URL
+                        }/preview/${encodeURIComponent(cleanedFileName)}`;
                 }
 
                 // Determina el tipo de archivo
-                if (cleanedFileName.toLowerCase().endsWith('.pdf')) {
+                if (cleanedFileName.toLowerCase().endsWith(".pdf")) {
                     setPreviewContent({
-                        type: 'pdf',
-                        url: fileUrl
+                        type: "pdf",
+                        url: fileUrl,
                     });
                 } else if (cleanedFileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
                     setPreviewContent({
-                        type: 'image',
-                        url: fileUrl
+                        type: "image",
+                        url: fileUrl,
                     });
                 } else {
                     setPreviewContent({
-                        type: 'other',
-                        name: cleanedFileName.split('/').pop() || cleanedFileName
+                        type: "other",
+                        name: cleanedFileName.split("/").pop() || cleanedFileName,
                     });
                 }
             }
@@ -414,24 +421,26 @@ const LineamientosI = () => {
                 </Button>
 
                 {(existingFile || newFile) && (
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        mt: 1,
-                        p: 1,
-                        backgroundColor: '#f5f5f5',
-                        borderRadius: 1
-                    }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mt: 1,
+                            p: 1,
+                            backgroundColor: "#f5f5f5",
+                            borderRadius: 1,
+                        }}
+                    >
                         <Typography
                             variant="body2"
                             sx={{
                                 mr: 2,
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    textDecoration: 'underline',
-                                    color: color.primary.azul
-                                }
+                                cursor: "pointer",
+                                "&:hover": {
+                                    textDecoration: "underline",
+                                    color: color.primary.azul,
+                                },
                             }}
                             onClick={() => handlePreview(existingFile || newFile, fieldName)}
                         >
@@ -440,9 +449,8 @@ const LineamientosI = () => {
 
                         <IconButton
                             onClick={() => handlePreview(existingFile || newFile, fieldName)}
-
                             size="small"
-                            sx={{ ml: 'auto', color: color.primary.azul }}
+                            sx={{ ml: "auto", color: color.primary.azul }}
                         >
                             <VisibilityIcon />
                         </IconButton>
@@ -476,95 +484,83 @@ const LineamientosI = () => {
     return (
         <Dashboard>
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={8}>
-                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                            Modificar Lineamientos para Investigación
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        sm={4}
-                        sx={{ display: "flex", justifyContent: "flex-end" }}
+                <Grid
+                    item
+                    xs={12}
+                    sm={4}
+                    sx={{ display: "flex", justifyContent: "flex-end" }}
+                >
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderColor: color.primary.rojo,
+                            color: color.primary.rojo,
+                        }}
+                        onClick={() => navigate("/dashboard")}
                     >
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderColor: color.primary.rojo,
-                                color: color.primary.rojo,
-                            }}
-                            onClick={() => navigate("/dashboard")}
-                        >
-                            Cerrar
-                        </Button>
-                    </Grid>
+                        Cerrar
+                    </Button>
                 </Grid>
 
-                <Grid container spacing={5} mt={2}>
-                    <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle1">Título del Proyecto</Typography>
-                        <TextField
-                            fullWidth
-                            name="accionformacion"
-                            value={formData.accionformacion}
-                            onChange={handleChange}
-                            error={errors.accionformacion}
-                            helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
-                            FormHelperTextProps={{ style: { color: 'red' } }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: errors.accionformacion ? 'red' : '',
-                                    },
-                                },
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}></Grid>
+                <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={8}>
+                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                                Modificar Lineamientos para Investigación
+                            </Typography>
+                        </Grid>
 
-                    {renderFileField(
-                        "presentoprotocolourl",
-                        "Documento del Protocolo del Proyecto de Investigación Educativa"
-                    )}
-
-                    <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle1">Estado del Protocolo</Typography>
-                        <FormControl fullWidth error={errors.estadoprotocolo}>
-                            <Select
-                                name="estadoprotocolo"
-                                value={formData.estadoprotocolo || ""}
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle1">Título del Proyecto</Typography>
+                            <TextField
+                                fullWidth
+                                name="accionformacion"
+                                value={formData.accionformacion}
                                 onChange={handleChange}
+                                error={errors.accionformacion}
+                                helperText={
+                                    errors.accionformacion
+                                        ? "El título del proyecto es requerido"
+                                        : ""
+                                }
+                                FormHelperTextProps={{ style: { color: "red" } }}
                                 sx={{
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: errors.estadoprotocolo ? 'red' : '',
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: errors.accionformacion ? "red" : "",
+                                        },
                                     },
                                 }}
-                            >
-                                <MenuItem value="" disabled>Selecione una opción</MenuItem>
-                                <MenuItem value="Incompleto">Incompleto</MenuItem>
-                                <MenuItem value="Completo">Completo</MenuItem>
-                            </Select>
-                            {errors.estadoprotocolo && (
-                                <FormHelperText style={{ color: 'red' }}>
-                                    Debe seleccionar el estado del protocolo
-                                </FormHelperText>
-                            )}
-                        </FormControl>
+                            />
+                        </Grid>
+
+                        {renderFileField(
+                            "presentoprotocolourl",
+                            "Documento del Protocolo del Proyecto de Investigación Educativa"
+                        )}
+                    </Grid>
+                </Paper>
+                <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
+                    <Grid container spacing={2}>
+
+                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                            Monitoreo y Seguimiento de la Investigación
+                        </Typography>
+
+                        {renderFileField(
+                            "monitoreoyevaluacionurl",
+                            "Documento de Monitoreo y Evaluación"
+                        )}
+                        {renderFileField(
+                            "aplicacionevaluacionurl",
+                            "Documento de Aplicación de Investigación"
+                        )}
                     </Grid>
 
-                    {renderFileField(
-                        "monitoreoyevaluacionurl",
-                        "Documento de Monitoreo y Evaluación"
-                    )}
-                    {renderFileField(
-                        "aplicacionevaluacionurl",
-                        "Documento de Aplicación de Evaluación"
-                    )}
-                </Grid>
-
-                <Box sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}>
-                    {/*  <Button
+                    <Box
+                        sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
+                    >
+                        {/*  <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.rojo }}
                         startIcon={<FastForwardOutlinedIcon />}
@@ -572,16 +568,16 @@ const LineamientosI = () => {
                     >
                         Omitir
                     </Button> */}
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: color.primary.azul, ml: 5 }}
-                        startIcon={<SaveIcon />}
-                        onClick={handleSubmit}
-                    >
-                        Guardar
-                    </Button>
-                </Box>
-
+                        <Button
+                            variant="contained"
+                            sx={{ backgroundColor: color.primary.azul, ml: 5 }}
+                            startIcon={<SaveIcon />}
+                            onClick={handleSubmit}
+                        >
+                            Guardar
+                        </Button>
+                    </Box>
+                </Paper>
                 {/* Modal de vista previa */}
                 <Dialog
                     open={previewOpen}
@@ -594,7 +590,7 @@ const LineamientosI = () => {
                         <IconButton
                             onClick={() => setPreviewOpen(false)}
                             sx={{
-                                position: 'absolute',
+                                position: "absolute",
                                 right: 8,
                                 top: 8,
                                 color: (theme) => theme.palette.grey[500],
@@ -604,32 +600,41 @@ const LineamientosI = () => {
                         </IconButton>
                     </DialogTitle>
                     <DialogContent dividers>
-                        {previewContent?.type === 'pdf' && (
+                        {previewContent?.type === "pdf" && (
                             <iframe
                                 src={previewContent.url}
                                 width="100%"
                                 height="500px"
-                                style={{ border: 'none' }}
+                                style={{ border: "none" }}
                                 title="Vista previa PDF"
                             />
                         )}
-                        {previewContent?.type === 'image' && (
+                        {previewContent?.type === "image" && (
                             <img
                                 src={previewContent.url}
                                 alt="Vista previa"
-                                style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
+                                style={{
+                                    maxWidth: "100%",
+                                    maxHeight: "500px",
+                                    display: "block",
+                                    margin: "0 auto",
+                                }}
                             />
                         )}
-                        {previewContent?.type === 'other' && (
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '200px',
-                                textAlign: 'center'
-                            }}>
-                                <DescriptionIcon sx={{ fontSize: 60, color: color.primary.azul }} />
+                        {previewContent?.type === "other" && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: "200px",
+                                    textAlign: "center",
+                                }}
+                            >
+                                <DescriptionIcon
+                                    sx={{ fontSize: 60, color: color.primary.azul }}
+                                />
                                 <Typography variant="h6" sx={{ mt: 2 }}>
                                     {previewContent.name}
                                 </Typography>
@@ -639,12 +644,14 @@ const LineamientosI = () => {
                                 <Button
                                     variant="contained"
                                     sx={{ mt: 2, backgroundColor: color.primary.azul }}
-                                    onClick={() => handleDownload(
-                                        existingFiles[currentPreviewField] ||
-                                        (formData[currentPreviewField] instanceof File ?
-                                            formData[currentPreviewField].name :
-                                            formData[currentPreviewField])
-                                    )}
+                                    onClick={() =>
+                                        handleDownload(
+                                            existingFiles[currentPreviewField] ||
+                                            (formData[currentPreviewField] instanceof File
+                                                ? formData[currentPreviewField].name
+                                                : formData[currentPreviewField])
+                                        )
+                                    }
                                 >
                                     Descargar archivo
                                 </Button>
