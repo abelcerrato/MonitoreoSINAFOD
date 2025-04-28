@@ -31,8 +31,7 @@ import Swal from 'sweetalert2';
 const FormularParticipantes = () => {
   const location = useLocation();
   const [fieldErrors, setFieldErrors] = useState({});
-  const [errors, setErrors] = useState({});
-  const { investCap } = location.state || {};
+  const { investCap, formacioninvest } = location.state || {};
   const [isSaved, setIsSaved] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
@@ -358,7 +357,7 @@ const FormularParticipantes = () => {
 
 
   {/* Datos académicos  del participante */ }
-  
+
 
 
   // Obtener gardo cuando cambia el departamento seleccionado
@@ -440,12 +439,14 @@ const FormularParticipantes = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} size={8}>
               <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                Registro de Participantes
+                {formacioninvest === "Investigación"
+                  ? "Registro de Investigadores"
+                  : "Registro de Participantes"}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
               <Button
                 variant="outlined"
                 sx={{
@@ -468,10 +469,10 @@ const FormularParticipantes = () => {
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Código SACE</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} sm={9}>
+                    <Grid item xs={12} size={9}>
                       <TextField
                         fullWidth
                         name="codigosace"
@@ -481,7 +482,7 @@ const FormularParticipantes = () => {
                         helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} size={3}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -492,10 +493,10 @@ const FormularParticipantes = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Identidad</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} sm={9}>
+                    <Grid item xs={12} size={9}>
                       <TextField
                         fullWidth
                         name="identificacion"
@@ -505,7 +506,7 @@ const FormularParticipantes = () => {
                         helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} size={3}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -519,7 +520,7 @@ const FormularParticipantes = () => {
 
                   </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
                   <TextField
                     fullWidth
@@ -530,7 +531,7 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.nombre ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <FormControl error={fieldErrors.sexo}>
                     <Typography variant="subtitle1">Sexo</Typography>
                     <RadioGroup
@@ -545,7 +546,7 @@ const FormularParticipantes = () => {
                     {fieldErrors.sexo && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>
                   {/* <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
                     <Select
@@ -573,7 +574,7 @@ const FormularParticipantes = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Grado Académico</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -590,7 +591,7 @@ const FormularParticipantes = () => {
 
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
                   <TextField
                     fullWidth
@@ -601,11 +602,11 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.añosdeservicio ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
                   <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Cargo que Desempeña</Typography>
                   <TextField
                     fullWidth
@@ -616,7 +617,7 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.funcion ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Departamento de Residencia</Typography>
                   <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                     <Select
@@ -638,7 +639,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Municipio de Residencia</Typography>
                   <FormControl fullWidth error={fieldErrors.municipioresidencia}>
                     <Select
@@ -658,7 +659,7 @@ const FormularParticipantes = () => {
                     {fieldErrors.municipioresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Aldea de Residencia</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -687,7 +688,7 @@ const FormularParticipantes = () => {
               <Grid container spacing={2}>
 
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nivel Educativo que Atiende</Typography>
                   <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                     <Select
@@ -705,7 +706,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Grado Académico que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -722,7 +723,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Centro Educativo</Typography>
                   <TextField
                     fullWidth
@@ -734,7 +735,7 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <FormControl fullWidth >
                     <Typography variant="subtitle1">Tipo de Administración</Typography>
                     <RadioGroup
@@ -750,7 +751,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Zona Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.zona}>
                     <Select name="zona" value={formData.zona} onChange={handleChange}>
@@ -761,7 +762,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.departamentoced}>
                     <Select
@@ -780,7 +781,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.municipioced}>
                     <Select
@@ -800,12 +801,12 @@ const FormularParticipantes = () => {
                     {fieldErrors.municipioced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select
                       name="aldeaced"
-                      value={formData.aldeaced}
+                      value={formData.aldeaced || ""}
                       onChange={handleChange}
                       disabled={!aldeas.length}
                     >
