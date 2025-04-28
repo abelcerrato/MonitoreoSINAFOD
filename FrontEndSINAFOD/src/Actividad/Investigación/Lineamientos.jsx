@@ -47,7 +47,7 @@ const LineamientosI = () => {
   const { user } = useUser();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState(null);
-  const [currentPreviewField, setCurrentPreviewField] = useState('');
+
   const [errors, setErrors] = useState({
     accionformacion: false,
     estadoprotocolo: false
@@ -59,6 +59,8 @@ const LineamientosI = () => {
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
     formacioninvest: "",
+    creadopor: user,
+    modificadopor: user
   });
   const navigate = useNavigate();
   const handleRedirect = () => {
@@ -108,7 +110,7 @@ const LineamientosI = () => {
       }
 
       // Validación opcional de tamaño (descomenta si lo necesitas)
-      /*
+
       const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
       if (file.size > MAX_FILE_SIZE) {
         Swal.fire({
@@ -120,7 +122,7 @@ const LineamientosI = () => {
         e.target.value = '';
         return;
       }
-      */
+
     }
 
     // Actualiza formData con el archivo (esto ya lo tenías)
@@ -143,7 +145,7 @@ const LineamientosI = () => {
     aplicacionevaluacionurl: React.useRef(null)
   };
 
-  // ... (otros estados y funciones)
+
 
   const handleRemoveFile = (fieldName) => {
     setFormData(prev => ({
@@ -163,23 +165,121 @@ const LineamientosI = () => {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Resetear errores
+  //   const newErrors = {
+  //     accionformacion: false,
+  //     estadoprotocolo: false
+  //   };
+
+  //   let hasError = false;
+
+  //   // Validar si se cargó un archivo en presentoprotocolourl
+  //   /*    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
+  //        newErrors.estadoprotocolo = true;
+  //        hasError = true;
+  //      }
+  //   */
+  //   // Validación del título del proyecto
+  //   if (!formData.accionformacion) {
+  //     newErrors.accionformacion = true;
+  //     hasError = true;
+  //   }
+
+  //   setErrors(newErrors);
+
+  //   if (hasError) {
+  //     Swal.fire("Error", "Por favor complete los campos requeridos", "error");
+  //     return;
+  //   }
+
+  //   const formDataToSend = new FormData();
+
+  //   // Agregar campos de texto
+  //   formDataToSend.append("accionformacion", formData.accionformacion);
+  //   formDataToSend.append(
+  //     "estadoprotocolo",
+  //     formData.presentoprotocolourl
+  //       ? (formData.estadoprotocolo || "Completo")
+  //       : "No se presentó"
+  //   );
+
+  //   formDataToSend.append("creadopor", user);
+  //   formDataToSend.append("modificadopor", user);
+  //   formDataToSend.append("formacioninvest", "Investigación");
+
+  //   // Contador de archivos subidos
+  //   let uploadedFilesCount = 0;
+  //   const totalRequiredFiles = 3;
+  //   const fileFields = [
+  //     "presentoprotocolourl",
+  //     "monitoreoyevaluacionurl",
+  //     "aplicacionevaluacionurl",
+  //   ];
+
+  //   // Agregar archivos si existen
+  //   fileFields.forEach(field => {
+  //     if (formData[field]) {
+  //       formDataToSend.append(field, formData[field]);
+  //       uploadedFilesCount++;
+  //     }
+  //   });
+
+  //   // Verificar si faltan archivos
+  //   if (uploadedFilesCount < totalRequiredFiles) {
+  //     const result = await Swal.fire({
+  //       title: 'Lineamientos incompletos',
+  //       text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos.`,
+  //       icon: 'warning',
+  //       showCancelButton: true,
+  //       confirmButtonColor: color.primary.azul,
+  //       cancelButtonColor: color.primary.rojo,
+  //       confirmButtonText: 'Guardar',
+  //       cancelButtonText: 'Cancelar',
+  //       reverseButtons: true
+  //     });
+
+  //     if (!result.isConfirmed) {
+  //       return; // No continuar si el usuario cancela
+  //     }
+  //   }
+  //   console.log("Datos que envio", formData);
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.REACT_APP_API_URL}/lineamientos`,
+  //       formDataToSend,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+  //     const investCap = response.data.id;
+  //     navigate("/Investigación", {
+  //       state: { investCap, accionformacion: formData.accionformacion },
+  //     });
+  //   } catch (error) {
+  //     console.error("Error al enviar los datos:", error);
+  //     Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     // Resetear errores
     const newErrors = {
       accionformacion: false,
-      estadoprotocolo: false
+
     };
 
     let hasError = false;
 
-    // Validar si se cargó un archivo en presentoprotocolourl
-    /*    if (formData.presentoprotocolourl && !formData.estadoprotocolo) {
-         newErrors.estadoprotocolo = true;
-         hasError = true;
-       }
-    */
+
     // Validación del título del proyecto
     if (!formData.accionformacion) {
       newErrors.accionformacion = true;
@@ -197,12 +297,6 @@ const LineamientosI = () => {
 
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
-    formDataToSend.append(
-      "estadoprotocolo",
-      formData.presentoprotocolourl
-        ? (formData.estadoprotocolo || "Completo")
-        : "No se presentó"
-    );
 
     formDataToSend.append("creadopor", user);
     formDataToSend.append("modificadopor", user);
@@ -229,13 +323,14 @@ const LineamientosI = () => {
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
         title: 'Lineamientos incompletos',
-        text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos.`,
+        text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
+        showCancelButton: true,
         showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Sí, Registar',
+        cancelButtonText: 'No, cancelar',
         reverseButtons: true
       });
 
@@ -243,21 +338,18 @@ const LineamientosI = () => {
         return; // No continuar si el usuario cancela
       }
     }
-    console.log("Datos que envio", formData);
 
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/lineamientos`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formDataToSend
       );
-      const investCap = response.data.id;
+
       navigate("/Investigación", {
-        state: { investCap, accionformacion: formData.accionformacion },
+        state: {
+          investCap: response.data.id,
+          accionformacion: formData.accionformacion,
+        },
       });
     } catch (error) {
       console.error("Error al enviar los datos:", error);
@@ -265,12 +357,13 @@ const LineamientosI = () => {
     }
   };
 
+
   const handlePreview = (fieldName) => {
     const file = formData[fieldName];
 
     if (!file) return;
 
-    setCurrentPreviewField(fieldName);
+
 
     if (file instanceof File) {
       const fileType = file.type.split('/')[0];
@@ -329,7 +422,7 @@ const LineamientosI = () => {
             </Grid>
 
             <Grid container spacing={5} mt={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <Typography variant="subtitle1">Título del Proyecto</Typography>
                 <TextField
                   fullWidth
@@ -349,7 +442,7 @@ const LineamientosI = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <Typography variant="h6" gutterBottom>
                   Documento del Protocolo del Proyecto de Investigación Educativa
                 </Typography>
@@ -508,7 +601,7 @@ const LineamientosI = () => {
 
             <Grid container spacing={5} mt={2}>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <Typography variant="h6" gutterBottom>
                   Documento de Monitoreo y Evaluación
                 </Typography>
@@ -558,7 +651,7 @@ const LineamientosI = () => {
                 )}
 
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <Typography variant="h6" gutterBottom>
                   Documento de Aplicación de Investigación
                 </Typography>
