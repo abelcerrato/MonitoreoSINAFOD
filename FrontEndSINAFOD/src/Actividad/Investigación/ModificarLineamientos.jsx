@@ -103,6 +103,7 @@ const LineamientosI = () => {
             [name]: value,
         }));
     };
+
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         const file = files[0];
@@ -401,7 +402,7 @@ const LineamientosI = () => {
         };
 
         return (
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} size={6}>
                 <Typography variant="h6" gutterBottom>
                     {label}
                 </Typography>
@@ -504,13 +505,13 @@ const LineamientosI = () => {
 
                 <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
+                        <Grid item xs={12} md={8}>
                             <Typography variant="h4" sx={{ color: color.primary.azul }}>
                                 Modificar Lineamientos para Investigación
                             </Typography>
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} size={6}>
                             <Typography variant="subtitle1">Título del Proyecto</Typography>
                             <TextField
                                 fullWidth

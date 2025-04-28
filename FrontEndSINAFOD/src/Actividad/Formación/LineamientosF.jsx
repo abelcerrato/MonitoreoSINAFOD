@@ -248,7 +248,7 @@ const LineamientosI = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={9}>
+            <Grid item xs={12} size={10.7} sm={9}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Registro de Lineamientos para Formación
               </Typography>
@@ -273,7 +273,7 @@ const LineamientosI = () => {
           </Grid>
 
           <Grid container spacing={5} mt={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} size={6} md={6}>
               <Typography variant="subtitle1">   Nombre de la Formación</Typography>
               <TextField
                 fullWidth
@@ -292,8 +292,8 @@ const LineamientosI = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}></Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}></Grid>
+            <Grid item xs={12} size={6} md={6}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimientos de los Criterios de Factibilidad
               </Typography>
@@ -335,7 +335,7 @@ const LineamientosI = () => {
               )}
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} size={6} md={6}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimiento de los Requisitos Técnicos
               </Typography>
@@ -376,7 +376,7 @@ const LineamientosI = () => {
                 </Box>
               )}
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} size={6} md={6}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimientos de los Criterios Éticos
               </Typography>

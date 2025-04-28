@@ -134,10 +134,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
   const checkLineamientos = async (id) => {
     const selectedRow = rows.find(row => row.id === id);
-    
-    if (selectedRow && 
-        (selectedRow.estado_lineamientos === "No Lleno Lineamientos" )) {
-      
+
+    if (selectedRow &&
+      (selectedRow.estado_lineamientos === "No Lleno Lineamientos")) {
+
       await Swal.fire({
         title: '¡Advertencia!',
         html: `Esta <b>${selectedRow.formacioninvest}</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
@@ -145,37 +145,38 @@ export default function TablaActividad(isSaved, setIsSaved) {
         confirmButtonText: 'Ok',
         confirmButtonColor: color.primary.azul,
       });
-    }else if (selectedRow && 
-      (selectedRow.estado_lineamientos === "Lineamientos Incompletos" )) {
-        await Swal.fire({
-          title: '¡Advertencia!',
-          html: `Esta <b>${selectedRow.formacioninvest}</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
-          icon: 'warning',
-          confirmButtonText: 'Ok',
-          confirmButtonColor: color.primary.azul,
-        });
+    } else if (selectedRow &&
+      (selectedRow.estado_lineamientos === "Lineamientos Incompletos")) {
+      await Swal.fire({
+        title: '¡Advertencia!',
+        html: `Esta <b>${selectedRow.formacioninvest}</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        icon: 'warning',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: color.primary.azul,
+      });
     }
   };
-  
+
   const handleInvestigación = async (id) => {
     await checkLineamientos(id);
     navigate(`/Actualizar_Investigación/${id}`);
   };
 
- const handleLineamientosInvestigacion = async (id) => {
-  await checkLineamientos(id);
-  navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
-};
+  const handleLineamientosInvestigacion = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
+  };
 
-const handleFormacion = async (id) => {
-  await checkLineamientos(id);
-  navigate(`/Actualizar_Formación/${id}`);
-};
+  const handleFormacion = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Formación/${id}`);
+  };
 
-  const handleLineamientosFormacion  = async (id) => {
+  const handleLineamientosFormacion = async (id) => {
     await checkLineamientos(id);
     navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
   };
+
 
 
   const columns = [
@@ -232,16 +233,23 @@ const handleFormacion = async (id) => {
       field: "fechainicio",
       headerName: "Fecha Inicio",
       width: 150,
-      valueGetter: (params) =>
-        new Date(params.row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/"),
+      renderCell: (params) => {
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        const date = new Date(params.value);
+        return date.toLocaleDateString('es-ES');
+      },
     },
     {
       field: "fechafinal",
       headerName: "Fecha de Finalización",
       width: 180,
-      valueGetter: (params) =>
-        new Date(params.row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/"),
+      renderCell: (params) => {
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        const date = new Date(params.value);
+        return date.toLocaleDateString('es-ES');
+      },
     },
+
     {
       field: "estado_lineamientos",
       headerName: "Lineamientos",
@@ -258,26 +266,7 @@ const handleFormacion = async (id) => {
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         autoHeight
-        sx={{
-         
-          border: 0,
-          backgroundColor: "#fff",
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: color.primary.azul,
-            color: "#fff",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            justifyContent: "center",
-          },
-          "& .MuiDataGrid-columnHeaderTitle": {
-            textAlign: "center",
-            width: "100%",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-cell": {
-            textAlign: "right",
-          },
-        }}
+
       />
 
       <CardDetalles open={open} handleClose={() => setOpen(false)} id={selectedId} />
