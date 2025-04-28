@@ -360,12 +360,12 @@ const ModificarParticipante = () => {
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} size={8}>
               <Typography variant="h3" sx={{ color: color.primary.azul }}>
                 Actualización de Participantes
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
               <Button
                 variant="outlined"
                 sx={{
@@ -389,22 +389,22 @@ const ModificarParticipante = () => {
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Código SACE</Typography>
                   <TextField fullWidth name="codigosace" value={formData.codigosace} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nombre</Typography>
                   <TextField fullWidth name="nombre" value={formData.nombre} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Identidad</Typography>
                   <TextField fullWidth name="identificacion" value={formData.identificacion} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <FormControl>
                     <Typography variant="subtitle1">Sexo</Typography>
                     <RadioGroup
@@ -418,7 +418,7 @@ const ModificarParticipante = () => {
                     </RadioGroup>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nivel Académico</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -437,7 +437,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Grado Académico</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -454,20 +454,20 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
                   <TextField fullWidth name="añosdeservicio" value={formData.añosdeservicio || ""} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
                   <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Función</Typography>
                   <TextField fullWidth name="funcion" value={formData.funcion} onChange={handleChange} />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Departamento de Residencia</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -487,7 +487,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Municipio de Residencia</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -506,7 +506,7 @@ const ModificarParticipante = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Aldea de Residencia</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -533,7 +533,7 @@ const ModificarParticipante = () => {
               <Grid container spacing={2}>
 
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Nivel Académico que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -550,7 +550,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Grado Educativo que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -567,12 +567,12 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Centro Educativo</Typography>
                   <TextField fullWidth name="centroeducativo" value={formData.centroeducativo} onChange={handleChange} />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <FormControl>
                     <Typography variant="subtitle1">Tipo de Administración</Typography>
                     <RadioGroup
@@ -587,7 +587,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Zona Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select name="zona" value={formData.zona} onChange={handleChange}>
@@ -597,7 +597,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select name="departamentoced" value={formData.departamentoced || ""} onChange={handleChange}>
@@ -610,7 +610,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -630,7 +630,7 @@ const ModificarParticipante = () => {
 
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} size={6}>
                   <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select

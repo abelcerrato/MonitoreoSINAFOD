@@ -111,17 +111,17 @@ export default function SignIn() {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt:5, p: 5, boxShadow: 5, borderRadius: 3 }}
+            sx={{ mt: 5, p: 5, boxShadow: 5, borderRadius: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <img
                   src={LogoCONED}
                   alt="Logo"
                   style={{ width: "90%", height: "90%", objectFit: "contain" }}
 
                 /> </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} size={6}>
                 <img
                   src={LogoDGDP}
                   alt="Logo"

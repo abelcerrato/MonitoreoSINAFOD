@@ -192,7 +192,7 @@ const ListadoActividad = () => {
                 };
                 cell.alignment = { horizontal: "center", vertical: "middle" }; // Centrar texto
             });
-            
+
             // Agregar los datos como filas en la tabla
             filteredRows.forEach(item => {
                 worksheet.addRow([
@@ -237,24 +237,25 @@ const ListadoActividad = () => {
             field: "duracion",
             headerName: "Duración",
             width: 200,
-            valueGetter: (params) => {
-              const tipo = params.row.formacioninvest;
-              const duracion = params.row.duracion;
-          
-              if (!duracion) {
-                return tipo === "Investigación"
-                  ? "0 Días 0 Meses 0 Años"
-                  : "0h 0m";
-              }
-          
-              if (tipo === "Investigación") {
-                return `${duracion.hours ?? 0} Días ${duracion.minutes ?? 0} Meses ${duracion.seconds ?? 0} Años`;
-              } else {
-                return `${duracion.hours ?? 0}h ${duracion.minutes ?? 0}m`;
-              }
-            },
-          },
-          
+            renderCell: (params) => {
+                const tipo = params.row.formacioninvest; // <- aquí cambia a `row`
+                const duracion = params.row.duracion;     // <- aquí cambia a `row`
+
+                if (!duracion) {
+                    return tipo === "Investigación"
+                        ? "0 Días 0 Meses 0 Años"
+                        : "0h 0m";
+                }
+
+                if (tipo === "Investigación") {
+                    return `${duracion.days ?? 0} Días ${duracion.months ?? 0} Meses ${duracion.years ?? 0} Años`;
+                } else {
+                    return `${duracion.hours ?? 0}h ${duracion.minutes ?? 0}m`;
+                }
+            }
+
+        },
+
         { field: "espaciofisico", headerName: "Espacio Físico", width: 180 },
         { field: "funciondirigido", headerName: "Nicel Educativo", width: 180 },
         { field: "nivelacademico", headerName: "Nivel Educativo", width: 180 },
@@ -264,15 +265,21 @@ const ListadoActividad = () => {
             field: "fechainicio",
             headerName: "Fecha Inicio",
             width: 150,
-            valueGetter: (params) =>
-                new Date(params.row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/"),
+            renderCell: (params) => {
+                if (!params.value) return ""; // si no hay fecha, mostrar vacío
+                const date = new Date(params.value);
+                return date.toLocaleDateString('es-ES');
+            },
         },
         {
             field: "fechafinal",
             headerName: "Fecha de Finalización",
             width: 180,
-            valueGetter: (params) =>
-                new Date(params.row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/"),
+            renderCell: (params) => {
+                if (!params.value) return ""; // si no hay fecha, mostrar vacío
+                const date = new Date(params.value);
+                return date.toLocaleDateString('es-ES');
+            },
         },
         { field: "participantesprog", headerName: "Cantidad de Participantes Programados", width: 290 },
         { field: "direccion", headerName: "Dirección", width: 200 },
@@ -287,8 +294,8 @@ const ListadoActividad = () => {
                     Listado de Capacitaciones
                 </Typography>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
+                <Grid container spacing={2} marginBottom={3}>
+                    <Grid item xs={12} size={4}>
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Columna</InputLabel>
                             <Select
@@ -315,7 +322,7 @@ const ListadoActividad = () => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} size={4}>
                         {filterColumn === "formacioninvest" ? (
                             <FormControl fullWidth>
                                 <Select
@@ -386,7 +393,7 @@ const ListadoActividad = () => {
                             </FormControl>
                         ) : filterColumn === "fecha" ? (
                             <Grid container spacing={4}>
-                                <Grid item xs={12} sm={5}>
+                                <Grid item xs={12} size={5}>
                                     <FormControl fullWidth>
                                         <TextField
                                             type="date"
@@ -396,7 +403,7 @@ const ListadoActividad = () => {
                                         />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} sm={5}>
+                                <Grid item xs={12} size={5}>
                                     <FormControl fullWidth>
                                         <TextField
                                             type="date"
@@ -411,7 +418,7 @@ const ListadoActividad = () => {
                             <TextField type="text" placeholder="Ingresar valor" onChange={(e) => setFilterValue(e.target.value)} />
                         )}
                     </Grid>
-                    <Grid item xs={12} sm={4} container justifyContent="flex-end">
+                    <Grid item xs={12} size={4} container justifyContent="flex-end">
                         <Tooltip title="Exportar Excel">
                             <IconButton
                                 onClick={() => exportExcel(rows)}
@@ -435,26 +442,7 @@ const ListadoActividad = () => {
                         setRowsPerPage(pageSize);
                     }}
                     autoHeight
-                    sx={{
-                        mt: 5,
-                        border: 0,
-                        backgroundColor: "#fff",
-                        "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: color.primary.azul,
-                            color: "#fff",
-                        },
-                        "& .MuiDataGrid-columnHeader": {
-                            justifyContent: "center",
-                        },
-                        "& .MuiDataGrid-columnHeaderTitle": {
-                            textAlign: "center",
-                            width: "100%",
-                            fontWeight: "bold",
-                        },
-                        "& .MuiDataGrid-cell": {
-                            textAlign: "right",
-                        },
-                    }}
+
                 />
 
             </Paper>
