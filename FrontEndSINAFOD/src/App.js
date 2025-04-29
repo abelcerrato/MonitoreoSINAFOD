@@ -75,7 +75,7 @@ function App() {
           <Route path="/Modificar_Participante/:id" element={<ProtectedRoute><ModificarParticipante /></ProtectedRoute>} />
          
           <Route path="/Reportería/Listado_Participantes" element={<ProtectedRoute><ListadoParticipantes /></ProtectedRoute>} />
-          <Route path="/Reportería/Listado_Capacitaciones" element={<ProtectedRoute><ListadoActividad /></ProtectedRoute>} />
+          <Route path="/Reportería/Listado_De_Acciones_Formativas" element={<ProtectedRoute><ListadoActividad /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
 

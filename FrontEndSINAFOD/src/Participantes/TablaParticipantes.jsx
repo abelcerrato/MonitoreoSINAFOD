@@ -162,8 +162,8 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
             <TableCell align="right">Aldea en la que Reside</TableCell>
             <TableCell align="right">Centro Educativo</TableCell>
             <TableCell align="right">Nivel Académico que Atiende</TableCell>
-            <TableCell align="right">Ciclo Académico que Atiende</TableCell>
-            <TableCell align="right">Grado Académico que Atiende</TableCell>
+            <TableCell align="right">Ciclo Educativo que Atiende</TableCell>
+            <TableCell align="right">Grado que Atiende</TableCell>
             <TableCell align="right">Tipo Administración</TableCell>
             <TableCell align="right">Zona Centro Educativo</TableCell>
             <TableCell align="right">Departamento  Centro Educativo</TableCell>

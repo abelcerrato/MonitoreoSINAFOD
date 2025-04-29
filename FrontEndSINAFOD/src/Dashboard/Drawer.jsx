@@ -78,7 +78,7 @@ const ProjectDrawer = ({ open }) => {
     return decodedCurrentPath === decodedComparePath;
   };
   const isReporteriaActive =
-    isActive("/Reportería/Listado_Capacitaciones") ||
+    isActive("/Reportería/Listado_De_Acciones_Formativas") ||
     isActive("/Reportería/Listado_Participantes") ||
     isActive("/Reportería/Aldeas") ||
     isActive("/Reportería/Etnias") ||
@@ -246,14 +246,14 @@ const ProjectDrawer = ({ open }) => {
 
 
                 <MenuItem
-                  path="/Reportería/Listado_Capacitaciones"
+                  path="/Reportería/Listado_De_Acciones_Formativas"
                   icon={<TextSnippetOutlinedIcon />}
                   text={
                     <>
-                      Listado de<br />Capacitaciones
+                      Listado de<br />Cap
                     </>
                   }
-                  onClick={() => navigate("/Reportería/Listado_Capacitaciones")}
+                  onClick={() => navigate("/Reportería/Listado_De_Acciones_Formativas")}
                 />
 
 
@@ -296,19 +296,19 @@ const ProjectDrawer = ({ open }) => {
           >
 
             <MuiMenuItem
-              onClick={() => handleItemClick("/Reportería/Listado_Capacitaciones")}
+              onClick={() => handleItemClick("/Reportería/Listado_De_Acciones_Formativas")}
 
             >
               <ListItemIcon>
                 <TextSnippetOutlinedIcon
                   fontSize="small"
-                  color={isActive("/Reportería/Listado_Capacitaciones") ? color.primary.azul : "inherit"}
+                  color={isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit"}
                 />
               </ListItemIcon>
               <ListItemText
-                primary="Listado de Capacitaciones"
+                primary="Listado de Acciones Formativas"
                 primaryTypographyProps={{
-                  color: isActive("/Reportería/Listado_Capacitaciones") ? color.primary.azul : "inherit",
+                  color: isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit",
                 }}
               />
             </MuiMenuItem>
