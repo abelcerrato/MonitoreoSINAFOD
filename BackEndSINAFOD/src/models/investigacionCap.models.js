@@ -35,7 +35,7 @@ export const getInvestigacionCapM = async () => {
                    OR (ic.presentoprotocolo = TRUE)
                    OR (ic.monitoreoyevaluacion = TRUE)
                    OR (ic.aplicacionevaluacion = TRUE) THEN 'Lineamientos Incompletos'
-                ELSE 'No Tiene Lineamientos'
+                ELSE 'No Lleno Lineamientos'
             END
 
         -- Para formación
@@ -48,7 +48,7 @@ export const getInvestigacionCapM = async () => {
                    OR (ic.criterioseticos = TRUE)
                    OR (ic.requisitostecnicos = TRUE)
                    OR (ic.criteriosfactibilidad = TRUE) THEN 'Lineamientos Incompletos'
-                ELSE 'No Tiene Lineamientos'
+                ELSE 'No Lleno Lineamientos'
             END
 
         ELSE 'no aplica'

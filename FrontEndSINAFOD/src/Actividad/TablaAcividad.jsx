@@ -27,6 +27,8 @@ import { color } from "../Components/color";
 import CardDetalles from "./CardDetalles";
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import { DataGrid } from '@mui/x-data-grid';
+import Swal from 'sweetalert2';
+
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -130,21 +132,51 @@ export default function TablaActividad(isSaved, setIsSaved) {
       });
   }, [isSaved]);
 
-  const handleInvestigación = (id) => {
+  const checkLineamientos = async (id) => {
+    const selectedRow = rows.find(row => row.id === id);
+
+    if (selectedRow &&
+      (selectedRow.estado_lineamientos === "No Lleno Lineamientos")) {
+
+      await Swal.fire({
+        title: '¡Advertencia!',
+        html: `Esta <b>${selectedRow.formacioninvest}</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        icon: 'warning',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: color.primary.azul,
+      });
+    } else if (selectedRow &&
+      (selectedRow.estado_lineamientos === "Lineamientos Incompletos")) {
+      await Swal.fire({
+        title: '¡Advertencia!',
+        html: `Esta <b>${selectedRow.formacioninvest}</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        icon: 'warning',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: color.primary.azul,
+      });
+    }
+  };
+
+  const handleInvestigación = async (id) => {
+    await checkLineamientos(id);
     navigate(`/Actualizar_Investigación/${id}`);
   };
 
-  const handleLineamientosInvesticagicon = (id) => {
+  const handleLineamientosInvestigacion = async (id) => {
+    await checkLineamientos(id);
     navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
   };
 
-  const handleFormacion = (id) => {
+  const handleFormacion = async (id) => {
+    await checkLineamientos(id);
     navigate(`/Actualizar_Formación/${id}`);
   };
 
-  const handleLineamientosFormacion = (id) => {
+  const handleLineamientosFormacion = async (id) => {
+    await checkLineamientos(id);
     navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
   };
+
 
 
   const columns = [
@@ -164,7 +196,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Actualizar Lineamientos">
-                  <IconButton onClick={() => handleLineamientosInvesticagicon(row.id)} color="success">
+                  <IconButton onClick={() => handleLineamientosInvestigacion(row.id)} color="success">
                     <ChecklistIcon />
                   </IconButton>
                 </Tooltip>
@@ -201,16 +233,23 @@ export default function TablaActividad(isSaved, setIsSaved) {
       field: "fechainicio",
       headerName: "Fecha Inicio",
       width: 150,
-      valueGetter: (params) =>
-        new Date(params.row.fechainicio).toISOString().split("T")[0].split("-").reverse().join("/"),
+      renderCell: (params) => {
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        const date = new Date(params.value);
+        return date.toLocaleDateString('es-ES');
+      },
     },
     {
       field: "fechafinal",
       headerName: "Fecha de Finalización",
       width: 180,
-      valueGetter: (params) =>
-        new Date(params.row.fechafinal).toISOString().split("T")[0].split("-").reverse().join("/"),
+      renderCell: (params) => {
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        const date = new Date(params.value);
+        return date.toLocaleDateString('es-ES');
+      },
     },
+
     {
       field: "estado_lineamientos",
       headerName: "Lineamientos",
@@ -227,26 +266,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         autoHeight
-        sx={{
-         
-          border: 0,
-          backgroundColor: "#fff",
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: color.primary.azul,
-            color: "#fff",
-          },
-          "& .MuiDataGrid-columnHeader": {
-            justifyContent: "center",
-          },
-          "& .MuiDataGrid-columnHeaderTitle": {
-            textAlign: "center",
-            width: "100%",
-            fontWeight: "bold",
-          },
-          "& .MuiDataGrid-cell": {
-            textAlign: "right",
-          },
-        }}
+
       />
 
       <CardDetalles open={open} handleClose={() => setOpen(false)} id={selectedId} />

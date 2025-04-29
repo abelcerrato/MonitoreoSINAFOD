@@ -236,8 +236,8 @@ const ListadoParticipantes = () => {
                     Listado de Participantes
                 </Typography>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
+                <Grid container spacing={2} marginBottom={3}>
+                    <Grid item xs={12} size={4}>
                         <FormControl fullWidth>
                             <Select onChange={(e) => setFilterColumn(e.target.value)}>
                                 <MenuItem value="">Seleccionar columna</MenuItem >
@@ -266,7 +266,7 @@ const ListadoParticipantes = () => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} size={4}>
                         {filterColumn === "sexo" ? (
                             <FormControl fullWidth>
                                 <Select onChange={(e) => setFilterValue(e.target.value)}>
@@ -332,7 +332,7 @@ const ListadoParticipantes = () => {
                             <TextField type="text" placeholder="Ingresar valor" onChange={(e) => setFilterValue(e.target.value)} />
                         )}
                     </Grid>
-                    <Grid item xs={12} sm={4} container justifyContent="flex-end">
+                    <Grid item xs={12} size={4} container justifyContent="flex-end">
                         <Tooltip title="Exportar Excel">
                             <IconButton
                                 onClick={() => exportExcel(rows)}
@@ -358,26 +358,7 @@ const ListadoParticipantes = () => {
                         setRowsPerPage(pageSize);
                     }}
                     autoHeight
-                    sx={{
-                        mt: 5,
-                        border: 0,
-                        backgroundColor: "#fff",
-                        "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: color.primary.azul,
-                            color: "#fff",
-                        },
-                        "& .MuiDataGrid-columnHeader": {
-                            justifyContent: "center",
-                        },
-                        "& .MuiDataGrid-columnHeaderTitle": {
-                            textAlign: "center",
 
-                            fontWeight: "bold",
-                        },
-                        "& .MuiDataGrid-cell": {
-                            textAlign: "right",
-                        },
-                    }}
                 />
 
 
