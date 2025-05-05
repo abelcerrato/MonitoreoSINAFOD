@@ -79,7 +79,7 @@ export const verificarUsuarioM = async (usuario) => {
 };
 
 
-export const postUserM = async (nombre, usuario, cecap, correo, idrol, estado, creadopor) => {
+export const postUserM = async (nombre, usuario,  correo, idrol, estado, creadopor) => {
     try {
         // Definir la nueva contraseña temporal
         const ContraseñaUsuarioNuevo = "NuevoUsuario1*";
@@ -87,10 +87,10 @@ export const postUserM = async (nombre, usuario, cecap, correo, idrol, estado, c
 
         const contraseñaCifrada  = await bcrypt.hash(ContraseñaUsuarioNuevo, 10);
         const { rows } = await pool.query(`INSERT INTO ms_usuarios
-                                                (nombre, usuario, cecap, correo, idrol, contraseña,
+                                                (nombre, usuario,  correo, idrol, contraseña,
                                                 estado, creadopor, fechacreacion, fechamodificacion, cambiocontraseña) 
-                                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, null, true) RETURNING *`,
-            [nombre, usuario, cecap,  correo, idrol, contraseñaCifrada,  estado, creadopor])
+                                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, null, true) RETURNING *`,
+            [nombre, usuario,   correo, idrol, contraseñaCifrada,  estado, creadopor])
 
         console.log(rows);
         return rows[0]
