@@ -59,8 +59,8 @@ const LineamientosI = () => {
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
     formacioninvest: "",
-    creadopor: user,
-    modificadopor: user
+    creadopor: user.id,
+    modificadopor: user.id
   });
   const navigate = useNavigate();
   const handleRedirect = () => {
@@ -298,8 +298,8 @@ const LineamientosI = () => {
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
 
-    formDataToSend.append("creadopor", user);
-    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("creadopor", user.id);
+    formDataToSend.append("modificadopor", user.id);
     formDataToSend.append("formacioninvest", "Investigación");
 
     // Contador de archivos subidos

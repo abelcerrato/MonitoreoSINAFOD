@@ -20,7 +20,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LogoCONED from "../Components/img/logos_CONED.png"
 import LogoDGDP from "../Components/img/Logo_DGDP.png"
 import { useUser } from "../Components/UserContext"
-
+import Swal from "sweetalert2";
 
 
 
@@ -29,7 +29,7 @@ import { useUser } from "../Components/UserContext"
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const { setUser } = useUser();
+  const { setUser, setPermissions } = useUser();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -56,42 +56,100 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setUser(formData.usuario);
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/verificarUsuario`,
+        `${process.env.REACT_APP_API_URL}/inicioSesion`,
         formData
       );
 
       if (response.status === 200) {
-        // Si la autenticación es exitosa
-        localStorage.setItem("user", JSON.stringify(formData.usuario)); // Guarda usuario
-        sessionStorage.setItem("isAuthenticated", "true"); // Usa sessionStorage para detectar sesión activa
+        const { id, usuario, idrol } = response.data.user;
+        const { token, message, yaHabiaSesion } = response.data;
+
+        // Guardar el usuario en el contexto global
+        setUser({ id, usuario, idrol });
+
+        // Guardar en localStorage
+        localStorage.setItem("user", JSON.stringify({
+          id,
+          usuario,
+        }));
+        localStorage.setItem("token", token);
+
+    const permisosResponse = await axios.get(
+           `${process.env.REACT_APP_API_URL}/permisos/${idrol}`,
+           {
+             headers: {
+               Authorization: `Bearer ${token}`
+             }
+           }
+         );
+ 
+         if (permisosResponse.status === 200) {
+           const permisos = permisosResponse.data.map(p => ({
+             idobjeto: p.idobjeto,
+             objeto: p.objeto,
+             idmodulo: p.idmodulo,
+             consultar: p.consultar,
+             insertar: p.insertar,
+             actualizar: p.actualizar,
+           }));
+ 
+           setPermissions(permisos); // Guardar en contexto y localStorage
+         } 
+        // Mostrar mensaje de éxito (si no es caso de sesión activa)
+        Swal.fire({
+          icon: yaHabiaSesion ? 'info' : 'success',
+          title: 'Inicio de sesión',
+          text: yaHabiaSesion
+            ? 'Existe una sesión abierta en otro dispositivo. Por motivos de seguridad, fue cerrada.'
+            : message,
+          timer: 3000,
+          showConfirmButton: false
+        });
+
+        // Indicar que la sesión está activa
+        sessionStorage.setItem("isAuthenticated", "true");
+
+        // Redirigir al dashboard
         navigate("/dashboard");
-      } else {
-        // Aquí no debería entrar, porque si la autenticación falla, devolverá un status 401
-        alert("Error en la autenticación. Verifique sus credenciales.");
       }
     } catch (error) {
-      console.error("Error en la autenticación:", error);
-
+      // Manejo de errores existente...
       if (error.response) {
-        // Si el servidor respondió con un error (status 401 o similar)
         if (error.response.status === 401) {
-          alert(error.response.data.message); // Muestra el mensaje de error enviado por el backend
+          Swal.fire({
+            title: "Error",
+            text: error.response.data.message,
+            icon: "error",
+            timer: 6000,
+          });
+        } else if (error.response.status === 403) {
+          const { id, usuario } = error.response.data.user;
+
+          setUser({ id, usuario, changePasswordRequired: true });
+
+          localStorage.setItem("user", JSON.stringify({
+            id,
+            usuario,
+            requiresPasswordChange: true
+          }));
+
+          sessionStorage.setItem("isAuthenticated", "true");
+
+          navigate("/dashboard");
         } else {
           alert("Error en la autenticación. Inténtelo de nuevo.");
         }
       } else if (error.request) {
-        // Si no se recibió respuesta del servidor
         alert("Error en la conexión con el servidor.");
       } else {
-        // Si hubo un error en la configuración de la solicitud
         alert("Hubo un problema con la solicitud. Inténtelo de nuevo.");
       }
     }
   };
+
 
 
   return (

@@ -135,7 +135,7 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
         >
           <Grid item xs={12} sm={9}>
             <Typography variant="h6" noWrap sx={{ color: "white" }}>
-              {user}
+              {user.usuario}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={3}>

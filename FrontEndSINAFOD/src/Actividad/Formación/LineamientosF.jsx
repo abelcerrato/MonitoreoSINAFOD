@@ -44,9 +44,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const LineamientosI = () => {
+const LineamientosF = () => {
   const { user } = useUser();
-  const { id } = useParams();
   const [formData, setFormData] = useState({
     accionformacion: "",
     criteriosfactibilidadurl: null,
@@ -58,11 +57,7 @@ const LineamientosI = () => {
     accionformacion: false,
     criterioseticosurl: false
   });
-  const [fileNames, setFileNames] = useState({
-    criteriosfactibilidadurl: "",
-    requisitostecnicosurl: "",
-    criterioseticosurl: "",
-  });
+
   const navigate = useNavigate();
   const handleRedirect = () => {
     navigate("/dashboard");
@@ -83,10 +78,6 @@ const LineamientosI = () => {
       [fieldName]: null,
     }));
 
-    setFileNames(prev => ({
-      ...prev,
-      [fieldName]: ""
-    }));
   };
 
 
@@ -138,11 +129,7 @@ const LineamientosI = () => {
       [name]: file,
     }));
 
-    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
-    setFileNames((prev) => ({
-      ...prev,
-      [name]: file ? file.name : "",
-    }));
+   
   };
 
 
@@ -182,8 +169,8 @@ const LineamientosI = () => {
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
 
-    formDataToSend.append("creadopor", user);
-    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("creadopor", user.id);
+    formDataToSend.append("modificadopor", user.id);
     formDataToSend.append("formacioninvest", "Formación");
 
     // Contador de archivos subidos
@@ -446,4 +433,4 @@ const LineamientosI = () => {
   );
 };
 
-export default LineamientosI;
+export default LineamientosF;

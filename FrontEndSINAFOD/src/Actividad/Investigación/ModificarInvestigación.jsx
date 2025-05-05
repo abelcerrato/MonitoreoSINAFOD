@@ -53,8 +53,8 @@ const Investigacion = () => {
         socializaron: null,
         zona: "",
         observacion: "",
-        creadopor: user,
-        modificadopor: user
+        creadopor: user.id,
+        modificadopor: user.id
     });
 
     const [fieldErrors, setFieldErrors] = useState({
@@ -317,7 +317,7 @@ const Investigacion = () => {
         const cleanedFormData = Object.fromEntries(
             Object.entries({
                 ...formData,
-                modificadopor: user // Asegúrate de incluir el usuario actual aquí
+                modificadopor: user.id // Asegúrate de incluir el usuario actual aquí
             }).map(([key, value]) => {
                 // Si el valor es una cadena vacía, lo convierte en null
                 if (value === "") return [key, null];

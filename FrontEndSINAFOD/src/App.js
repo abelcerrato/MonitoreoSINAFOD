@@ -21,9 +21,9 @@ import Participantes from './Participantes/FormularioParticipantes';
 import ModificarParticipante from './Participantes/ModificarParticipantes'
 import ListadoParticipantes from './Reportería/ListadoParticipantes'
 import ListadoActividad from './Reportería/ListadoCapacitaciones'
+
+
 import { UserProvider } from './Components/UserContext';
-
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -76,6 +76,10 @@ function App() {
          
           <Route path="/Reportería/Listado_Participantes" element={<ProtectedRoute><ListadoParticipantes /></ProtectedRoute>} />
           <Route path="/Reportería/Listado_De_Acciones_Formativas" element={<ProtectedRoute><ListadoActividad /></ProtectedRoute>} />
+       
+       
+       
+       
         </Routes>
       </BrowserRouter>
 

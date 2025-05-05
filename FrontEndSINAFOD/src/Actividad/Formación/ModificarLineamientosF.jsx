@@ -43,7 +43,7 @@ const VisuallyHiddenInput = styled("input")({
     width: 1,
 });
 
-const LineamientosM = () => {
+const ModificarLineamientos = () => {
     const { user } = useUser();
     const { id } = useParams();
     const [formData, setFormData] = useState({
@@ -282,7 +282,7 @@ const LineamientosM = () => {
 
         const formDataToSend = new FormData();
         formDataToSend.append("accionformacion", formData.accionformacion);
-        formDataToSend.append("modificadopor", user);
+        formDataToSend.append("modificadopor", user.id);
         formDataToSend.append("formacioninvest", "Formación");
 
         // Contador de archivos subidos
@@ -772,4 +772,4 @@ const LineamientosM = () => {
     );
 };
 
-export default LineamientosM;
+export default ModificarLineamientos;
