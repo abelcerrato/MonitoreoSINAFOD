@@ -4,16 +4,26 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 
-// Configuración para obtener la ruta correcta del archivo JSON
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const serviceAccount = JSON.parse(
-  readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-b4a84097bf.json'))
-);
+// Configuración segura para entornos local y producción
+let serviceAccount;
+
+if (process.env.FIREBASE_CONFIG) {
+  // Para producción (Vercel): usa la variable de entorno
+  serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+}
+
+// else {
+//   // Para desarrollo local: usa el archivo JSON (pero NO lo subas a GitHub)
+//   const __dirname = dirname(fileURLToPath(import.meta.url));
+//   serviceAccount = JSON.parse(
+//     readFileSync(join(__dirname, './firebase-credenciales-local.json'))
+//   );
+// }
 
 // Inicialización de Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "monitoreosinafod.firebasestorage.app" // Reemplaza con tu bucket
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 });
 
 // Exporta los servicios necesarios
