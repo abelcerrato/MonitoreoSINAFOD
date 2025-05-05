@@ -218,7 +218,7 @@ const LineamientosM = () => {
 
             // 3. Extraer el nombre original del archivo
             const contentDisposition = response.headers["content-disposition"];
-            let downloadFilename = filename.split('-').slice(4).join('-'); // Nombre original
+            let downloadFilename = filename.split('-').slice(3).join('-'); // Nombre original
 
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+?)"?(;|$)/);
