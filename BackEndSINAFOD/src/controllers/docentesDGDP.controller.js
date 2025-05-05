@@ -1,7 +1,7 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
 import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
-import { getUsuarioIdM } from "../models/user.models.js";
+import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
 
 export const getDocentesC = async (req, res) => {

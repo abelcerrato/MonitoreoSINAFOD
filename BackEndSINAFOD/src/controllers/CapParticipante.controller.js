@@ -2,7 +2,7 @@ import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.mode
 import { getCapParticipanteIdInvestM, getCapParticipanteIdM, getCapParticipanteM, getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM, putCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDepartamentoId } from "../models/departamentos.models.js";
 import { getMunicipiosIdM, getMunicipioxIdDepto } from "../models/municipos.models.js";
-import { getUsuarioIdM } from "../models/user.models.js";
+import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
 export const getCapParticipanteC = async (req, res) => {
     try {

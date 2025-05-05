@@ -1,6 +1,6 @@
 import express from "express";
 import {PORT} from './config.js'
-import userRoutes from './routes/users.routes.js'
+import userRoutes from './routes/ms_usuarios.routes.js'
 import InvestCap from "./routes/investigacionCap.routes.js";
 import Departamentos from "./routes/departamentos.routes.js";
 import Municipios from "./routes/municipos.routes.js"

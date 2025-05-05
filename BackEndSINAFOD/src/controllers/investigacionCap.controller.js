@@ -5,7 +5,7 @@ import multer from 'multer';
 import { pool } from '../db.js'
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
 import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacionCap.models.js";
-import { getUsuarioIdM } from "../models/user.models.js";
+import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
 //-----------------------------------------------------------------------------------------------------------
 // Obtener investigacion o capacitacion
