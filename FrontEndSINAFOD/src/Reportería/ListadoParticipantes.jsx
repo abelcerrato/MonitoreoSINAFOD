@@ -147,7 +147,7 @@ const ListadoParticipantes = () => {
                 "ID", "Nombre de la Acción o Formación", "Código SACE", "Nombre", "Identificación", "Sexo",
                 "Nivel Académico del Participante", "Grado Académico del Participante",
                 "Años de Servicio", "Código de Red", "Función", "Departamento en el que Reside", "Municipio en el que Reside", "Aldea en la que Reside", "Centro Educativo",
-                "Nivel Académico que Atiende", "Ciclo Académico que Atiende", "Grado Académico que Atiende", "Tipo Administración",
+                "Nivel Académico que Atiende", "Ciclo Educativo que Atiende", "Grado que Atiende", "Tipo Administración",
                 "Zona Centro Educativo", "Departamento Centro Educativo", "Municipio Centro Educativo", "Aldea Centro Educativo",
 
             ];
@@ -218,8 +218,8 @@ const ListadoParticipantes = () => {
         { field: "nombrealdearesidencia", headerName: "Aldea en la que Reside", width: 180 },
         { field: "centroeducativo", headerName: "Centro Educativo", width: 180 },
         { field: "nombrenivelced", headerName: "Nivel Académico que Atiende", width: 200 },
-        { field: "nombrecicloced", headerName: "Ciclo Académico que Atiende", width: 230 },
-        { field: "nombregradoced", headerName: "Grado Académico que Atiende", width: 230 },
+        { field: "nombrecicloced", headerName: "Ciclo Educativo que Atiende", width: 230 },
+        { field: "nombregradoced", headerName: "Grado que Atiende", width: 230 },
         { field: "tipoadministracion", headerName: "Tipo Administración", width: 180 },
         { field: "zona", headerName: "Zona Centro Educativo", width: 180 },
         { field: "nombredeptoced", headerName: "Departamento Centro Educativo", width: 230 },
@@ -256,8 +256,8 @@ const ListadoParticipantes = () => {
                                 <MenuItem value="nombrealdearesidencia">Aldea en el que Reside</MenuItem >
                                 <MenuItem value="centroeducativo">Centro Educativo</MenuItem >
                                 <MenuItem value="nombrenivelced">Nivel Educativo que Atiende</MenuItem >
-                                <MenuItem value="nombrecicloced">Ciclo Académico que Atiende</MenuItem >
-                                <MenuItem value="nombregradoced">Grado Académico que Atiende</MenuItem >
+                                <MenuItem value="nombrecicloced">Ciclo Educativo que Atiende</MenuItem >
+                                <MenuItem value="nombregradoced">Grado que Atiende</MenuItem >
                                 <MenuItem value="tipoadministracion">Tipo Administración</MenuItem >
                                 <MenuItem value="zona">Zona Centro Educativo</MenuItem >
                                 <MenuItem value="nombredeptoced">Departamento Centro Educativo</MenuItem >

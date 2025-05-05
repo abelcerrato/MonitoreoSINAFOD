@@ -355,13 +355,11 @@ const Investigacion = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-
-
                     <Typography variant="h4" sx={{ color: color.primary.azul }}>
                         Actualizar Datos sobre la Investigación
                     </Typography>
 
-                    <Grid container spacing={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid container spacing={1} sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                         <Grid
                             item
                             xs={12}
@@ -410,7 +408,6 @@ const Investigacion = () => {
                             </Button>
                         </Grid>
                     </Grid>
-
                     <Grid container spacing={5} mt={2}>
                         <Grid item xs={12} size={6} sm={6}>
                             <Typography variant="subtitle1">
@@ -611,7 +608,7 @@ const Investigacion = () => {
                         </Grid>
 
                         <Grid item xs={12} size={6} sm={6}>
-                            <Typography variant="subtitle1">¿Se realizó socialización?</Typography>
+                            <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select
                                     name="socializaron"
@@ -647,12 +644,6 @@ const Investigacion = () => {
                         </Button>
 
                     </Box>
-
-
-
-
-
-
                 </Paper>
 
             </Dashboard>

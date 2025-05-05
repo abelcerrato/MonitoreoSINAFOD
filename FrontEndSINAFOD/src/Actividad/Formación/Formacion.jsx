@@ -398,7 +398,7 @@ const Investigacion = () => {
                             )}
                         </Grid>
                         <Grid item xs={12} size={6} sm={6}>
-                            <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>
+                            <Typography variant="subtitle1">¿La Formación Es Interna o Externa?</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoactividad}>
                                 <Select
                                     name="tipoactividad"
@@ -623,7 +623,7 @@ const Investigacion = () => {
                         </Grid>
                         <Grid item xs={12} size={6} sm={6}>
                             <Typography variant="subtitle1">
-                                Ciclo Académico
+                                Ciclo Educativo
                             </Typography>
                             <FormControl fullWidth>
                                 <Select
@@ -686,28 +686,32 @@ const Investigacion = () => {
                                 helperText={fieldErrors.participantesprog ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
-                            <Typography variant="subtitle1">Espacio Físico</Typography>
-                            <TextField
-                                fullWidth
-                                name="espaciofisico"
-                                value={formData.espaciofisico}
-                                onChange={handleChange}
-                                error={fieldErrors.espaciofisico}
-                                helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
-                            />
-                        </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
-                            <Typography variant="subtitle1">Dirección</Typography>
-                            <TextField
-                                fullWidth
-                                name="direccion"
-                                value={formData.direccion}
-                                onChange={handleChange}
-                                error={fieldErrors.direccion}
-                                helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
-                            />
-                        </Grid>
+                        {(formData.modalidad === "Presencial" || formData.modalidad === "Híbrido") && (
+                            <>
+                                <Grid item xs={12} size={6} sm={6}>
+                                    <Typography variant="subtitle1">Espacio Físico</Typography>
+                                    <TextField
+                                        fullWidth
+                                        name="espaciofisico"
+                                        value={formData.espaciofisico}
+                                        onChange={handleChange}
+                                        error={fieldErrors.espaciofisico}
+                                        helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} size={6} sm={6}>
+                                    <Typography variant="subtitle1">Dirección</Typography>
+                                    <TextField
+                                        fullWidth
+                                        name="direccion"
+                                        value={formData.direccion}
+                                        onChange={handleChange}
+                                        error={fieldErrors.direccion}
+                                        helperText={fieldErrors.direccion ? "Este campo es obligatorio" : ""}
+                                    />
+                                </Grid>
+                            </>
+                        )}
                         <Grid item xs={12} size={6} sm={6}>
                             <Typography variant="subtitle1">Zona</Typography>
                             <FormControl fullWidth error={fieldErrors.zona}>
@@ -724,7 +728,7 @@ const Investigacion = () => {
                         </Grid>
 
                         <Grid item xs={12} size={6} sm={6}>
-                            <Typography variant="subtitle1">¿Se realizó socialización?</Typography>
+                            <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron ?? ''} onChange={handleChange}>
                                     <MenuItem value={true}>Sí</MenuItem>
@@ -760,12 +764,6 @@ const Investigacion = () => {
                         </Button>
 
                     </Box>
-
-
-
-
-
-
                 </Paper>
 
             </Dashboard>

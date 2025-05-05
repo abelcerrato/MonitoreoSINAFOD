@@ -573,7 +573,7 @@ const Investigacion = () => {
                         </Grid>
 
                         <Grid item xs={12} size={6}>
-                            <Typography variant="subtitle1">¿Se realizó socialización?</Typography>
+                            <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron} onChange={handleChange}>
                                     <MenuItem value="true">Sí</MenuItem>

@@ -147,7 +147,7 @@ const CardDetalles = ({ open, handleClose, id }) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ "&:hover": { backgroundColor: "#f5f5f5", cursor: "pointer" } }}>
-                    <TableCell style={{ fontWeight: "bold" }}>Ciclo Académico</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Ciclo Educativo</TableCell>
                     <TableCell style={{ width: 160 }} >
                       {data.cicloacademico}
                     </TableCell>

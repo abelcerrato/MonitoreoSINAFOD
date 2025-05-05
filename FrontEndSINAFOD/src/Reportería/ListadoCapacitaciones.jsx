@@ -131,7 +131,7 @@ const ListadoActividad = () => {
     const exportExcel = async () => {
         try {
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet("Capacitaciones");
+            const worksheet = workbook.addWorksheet("Acciones Formativas");
             // Convertir imágenes a base64 (si es necesario)
             const image1Base64 = await toBase64(LogoCONED);
             const image2Base64 = await toBase64(LogoDGDP);
@@ -155,7 +155,7 @@ const ListadoActividad = () => {
             // Definir el título
             worksheet.mergeCells("A8:F8");
             const title = worksheet.getCell("A8");
-            title.value = "Listado de Capacitaciones";
+            title.value = "Listado de Acciones Formativas";
             title.font = { size: 16, bold: true };
             title.alignment = { horizontal: "center", vertical: "middle" };
 
@@ -173,7 +173,7 @@ const ListadoActividad = () => {
             const headers = [
                 "ID", "Nombre de la Acción o Formación", "Formación o Investigación", "Institución Responsable", "Responsable de Firmas", "Ambito de Formación",
                 "Tipo de Formación", "Modalidad", "Duración", "	Espacio Físico", "Nicel Educativo",
-                "Ciclo Académico", "Estado", "Fecha Inicio", "Fecha de Finalización", "Cantidad de Participantes Programados",
+                "Ciclo Educativo", "Estado", "Fecha Inicio", "Fecha de Finalización", "Cantidad de Participantes Programados",
                 "Dirección", "Zona", "Observación"
 
             ];
@@ -216,7 +216,7 @@ const ListadoActividad = () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "Reporte_Capacitaciones.xlsx";
+            a.download = "Reporte_Acciones Formativas.xlsx";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -291,7 +291,7 @@ const ListadoActividad = () => {
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
                 <Typography variant="h3" sx={{ color: color.primary.azul, mb: 5 }}>
-                    Listado de Capacitaciones
+                    Listado de Acciones Formativas
                 </Typography>
 
                 <Grid container spacing={2} marginBottom={3}>
@@ -313,7 +313,7 @@ const ListadoActividad = () => {
                                 <MenuItem value="duracion">Duración</MenuItem >
                                 <MenuItem value="espaciofisico">Espacio Físico</MenuItem >
                                 <MenuItem value="nivelacademico">Nivel Educativo</MenuItem >
-                                <MenuItem value="cicloacademico">Ciclo Académico</MenuItem >
+                                <MenuItem value="cicloacademico">Ciclo Educativo</MenuItem >
                                 <MenuItem value="estado">Estado</MenuItem >
                                 <MenuItem value="fecha">Fecha</MenuItem >
                                 <MenuItem value="participantesprog">Cantidad de Participantes Programados</MenuItem >
