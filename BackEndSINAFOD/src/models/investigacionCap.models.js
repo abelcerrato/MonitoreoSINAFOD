@@ -55,7 +55,7 @@ export const getInvestigacionCapM = async () => {
     END AS estado_lineamientos
 
 FROM investigacioncap AS ic
-LEFT JOIN usuario u ON ic.creadopor = u.id
+LEFT JOIN ms_usuarios u ON ic.creadopor = u.id
 LEFT JOIN nivelesacademicos n ON ic.idnivelesacademicos = n.id 
 LEFT JOIN ciclosacademicos c ON ic.idciclosacademicos = c.id
 ORDER BY ic.id DESC;

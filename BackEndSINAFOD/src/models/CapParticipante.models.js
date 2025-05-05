@@ -58,8 +58,8 @@ export const getCapParticipanteM = async () => {
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
             
- 			left join usuario as u on cp.creadopor = u.id 
-            left join usuario as mp on cp.modificadopor = mp.id 
+ 			left join ms_usuarios as u on cp.creadopor = u.id 
+            left join ms_usuarios as mp on cp.modificadopor = mp.id 
             
         `)
         //console.log(rows);
@@ -126,8 +126,8 @@ export const getCapParticipanteIdM = async (id) => {
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            left join usuario as u on cp.creadopor = u.id 
-            left join usuario as mp on cp.modificadopor = mp.id 
+            left join ms_usuarios as u on cp.creadopor = u.id 
+            left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.id=$1
         `, [id])
         //console.log(rows);
@@ -195,8 +195,8 @@ export const getCapParticipanteIdInvestM = async (id) => {
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            left join usuario as u on cp.creadopor = u.id 
-            left join usuario as mp on cp.modificadopor = mp.id 
+            left join ms_usuarios as u on cp.creadopor = u.id 
+            left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.idinvestigacioncap=$1
         `, [id])
         //console.log(rows);
@@ -352,8 +352,8 @@ export const getParticipanteIdentificacionM = async (filtro) => {
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            left join usuario as u on cp.creadopor = u.id 
-            left join usuario as mp on cp.modificadopor = mp.id 
+            left join ms_usuarios as u on cp.creadopor = u.id 
+            left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.identificacion=$1
             ORDER BY cp.id DESC
             LIMIT 1
@@ -423,8 +423,8 @@ export const getParticipanteCodSACEM = async (filtro) => {
             left join ciclosacademicos c on cp.idciclosacademicos =c.id 
             left join gradosacademicos g on cp.idgradosacademicos =g.id
             
-            left join usuario as u on cp.creadopor = u.id 
-            left join usuario as mp on cp.modificadopor = mp.id 
+            left join ms_usuarios as u on cp.creadopor = u.id 
+            left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.codigosace=$1
             ORDER BY cp.id DESC
             LIMIT 1
