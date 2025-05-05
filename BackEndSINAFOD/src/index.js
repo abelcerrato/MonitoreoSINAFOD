@@ -10,6 +10,11 @@ import Aldeas from "./routes/aldeas.routes.js";
 import DocentesDGDP from "./routes/docentesDGDP.routes.js";
 import uploadRoutes from "./routes/uploads.routes.js";
 
+import ms_rolesRoutes from "./routes/ms_roles.routes.js";
+import ms_modulosRoutes from "./routes/ms_modulos.routes.js"
+import ms_objetosRoutes from "./routes/ms_objetos.routes.js";
+import ms_permisosRoutes from "./routes/ms_permisos.routes.js"
+
 import cors from "cors"
 
 import 'dotenv/config'; 
@@ -30,6 +35,12 @@ app.use(Academico)
 app.use(Aldeas)
 app.use(DocentesDGDP)
 app.use(uploadRoutes)
+
+
+app.use(ms_rolesRoutes)
+app.use(ms_modulosRoutes)
+app.use(ms_objetosRoutes)
+app.use(ms_permisosRoutes)
 
 console.log("DB_USER:", process.env.DB_USER); // Prueba si se está cargando correctamente
 
