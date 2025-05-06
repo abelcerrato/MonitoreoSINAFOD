@@ -60,10 +60,7 @@ const LineamientosI = () => {
         monitoreoyevaluacionurl: null,
         aplicacionevaluacionurl: null,
     });
-    const [errors, setErrors] = useState({
-        accionformacion: false,
-        estadoprotocolo: false,
-    });
+  
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewContent, setPreviewContent] = useState(null);
     const [currentPreviewField, setCurrentPreviewField] = useState(null);
@@ -259,7 +256,7 @@ const LineamientosI = () => {
         const formDataToSend = new FormData();
         formDataToSend.append("accionformacion", formData.accionformacion);
         formDataToSend.append("estadoprotocolo", formData.estadoprotocolo);
-        formDataToSend.append("modificadopor", user);
+        formDataToSend.append("modificadopor", user.id);
         formDataToSend.append("formacioninvest", "Investigacion");
 
         // Contador de archivos subidos
@@ -518,20 +515,6 @@ const LineamientosI = () => {
                                 name="accionformacion"
                                 value={formData.accionformacion}
                                 onChange={handleChange}
-                                error={errors.accionformacion}
-                                helperText={
-                                    errors.accionformacion
-                                        ? "El título del proyecto es requerido"
-                                        : ""
-                                }
-                                FormHelperTextProps={{ style: { color: "red" } }}
-                                sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                        "& fieldset": {
-                                            borderColor: errors.accionformacion ? "red" : "",
-                                        },
-                                    },
-                                }}
                             />
                         </Grid>
 

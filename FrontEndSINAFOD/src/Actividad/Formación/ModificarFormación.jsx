@@ -26,11 +26,12 @@ import { useUser } from "../../Components/UserContext";
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import Swal from 'sweetalert2';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
+import Formacion from "./Formacion";
 
 
 
 
-const Investigacion = () => {
+const ModificarFormacion = () => {
     const { user } = useUser();
     const { id } = useParams();
     const location = useLocation();
@@ -54,8 +55,8 @@ const Investigacion = () => {
         socializaron: null,
         zona: "",
         observacion: "",
-        creadopor: user,
-        modificadopor: user,
+        creadopor: user.id,
+        modificadopor: user.id,
         institucionresponsable: "",
         responsablefirmas: "",
         ambitoformacion: "",
@@ -335,7 +336,7 @@ const Investigacion = () => {
         const cleanedFormData = Object.fromEntries(
             Object.entries({
                 ...formData,
-                modificadopor: user // Asegúrate de incluir el usuario actual aquí
+                modificadopor: user.id // Asegúrate de incluir el usuario actual aquí
             }).map(([key, value]) => {
                 // Si el valor es una cadena vacía, lo convierte en null
                 if (value === "") return [key, null];
@@ -820,4 +821,4 @@ const Investigacion = () => {
     );
 };
 
-export default Investigacion;
+export default ModificarFormacion

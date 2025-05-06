@@ -53,8 +53,8 @@ const Investigacion = () => {
         socializaron: null,
         zona: "",
         observacion: "",
-        creadopor: user,
-        modificadopor: user
+        creadopor: user.id,
+        modificadopor: user.id
     });
 
     const [fieldErrors, setFieldErrors] = useState({
@@ -350,7 +350,7 @@ const Investigacion = () => {
                             Registro de Datos sobre la Investigación
                         </Typography>
 
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -593,8 +593,6 @@ const Investigacion = () => {
                         </Grid>
                     </Grid>
                     <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-
-
                         <Button
                             variant="contained"
                             sx={{ backgroundColor: color.primary.azul, ml: 5 }}
@@ -605,12 +603,6 @@ const Investigacion = () => {
                         </Button>
 
                     </Box>
-
-
-
-
-
-
                 </Paper>
 
             </Dashboard>

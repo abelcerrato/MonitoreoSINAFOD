@@ -49,7 +49,7 @@ export const getPermisosIdRolM = async (id) => {
     try {
         const { rows } = await pool.query(`
         select
-            p.id, p.idrol, mr.rol, p.idobjeto, mo.objeto,mo.idmodulo, 
+            p.id, p.idrol, mr.rol, p.idobjeto, mo.objeto,mo.idmodulo, mr.estado,mr.descripcion,
             p.consultar, p.insertar, p.actualizar, 
             muc.nombre as creadopor, p.fechacreacion, mum.nombre as modificadopor, p.fechamodificacion 
         FROM ms_permisos p

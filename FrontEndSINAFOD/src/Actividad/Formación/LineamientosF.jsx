@@ -44,9 +44,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const LineamientosI = () => {
+const LineamientosF = () => {
   const { user } = useUser();
-  const { id } = useParams();
   const [formData, setFormData] = useState({
     accionformacion: "",
     criteriosfactibilidadurl: null,
@@ -58,11 +57,7 @@ const LineamientosI = () => {
     accionformacion: false,
     criterioseticosurl: false
   });
-  const [fileNames, setFileNames] = useState({
-    criteriosfactibilidadurl: "",
-    requisitostecnicosurl: "",
-    criterioseticosurl: "",
-  });
+
   const navigate = useNavigate();
   const handleRedirect = () => {
     navigate("/dashboard");
@@ -83,10 +78,6 @@ const LineamientosI = () => {
       [fieldName]: null,
     }));
 
-    setFileNames(prev => ({
-      ...prev,
-      [fieldName]: ""
-    }));
   };
 
 
@@ -138,11 +129,7 @@ const LineamientosI = () => {
       [name]: file,
     }));
 
-    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
-    setFileNames((prev) => ({
-      ...prev,
-      [name]: file ? file.name : "",
-    }));
+
   };
 
 
@@ -182,8 +169,8 @@ const LineamientosI = () => {
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
 
-    formDataToSend.append("creadopor", user);
-    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("creadopor", user.id);
+    formDataToSend.append("modificadopor", user.id);
     formDataToSend.append("formacioninvest", "Formación");
 
     // Contador de archivos subidos
@@ -247,30 +234,26 @@ const LineamientosI = () => {
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} size={10.7} sm={9}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Lineamientos para Formación
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={3}
-              sx={{ display: "flex", justifyContent: "flex-end" }}
+
+          <Typography variant="h4" sx={{ color: color.primary.azul }}>
+            Registro de Lineamientos para Formación
+          </Typography>
+
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end" }}
+          >
+            <Button
+              variant="outlined"
+              sx={{
+                borderColor: color.primary.rojo,
+                color: color.primary.rojo,
+              }}
+              onClick={() => handleRedirect()}
             >
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                onClick={() => handleRedirect()}
-              >
-                Cerrar
-              </Button>
-            </Grid>
-          </Grid>
+              Cerrar
+            </Button>
+          </Box>
+
 
           <Grid container spacing={5} mt={2}>
             <Grid item xs={12} size={6} md={6}>
@@ -446,4 +429,4 @@ const LineamientosI = () => {
   );
 };
 
-export default LineamientosI;
+export default LineamientosF;
