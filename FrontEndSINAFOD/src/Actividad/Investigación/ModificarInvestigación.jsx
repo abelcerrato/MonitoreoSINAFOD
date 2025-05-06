@@ -505,7 +505,7 @@ const Investigacion = () => {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} size={3}>
+                                <Grid item xs={12} size={2}>
                                     <TextField
                                         variant="outlined"
                                         label="Días"
@@ -518,7 +518,7 @@ const Investigacion = () => {
                                         helperText={fieldErrors.dia ? "Por favor ingresa un número válido para el día." : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={3}>
+                                <Grid item xs={12} size={4}>
                                     <TextField
                                         variant="outlined"
                                         label="(Año-Mes-Día)"

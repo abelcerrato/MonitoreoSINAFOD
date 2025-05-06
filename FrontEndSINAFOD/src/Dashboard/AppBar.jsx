@@ -30,7 +30,7 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
       }
 
       // Llama al endpoint sin token (si no es necesario)
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/logout/${user.id}`);
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/cierreSesion/${user.id}`);
       console.log("Respuesta del backend:", response.data); // Para depuración
 
       // Limpieza y redirección
