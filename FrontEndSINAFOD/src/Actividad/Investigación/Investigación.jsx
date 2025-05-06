@@ -350,7 +350,7 @@ const Investigacion = () => {
                             Registro de Datos sobre la Investigación
                         </Typography>
 
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
                             <Button
                                 variant="outlined"
                                 sx={{

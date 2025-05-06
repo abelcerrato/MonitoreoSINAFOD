@@ -349,30 +349,26 @@ const Formacion = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} size={10.7} sm={9}>
-                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                                Registro de Datos sobre la Formación
-                            </Typography>
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            sm={3}
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
+
+                    <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                        Registro de Datos sobre la Formación
+                    </Typography>
+
+                    <Box
+                        sx={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                borderColor: color.primary.rojo,
+                                color: color.primary.rojo,
+                            }}
+                            onClick={() => handleRedirect()}
                         >
-                            <Button
-                                variant="outlined"
-                                sx={{
-                                    borderColor: color.primary.rojo,
-                                    color: color.primary.rojo,
-                                }}
-                                onClick={() => handleRedirect()}
-                            >
-                                Cerrar
-                            </Button>
-                        </Grid>
-                    </Grid>
+                            Cerrar
+                        </Button>
+                    </Box>
+
 
                     <Grid container spacing={5} mt={2}>
                         <Grid item xs={12} size={6} sm={6}>

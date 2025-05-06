@@ -20,7 +20,7 @@ import {
 
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
 
@@ -32,14 +32,15 @@ import Swal from 'sweetalert2';
 const Usuario = () => {
     const { user } = useUser();
     const [roles, setRoles] = useState([]);
+    const { id } = useParams();
 
     const [formData, setFormData] = useState({
         nombre: "",
         usuario: "",
         correo: "",
         idrol: "",
-        estado: "Nuevo",
-        creadopor: user.id,
+        estado: "",
+        modificadopor: user.id,
     });
 
 
@@ -49,8 +50,29 @@ const Usuario = () => {
         navigate("/Seguridad/Usuarios");
     };
 
+    useEffect(() => {
+        const obtenerDetalles = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/usuario/${id}`);
+                const userData = response.data; // Asumo que response.data es el objeto directo (no un array)
 
+                // Transformación de datos antes de asignar
+                setFormData({
+                    usuario: userData.usuario || '',
+                    nombre: userData.nombre || '',
+                    correo: userData.correo || '',
+                    idrol: userData.idrol || '',
+                    estado: userData.estado || '',
+                });
 
+            } catch (error) {
+                console.error("Error al obtener los datos", error);
+                // Puedes agregar manejo de errores visual (ej: toast notification)
+            }
+        };
+
+        if (id) obtenerDetalles(); // Solo ejecuta si id existe
+    }, [id]);
     // Manejar cambios en campos de texto y selects
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -80,23 +102,19 @@ const Usuario = () => {
 
 
 
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/insertarUsuarios`,
+            const response = await axios.put(
+                `${process.env.REACT_APP_API_URL}/actualizarUsuarios/${id}`,
                 formData,
                 { headers: { "Content-Type": "application/json" } }
             );
 
             // Mostrar mensaje de éxito
             await Swal.fire(
-                '¡Guardado!',
-                'El usuario ha sido registrado correctamente.',
+                'Actualización!',
+                'Los datos se han actualizado correctamente.',
                 'success'
             );
-
-
-            console.log("Datos que envio", formData);
-
-
+            navigate("/Seguridad/Usuarios");
         } catch (error) {
             console.error("Error al guardar los datos", error);
             Swal.fire('Error!', 'Error al guardar datos', 'error');
@@ -110,7 +128,7 @@ const Usuario = () => {
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
 
                     <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                        Registro de Usuarios
+                        Actualizar de Usuario
                     </Typography>
 
                     <Box
@@ -177,7 +195,22 @@ const Usuario = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-
+                        <Grid item xs={12} size={6}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Estado</InputLabel>
+                                <Select
+                                    name="estado"
+                                    value={formData.estado || ''}
+                                    onChange={handleChange}
+                                    label="Estado"
+                                >
+                                    <MenuItem value="">Seleccionar estado</MenuItem>
+                                    <MenuItem value="Nuevo">Nuevo</MenuItem>
+                                    <MenuItem value="Activo">Activo</MenuItem>
+                                    <MenuItem value="Inactivo">Inactivo</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
                     </Grid>
                     <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
                         <Button

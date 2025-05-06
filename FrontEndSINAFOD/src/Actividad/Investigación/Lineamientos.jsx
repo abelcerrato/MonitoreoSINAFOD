@@ -686,7 +686,7 @@ const LineamientosI = () => {
                     </Typography>
                     <IconButton
                       color="primary"
-                      sx={{ background: color.azul, ml: 'auto' }}
+                      sx={{ background: color.primary.azul, ml: 'auto' }}
                       onClick={() => handlePreview('aplicacionevaluacionurl')}
                     >
                       <VisibilityIcon fontSize="small" />

@@ -54,14 +54,14 @@ const ProjectDrawer = ({ open }) => {
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
-  const [seguridadMenuOpen, setSeguridadMenuOpen] = useState(false);
-  const seguridadAnchorRef = useRef(null);
+
+
 
   // Refs y estados para los menús flotantes
   const reporteriaAnchorRef = useRef(null);
-
+  const seguridadAnchorRef = useRef(null);
   const [reporteriaMenuOpen, setReporteriaMenuOpen] = useState(false);
-
+  const [seguridadMenuOpen, setSeguridadMenuOpen] = useState(false);
 
   const handelReporteriaMenuOpen = (event) => {
     if (!open) {
@@ -69,27 +69,34 @@ const ProjectDrawer = ({ open }) => {
     }
   };
 
-
-  const handleMenuClose = () => {
-    setReporteriaMenuOpen(false);
-  };
-
-  const handleItemClick = (path) => {
-    navigate(path);
-    handleMenuClose();
-  };
-
   const handleSeguridadMenuOpen = (event) => {
     if (!open) {
       setSeguridadMenuOpen(true);
     }
   };
+
+
+
+  const handleMenuClose = () => {
+    setReporteriaMenuOpen(false);
+  };
+
+  const handleMenuCloseSegu = () => {
+    setSeguridadMenuOpen(false);
+  };
+  const handleItemClick = (path) => {
+    navigate(path);
+    handleMenuClose();
+  };
+
+
   const isActive = (path) => {
     // Decodifica tanto la ruta actual como la ruta que estamos comparando
     const decodedCurrentPath = decodeURIComponent(location.pathname);
     const decodedComparePath = decodeURIComponent(path);
     return decodedCurrentPath === decodedComparePath;
   };
+
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
     isActive("/Reportería/Listado_Participantes")
@@ -391,7 +398,7 @@ const ProjectDrawer = ({ open }) => {
         <Menu
           anchorEl={seguridadAnchorRef.current}
           open={seguridadMenuOpen && !open}
-          onClose={handleMenuClose}
+          onClose={handleMenuCloseSegu}
           anchorOrigin={{
             vertical: "center",
             horizontal: "right",
@@ -423,13 +430,13 @@ const ProjectDrawer = ({ open }) => {
             <ListItemIcon>
               <PeopleAltOutlinedIcon
                 fontSize="small"
-                color={isActive("/Seguridad/Usuarios") ? "error" : "inherit"}
+                color={isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit"}
               />
             </ListItemIcon>
             <ListItemText
               primary="Usuarios"
               primaryTypographyProps={{
-                color: isActive("/Seguridad/Usuarios") ? "error" : "inherit",
+                color: isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit",
               }}
             />
           </MuiMenuItem>
@@ -447,13 +454,13 @@ const ProjectDrawer = ({ open }) => {
             <ListItemIcon>
               <HttpsOutlinedIcon
                 fontSize="small"
-                color={isActive("/Seguridad/Roles-y-Permisos") ? "error" : "inherit"}
+                color={isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit"}
               />
             </ListItemIcon>
             <ListItemText
               primary="Roles y Permisos"
               primaryTypographyProps={{
-                color: isActive("/Seguridad/Roles-y-Permisos") ? "error" : "inherit",
+                color: isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit",
               }}
             />
           </MuiMenuItem>
