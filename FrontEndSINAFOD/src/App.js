@@ -2,7 +2,7 @@
 import './App.css';
 import { useUser } from './Components/UserContext';
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Outlet,Navigate  } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import SignIn from './Login/Sign-in';
 import Dashboard from './Dashboard/dashboard';
 
@@ -35,7 +35,7 @@ import { UserProvider } from './Components/UserContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-
+import { PERMISSIONS } from './Components/permissions';
 const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = React.useState(false);
@@ -144,7 +144,7 @@ function App() {
             <Route
               path="/Lineamientos_De_Investigación"
               element={
-                <PermissionValidator requiredPermission={1}>
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
                   <LineamientosI />
                 </PermissionValidator>
               }
@@ -152,7 +152,7 @@ function App() {
             <Route
               path="/Actualizar_Lineamientos_De_Investigación/:id"
               element={
-                <PermissionValidator requiredPermission={1}>
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
                   <LineamientosM />
                 </PermissionValidator>
               }
@@ -160,7 +160,7 @@ function App() {
             <Route
               path="/Investigación"
               element={
-                <PermissionValidator requiredPermission={1}>
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
                   <Investigación />
                 </PermissionValidator>
               }
@@ -168,7 +168,7 @@ function App() {
             <Route
               path="/Actualizar_Investigación/:id"
               element={
-                <PermissionValidator requiredPermission={1}>
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
                   <ActualizarInvestigación />
                 </PermissionValidator>
               }
@@ -178,7 +178,7 @@ function App() {
             <Route
               path="/Lineamientos_De_Formación"
               element={
-                <PermissionValidator requiredPermission={2}>
+                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
                   <LineamientosF />
                 </PermissionValidator>
               }
@@ -186,7 +186,7 @@ function App() {
             <Route
               path="/Actualizar_Lineamientos_De_Formación/:id"
               element={
-                <PermissionValidator requiredPermission={2}>
+                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
                   <LineamientosFormacionM />
                 </PermissionValidator>
               }
@@ -194,7 +194,7 @@ function App() {
             <Route
               path="/Formación"
               element={
-                <PermissionValidator requiredPermission={2}>
+                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
                   <Formacion />
                 </PermissionValidator>
               }
@@ -202,7 +202,7 @@ function App() {
             <Route
               path="/Actualizar_Formación/:id"
               element={
-                <PermissionValidator requiredPermission={2}>
+                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
                   <ActualizarFormacion />
                 </PermissionValidator>
               }
@@ -212,7 +212,7 @@ function App() {
             <Route
               path="/Participantes"
               element={
-                <PermissionValidator requiredPermission={3}>
+                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
                   <Participantes />
                 </PermissionValidator>
               }
@@ -220,7 +220,7 @@ function App() {
             <Route
               path="/Modificar_Participante/:id"
               element={
-                <PermissionValidator requiredPermission={3}>
+                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
                   <ModificarParticipante />
                 </PermissionValidator>
               }
@@ -230,7 +230,7 @@ function App() {
             <Route
               path="/Reportería/Listado_Participantes"
               element={
-                <PermissionValidator requiredPermission={4}>
+                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
                   <ListadoParticipantes />
                 </PermissionValidator>
               }
@@ -238,7 +238,7 @@ function App() {
             <Route
               path="/Reportería/Listado_De_Acciones_Formativas"
               element={
-                <PermissionValidator requiredPermission={4}>
+                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
                   <ListadoActividad />
                 </PermissionValidator>
               }
@@ -248,7 +248,7 @@ function App() {
             <Route
               path="/Seguridad/Usuarios"
               element={
-                <PermissionValidator requiredPermission={5}>
+                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
                   <Usuarios />
                 </PermissionValidator>
               }
@@ -256,7 +256,7 @@ function App() {
             <Route
               path="/Seguridad/Registrar_Usuario"
               element={
-                <PermissionValidator requiredPermission={5}>
+                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
                   <RegistroUsuario />
                 </PermissionValidator>
               }
@@ -264,7 +264,7 @@ function App() {
             <Route
               path="/Seguridad/Actualizar_Usuario/:id"
               element={
-                <PermissionValidator requiredPermission={5}>
+                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
                   <ModificarUsuario />
                 </PermissionValidator>
               }
@@ -272,7 +272,7 @@ function App() {
             <Route
               path="/Seguridad/Roles-y-Permisos"
               element={
-                <PermissionValidator requiredPermission={6}>
+                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
                   <Permisos />
                 </PermissionValidator>
               }
@@ -280,7 +280,7 @@ function App() {
             <Route
               path="/Seguridad/Registrar_Rol-y-Permisos"
               element={
-                <PermissionValidator requiredPermission={6}>
+                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
                   <RegistroRol />
                 </PermissionValidator>
               }
@@ -288,7 +288,7 @@ function App() {
             <Route
               path="/Seguridad/Actualizar_Rol-y-Permisos/:id"
               element={
-                <PermissionValidator requiredPermission={6}>
+                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
                   <ModificarRol />
                 </PermissionValidator>
               }
