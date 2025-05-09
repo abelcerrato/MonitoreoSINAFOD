@@ -77,27 +77,27 @@ export default function SignIn() {
         }));
         localStorage.setItem("token", token);
 
-    const permisosResponse = await axios.get(
-           `${process.env.REACT_APP_API_URL}/permisos/${idrol}`,
-           {
-             headers: {
-               Authorization: `Bearer ${token}`
-             }
-           }
-         );
- 
-         if (permisosResponse.status === 200) {
-           const permisos = permisosResponse.data.map(p => ({
-             idobjeto: p.idobjeto,
-             objeto: p.objeto,
-             idmodulo: p.idmodulo,
-             consultar: p.consultar,
-             insertar: p.insertar,
-             actualizar: p.actualizar,
-           }));
- 
-           setPermissions(permisos); // Guardar en contexto y localStorage
-         } 
+        const permisosResponse = await axios.get(
+          `${process.env.REACT_APP_API_URL}/permisos/${idrol}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        if (permisosResponse.status === 200) {
+          const permisos = permisosResponse.data.map(p => ({
+            idobjeto: p.idobjeto,
+            objeto: p.objeto,
+            idmodulo: p.idmodulo,
+            consultar: p.consultar,
+            insertar: p.insertar,
+            actualizar: p.actualizar,
+          }));
+
+          setPermissions(permisos); // Guardar en contexto y localStorage
+        }
         // Mostrar mensaje de éxito (si no es caso de sesión activa)
         Swal.fire({
           icon: yaHabiaSesion ? 'info' : 'success',
@@ -126,19 +126,28 @@ export default function SignIn() {
             timer: 6000,
           });
         } else if (error.response.status === 403) {
-          const { id, usuario } = error.response.data.user;
+          const { id, usuario, token } = error.response.data.user; // Asegúrate de recibir el token desde el backend
 
-          setUser({ id, usuario, changePasswordRequired: true });
-
+          // Guardar en localStorage
           localStorage.setItem("user", JSON.stringify({
             id,
             usuario,
             requiresPasswordChange: true
           }));
+          localStorage.setItem("token", token); // ¡IMPORTANTE! Sin esto, ProtectedRoute bloqueará el acceso
 
+          // Actualizar el contexto
+          setUser({
+            id,
+            usuario,
+            changePasswordRequired: true
+          });
+
+          // Marcar como autenticado
           sessionStorage.setItem("isAuthenticated", "true");
 
-          navigate("/dashboard");
+          // Redirigir al dashboard
+          navigate("/dashboard", { replace: true }); // Usa replace para evitar problemas de navegación
         } else {
           alert("Error en la autenticación. Inténtelo de nuevo.");
         }

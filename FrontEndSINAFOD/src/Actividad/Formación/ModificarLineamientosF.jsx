@@ -583,16 +583,12 @@ const ModificarLineamientos = () => {
     return (
         <Dashboard>
             <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} size={10.7} sm={8}>
-                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                            Actualizar Lineamientos de Formación
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        sm={4}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                    <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                        Actualizar Lineamientos de Formación
+                    </Typography>
+
+                    <Box
                         sx={{ display: "flex", justifyContent: "flex-end" }}
                     >
                         <Button
@@ -605,8 +601,8 @@ const ModificarLineamientos = () => {
                         >
                             Cerrar
                         </Button>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Box>
 
                 <Grid container spacing={5} mt={2}>
                     <Grid item xs={12} size={6}>

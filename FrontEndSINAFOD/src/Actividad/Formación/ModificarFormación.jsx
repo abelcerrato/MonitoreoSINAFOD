@@ -390,7 +390,7 @@ const ModificarFormacion = () => {
                                 variant="contained"
                                 sx={{ backgroundColor: color.primary.azul, mr: 3, height: "40px" }}
                                 startIcon={<Groups2OutlinedIcon />}
-                                onClick={() => navigate("/Participantes", { state: { formacioninvest: formData.formacioninvest } })}
+                                onClick={() => navigate(`/Participantes/${id}`, { state: { formacioninvest: formData.formacioninvest } })}
                             >
                                 Participantes
                             </Button>

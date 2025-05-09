@@ -108,25 +108,28 @@ const Usuario = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                            Registro de Usuarios
+                        </Typography>
 
-                    <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                        Registro de Usuarios
-                    </Typography>
+                        <Box
 
-                    <Box
-
-                        sx={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderColor: color.primary.rojo,
-                                color: color.primary.rojo,
-                            }}
-                            onClick={() => handleRedirect()}
+                            sx={{ display: "flex", justifyContent: "flex-end" }}
                         >
-                            Cerrar
-                        </Button>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    borderColor: color.primary.rojo,
+                                    color: color.primary.rojo,
+                                }}
+                                onClick={() => handleRedirect()}
+                            >
+                                Cerrar
+                            </Button>
+
+                        </Box>
+
 
                     </Box>
                     <Grid container spacing={2} sx={{ marginTop: 2 }}>

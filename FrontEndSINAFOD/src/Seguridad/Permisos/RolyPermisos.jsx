@@ -47,6 +47,7 @@ const CreateRole = () => {
 
                 setModulos(modulosRes.data);
                 setObjetos(objetosRes.data);
+                console.log(modulosRes.data);
 
                 // Inicializar permisos
                 setFormData(prev => ({
@@ -290,7 +291,7 @@ const CreateRole = () => {
                         margin="normal"
                     />
 
-                    <FormControl fullWidth  sx={{ mt: 2 }}>
+                    <FormControl fullWidth sx={{ mt: 2 }}>
                         <InputLabel>Estado</InputLabel>
                         <Select
                             name="estado"
@@ -363,9 +364,12 @@ const CreateRole = () => {
 
                 {objetosPorModulo.map((grupo) => (
                     <Accordion key={grupo.idmodulo}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <AccordionSummary component="div" expandIcon={<ExpandMoreIcon />}>
                             <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                                 <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>{grupo.modulo}</Typography>
+                               
+                               
+                                
                                 <IconButton
                                     size="small"
                                     onClick={(e) => {

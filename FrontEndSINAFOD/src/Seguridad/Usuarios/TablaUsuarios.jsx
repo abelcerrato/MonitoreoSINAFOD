@@ -144,17 +144,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
                         >
                             Crear Usuario
                         </Button>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderColor: color.primary.rojo,
-                                color: color.primary.rojo,
-                                marginLeft: 2,
-                            }}
-                            onClick={() => handleRedirect()}
-                        >
-                            Cerrar
-                        </Button>
+                   
                     </Box>
 
                     <DataGrid
