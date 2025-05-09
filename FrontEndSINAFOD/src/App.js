@@ -135,7 +135,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SignIn />} />
-
+ <Route
+              path="/Participantes/:id"
+              element={
+                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
+                  <Participantes />
+                </PermissionValidator>
+              }
+            />
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -209,14 +216,7 @@ function App() {
             />
 
             {/* Participantes */}
-            <Route
-              path="/Participantes"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
-                  <Participantes />
-                </PermissionValidator>
-              }
-            />
+           
             <Route
               path="/Modificar_Participante/:id"
               element={

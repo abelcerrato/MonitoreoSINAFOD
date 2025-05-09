@@ -56,8 +56,8 @@ export const getCapParticipanteIdInvestC = async (req, res) => {
 
 export const postCapParticipanteC = async (req, res) => {
     try {
-        const { idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos, 
+        const {idinvestigacioncap} = req.params
+        const { ipioced, creadopor, idnivelesacademicos, idgradosacademicos, 
             CicloAcademico, sexo, añosdeservicio, tipoadministracion, codigodered,
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body
         console.log(req.body);

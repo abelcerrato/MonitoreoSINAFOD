@@ -26,12 +26,14 @@ import { useUser } from "../../Components/UserContext";
 
 import Swal from 'sweetalert2';
 
+import { QRCodeCanvas } from 'qrcode.react';
 
 
 
 const Formacion = () => {
     const { user } = useUser();
     const location = useLocation();
+       const [qrUrl, setQrUrl] = useState(null)
     const [investCapId, setInvestCapId] = useState(null);
     const [NivelEducativo, setNivelEducativo] = useState([]);
     const [errorM, setErrorM] = useState("");
@@ -335,8 +337,10 @@ const Formacion = () => {
 
             console.log("Datos que envio", formData);
 
-            // Redirigir a Participantes con el ID
-            navigate("/Participantes", { state: { investCap: idToUse, formacioninvest: formData.formacioninvest } });
+            // Redirigir a Participantes con el ID  navigate(`/Participantes/${idToUse}`, { state: { investCap: idToUse, formacioninvest: formData.formacioninvest } });
+                      const qrLink = `http://localhost:3000/Participantes/${idToUse}`;
+            setQrUrl(qrLink);  // <- guarda la URL en estado para mostrar QR
+
 
         } catch (error) {
             console.error("Error al guardar los datos", error);
@@ -749,6 +753,13 @@ const Formacion = () => {
                     </Grid>
                     <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
 
+            {qrUrl && (
+                <div style={{ marginTop: '20px' }}>
+                    <h3>Escanea este QR:</h3>
+                    <QRCodeCanvas value={qrUrl} size={200} />
+                    <p>{qrUrl}</p>
+                </div>
+            )}
 
                         <Button
                             variant="contained"
