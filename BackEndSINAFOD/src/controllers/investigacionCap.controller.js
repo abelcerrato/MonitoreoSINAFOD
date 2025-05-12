@@ -52,10 +52,10 @@ export const posInvestigacionCapC = async (req, res) => {
         estado, creadopor, idnivelesacademicos, cicloacademico,
         tipoactividad, existeconvenio, institucionconvenio,
         plataforma, socializaron, costo } = req.body
-    console.log("datos",req.body);
+    console.log("datos", req.body);
 
     try {
-       const usuario = creadopor;
+        const usuario = creadopor;
 
         const CicloResponse = await getCicloAcademicoM(cicloacademico);
         let idciclosacademicos = null;
@@ -93,7 +93,7 @@ export const putInvestigacionCapC = async (req, res) => {
 
     try {
 
-     const usuario = modificadopor;
+        const usuario = modificadopor;
 
 
         const CicloResponse = await getCicloAcademicoM(cicloacademico);
@@ -372,7 +372,7 @@ export const postLineamientosC = async (req, res) => {
         .join('-');
 
     try {
-       const usuario = creadopor;
+        const usuario = creadopor;
 
 
         // 2. Validar archivos
@@ -664,15 +664,8 @@ export const putLineamientosC = async (req, res) => {
         .join('-');
 
     try {
-        // 1. Validar usuario (tu código actual está bien)
-        const userResponse = await getUsuarioIdM(modificadopor);
-        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuario no encontrado o sin ID válido'
-            });
-        }
-        const usuario = userResponse[0].id;
+
+        const usuario = modificadopor;
 
         // 2. Validar archivos (tu código actual está bien)
         for (const fieldName in files) {

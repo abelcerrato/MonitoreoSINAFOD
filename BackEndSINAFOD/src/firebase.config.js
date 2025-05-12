@@ -19,7 +19,7 @@ try {
     // For local development: use JSON file
     const __dirname = dirname(fileURLToPath(import.meta.url));
     serviceAccount = JSON.parse(
-      readFileSync(join(__dirname, './firebase-credenciales-local.json'))
+      readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-c2060cd83f.json'))
     );
   }
 

@@ -197,7 +197,6 @@ const LineamientosF = () => {
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
         showCancelButton: true,
-        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
         confirmButtonText: 'Sí, Registar',

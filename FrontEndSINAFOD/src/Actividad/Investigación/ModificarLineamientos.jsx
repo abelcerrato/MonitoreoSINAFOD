@@ -60,7 +60,7 @@ const LineamientosI = () => {
         monitoreoyevaluacionurl: null,
         aplicacionevaluacionurl: null,
     });
-  
+
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewContent, setPreviewContent] = useState(null);
     const [currentPreviewField, setCurrentPreviewField] = useState(null);
@@ -395,7 +395,7 @@ const LineamientosI = () => {
 
         const getDisplayName = (filePath) => {
             if (!filePath) return "";
-            return filePath.split("/").pop().split("-").slice(4).join("-");
+            return filePath.split("/").pop().split("-").slice(3).join("-");
         };
 
         return (
