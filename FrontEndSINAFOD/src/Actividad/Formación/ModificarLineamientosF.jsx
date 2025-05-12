@@ -352,7 +352,7 @@ const ModificarLineamientos = () => {
 
         const getDisplayName = (filePath) => {
             if (!filePath) return "";
-            return filePath.split("/").pop().split("-").slice(4).join("-");
+            return filePath.split("/").pop().split("-").slice(3).join("-");
         };
 
 
