@@ -157,7 +157,7 @@ const RolesTable = () => {
     <Dashboard>
       <Box component={Paper} sx={{ p: 5 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: color.primary.azul }}>
+          <Typography variant="h4"  sx={{ fontWeight: 'bold', color: color.primary.azul }}>
             Roles y Permisos
           </Typography>
           <Button

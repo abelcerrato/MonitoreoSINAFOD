@@ -341,25 +341,25 @@ const Investigacion = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-             <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                           Registro de Datos sobre la Investigación
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                  onClick={() => navigate("/dashboard")}
-              >
-                Cerrar
-              </Button>
-            </Grid>
-          </Grid>
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                                Registro de Datos sobre la Investigación
+                            </Typography>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    borderColor: color.primary.rojo,
+                                    color: color.primary.rojo,
+                                }}
+                                onClick={() => navigate("/dashboard")}
+                            >
+                                Cerrar
+                            </Button>
+                        </Grid>
+                    </Grid>
 
                     <Grid container spacing={2} mt={2}>
                         <Grid size={{ xs: 12, md: 6 }}>

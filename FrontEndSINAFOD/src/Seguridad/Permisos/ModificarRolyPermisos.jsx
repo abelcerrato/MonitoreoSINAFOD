@@ -283,7 +283,7 @@ const EditRole = () => {
     return (
         <Dashboard>
             <Box component={Paper} sx={{ p: 5 }}>
-                <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: color.primary.azul, mb: 3 }}>
+                <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: color.primary.azul, mb: 3 }}>
                     Editar Rol: {formData.rol}
                 </Typography>
                 <Box sx={{ mb: 3 }}>

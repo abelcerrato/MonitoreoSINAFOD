@@ -45,9 +45,6 @@ const Usuario = () => {
 
 
     const navigate = useNavigate();
-    const handleRedirect = () => {
-        navigate("/Seguridad/Usuarios");
-    };
 
 
 
@@ -108,32 +105,27 @@ const Usuario = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                            Registro de Usuarios
-                        </Typography>
-
-                        <Box
-
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                                Registro de Usuarios
+                            </Typography>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <Button
                                 variant="outlined"
                                 sx={{
                                     borderColor: color.primary.rojo,
                                     color: color.primary.rojo,
                                 }}
-                                onClick={() => handleRedirect()}
+                                onClick={() => navigate("/dashboard")}
                             >
                                 Cerrar
                             </Button>
-
-                        </Box>
-
-
-                    </Box>
+                        </Grid>
+                    </Grid>
                     <Grid container spacing={2} sx={{ marginTop: 2 }}>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 label="Nombre"
                                 name="nombre"
@@ -142,7 +134,7 @@ const Usuario = () => {
                                 fullWidth
                             />
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
 
                             <TextField
                                 label="Correo Electrónico"
@@ -152,7 +144,7 @@ const Usuario = () => {
                                 fullWidth
                             />
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 label="Usuario"
                                 name="usuario"
@@ -161,7 +153,7 @@ const Usuario = () => {
                                 fullWidth
                             />
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
 
                             <FormControl fullWidth >
                                 <InputLabel id="demo-simple-select-label">Rol</InputLabel>

@@ -269,7 +269,7 @@ const CreateRole = () => {
     return (
         <Dashboard>
             <Box component={Paper} sx={{ p: 5 }}>
-                <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: color.primary.azul, mb: 3 }}>
+                <Typography variant="h4"  sx={{ fontWeight: 'bold', color: color.primary.azul, mb: 3 }}>
                     Crear Nuevo Rol
                 </Typography>
                 <Box sx={{ mb: 3, mt: 2 }}>

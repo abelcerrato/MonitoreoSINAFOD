@@ -358,6 +358,7 @@ const ModificarLineamientos = () => {
 
         return (
             <Grid size={{ xs: 12, md: 6 }}>
+
                 <Typography variant="h6" gutterBottom>
                     {label}
                 </Typography>
@@ -440,7 +441,8 @@ const ModificarLineamientos = () => {
                                     </IconButton>
                                 </Grid>
                             </Grid>
-                        </Grid></Grid>
+                        </Grid>
+                    </Grid>
                 )}
             </Grid>
         );

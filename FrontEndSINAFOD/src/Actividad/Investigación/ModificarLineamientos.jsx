@@ -399,7 +399,7 @@ const LineamientosI = () => {
         };
 
         return (
-            <Grid item xs={12} size={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h6" gutterBottom>
                     {label}
                 </Typography>
@@ -419,69 +419,78 @@ const LineamientosI = () => {
                 </Button>
 
                 {(existingFile || newFile) && (
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            mt: 1,
-                            p: 1,
-                            backgroundColor: "#f5f5f5",
-                            borderRadius: 1,
-                        }}
-                    >
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                mr: 2,
-                                cursor: "pointer",
-                                "&:hover": {
-                                    textDecoration: "underline",
-                                    color: color.primary.azul,
-                                },
-                            }}
-                            onClick={() => handlePreview(existingFile || newFile, fieldName)}
-                        >
-                            {existingFile ? getDisplayName(existingFile) : newFile.name}
-                        </Typography>
+                    <Grid sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mt: 1,
+                        p: 1,
+                        backgroundColor: '#f5f5f5',
+                        borderRadius: 1
+                    }}>
+                        <Grid size={{ xs: 12, md: 12 }}>
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    mr: 2,
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        textDecoration: 'underline',
+                                        color: color.primary.azul
+                                    }
+                                }}
+                                onClick={() => handlePreview(existingFile || newFile, fieldName)}
+                            >
+                                {existingFile ? getDisplayName(existingFile) : newFile.name}
+                            </Typography>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid container spacing={2} sx={{ display: "flex", justifyContent: "flex-end" }} >
+                                <Grid>
+                                    <IconButton
+                                        onClick={() => handlePreview(existingFile || newFile, fieldName)}
 
-                        <IconButton
-                            onClick={() => handlePreview(existingFile || newFile, fieldName)}
-                            size="small"
-                            sx={{ ml: "auto", color: color.primary.azul }}
-                        >
-                            <VisibilityIcon />
-                        </IconButton>
+                                        size="small"
+                                        sx={{ ml: 'auto', color: color.primary.azul }}
+                                    >
+                                        <VisibilityIcon />
+                                    </IconButton>
+                                </Grid>
+                                <Grid>
+                                    <IconButton
+                                        onClick={() => handleDownload(existingFile)}
+                                        sx={{ color: color.primary.azul }}
+                                        size="small"
+                                    >
+                                        <DownloadIcon />
+                                    </IconButton>
+                                </Grid>
+                                <Grid>
+                                    <IconButton
+                                        color="error"
+                                        size="small"
+                                        onClick={() => {
+                                            if (existingFile) {
+                                                handleDeleteFile(fieldName);
+                                            } else {
+                                                setFormData((prev) => ({ ...prev, [fieldName]: null }));
+                                            }
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
 
-                        <IconButton
-                            onClick={() => handleDownload(existingFile)}
-                            sx={{ color: color.primary.azul }}
-                            size="small"
-                        >
-                            <DownloadIcon />
-                        </IconButton>
-
-                        <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => {
-                                if (existingFile) {
-                                    handleDeleteFile(fieldName);
-                                } else {
-                                    setFormData((prev) => ({ ...prev, [fieldName]: null }));
-                                }
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Box>
                 )}
             </Grid>
         );
     };
     return (
         <Dashboard>
-            <Paper sx={{ padding: 3, marginBottom: 3 }}>
+            <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
                 <Grid
                     item
                     xs={12}
@@ -500,15 +509,27 @@ const LineamientosI = () => {
                     </Button>
                 </Grid>
 
-                <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                                Modificar Lineamientos para Investigación
-                            </Typography>
-                        </Grid>
+                <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            color: color.primary.azul,
+                            fontSize: {
+                                xs: '1.5rem',
+                                sm: '2rem',
+                                md: '2.5rem',
+                                lg: '2rem',
+                            },
+                        }}
+                    >
+                        Registro de Lineamientos para Investigación
+                    </Typography>
 
-                        <Grid item xs={12} size={6}>
+                    <Grid container spacing={5} mt={2}>
+
+
+
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Título del Proyecto</Typography>
                             <TextField
                                 fullWidth
@@ -524,12 +545,24 @@ const LineamientosI = () => {
                         )}
                     </Grid>
                 </Paper>
-                <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
+                <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            color: color.primary.azul,
+                            fontSize: {
+                                xs: '1.5rem',
+                                sm: '2rem',
+                                md: '2.5rem',
+                                lg: '2rem',
+                            },
+                        }}
+                    >
+                        Documento de Monitoreo y Evaluación
+                    </Typography>
                     <Grid container spacing={2}>
 
-                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                            Monitoreo y Seguimiento de la Investigación
-                        </Typography>
+
 
                         {renderFileField(
                             "monitoreoyevaluacionurl",

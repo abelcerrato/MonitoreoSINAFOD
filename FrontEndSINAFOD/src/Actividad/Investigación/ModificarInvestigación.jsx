@@ -360,42 +360,27 @@ const Investigacion = () => {
                     </Typography>
 
                     <Grid container spacing={1} sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                        <Grid
-                            item
-                            xs={12}
-                            sm={3}
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
+                        <Grid>
                             <Button
                                 variant="contained"
-                                sx={{ backgroundColor: color.primary.azul, mr: 3, height: "40px" }}
+                                sx={{ backgroundColor: color.primary.azul }}
                                 startIcon={<Groups2OutlinedIcon />}
                                 onClick={() => navigate("/Participantes", { state: { formacioninvest: formData.formacioninvest } })}
                             >
                                 Participantes
                             </Button>
                         </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            sm={3}
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
+                        <Grid>
                             <Button
                                 variant="contained"
-                                sx={{ backgroundColor: color.primary.azul, mr: 3, height: "40px" }}
+                                sx={{ backgroundColor: color.primary.azul }}
                                 startIcon={<ChecklistIcon />}
                                 onClick={() => navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`)}
                             >
                                 Lineamientos
                             </Button>
                         </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            sm={3}
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
+                        <Grid>
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -409,7 +394,7 @@ const Investigacion = () => {
                         </Grid>
                     </Grid>
                     <Grid container spacing={5} mt={2}>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Título del Proyecto
                             </Typography>
@@ -423,7 +408,7 @@ const Investigacion = () => {
                             />
 
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoactividad} >
                                 <Select
@@ -439,7 +424,7 @@ const Investigacion = () => {
                         </Grid>
                         {formData.tipoactividad === "Externa" && (
                             <>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Nombre de la Institución Asociada</Typography>
                                     <TextField
                                         fullWidth
@@ -448,7 +433,7 @@ const Investigacion = () => {
                                         onChange={handleChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Se Tiene Convenio la Institución Asociada</Typography>
                                     <FormControl fullWidth >
                                         <Select
@@ -464,7 +449,7 @@ const Investigacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Presupuesto
                             </Typography>
@@ -475,10 +460,10 @@ const Investigacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Duración</Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Años"
@@ -491,7 +476,7 @@ const Investigacion = () => {
                                         helperText={fieldErrors.año ? "Por favor ingresa un número válido para el año." : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Meses"
@@ -505,7 +490,7 @@ const Investigacion = () => {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} size={2}>
+                                <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Días"
@@ -518,7 +503,7 @@ const Investigacion = () => {
                                         helperText={fieldErrors.dia ? "Por favor ingresa un número válido para el día." : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={4}>
+                                <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         variant="outlined"
                                         label="(Año-Mes-Día)"
@@ -533,7 +518,7 @@ const Investigacion = () => {
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Población Objetivo
                             </Typography>
@@ -545,7 +530,7 @@ const Investigacion = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nivel Educativo
                             </Typography>
@@ -568,7 +553,7 @@ const Investigacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha Inicio</Typography>
                             <TextField
                                 fullWidth
@@ -580,7 +565,7 @@ const Investigacion = () => {
                                 helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error 
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha de Finalización</Typography>
                             <TextField
                                 fullWidth
@@ -595,7 +580,7 @@ const Investigacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Ubicación</Typography>
                             <TextField
                                 fullWidth
@@ -607,7 +592,7 @@ const Investigacion = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select
@@ -621,7 +606,7 @@ const Investigacion = () => {
                                 {fieldErrors.socializaron && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Observación</Typography>
                             <TextField
                                 fullWidth
