@@ -1,7 +1,8 @@
 import express from "express";
 import {PORT} from './config.js'
 import userRoutes from './routes/ms_usuarios.routes.js'
-import InvestCap from "./routes/investigacionCap.routes.js";
+import Investigacion from "./routes/investigacion.routes.js";
+import Formacion from "./routes/formacion.routes.js";
 import Departamentos from "./routes/departamentos.routes.js";
 import Municipios from "./routes/municipos.routes.js"
 import CapacitacionP from "./routes/CapParticipante.routes.js";
@@ -27,7 +28,8 @@ app.use(cors());
 
 app.use(express.json())
 app.use(userRoutes)
-app.use(InvestCap)
+app.use(Investigacion)
+app.use(Formacion)
 app.use(Departamentos)
 app.use(Municipios)
 app.use(CapacitacionP)

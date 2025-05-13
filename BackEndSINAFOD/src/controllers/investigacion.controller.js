@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import { pool } from '../db.js'
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
-import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacionCap.models.js";
+import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacion.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
 //-----------------------------------------------------------------------------------------------------------
