@@ -390,7 +390,7 @@ const ModificarFormacion = () => {
                                 variant="contained"
                                 sx={{ backgroundColor: color.primary.azul, mr: 3, height: "40px" }}
                                 startIcon={<Groups2OutlinedIcon />}
-                                onClick={() => navigate(`/Participantes/${id}`, { state: { formacioninvest: formData.formacioninvest } })}
+                                onClick={() => navigate(`/Participantes/${id}`, { state: { investCap: id, formacioninvest: formData.formacioninvest } })}
                             >
                                 Participantes
                             </Button>
@@ -429,7 +429,7 @@ const ModificarFormacion = () => {
                         </Grid>
                     </Grid>
                     <Grid container spacing={5} mt={2}>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nombre de la Formación
                             </Typography>
@@ -451,7 +451,7 @@ const ModificarFormacion = () => {
                                 </Typography>
                             )}
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿La Formación Es Interna o Externa?</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoactividad}>
                                 <Select
@@ -471,7 +471,7 @@ const ModificarFormacion = () => {
                         </Grid>
                         {formData.tipoactividad === "Externa" && (
                             <>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Nombre de la Institución Asociada</Typography>
                                     <TextField
                                         fullWidth
@@ -480,7 +480,7 @@ const ModificarFormacion = () => {
                                         onChange={handleChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Se Tiene Convenio la Institución Asociada</Typography>
                                     <FormControl fullWidth >
                                         <Select
@@ -496,7 +496,7 @@ const ModificarFormacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Institución Responsable
                             </Typography>
@@ -509,7 +509,7 @@ const ModificarFormacion = () => {
                                 helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Responsable de Firmas</Typography>
                             <TextField
                                 fullWidth
@@ -520,7 +520,7 @@ const ModificarFormacion = () => {
                                 helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Ambito de Formación</Typography>
                             <TextField
                                 fullWidth
@@ -531,7 +531,7 @@ const ModificarFormacion = () => {
                                 helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Tipo de Formación</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoformacion}>
                                 <Select
@@ -547,7 +547,7 @@ const ModificarFormacion = () => {
                                 {fieldErrors.tipoformacion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Modalidad</Typography>
                             <FormControl fullWidth error={fieldErrors.modalidad}>
                                 <Select
@@ -563,7 +563,7 @@ const ModificarFormacion = () => {
                             </FormControl>
                         </Grid>
                         {(formData.modalidad === "Online" || formData.modalidad === "Híbrido") && (
-                            <Grid item xs={12} size={6} sm={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="subtitle1">Plataforma en la que se Relizara la Actividad</Typography>
                                 <TextField
                                     fullWidth
@@ -575,11 +575,10 @@ const ModificarFormacion = () => {
                                 />
                             </Grid>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Duración</Typography>
-
                             <Grid container spacing={2}>
-                                <Grid item xs={12} size={4}>
+                                <Grid  size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Horas"
@@ -592,7 +591,7 @@ const ModificarFormacion = () => {
                                         helperText={fieldErrors.horas || fieldErrors.minutos}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={4}>
+                                <Grid  size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Minutos"
@@ -607,7 +606,7 @@ const ModificarFormacion = () => {
                                     />
                                     {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                                 </Grid>
-                                <Grid item xs={12} size={4}>
+                                <Grid  size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="(HH:MM)"
@@ -621,7 +620,7 @@ const ModificarFormacion = () => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Estado</Typography>
                             <FormControl fullWidth error={fieldErrors.estado}>
                                 <Select
@@ -638,7 +637,7 @@ const ModificarFormacion = () => {
                                 {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Cargo a la que va dirigido
                             </Typography>
@@ -651,7 +650,7 @@ const ModificarFormacion = () => {
                                 helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nivel Educativo
                             </Typography>
@@ -674,7 +673,7 @@ const ModificarFormacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Ciclo Educativo
                             </Typography>
@@ -698,7 +697,7 @@ const ModificarFormacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha Inicio</Typography>
                             <TextField
                                 fullWidth
@@ -710,7 +709,7 @@ const ModificarFormacion = () => {
                                 helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha de Finalización</Typography>
                             <TextField
                                 fullWidth
@@ -725,7 +724,7 @@ const ModificarFormacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Cantidad de Participantes Programados
                             </Typography>
@@ -741,7 +740,7 @@ const ModificarFormacion = () => {
                         </Grid>
                         {(formData.modalidad === "Presencial" || formData.modalidad === "Híbrido") && (
                             <>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Espacio Físico</Typography>
                                     <TextField
                                         fullWidth
@@ -752,7 +751,7 @@ const ModificarFormacion = () => {
                                         helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Dirección</Typography>
                                     <TextField
                                         fullWidth
@@ -765,7 +764,7 @@ const ModificarFormacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Zona</Typography>
                             <FormControl fullWidth error={fieldErrors.zona}>
                                 <Select
@@ -779,7 +778,7 @@ const ModificarFormacion = () => {
                                 {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron || ""} onChange={handleChange}>
@@ -793,7 +792,7 @@ const ModificarFormacion = () => {
                                 )}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Observación</Typography>
                             <TextField
                                 fullWidth

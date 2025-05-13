@@ -69,7 +69,7 @@ const FormularParticipantes = () => {
     municipioced: "",
     departamentoced: "",
     tipoadministracion: "Gubernamental",
-    creadopor: user,
+    creadopor: user.id,
   });
 
   const limpiarCampos = () => {
@@ -108,7 +108,6 @@ const FormularParticipantes = () => {
   const handleSave = async () => {
     const requiredFields = [
       "identificacion",
-      "codigosace",
       "nombre",
       "funcion",
       "sexo",
@@ -153,7 +152,7 @@ const FormularParticipantes = () => {
       }, {});
     };
     try {
-      //console.log("formData", formData);   
+      console.log("formData", formData);
       const transformedFormData = transformFormData(formData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/CapacitacionP/${investCap}`,
@@ -446,18 +445,18 @@ const FormularParticipantes = () => {
                   : "Registro de Participantes"}
               </Typography>
             </Grid>
-            <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: color.primary.rojo,
-                  color: color.primary.rojo,
-                }}
-                onClick={() => handleRedirect()}
-              >
-                Cerrar
-              </Button>
-            </Grid>
+            {/* <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              variant="outlined"
+              sx={{
+                borderColor: color.primary.rojo,
+                color: color.primary.rojo,
+              }}
+              onClick={() => handleRedirect()}
+            >
+              Cerrar
+            </Button>
+          </Grid> */}
 
           </Grid>
           <TabContext value={value}>
@@ -541,7 +540,7 @@ const FormularParticipantes = () => {
                       onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
                     >
                       <FormControlLabel value="Mujer" control={<Radio />} label="Mujer" />
-                      <FormControlLabel value="Hombre" control={<Radio />} label="Hombre" />
+                      <FormControlLabel value="Masculino " control={<Radio />} label="Hombre" />
                     </RadioGroup>
                     {fieldErrors.sexo && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>

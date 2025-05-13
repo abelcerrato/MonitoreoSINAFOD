@@ -19,6 +19,7 @@ import ActualizarFormacion from './Actividad/Formación/ModificarFormación';
 
 
 import Participantes from './Participantes/FormularioParticipantes';
+import FormularioExterno from './Participantes/FormularioExterno';
 import ModificarParticipante from './Participantes/ModificarParticipantes';
 import ListadoParticipantes from './Reportería/ListadoParticipantes';
 import ListadoActividad from './Reportería/ListadoCapacitaciones';
@@ -135,14 +136,16 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SignIn />} />
- <Route
-              path="/Participantes/:id"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
-                  <Participantes />
-                </PermissionValidator>
-              }
-            />
+
+          <Route
+            path="/Formulario-De-Participante/:id"
+            element={
+
+              <FormularioExterno />
+
+            }
+          />
+
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -216,7 +219,14 @@ function App() {
             />
 
             {/* Participantes */}
-           
+            <Route
+              path="/Participantes/:id"
+              element={
+                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
+                  <Participantes />
+                </PermissionValidator>
+              }
+            />
             <Route
               path="/Modificar_Participante/:id"
               element={
