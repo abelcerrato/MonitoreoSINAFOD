@@ -1,6 +1,6 @@
 
 import {Router} from "express";
-import { getInvestigacionCapC, getInvestigacionCapIdInvC, posInvestigacionCapC, postLineamientosC, putInvestigacionCapC, putLineamientosC, upload, uploadLineamientos,  } from "../controllers/investigacionCap.controller.js";
+import { getInvestigacionCapC, getInvestigacionCapIdInvC, posInvestigacionCapC, postLineamientosC, putInvestigacionCapC, putLineamientosC, upload, uploadLineamientos,  } from "../controllers/investigacion.controller.js";
 const router=Router();
 
 
