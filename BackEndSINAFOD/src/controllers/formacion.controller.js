@@ -46,14 +46,14 @@ export const getIdFormacionC = async (req, res) => {
 export const postFormacionC = async (req, res) => {
     const { formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion,
         modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal,
-        participantesprog, espaciofisico, direccion, zona, socializaron, observacion } = req.body
+        participantesprog, espaciofisico, direccion, zona, socializaron, observacion, creadopor } = req.body
     console.log("datos", req.body);
 
     try {
 
         const formacionP = await postFormacionM(formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion,
             modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal,
-            participantesprog, espaciofisico, direccion, zona, socializaron, observacion
+            participantesprog, espaciofisico, direccion, zona, socializaron, observacion, creadopor
         )
 
         res.json({ message: "Formacion agregada exitiosamente", id: formacionP.id });
@@ -71,11 +71,11 @@ export const putFormacionC = async (req, res) => {
     const { id } = req.params;
     const {formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                participantesprog, espaciofisico, direccion, zona, socializaron, observacion } = req.body
+                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, modificadopor } = req.body
     try {
         const formacionP = await putFormacionM(formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, id)
+                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, modificadopor, id)
 
         res.json({ message: "Formacion actualizada exitosamente ", user: formacionP });
     } catch (error) {
@@ -115,9 +115,7 @@ const ALLOWED_MIME_TYPES = [
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export const postLineamientosFormacionC = async (req, res) => {
-    const {
-        criteriosfactibilidad, requisitostecnicos,  criterioseticos, creadopor
-    } = req.body;
+    const {formacion, criteriosfactibilidad, requisitostecnicos,  criterioseticos, creadopor } = req.body;
 
     const files = req.files || {};
     const d = new Date();

@@ -57,18 +57,18 @@ export const getIdFormacionM = async (id) => {
 
 export const postFormacionM = async (formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-participantesprog, espaciofisico, direccion, zona, socializaron, observacion) => {
+participantesprog, espaciofisico, direccion, zona, socializaron, observacion, creadopor) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO formacion (formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                                     modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                                    participantesprog, espaciofisico, direccion, zona, socializaron, observacion) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27) 
+                                    participantesprog, espaciofisico, direccion, zona, socializaron, observacion, creadopor, fechacreacion) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, CURRENT_TIMESTAMP) 
             RETURNING id`,
             [
                 formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                participantesprog, espaciofisico, direccion, zona, socializaron, observacion
+                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, creadopor
             ])
 
 
@@ -85,7 +85,7 @@ participantesprog, espaciofisico, direccion, zona, socializaron, observacion) =>
 
 export const putFormacionM = async (formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, id) => {
+                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, modificadopor, id) => {
     try {
         const { rows } = await pool.query(`
             UPDATE formacion 
@@ -116,12 +116,13 @@ export const putFormacionM = async (formacion, tipoactividad, existeconvenio, in
                 direccion=$24, 
                 zona=$25, 
                 socializaron=$26, 
-                observacion=$27
-            WHERE id=$28
+                observacion=$27,
+                modificadopor=$28
+            WHERE id=$29
             RETURNING *`,
             [formacion, tipoactividad, existeconvenio, institucionconvenio, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, 
                 modalidad, plataforma, duracion, estado, funciondirigido, prebasica, basica, media, primerciclo, segundociclo, tercerciclo, fechainicio, fechafinal, 
-                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, id])
+                participantesprog, espaciofisico, direccion, zona, socializaron, observacion, modificadopor, id])
 
         return rows[0]
     } catch (error) {

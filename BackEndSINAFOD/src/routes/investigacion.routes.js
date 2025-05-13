@@ -1,20 +1,21 @@
 
 import {Router} from "express";
-import { getInvestigacionCapC, getInvestigacionCapIdInvC, posInvestigacionCapC, postLineamientosC, putInvestigacionCapC, putLineamientosC, upload, uploadLineamientos,  } from "../controllers/investigacion.controller.js";
+import { getIdInvestigacionC, getInvestigacionC, postInvestigacionC, postLineamientosInvestigacionC, putInvestigacionC, putLineamientosInvestigacionC, uploadLineamientosInvestigacion,  } from "../controllers/investigacion.controller.js";
+import { postInvestigacionM } from "../models/investigacion.models.js";
 const router=Router();
 
 
 //---------------------------------------------------------
-//      INVESTIGACION O CAPACITACION
+//                    INVESTIGACION 
 //---------------------------------------------------------
-router.get('/investC', getInvestigacionCapC)
-router.get('/investC/:id', getInvestigacionCapIdInvC)
-router.post('/investC', posInvestigacionCapC)
-router.put('/investC/:id', putInvestigacionCapC)
+router.get('/investigacion', getInvestigacionC)
+router.get('/investigacion/:id', getIdInvestigacionC)
+router.post('/investigacion', postInvestigacionC)
+router.put('/investigacion/:id', putInvestigacionC)
 
-router.put('/lineamientos/:id', uploadLineamientos, putLineamientosC);
+router.put('/lineamientosinvestigacion/:id', uploadLineamientosInvestigacion, putLineamientosInvestigacionC);
 
-router.post('/lineamientos', uploadLineamientos, postLineamientosC);
+router.post('/lineamientosinvestigacion', uploadLineamientosInvestigacion, postLineamientosInvestigacionC);
 
 
 
