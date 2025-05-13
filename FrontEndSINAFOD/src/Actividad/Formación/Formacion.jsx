@@ -33,7 +33,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 const Formacion = () => {
     const { user } = useUser();
     const location = useLocation();
-       const [qrUrl, setQrUrl] = useState(null)
+    const [qrUrl, setQrUrl] = useState(null)
     const [investCapId, setInvestCapId] = useState(null);
     const [NivelEducativo, setNivelEducativo] = useState([]);
     const [errorM, setErrorM] = useState("");
@@ -77,10 +77,6 @@ const Formacion = () => {
 
 
     const navigate = useNavigate();
-    const handleRedirect = () => {
-        navigate("/dashboard");
-    };
-
 
 
     // Manejar cambios en campos de texto y selects
@@ -338,7 +334,7 @@ const Formacion = () => {
             console.log("Datos que envio", formData);
 
             // Redirigir a Participantes con el ID  navigate(`/Participantes/${idToUse}`, { state: { investCap: idToUse, formacioninvest: formData.formacioninvest } });
-                      const qrLink = `http://localhost:3000/Participantes/${idToUse}`;
+            const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${idToUse}`;
             setQrUrl(qrLink);  // <- guarda la URL en estado para mostrar QR
 
 
@@ -352,7 +348,7 @@ const Formacion = () => {
     return (
         <>
             <Dashboard>
-                <Paper sx={{ padding: 3, marginBottom: 3 }}>
+                <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
 
                     <Typography variant="h4" sx={{ color: color.primary.azul }}>
                         Registro de Datos sobre la Formación
@@ -367,7 +363,7 @@ const Formacion = () => {
                                 borderColor: color.primary.rojo,
                                 color: color.primary.rojo,
                             }}
-                            onClick={() => handleRedirect()}
+                         onClick={() => navigate("/dashboard")}
                         >
                             Cerrar
                         </Button>
@@ -375,7 +371,7 @@ const Formacion = () => {
 
 
                     <Grid container spacing={5} mt={2}>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nombre de la Formación
                             </Typography>
@@ -397,7 +393,7 @@ const Formacion = () => {
                                 </Typography>
                             )}
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿La Formación Es Interna o Externa?</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoactividad}>
                                 <Select
@@ -417,7 +413,7 @@ const Formacion = () => {
                         </Grid>
                         {formData.tipoactividad === "Externa" && (
                             <>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Nombre de la Institución Asociada</Typography>
                                     <TextField
                                         fullWidth
@@ -426,7 +422,7 @@ const Formacion = () => {
                                         onChange={handleChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Se Tiene Convenio la Institución Asociada</Typography>
                                     <FormControl fullWidth >
                                         <Select
@@ -442,7 +438,7 @@ const Formacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Institución Responsable
                             </Typography>
@@ -455,7 +451,7 @@ const Formacion = () => {
                                 helperText={fieldErrors.institucionresponsable ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Responsable de Firmas</Typography>
                             <TextField
                                 fullWidth
@@ -466,7 +462,7 @@ const Formacion = () => {
                                 helperText={fieldErrors.responsablefirmas ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Ambito de Formación</Typography>
                             <TextField
                                 fullWidth
@@ -477,7 +473,7 @@ const Formacion = () => {
                                 helperText={fieldErrors.ambitoformacion ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Tipo de Formación</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoformacion}>
                                 <Select
@@ -494,7 +490,7 @@ const Formacion = () => {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Modalidad</Typography>
                             <FormControl fullWidth error={fieldErrors.modalidad}>
                                 <Select
@@ -510,7 +506,7 @@ const Formacion = () => {
                             </FormControl>
                         </Grid>
                         {(formData.modalidad === "Online" || formData.modalidad === "Híbrido") && (
-                            <Grid item xs={12} size={6} sm={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Typography variant="subtitle1">Plataforma en la que se Relizara la Actividad</Typography>
                                 <TextField
                                     fullWidth
@@ -522,11 +518,11 @@ const Formacion = () => {
                                 />
                             </Grid>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Duración</Typography>
 
                             <Grid container spacing={2}>
-                                <Grid item xs={12} size={4}>
+                                <Grid size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Horas"
@@ -539,7 +535,7 @@ const Formacion = () => {
                                         helperText={fieldErrors.horas || fieldErrors.minutos}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={4}>
+                                <Grid size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Minutos"
@@ -554,7 +550,7 @@ const Formacion = () => {
                                     />
                                     {errorM && <div style={{ color: "red", marginTop: "5px" }}>{errorM}</div>}
                                 </Grid>
-                                <Grid item xs={12} size={4}>
+                                <Grid size={{ xs: 6, md: 4 }}>
                                     <TextField
                                         variant="outlined"
                                         label="(HH:MM)"
@@ -568,7 +564,7 @@ const Formacion = () => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Estado</Typography>
                             <FormControl fullWidth error={fieldErrors.estado}>
                                 <Select
@@ -585,7 +581,7 @@ const Formacion = () => {
                                 {fieldErrors.estado && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Cargo a la que va dirigido
                             </Typography>
@@ -598,7 +594,7 @@ const Formacion = () => {
                                 helperText={fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nivel Educativo
                             </Typography>
@@ -621,7 +617,7 @@ const Formacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Ciclo Educativo
                             </Typography>
@@ -645,7 +641,7 @@ const Formacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha Inicio</Typography>
                             <TextField
                                 fullWidth
@@ -657,7 +653,7 @@ const Formacion = () => {
                                 helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha de Finalización</Typography>
                             <TextField
                                 fullWidth
@@ -672,7 +668,7 @@ const Formacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Cantidad de Participantes Programados
                             </Typography>
@@ -688,7 +684,7 @@ const Formacion = () => {
                         </Grid>
                         {(formData.modalidad === "Presencial" || formData.modalidad === "Híbrido") && (
                             <>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Espacio Físico</Typography>
                                     <TextField
                                         fullWidth
@@ -699,7 +695,7 @@ const Formacion = () => {
                                         helperText={fieldErrors.espaciofisico ? "Este campo es obligatorio" : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6} sm={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Dirección</Typography>
                                     <TextField
                                         fullWidth
@@ -712,7 +708,7 @@ const Formacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Zona</Typography>
                             <FormControl fullWidth error={fieldErrors.zona}>
                                 <Select
@@ -727,7 +723,7 @@ const Formacion = () => {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron ?? ''} onChange={handleChange}>
@@ -741,7 +737,7 @@ const Formacion = () => {
                                 )}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Observación</Typography>
                             <TextField
                                 fullWidth
@@ -753,13 +749,13 @@ const Formacion = () => {
                     </Grid>
                     <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
 
-            {qrUrl && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>Escanea este QR:</h3>
-                    <QRCodeCanvas value={qrUrl} size={200} />
-                    <p>{qrUrl}</p>
-                </div>
-            )}
+                        {qrUrl && (
+                            <div style={{ marginTop: '20px' }}>
+                                <h3>Escanea este QR:</h3>
+                                <QRCodeCanvas value={qrUrl} size={200} />
+                                <p>{qrUrl}</p>
+                            </div>
+                        )}
 
                         <Button
                             variant="contained"

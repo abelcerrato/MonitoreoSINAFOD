@@ -15,6 +15,8 @@ import {
   TablePagination,
   Paper,
   Tooltip,
+  Dialog, DialogTitle, DialogContent,
+  colors
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
@@ -28,6 +30,8 @@ import CardDetalles from "./CardDetalles";
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import { DataGrid } from '@mui/x-data-grid';
 import Swal from 'sweetalert2';
+import QrCodeScannerOutlinedIcon from '@mui/icons-material/QrCodeScannerOutlined';
+import { QRCodeCanvas } from 'qrcode.react';
 
 
 function TablePaginationActions(props) {
@@ -111,6 +115,8 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [qrUrl, setQrUrl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const handleOpen = (id) => {
     setSelectedId(id);
@@ -177,6 +183,16 @@ export default function TablaActividad(isSaved, setIsSaved) {
     navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
   };
 
+  const handleOpenQrModal = (id) => {
+    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}`;
+    setQrUrl(qrLink);
+    setOpenModal(true);
+  };
+
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
 
   const columns = [
@@ -215,6 +231,13 @@ export default function TablaActividad(isSaved, setIsSaved) {
                 </Tooltip>
               </>
             )}
+            <Tooltip title="Generar QR para participantes">
+              <IconButton sx={{ color: color.primary.azul }} onClick={() => handleOpenQrModal(row.id)}>
+                <QrCodeScannerOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+
+
             <Tooltip title="Ver Detalles">
               <IconButton onClick={() => handleOpen(row.id)} color="info">
                 <RemoveRedEyeIcon />
@@ -270,6 +293,18 @@ export default function TablaActividad(isSaved, setIsSaved) {
       />
 
       <CardDetalles open={open} handleClose={() => setOpen(false)} id={selectedId} />
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+        <DialogTitle>Escanea este QR</DialogTitle>
+        <DialogContent style={{ textAlign: 'center' }}>
+          {qrUrl && (
+            <>
+              <QRCodeCanvas value={qrUrl} size={200} />
+              <p style={{ marginTop: '10px' }}>{qrUrl}</p>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
     </Paper>
   );
 }
