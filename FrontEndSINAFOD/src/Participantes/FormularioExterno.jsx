@@ -74,6 +74,7 @@ const FormularioExterno = () => {
         creadopor: null,
     });
 
+
     const limpiarCampos = () => {
         setFormData((prevState) => ({
             ...prevState,
@@ -141,6 +142,8 @@ const FormularioExterno = () => {
             });
             return;
         }
+
+
 
         try {
             console.log("formData", formData);
@@ -449,11 +452,11 @@ const FormularioExterno = () => {
         <>
             <Box
                 sx={{
-                    minHeight: '100vh',         
+                    minHeight: '100vh',              // para ocupar toda la altura de la ventana
                     display: 'flex',
-                    justifyContent: 'center',      
-                    alignItems: 'center',        
-                    backgroundColor: '#f0f2f5'     
+                    justifyContent: 'center',       // centra horizontalmente
+                    alignItems: 'center',           // centra verticalmente
+                    backgroundColor: '#f0f2f5'      // opcional: color de fondo
                 }}
             >
 
@@ -534,7 +537,7 @@ const FormularioExterno = () => {
                 <Paper sx={{ padding: 5, margin: 2, width: "80%" }} elevation={3}>
                     <Grid container spacing={2}>
 
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography sx={{
                                 color: color.primary.azul,
                                 fontWeight: 'bold',
@@ -567,7 +570,7 @@ const FormularioExterno = () => {
 
                         </Grid>
 
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1" >
                                 Por favor, complete la siguiente información, asegúrese de revisar sus respuestas antes de enviarlas.
                                 <Typography variant="subtitle1" sx={{ color: color.primary.rojo }}>
@@ -575,13 +578,13 @@ const FormularioExterno = () => {
                                 </Typography>
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1" sx={{ color: color.primary.azul, textAlign: "center" }}>
                                 Datos Generales del Participante
                             </Typography>
                         </Grid>
 
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Código SACE *</Typography>
                             <TextField
                                 fullWidth
@@ -593,7 +596,7 @@ const FormularioExterno = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Identidad*</Typography>
 
 
@@ -605,8 +608,12 @@ const FormularioExterno = () => {
                                 error={fieldErrors.identificacion}
                                 helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
                             />
+
+
+
+
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Nombre*</Typography>
                             <TextField
                                 fullWidth
@@ -617,7 +624,7 @@ const FormularioExterno = () => {
                                 helperText={fieldErrors.nombre ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <FormControl error={fieldErrors.sexo}>
                                 <Typography variant="subtitle1">Sexo*</Typography>
                                 <RadioGroup
@@ -626,13 +633,13 @@ const FormularioExterno = () => {
                                     value={formData.sexo}
                                     onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
                                 >
-                                    <FormControlLabel value="Femenino" control={<Radio />} label="Mujer" />
+                                    <FormControlLabel value="Mujer" control={<Radio />} label="Mujer" />
                                     <FormControlLabel value="Hombre" control={<Radio />} label="Hombre" />
                                 </RadioGroup>
                                 {fieldErrors.sexo && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Nivel Educativo*</Typography>
 
                             <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
@@ -647,7 +654,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Grado Académico</Typography>
                             <FormControl fullWidth>
                                 <Select
@@ -665,7 +672,7 @@ const FormularioExterno = () => {
 
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Años de Servicio*</Typography>
                             <TextField
                                 fullWidth
@@ -676,11 +683,11 @@ const FormularioExterno = () => {
                                 helperText={fieldErrors.añosdeservicio ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
                             <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Cargo que Desempeña*</Typography>
                             <TextField
                                 fullWidth
@@ -691,7 +698,7 @@ const FormularioExterno = () => {
                                 helperText={fieldErrors.funcion ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Departamento de Residencia*</Typography>
                             <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                                 <Select
@@ -712,7 +719,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.deptoresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Municipio de Residencia*</Typography>
                             <FormControl fullWidth error={fieldErrors.municipioresidencia}>
                                 <Select
@@ -732,7 +739,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.municipioresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Aldea de Residencia</Typography>
                             <FormControl fullWidth>
                                 <Select
@@ -756,12 +763,12 @@ const FormularioExterno = () => {
                     </Grid>
 
                     <Grid container spacing={2}>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1" sx={{ color: color.primary.azul, textAlign: "center", mt: 3 }}>
                                 Datos del Centro Educativo Que Representa
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Nivel Educativo que Atiende*</Typography>
                             <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                                 <Select
@@ -778,7 +785,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.idnivelesacademicos && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Grado Académico que Atiende*</Typography>
                             <FormControl fullWidth>
                                 <Select
@@ -794,7 +801,7 @@ const FormularioExterno = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Centro Educativo*</Typography>
                             <TextField
                                 fullWidth
@@ -805,7 +812,7 @@ const FormularioExterno = () => {
                                 helperText={fieldErrors.centroeducativo ? "Este campo es obligatorio" : ""}
                             />
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <FormControl fullWidth >
                                 <Typography variant="subtitle1">Tipo de Administración*</Typography>
                                 <RadioGroup
@@ -820,7 +827,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.tipoadministracion && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Zona Centro Educativo*</Typography>
                             <FormControl fullWidth error={fieldErrors.zona}>
                                 <Select name="zona" value={formData.zona} onChange={handleChange}>
@@ -830,7 +837,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.zona && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Departamento Centro Educativo*</Typography>
                             <FormControl fullWidth error={fieldErrors.departamentoced}>
                                 <Select
@@ -848,7 +855,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.departamentoced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Municipio Centro Educativo*</Typography>
                             <FormControl fullWidth error={fieldErrors.municipioced}>
                                 <Select
@@ -868,7 +875,7 @@ const FormularioExterno = () => {
                                 {fieldErrors.municipioced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={12}>
+                        <Grid size={{ xs: 12, md: 12 }}>
                             <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
                             <FormControl fullWidth>
                                 <Select
