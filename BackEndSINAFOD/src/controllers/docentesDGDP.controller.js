@@ -1,7 +1,7 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
 import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
-import { getUsuarioIdM } from "../models/user.models.js";
+import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
 
 export const getDocentesC = async (req, res) => {
@@ -151,7 +151,7 @@ export const getFiltroDocenteC = async (req, res) => {
             getParticipanteCodSACEM(filtro),
             getParticipanteIdentificacionM(filtro),
             getDocenteIdentificacionM(filtro),
-            getDocenteCodSACEM(filtro)  
+            getDocenteCodSACEM(filtro)
         ]);
 
         // Buscar el primer resultado que no esté vacío o null
@@ -177,21 +177,17 @@ export const getFiltroDocenteC = async (req, res) => {
 
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
-
+    const { idinvestigacioncap } = req.params
     const { codigosace, identificacion, nombre, correo, iddepartamento, idmunicipio, idaldea,
         sexo, institucion, institucioncodsace, idnivelesacademicos, cicloacademico, zona,
-        idinvestigacioncap, funcion, centroeducativo, departamentoced, municipioced, creadopor,
+        funcion, centroeducativo, departamentoced, municipioced, creadopor,
         idgradosacademicos, añosdeservicio, tipoadministracion, codigodered,
         deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
 
     console.log('respuesta del servidor: ', req.body);
 
 
-    const userResponse = await getUsuarioIdM(creadopor);
-    if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
-        return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
-    }
-    const usuario = userResponse[0].id;
+    const usuario = creadopor;
 
 
 
