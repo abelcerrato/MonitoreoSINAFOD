@@ -356,7 +356,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
             left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.identificacion=$1
             ORDER BY cp.id DESC
-
+            LIMIT 1
         `, [filtro])
         //console.log(rows);
         return rows;
@@ -427,7 +427,7 @@ export const getParticipanteCodSACEM = async (filtro) => {
             left join ms_usuarios as mp on cp.modificadopor = mp.id 
             WHERE cp.codigosace=$1
             ORDER BY cp.id DESC
-      
+            LIMIT 1
         `, [filtro])
         //console.log(rows);
         return rows;

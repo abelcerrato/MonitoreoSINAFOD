@@ -56,8 +56,8 @@ export const getCapParticipanteIdInvestC = async (req, res) => {
 
 export const postCapParticipanteC = async (req, res) => {
     try {
-        const { idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipioced, creadopor, idnivelesacademicos, idgradosacademicos,
+        const {idinvestigacioncap} = req.params
+        const { ipioced, creadopor, idnivelesacademicos, idgradosacademicos, 
             CicloAcademico, sexo, añosdeservicio, tipoadministracion, codigodered,
             deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body
         console.log(req.body);
@@ -68,13 +68,17 @@ export const postCapParticipanteC = async (req, res) => {
         // }
         // const municipio = muniResponse[0].id;
 
-        const usuario = creadopor;
-        /* 
-                const NivelResponse = await getNivelAcademicoM(NivelAcademico);
-                if (!NivelResponse || NivelResponse.length === 0 || !NivelResponse[0].id) {
-                    return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
-                }
-                const idnivelesacademicos = NivelResponse[0].id; */
+        const userResponse = await getUsuarioIdM(creadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
+/* 
+        const NivelResponse = await getNivelAcademicoM(NivelAcademico);
+        if (!NivelResponse || NivelResponse.length === 0 || !NivelResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const idnivelesacademicos = NivelResponse[0].id; */
 
 
         let idciclosacademicos = null; // Por defecto lo dejamos en null
@@ -123,14 +127,18 @@ export const putCapParticipanteC = async (req, res) => {
                 }
                 const departamento = deptoResponse[0].id; */
 
-        /*        const muniResponse = await getMunicipioxIdDepto(municipioced);
-               if (!muniResponse || muniResponse.length === 0 || !muniResponse[0].id) {
-                   return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
-               }
-               const municipio = muniResponse[0].id; */
+ /*        const muniResponse = await getMunicipioxIdDepto(municipioced);
+        if (!muniResponse || muniResponse.length === 0 || !muniResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const municipio = muniResponse[0].id; */
 
 
-        const usuario = modificadopor;
+        const userResponse = await getUsuarioIdM(modificadopor);
+        if (!userResponse || userResponse.length === 0 || !userResponse[0].id) {
+            return res.status(404).json({ message: "Usuario no encontrado o sin ID válido" });
+        }
+        const usuario = userResponse[0].id;
 
 
 
@@ -147,7 +155,7 @@ export const putCapParticipanteC = async (req, res) => {
 
 
         const CapParticipante = await putCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-            departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos,
+            departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos, idciclosacademicos, 
             sexo, añosdeservicio, tipoadministracion, codigodered, deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced, id)
         //res.json(CapParticipante)
         res.json({ message: "Capacitacion del participanteactualizada ", user: CapParticipante });
@@ -185,7 +193,7 @@ export const getParticipanteIdentificacionC = async (req, res) => {
 //para buscar por codigo SACE en tabla de docentesdgdp
 export const getParticipanteCodSACEC = async (req, res) => {
     try {
-        const { filtro } = req.params
+        const {filtro } = req.params
         const CapParticipante = await getParticipanteCodSACEM(filtro);
 
         if (!CapParticipante) {

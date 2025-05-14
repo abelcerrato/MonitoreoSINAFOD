@@ -4,17 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import { pool } from '../db.js'
 import { getCicloAcademicoM, getNivelAcademicoM } from "../models/Academico.models.js";
-import { getInvestigacionCapIdInvM, getInvestigacionCapM, postInvestigacionCapM, postLineamientosM, putInvestigacionCapM, putLineamientosM } from "../models/investigacionCap.models.js";
-import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
+import { getIdInvestigacionM, getInvestigacionM, postInvestigacionM, postLineamientosInvesatigacionM, putInvestigacionM, putLineamientosInvesatigacionM } from "../models/investigacion.models.js";
+
 
 //-----------------------------------------------------------------------------------------------------------
 // Obtener investigacion o capacitacion
-export const getInvestigacionCapC = async (req, res) => {
+export const getInvestigacionC = async (req, res) => {
     try {
-        const investCap = await getInvestigacionCapM();
-        res.json(investCap)
+        const invest = await getInvestigacionM();
+        res.json(invest)
     } catch (error) {
-        console.error('Error al obtener registros de investigacionCap:', error);
+        console.error('Error al obtener registros de investigacion:', error);
         res.status(500).json({ error: 'Error interno del servidor', message: error.message });
     }
 
@@ -22,17 +22,14 @@ export const getInvestigacionCapC = async (req, res) => {
 
 //-----------------------------------------------------------------------------------------------------------
 // Obtener investigacion o capacitacion por id
-export const getInvestigacionCapIdInvC = async (req, res) => {
+export const getIdInvestigacionC = async (req, res) => {
     const { id } = req.params
     try {
-
-        const investCap = await getInvestigacionCapIdInvM(id);
-
-        if (!investCap) {
+        const invest = await getIdInvestigacionM(id);
+        if (!invest) {
             return res.status(404).json({ message: "Registro no encontrado" });
         }
-
-        res.json(investCap)
+        res.json(invest)
     } catch (error) {
         console.error('Error al obtener el registro:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -42,35 +39,21 @@ export const getInvestigacionCapIdInvC = async (req, res) => {
 
 
 //-------------------------------------------------------------------------------------------------------------------------
-// Crear investigacion o capacitacion sin lineamientos
+// Crear investigacion sin lineamientos
 
-export const posInvestigacionCapC = async (req, res) => {
-    const { accionformacion, institucionresponsable, responsablefirmas,
-        ambitoformacion, tipoformacion, modalidad, formacioninvest, zona,
-        duracion, espaciofisico, funciondirigido, fechainicio,
-        fechafinal, participantesprog, participantesrecib, direccion, observacion,
-        estado, creadopor, idnivelesacademicos, cicloacademico,
-        tipoactividad, existeconvenio, institucionconvenio,
-        plataforma, socializaron, costo } = req.body
-    console.log(req.body);
+export const postInvestigacionC = async (req, res) => {
+    const { investigacion, tipoactividad, existeconvenio, institucionconvenio,
+        presupuesto, duracion, funciondirigido, prebasica, basica, media,
+        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor } = req.body
+    console.log("datos", req.body);
 
     try {
-        const usuario = creadopor // Usar el creadopor o modificadopor según lo que esté disponible
-
-        const CicloResponse = await getCicloAcademicoM(cicloacademico);
-        let idciclosacademicos = null;
-
-        if (CicloResponse && CicloResponse.length > 0 && CicloResponse[0].id) {
-            idciclosacademicos = CicloResponse[0].id;
-        }
-
-
-        const investCap = await postInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas, ambitoformacion, tipoformacion, modalidad, formacioninvest, zona, duracion, espaciofisico,
-            funciondirigido, fechainicio, fechafinal, participantesprog, participantesrecib, direccion, observacion, estado, usuario, idnivelesacademicos, idciclosacademicos,
-            tipoactividad, existeconvenio, institucionconvenio, plataforma, socializaron, costo
+        const invest = await postInvestigacionM(investigacion, tipoactividad, existeconvenio, institucionconvenio,
+            presupuesto, duracion, funciondirigido, prebasica, basica, media,
+            fechainicio, fechafinal, direccion, socializaron, observacion, creadopor
         )
 
-        res.json({ message: "Investigacion o Capacitacion agregado", id: investCap.id });
+        res.json({ message: "Investigacion  agregada exitosamente", id: invest.id });
     } catch (error) {
         console.error('Error al insertar', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -79,62 +62,39 @@ export const posInvestigacionCapC = async (req, res) => {
 
 
 //-----------------------------------------------------------------------------------------------------------
-// Actualizar investigacion o capacitacion con lineamientos
+// Actualizar investigacion con lineamientos
 // Se actualizan los lineamientos y se suben los archivos correspondientes
-export const putInvestigacionCapC = async (req, res) => {
+export const putInvestigacionC = async (req, res) => {
     const { id } = req.params;
-    const { accionformacion, institucionresponsable, responsablefirmas,
-        ambitoformacion, tipoformacion, modalidad, formacioninvest, zona,
-        duracion, espaciofisico, funciondirigido, fechainicio,
-        fechafinal, participantesprog, participantesrecib, direccion, observacion,
-        estado, modificadopor, idnivelesacademicos, cicloacademico,
-        tipoactividad, existeconvenio, institucionconvenio,
-        plataforma, socializaron, costo } = req.body
+    const { nvestigacion, tipoactividad, existeconvenio, institucionconvenio,
+        presupuesto, duracion, funciondirigido, prebasica, basica, media,
+        fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor } = req.body
 
     try {
-
-        const usuario = modificadopor // Usar el creadopor o modificadopor según lo que esté disponible
-
-        const CicloResponse = await getCicloAcademicoM(cicloacademico);
-        let idciclosacademicos = null; // Por defecto lo dejamos en null
-
-        if (CicloResponse && CicloResponse.length > 0 && CicloResponse[0].id) {
-            idciclosacademicos = CicloResponse[0].id;
-        }
-
-        const investCap = await putInvestigacionCapM(accionformacion, institucionresponsable, responsablefirmas,
-            ambitoformacion, tipoformacion, modalidad, formacioninvest, zona,
-            duracion, espaciofisico, funciondirigido, fechainicio,
-            fechafinal, participantesprog, participantesrecib, direccion, observacion,
-            estado, usuario, idnivelesacademicos, idciclosacademicos,
-            tipoactividad, existeconvenio, institucionconvenio,
-            plataforma, socializaron, costo,
-            id)
-        //res.json(investCap)
-        res.json({ message: "Investigacion o capacitacion actualizada ", user: investCap });
+        const invest = await putInvestigacionM(nvestigacion, tipoactividad, existeconvenio, institucionconvenio,
+            presupuesto, duracion, funciondirigido, prebasica, basica, media,
+            fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, id)
+        res.json({ message: "Investigacion actualizada exitosamente", user: invest });
     } catch (error) {
-        console.error('Error al actualizar la investigacion o capaciotacion: ', error);
+        console.error('Error al actualizar la investigacion: ', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 
 
 }
 
-
-
+//-----------------------------------------------------------------------------------------------------------
 
 // Configuración de multer para manejar la subida de archivos en memoria
 const storage = multer.memoryStorage();
 export const upload = multer({ storage });
 
 // Middleware para manejar la subida de archivos
-export const uploadLineamientos = upload.fields([
+export const uploadLineamientosInvestigacion = upload.fields([
     { name: 'presentoprotocolourl', maxCount: 1 },
     { name: 'monitoreoyevaluacionurl', maxCount: 1 },
     { name: 'aplicacionevaluacionurl', maxCount: 1 },
-    { name: 'criteriosfactibilidadurl', maxCount: 1 },
-    { name: 'requisitostecnicosurl', maxCount: 1 },
-    { name: 'criterioseticosurl', maxCount: 1 },
+    { name: 'divulgacionresultadosurl', maxCount: 1 },
 ]);
 
 
@@ -150,18 +110,13 @@ const ALLOWED_MIME_TYPES = [
 // Tamaño máximo de archivo (10MB)
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-export const postLineamientosC = async (req, res) => {
-    const {
-        presentoprotocolo,
-        estadoprotocolo,
-        monitoreoyevaluacion,
-        aplicacionevaluacion,
-        accionformacion,
-        creadopor,
-        formacioninvest,
-        criteriosfactibilidad,
-        requisitostecnicos,
-        criterioseticos,
+
+//-----------------------------------------------------------------------------------------------------------
+// Crear lineamientos de investigacion
+export const postLineamientosInvestigacionC = async (req, res) => {
+    const {investigacion,  presentoprotocolo, estadoprotocolo,
+        monitoreoyevaluacion, aplicacionevaluacion,  divulgacionresultados, creadopor
+        
     } = req.body;
 
     const files = req.files || {};
@@ -171,8 +126,6 @@ export const postLineamientosC = async (req, res) => {
         .join('-');
 
     try {
-
-        const usuario = creadopor;
 
         // 2. Validar archivos
         for (const fieldName in files) {
@@ -196,8 +149,10 @@ export const postLineamientosC = async (req, res) => {
             }
         }
 
+        
         // 3. Inserción inicial en BD
-        const result = await postLineamientosM(
+        const result = await postLineamientosInvesatigacionM(
+            investigacion,
             presentoprotocolo,
             null, // presentoprotocolourl
             estadoprotocolo,
@@ -205,18 +160,13 @@ export const postLineamientosC = async (req, res) => {
             null, // monitoreoyevaluacionurl
             aplicacionevaluacion,
             null, // aplicacionevaluacionurl
-            accionformacion,
-            usuario,
-            formacioninvest,
-            criteriosfactibilidad,
-            null, // criteriosfactibilidadurl
-            requisitostecnicos,
-            null, // requisitostecnicosurl
-            criterioseticos,
-            null // criterioseticosurl
+            divulgacionresultados,
+            null, // divulgacionresultadosurl
+            creadopor
+
         );
 
-        const idInvestCap = result.id;
+        const idInvest = result.id;
 
         // 4. Subir archivos a Firebase
         const fileUpdates = {};
@@ -231,7 +181,7 @@ export const postLineamientosC = async (req, res) => {
                     contentType: mimeType,
                     metadata: {
                         firebaseStorageDownloadTokens: token,
-                        uploader: usuario,
+                        uploader: creadopor,
                         uploadDate: new Date().toISOString()
                     },
                 },
@@ -245,7 +195,7 @@ export const postLineamientosC = async (req, res) => {
         for (const fieldName in files) {
             if (files[fieldName]?.[0]) {
                 const file = files[fieldName][0];
-                const filename = `${idInvestCap}_${date}-${file.originalname}`;
+                const filename = `${idInvest}_${date}-${file.originalname}`;
 
                 uploadPromises.push(
                     uploadFileToFirebase(file.buffer, filename, file.mimetype)
@@ -260,7 +210,7 @@ export const postLineamientosC = async (req, res) => {
         await Promise.all(uploadPromises);
 
         // 5. Actualizar BD con URLs
-        await putLineamientosM(
+        await putLineamientosInvesatigacionM(
             booleanUpdates.presentoprotocolo || false,
             fileUpdates.presentoprotocolourl || null,
             estadoprotocolo,
@@ -268,19 +218,15 @@ export const postLineamientosC = async (req, res) => {
             fileUpdates.monitoreoyevaluacionurl || null,
             booleanUpdates.aplicacionevaluacion || false,
             fileUpdates.aplicacionevaluacionurl || null,
-            booleanUpdates.criteriosfactibilidad || false,
-            fileUpdates.criteriosfactibilidadurl || null,
-            booleanUpdates.requisitostecnicos || false,
-            fileUpdates.requisitostecnicosurl || null,
-            booleanUpdates.criterioseticos || false,
-            fileUpdates.criterioseticosurl || null,
-            usuario,
-            idInvestCap
+            booleanUpdates.divulgacionresultados || false,
+            fileUpdates.divulgacionresultadosurl || null,
+            creadopor,
+            idInvest
         );
         res.json({
             success: true,
             message: "Lineamientos actualizados correctamente",
-            id: idInvestCap,
+            id: idInvest,
             files: fileUpdates,
             flags: booleanUpdates
         });
@@ -295,30 +241,24 @@ export const postLineamientosC = async (req, res) => {
         });
     }
 };
+
+
 //-----------------------------------------------------------------------------------------------------------
-
-
-
-export const putLineamientosC = async (req, res) => {
+// Actualizar lineamientos de investigacion
+export const putLineamientosInvestigacionC = async (req, res) => {
     const { id } = req.params;
     const {
         presentoprotocolo,
         estadoprotocolo,
         monitoreoyevaluacion,
         aplicacionevaluacion,
-        accionformacion,
+        investigacion,
         modificadopor,
-        formacioninvest,
-        criteriosfactibilidad,
-        requisitostecnicos,
-        criterioseticos,
-        // Estos campos vienen como strings 'null' desde el frontend
         presentoprotocolourl,
         monitoreoyevaluacionurl,
         aplicacionevaluacionurl,
-        criteriosfactibilidadurl,
-        requisitostecnicosurl,
-        criterioseticosurl
+        divulgacionresultados,
+        divulgacionresultadosurl,
     } = req.body;
 
     const files = req.files || {};
@@ -328,9 +268,6 @@ export const putLineamientosC = async (req, res) => {
         .join('-');
 
     try {
-        // 1. Validar usuario (tu código actual está bien)
-
-        const usuario = modificadopor;
 
         // 2. Validar archivos (tu código actual está bien)
         for (const fieldName in files) {
@@ -356,7 +293,7 @@ export const putLineamientosC = async (req, res) => {
 
         // 3. Obtener datos actuales
         const currentDataResponse = await pool.query(
-            'SELECT * FROM investigacioncap WHERE id = $1',
+            'SELECT * FROM investigacion WHERE id = $1',
             [id]
         );
         const currentData = currentDataResponse.rows[0];
@@ -378,7 +315,7 @@ export const putLineamientosC = async (req, res) => {
                     contentType: mimeType,
                     metadata: {
                         firebaseStorageDownloadTokens: token,
-                        uploader: usuario,
+                        uploader: modificadopor,
                         uploadDate: new Date().toISOString()
                     },
                 },
@@ -397,9 +334,8 @@ export const putLineamientosC = async (req, res) => {
             'presentoprotocolourl',
             'monitoreoyevaluacionurl',
             'aplicacionevaluacionurl',
-            'criteriosfactibilidadurl',
-            'requisitostecnicosurl',
-            'criterioseticosurl'
+            'divulgacionresultadosurl',
+            
         ];
 
         // Procesar cada campo de archivo
@@ -447,14 +383,9 @@ export const putLineamientosC = async (req, res) => {
             monitoreoyevaluacionurl: fileUpdates.monitoreoyevaluacionurl ?? null,
             aplicacionevaluacion: booleanUpdates.aplicacionevaluacion ?? currentData.aplicacionevaluacion,
             aplicacionevaluacionurl: fileUpdates.aplicacionevaluacionurl ?? null,
-            accionformacion: accionformacion || currentData.accionformacion,
-            formacioninvest: formacioninvest || currentData.formacioninvest,
-            criteriosfactibilidad: booleanUpdates.criteriosfactibilidad ?? currentData.criteriosfactibilidad,
-            criteriosfactibilidadurl: fileUpdates.criteriosfactibilidadurl ?? null,
-            requisitostecnicos: booleanUpdates.requisitostecnicos ?? currentData.requisitostecnicos,
-            requisitostecnicosurl: fileUpdates.requisitostecnicosurl ?? null,
-            criterioseticos: booleanUpdates.criterioseticos ?? currentData.criterioseticos,
-            criterioseticosurl: fileUpdates.criterioseticosurl ?? null
+            divulgacionresultados: booleanUpdates.divulgacionresultados ?? currentData.divulgacionresultados,
+            divulgacionresultadosurl: fileUpdates.divulgacionresultadosurl ?? null,
+            investigacion: investigacion || currentData.investigacion
         };
 
         // 7. Actualizar en la base de datos
@@ -466,13 +397,9 @@ export const putLineamientosC = async (req, res) => {
             updateData.monitoreoyevaluacionurl,
             updateData.aplicacionevaluacion,
             updateData.aplicacionevaluacionurl,
-            updateData.criteriosfactibilidad,
-            updateData.criteriosfactibilidadurl,
-            updateData.requisitostecnicos,
-            updateData.requisitostecnicosurl,
-            updateData.criterioseticos,
-            updateData.criterioseticosurl,
-            usuario,
+            updateData.divulgacionresultados,
+            updateData.divulgacionresultadosurl,
+            modificadopor,
             id
         );
 
