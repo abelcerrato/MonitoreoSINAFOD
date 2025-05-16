@@ -1,5 +1,6 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
-import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
+import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postParticipanteM } from "../models/Participante.models.js";
+import { postCentroEducativoM } from "../models/centroeducativo.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
@@ -177,33 +178,49 @@ export const getFiltroDocenteC = async (req, res) => {
 
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
-    const { idinvestigacioncap } = req.params
-    const { codigosace, identificacion, nombre, correo, iddepartamento, idmunicipio, idaldea,
-        sexo, institucion, institucioncodsace, idnivelesacademicos, cicloacademico, zona,
-        funcion, centroeducativo, departamentoced, municipioced, creadopor,
-        idgradosacademicos, añosdeservicio, tipoadministracion, codigodered,
-        deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
+
+
+    const { tipo, id } = req.params;
+
+    let idinvestigacion = null;
+    let idformacion = null;
+
+    if (tipo === 'investigacion') {
+        idinvestigacion = id;
+    } else if (tipo === 'formacion') {
+        idformacion = id;
+    } else {
+        return res.status(400).json({ error: "Tipo inválido. Debe ser 'investigacion' o 'formacion'." });
+    }
+
+
+    const {
+        //datos del participante o sea el docente
+        identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+        idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+        deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor,
+        //datos del cventro educativo
+        nombreced, codigosaceCed, tipoadministracion, tipocentro, jornada, zona, prebasica, basica, media,
+        primero, segundo, tercero, cuarto, quinto, sexto, séptimo, octavo, noveno, btp1, btp2, btp3, bch1, bch2, bch3,
+        modalidad, iddepartamento, idmunicipio, idaldea
+    } = req.body;
 
     console.log('respuesta del servidor: ', req.body);
 
 
-    const usuario = creadopor;
-
-
-
     let idciclosacademicos = null; // Por defecto lo dejamos en null
 
-    // Lógica para asignar el valor a idciclosacademicos según idgradosacademicos
-    if (idgradosacademicos >= 1 && idgradosacademicos <= 3) {
+    // Lógica para asignar el valor a idciclosacademicos según idgradoacademicos
+    if (idgradoacademicos >= 1 && idgradoacademicos <= 3) {
         idciclosacademicos = 1;
-    } else if (idgradosacademicos >= 4 && idgradosacademicos <= 6) {
+    } else if (idgradoacademicos >= 4 && idgradoacademicos <= 6) {
         idciclosacademicos = 2;
-    } else if (idgradosacademicos >= 7 && idgradosacademicos <= 9) {
+    } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
         idciclosacademicos = 3;
     }
 
-    try {
 
+    try {
         // Buscar por identificación de docente y por codigo sace
         const resultado1 = await getDocenteIdentificacionM(identificacion);
         const resultado2 = await getDocenteCodSACEM(codigosace);
@@ -212,44 +229,53 @@ export const getFiltroDocentesC = async (req, res) => {
         if (resultado1 == null && resultado2 == null) { //si no encuentra registros, pasa a insertar en docente y participante
 
             //insertar en docente
-            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
-                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
-
-
+            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
+                genero, nombreced, codigosaceCed, idnivelacademicos, idciclosacademicos, zona);
 
             //insertar en participante
-            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
-                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
+            const Participante = await postParticipanteM(
+                idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor)
+
+            const idparticipante = Participante
+
+            const CentroEducativo = await postCentroEducativoM(
+                nombreced, codigosaceCed, tipoadministracion, tipocentro, jornada, zona, prebasica, basica, media,
+                primero, segundo, tercero, cuarto, quinto, sexto, séptimo, octavo, noveno, btp1, btp2, btp3, bch1, bch2, bch3,
+                modalidad, iddepartamento, idmunicipio, idaldea, idparticipante)
 
 
             return res.status(201).json({
-                message: "Docente agregado y capacitación del participante registrada.",
+                message: "Participante y su centro educativo regiostrado a la Formacion o investigacion correctamente.",
                 docentes,
-                participantes: CapParticipante
+                participantes: Participante,
+                ced: CentroEducativo
             });
 
-        } else { //si encuentra registros, pasa a actualizar en docente y agregar participante 
-
-            //actualizar en docente
-            const docentes = await putDocentesM(codigosace, nombre, correo, departamentoced, municipioced, aldeaced,
-                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
+        } else { //si encuentra registros, pasa a agregar participante 
 
 
             //insertar en participante
-            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
-                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
+            const Participante = await postParticipanteM(
+                idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor)
+
+            const idparticipante = Participante
+
+            const CentroEducativo = await postCentroEducativoM(
+                nombreced, codigosaceCed, tipoadministracion, tipocentro, jornada, zona, prebasica, basica, media,
+                primero, segundo, tercero, cuarto, quinto, sexto, séptimo, octavo, noveno, btp1, btp2, btp3, bch1, bch2, bch3,
+                modalidad, iddepartamento, idmunicipio, idaldea, idparticipante)
+
 
             return res.status(201).json({
-                message: "Docente actualizado y capacitación del participante registrada.",
-                docentes,
-                participantes: CapParticipante
+                message: "Docente actualizado y participante registrada.",
+                participantes: Participante,
+                ced: CentroEducativo
             });
         }
-
     } catch (error) {
         console.error('Error al obtener datos:', error);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });

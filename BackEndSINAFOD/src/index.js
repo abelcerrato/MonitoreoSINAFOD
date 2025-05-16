@@ -5,7 +5,8 @@ import Investigacion from "./routes/investigacion.routes.js";
 import Formacion from "./routes/formacion.routes.js";
 import Departamentos from "./routes/departamentos.routes.js";
 import Municipios from "./routes/municipos.routes.js"
-import CapacitacionP from "./routes/CapParticipante.routes.js";
+import Participante from "./routes/Participante.routes.js";
+import CentroEducativo from "./routes/centroeducativo.routes.js"
 import Academico from "./routes/Academico.routes.js";
 import Aldeas from "./routes/aldeas.routes.js";
 import DocentesDGDP from "./routes/docentesDGDP.routes.js";
@@ -15,6 +16,7 @@ import ms_rolesRoutes from "./routes/ms_roles.routes.js";
 import ms_modulosRoutes from "./routes/ms_modulos.routes.js"
 import ms_objetosRoutes from "./routes/ms_objetos.routes.js";
 import ms_permisosRoutes from "./routes/ms_permisos.routes.js"
+
 
 import cors from "cors"
 
@@ -32,7 +34,8 @@ app.use(Investigacion)
 app.use(Formacion)
 app.use(Departamentos)
 app.use(Municipios)
-app.use(CapacitacionP)
+app.use(Participante)
+app.use(CentroEducativo)
 app.use(Academico)
 app.use(Aldeas)
 app.use(DocentesDGDP)
