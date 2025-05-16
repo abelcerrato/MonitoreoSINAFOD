@@ -53,8 +53,8 @@ const Investigacion = () => {
         socializaron: null,
         zona: "",
         observacion: "",
-        creadopor: user,
-        modificadopor: user
+        creadopor: user.id,
+        modificadopor: user.id
     });
 
     const [fieldErrors, setFieldErrors] = useState({
@@ -64,9 +64,6 @@ const Investigacion = () => {
 
 
     const navigate = useNavigate();
-    const handleRedirect = () => {
-        navigate("/dashboard");
-    };
 
 
 
@@ -317,7 +314,7 @@ const Investigacion = () => {
             console.log("Datos que envio", formData);
 
             // Redirigir a Participantes con el ID
-            navigate("/Participantes", { state: { investCap: idToUse } });
+            navigate("/Participantes", { state: { investCap: idToUse,  formacioninvest: formData.formacioninvest } });
 
         } catch (error) {
             console.error("Error al guardar los datos", error);
@@ -344,29 +341,28 @@ const Investigacion = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Box alignItems="center" justifyContent="space-between">
-
-                        <Typography variant="h3" sx={{ color: color.primary.azul }}>
-                            Registro de Datos sobre la Investigación
-                        </Typography>
-
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: "-45px" }}>
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                        <Grid size={{ xs: 12, md: 8 }}>
+                            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+                                Registro de Datos sobre la Investigación
+                            </Typography>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <Button
                                 variant="outlined"
                                 sx={{
                                     borderColor: color.primary.rojo,
                                     color: color.primary.rojo,
                                 }}
-                                onClick={() => handleRedirect()}
+                                onClick={() => navigate("/dashboard")}
                             >
                                 Cerrar
                             </Button>
-                        </Box>
-
-                    </Box>
+                        </Grid>
+                    </Grid>
 
                     <Grid container spacing={2} mt={2}>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Título del Proyecto
                             </Typography>
@@ -388,7 +384,7 @@ const Investigacion = () => {
                                 </Typography>
                             )}
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿La Investigación Es Interna o Externa?</Typography>
                             <FormControl fullWidth error={fieldErrors.tipoactividad}>
                                 <Select
@@ -404,7 +400,7 @@ const Investigacion = () => {
                         </Grid>
                         {formData.tipoactividad === "Externa" && (
                             <>
-                                <Grid item xs={12} size={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Nombre de la Institución Asociada</Typography>
                                     <TextField
                                         fullWidth
@@ -413,7 +409,7 @@ const Investigacion = () => {
                                         onChange={handleChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={6}>
+                                <Grid size={{ xs: 12, md: 6 }}>
                                     <Typography variant="subtitle1">Se Tiene Convenio la Institución Asociada</Typography>
                                     <FormControl fullWidth >
                                         <Select
@@ -429,7 +425,7 @@ const Investigacion = () => {
                                 </Grid>
                             </>
                         )}
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Presupuesto
                             </Typography>
@@ -440,10 +436,10 @@ const Investigacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6} sm={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Duración</Typography>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Años"
@@ -456,7 +452,7 @@ const Investigacion = () => {
                                         helperText={fieldErrors.año ? "Por favor ingresa un número válido para el año." : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 2 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Meses"
@@ -470,7 +466,7 @@ const Investigacion = () => {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 2 }}>
                                     <TextField
                                         variant="outlined"
                                         label="Días"
@@ -483,7 +479,7 @@ const Investigacion = () => {
                                         helperText={fieldErrors.dia ? "Por favor ingresa un número válido para el día." : ""}
                                     />
                                 </Grid>
-                                <Grid item xs={12} size={3}>
+                                <Grid size={{ xs: 12, md: 5 }}>
                                     <TextField
                                         variant="outlined"
                                         label="(Año-Mes-Día)"
@@ -498,7 +494,7 @@ const Investigacion = () => {
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Población Objetivo
                             </Typography>
@@ -510,7 +506,7 @@ const Investigacion = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">
                                 Nivel Educativo
                             </Typography>
@@ -533,7 +529,7 @@ const Investigacion = () => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha Inicio</Typography>
                             <TextField
                                 fullWidth
@@ -545,7 +541,7 @@ const Investigacion = () => {
                                 helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error 
                             />
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Fecha de Finalización</Typography>
                             <TextField
                                 fullWidth
@@ -560,7 +556,7 @@ const Investigacion = () => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Ubicación</Typography>
                             <TextField
                                 fullWidth
@@ -572,7 +568,7 @@ const Investigacion = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">¿Se realizó convocatoria?</Typography>
                             <FormControl fullWidth error={fieldErrors.socializaron}>
                                 <Select name="socializaron" value={formData.socializaron} onChange={handleChange}>
@@ -582,7 +578,7 @@ const Investigacion = () => {
                                 {fieldErrors.socializaron && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} size={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle1">Observación</Typography>
                             <TextField
                                 fullWidth
@@ -593,8 +589,6 @@ const Investigacion = () => {
                         </Grid>
                     </Grid>
                     <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-
-
                         <Button
                             variant="contained"
                             sx={{ backgroundColor: color.primary.azul, ml: 5 }}
@@ -605,12 +599,6 @@ const Investigacion = () => {
                         </Button>
 
                     </Box>
-
-
-
-
-
-
                 </Paper>
 
             </Dashboard>

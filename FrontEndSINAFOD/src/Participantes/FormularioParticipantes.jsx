@@ -15,7 +15,11 @@ import {
   FormControlLabel,
   Tab,
   Tabs,
-  FormHelperText
+  FormHelperText,
+  List,
+  ListItem,
+  ListItemText,
+  Modal
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -69,7 +73,7 @@ const FormularParticipantes = () => {
     municipioced: "",
     departamentoced: "",
     tipoadministracion: "Gubernamental",
-    creadopor: user,
+    creadopor: user.id,
   });
 
   const limpiarCampos = () => {
@@ -108,7 +112,6 @@ const FormularParticipantes = () => {
   const handleSave = async () => {
     const requiredFields = [
       "identificacion",
-      "codigosace",
       "nombre",
       "funcion",
       "sexo",
@@ -153,10 +156,10 @@ const FormularParticipantes = () => {
       }, {});
     };
     try {
-      //console.log("formData", formData);   
+      console.log("formData", formData);
       const transformedFormData = transformFormData(formData);
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/CapacitacionP`,
+        `${process.env.REACT_APP_API_URL}/CapacitacionP/${investCap}`,
         transformedFormData,
         {
           headers: {
@@ -296,9 +299,6 @@ const FormularParticipantes = () => {
 
     obtenergardo();
   }, [formData.idnivelesacademicos]);
-  const handleRedirect = () => {
-    navigate("/dashboard");
-  };
 
 
   // Obtener aldea del participante 
@@ -358,8 +358,6 @@ const FormularParticipantes = () => {
 
   {/* Datos académicos  del participante */ }
 
-
-
   // Obtener gardo cuando cambia el departamento seleccionado
   useEffect(() => {
     if (!formData.nivelacademicodocente) return;
@@ -377,14 +375,18 @@ const FormularParticipantes = () => {
     obtenergardo();
   }, [formData.nivelacademicodocente]);
 
-
+  const [docentesEncontrados, setDocentesEncontrados] = useState([]);
+  const [openSeleccionModal, setOpenSeleccionModal] = useState(false);
 
   const obtenerDNI = async (campo) => {
-    // Verifica cuál de los campos tiene datos según el parámetro 'campo'
     const filtro = formData[campo] && formData[campo].trim() !== "" ? formData[campo] : null;
 
     if (!filtro) {
-      alert("Por favor, ingrese un valor en el campo seleccionado.");
+      Swal.fire({
+        title: "Campo vacío",
+        text: "Por favor, ingrese un valor en el campo seleccionado.",
+        icon: "warning"
+      });
       return;
     }
 
@@ -394,66 +396,86 @@ const FormularParticipantes = () => {
       );
 
       if (response.data && response.data.length > 0) {
-        const docente = response.data[0];
-        setFormData((prev) => ({
-          ...prev,
-          codigosace: docente.codigosace || "",
-          identificacion: docente.identificacion || "",
-          codigosace: docente.codigosace || "",
-          nombre: docente.nombre || "",
-          funcion: docente.funcion || "",
-          sexo: docente.sexo || "",
-          añosdeservicio: docente.añosdeservicio || "",
-          codigodered: docente.codigodered || "",
-          deptoresidencia: docente.iddeptoresidencia || "",
-          municipioresidencia: docente.idmuniresidencia || "",
-          aldearesidencia: docente.idaldearesidencia || "",
-          nivelacademicodocente: docente.idnivelacademicodocente || "",
-          gradoacademicodocente: docente.idgradoacademicodocente || "",
-
-          centroeducativo: docente.centroeducativo || "",
-          idnivelesacademicos: docente.idnivelesacademicos || "",
-          idgradosacademicos: docente.idgradosacademicos || "",
-          zona: docente.zona || "",
-          municipioced: docente.municipioced || "",
-          departamentoced: docente.departamentoced || "",
-          aldeaced: docente.aldeaced || "",
-          tipoadministracion: docente.tipoadministracion || "Gubernamental",
-        }));
-
+        if (response.data.length === 1) {
+          // Si solo hay un registro, llenar directamente
+          llenarFormulario(response.data[0]);
+          Swal.fire({
+            title: 'Participante encontrado',
+            text: 'Se encontraron datos del participante',
+            icon: 'success',
+            timer: 6000,
+          });
+        } else {
+          // Si hay múltiples registros, mostrar modal de selección
+          setDocentesEncontrados(response.data);
+          setOpenSeleccionModal(true);
+        }
+      } else {
         Swal.fire({
-          title: 'Participante encontrado',
-          text: 'Se encontraron datos del participante',
-          icon: 'success',
+          title: 'No encontrado',
+          text: 'No se encontraron registros para el filtro proporcionado',
+          icon: 'info',
           timer: 6000,
         });
       }
     } catch (error) {
       console.error("Error al obtener los datos", error);
-      alert("No se encontró ningún registro.");
+      Swal.fire({
+        title: 'Error',
+        text: 'Ocurrió un error al buscar los datos',
+        icon: 'error',
+        timer: 6000,
+      });
     }
   };
+
+  const llenarFormulario = (docente) => {
+    setFormData(prev => ({
+      ...prev,
+      codigosace: docente.codigosace || "",
+      identificacion: docente.identificacion || "",
+      nombre: docente.nombre || "",
+      funcion: docente.funcion || "",
+      sexo: docente.sexo || "",
+      añosdeservicio: docente.añosdeservicio || "",
+      codigodered: docente.codigodered || "",
+      deptoresidencia: docente.iddeptoresidencia || "",
+      municipioresidencia: docente.idmuniresidencia || "",
+      aldearesidencia: docente.idaldearesidencia || "",
+      nivelacademicodocente: docente.idnivelacademicodocente || "",
+      gradoacademicodocente: docente.idgradoacademicodocente || "",
+      centroeducativo: docente.centroeducativo || "",
+      idnivelesacademicos: docente.idnivelesacademicos || "",
+      idgradosacademicos: docente.idgradosacademicos || "",
+      zona: docente.zona || "",
+      municipioced: docente.municipioced || "",
+      departamentoced: docente.departamentoced || "",
+      aldeaced: docente.aldeaced || "",
+      tipoadministracion: docente.tipoadministracion || "Gubernamental"
+    }));
+  };
+
 
   return (
     <>
       <Dashboard>
-        <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} size={8}>
-              <Typography variant="h3" sx={{ color: color.primary.azul }}>
+        <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
+          <Grid container alignItems="center" spacing={2}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 {formacioninvest === "Investigación"
                   ? "Registro de Investigadores"
                   : "Registro de Participantes"}
               </Typography>
             </Grid>
-            <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Grid size={{ xs: 12, md: 4 }} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
               <Button
                 variant="outlined"
                 sx={{
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => handleRedirect()}
+                onClick={() => navigate("/dashboard")}
               >
                 Cerrar
               </Button>
@@ -461,7 +483,7 @@ const FormularParticipantes = () => {
 
           </Grid>
           <TabContext value={value}>
-            <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
+            <Tabs value={value} onChange={handleChangeValues} allowScrollButtonsMobile variant="scrollable" scrollButtons="auto">
               <Tab label="Datos Generales del Participante" value="1" />
               <Tab label="Datos del Centro Educativo" value="2" />
             </Tabs>
@@ -469,10 +491,10 @@ const FormularParticipantes = () => {
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Código SACE</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} size={9}>
+                    <Grid size={{ xs: 12, md: 9 }}>
                       <TextField
                         fullWidth
                         name="codigosace"
@@ -482,7 +504,7 @@ const FormularParticipantes = () => {
                         helperText={fieldErrors.codigosace ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} size={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -493,10 +515,10 @@ const FormularParticipantes = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Identidad</Typography>
                   <Grid spacing={2} container>
-                    <Grid item xs={12} size={9}>
+                    <Grid size={{ xs: 12, md: 9 }}>
                       <TextField
                         fullWidth
                         name="identificacion"
@@ -506,7 +528,7 @@ const FormularParticipantes = () => {
                         helperText={fieldErrors.identificacion ? "Este campo es obligatorio" : ""}
                       />
                     </Grid>
-                    <Grid item xs={12} size={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -520,7 +542,7 @@ const FormularParticipantes = () => {
 
                   </Grid>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nombre</Typography>
                   <TextField
                     fullWidth
@@ -531,7 +553,7 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.nombre ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl error={fieldErrors.sexo}>
                     <Typography variant="subtitle1">Sexo</Typography>
                     <RadioGroup
@@ -540,30 +562,15 @@ const FormularParticipantes = () => {
                       value={formData.sexo}
                       onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
                     >
-                      <FormControlLabel value="Mujer" control={<Radio />} label="Mujer" />
-                      <FormControlLabel value="Hombre" control={<Radio />} label="Hombre" />
+                      <FormControlLabel value="Femenino" control={<Radio />} label="Mujer" />
+                      <FormControlLabel value="Masculino" control={<Radio />} label="Hombre" />
                     </RadioGroup>
                     {fieldErrors.sexo && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>
-                  {/* <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
-                    <Select
-                      name="nivelacademicodocente"
-                      value={formData.nivelacademicodocente || ""}
-                      onChange={handleChange}>
-                      {NivelEducativoP.length > 0 ? (
-                        NivelEducativoP.map((dep) =>
-                          <MenuItem key={dep.id} value={dep.id}>
-                            {dep.nombre}
-                          </MenuItem>)
-                      ) : (
-                        <MenuItem disabled>Cargando...</MenuItem>
-                      )}
-                    </Select>
-                    {fieldErrors.nivelacademicodocente && <FormHelperText>Este campo es obligatorio</FormHelperText>}
-                  </FormControl>*/}
+
                   <FormControl fullWidth error={fieldErrors.nivelacademicodocente}>
                     <Select
                       name="nivelacademicodocente"
@@ -574,7 +581,7 @@ const FormularParticipantes = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Grado Académico</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -591,7 +598,7 @@ const FormularParticipantes = () => {
 
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
                   <TextField
                     fullWidth
@@ -602,11 +609,11 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.añosdeservicio ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
                   <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Cargo que Desempeña</Typography>
                   <TextField
                     fullWidth
@@ -617,7 +624,7 @@ const FormularParticipantes = () => {
                     helperText={fieldErrors.funcion ? "Este campo es obligatorio" : ""}
                   />
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Departamento de Residencia</Typography>
                   <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                     <Select
@@ -639,7 +646,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Municipio de Residencia</Typography>
                   <FormControl fullWidth error={fieldErrors.municipioresidencia}>
                     <Select
@@ -659,7 +666,7 @@ const FormularParticipantes = () => {
                     {fieldErrors.municipioresidencia && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Aldea de Residencia</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -688,7 +695,7 @@ const FormularParticipantes = () => {
               <Grid container spacing={2}>
 
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nivel Educativo que Atiende</Typography>
                   <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
                     <Select
@@ -706,7 +713,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Grado Académico que Atiende</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -723,7 +730,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Centro Educativo</Typography>
                   <TextField
                     fullWidth
@@ -735,7 +742,7 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl fullWidth >
                     <Typography variant="subtitle1">Tipo de Administración</Typography>
                     <RadioGroup
@@ -751,7 +758,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Zona Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.zona}>
                     <Select name="zona" value={formData.zona} onChange={handleChange}>
@@ -762,7 +769,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.departamentoced}>
                     <Select
@@ -781,7 +788,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
                   <FormControl fullWidth error={fieldErrors.municipioced}>
                     <Select
@@ -801,7 +808,7 @@ const FormularParticipantes = () => {
                     {fieldErrors.municipioced && <FormHelperText>Este campo es obligatorio</FormHelperText>}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
                   <FormControl fullWidth>
                     <Select
@@ -838,7 +845,76 @@ const FormularParticipantes = () => {
             </TabPanel>
           </TabContext>
 
+          {/* Modal para selección de docente cuando hay múltiples resultados */}
+          <Modal
+            open={openSeleccionModal}
+            onClose={() => setOpenSeleccionModal(false)}
+            aria-labelledby="seleccion-docente-modal"
+          >
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%',
+              maxWidth: 800,
+              maxHeight: '80vh',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+              borderRadius: 2,
+              overflow: 'auto'
+            }}>
+              <Typography id="seleccion-docente-modal" variant="h6" component="h2" sx={{ mb: 3 }}>
+                Se encontraron múltiples registros
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 3 }}>
+                Por favor seleccione el registro correcto:
+              </Typography>
 
+              <List>
+                {docentesEncontrados.map((docente, index) => (
+                  <ListItem
+                    key={index}
+                    button
+                    onClick={() => {
+                      llenarFormulario(docente);
+                      setOpenSeleccionModal(false);
+                    }}
+                    sx={{
+                      borderBottom: '1px solid #eee',
+                      '&:hover': {
+                        backgroundColor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <ListItemText
+                      primary={`${docente.nombre || 'Sin nombre'} - ${docente.identificacion || 'Sin identificación'}`}
+                      secondary={
+                        <>
+                          <Box component="span" display="block" fontWeight="bold">
+                            Centro Educativo: {docente.centroeducativo || 'No especificado'}
+                          </Box>
+                          <Box component="span" display="block">
+                            Nivel Educativo que Atiende: {docente.nombrenivelced || ''} - Grado Educativo que Atiende: {docente.nombregradoced || ''}
+                          </Box>
+                        </>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenSeleccionModal(false)}
+                >
+                  Cancelar
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
         </Paper>
         <TablaPacticantes investCap={investCap} isSaved={isSaved} setIsSaved={setIsSaved} />
       </Dashboard>

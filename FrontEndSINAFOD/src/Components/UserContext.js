@@ -1,31 +1,39 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Creamos el contexto para el usuario
 const UserContext = createContext();
 
-// Proveedor del contexto
 export const UserProvider = ({ children }) => {
-  // Recuperamos el usuario del localStorage si existe
-  const storedUser = JSON.parse(localStorage.getItem('user'));
-  const [user, setUser] = useState(storedUser); // Estado para el usuario
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedPermissions = JSON.parse(localStorage.getItem('permissions')) || [];
 
-  // Cada vez que el estado 'user' cambie, lo guardamos en el localStorage
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user'); // Si el usuario se desconecta, lo eliminamos del localStorage
-    }
-  }, [user]);
+    const [user, setUser] = useState(storedUser);
+    const [permissions, setPermissions] = useState(storedPermissions);
 
-  return (
-    <UserContext.Provider value={{ user, setUser }}>
-      {children}
-    </UserContext.Provider>
-  );
+    const updateUser = (newUserData) => {
+        setUser(newUserData);
+        sessionStorage.setItem('user', JSON.stringify(newUserData));
+    };
+
+    const updatePermissions = (perms) => {
+        setPermissions(perms);
+        localStorage.setItem('permissions', JSON.stringify(perms));
+    };
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
+
+    return (
+        <UserContext.Provider value={{ user, setUser, updateUser, permissions, setPermissions: updatePermissions }}>
+            {children}
+        </UserContext.Provider>
+    );
 };
 
-// Hook para usar el contexto en cualquier parte de la app
 export const useUser = () => {
-  return useContext(UserContext);
+    return useContext(UserContext);
 };

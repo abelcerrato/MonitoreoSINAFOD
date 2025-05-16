@@ -196,10 +196,10 @@ const ListadoActividad = () => {
             // Agregar los datos como filas en la tabla
             filteredRows.forEach(item => {
                 worksheet.addRow([
-                    item.id, item.accionformacion, item.formacioninvest, item.institucionresponsable, item.responsablefirmas,
+                    item.id, item.accionformacion, item.formacioninvest, item.institucionresponsable?? "-", item.responsablefirmas?? "-",
                     item.tipoformacion, item.modalidad, item.duracion ? `${item.duracion?.hours ?? 0}h ${item.duracion?.minutes ?? 0}m` : "0h 0m", item.espaciofisico, item.funciondirigido,
                     item.nivelacademico ?? "-", item.cicloacademico ?? "-", item.estado, item.fechainicio ? new Date(item.fechainicio).toLocaleDateString("es-ES") : "-", item.fechafinal ? new Date(item.fechafinal).toLocaleDateString("es-ES") : "-",
-                    item.participantesprog, item.direccion, item.zona, item.observacion,
+                    item.participantesprog?? "-", item.direccion?? "-", item.zona?? "-", item.observacion?? "-",
                 ]);
             });
 
