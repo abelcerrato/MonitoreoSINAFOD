@@ -74,26 +74,26 @@ export const getParticipanteIdFormacionC = async (req, res) => {
 
 
 export const postParticipanteC = async (req, res) => {
+
+    const { tipo, id } = req.params;
+
+    let idinvestigacion = null;
+    let idformacion = null;
+
+    if (tipo === 'investigacion') {
+        idinvestigacion = id;
+    } else if (tipo === 'formacion') {
+        idformacion = id;
+    } else {
+        return res.status(400).json({ error: "Tipo inválido. Debe ser 'investigacion' o 'formacion'." });
+    }
+
+    const { identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+        idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+        deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor } = req.body
+    console.log(req.body);
+
     try {
-
-        const { tipo, id } = req.params;
-
-        let idinvestigacion = null;
-        let idformacion = null;
-
-        if (tipo === 'investigacion') {
-            idinvestigacion = id;
-        } else if (tipo === 'formacion') {
-            idformacion = id;
-        } else {
-            return res.status(400).json({ error: "Tipo inválido. Debe ser 'investigacion' o 'formacion'." });
-        }
-
-        const { identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
-            idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
-            deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor } = req.body
-        console.log(req.body);
-
 
         const Participante = await postParticipanteM(
             idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
@@ -112,26 +112,24 @@ export const postParticipanteC = async (req, res) => {
 
 
 export const putParticipanteC = async (req, res) => {
+    const { id } = req.params;
+    const { idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+        idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+        deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, modificadopor } = req.body
+
+
+    let idciclosacademicos = null; // Por defecto lo dejamos en null
+
+    // Lógica para asignar el valor a idciclosacademicos según idgradoacademicos
+    if (idgradoacademicos >= 1 && idgradoacademicos <= 3) {
+        idciclosacademicos = 1;
+    } else if (idgradoacademicos >= 4 && idgradoacademicos <= 6) {
+        idciclosacademicos = 2;
+    } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
+        idciclosacademicos = 3;
+    }
 
     try {
-        const { id } = req.params;
-        const { idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
-            idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
-            deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, modificadopor } = req.body
-
-
-        let idciclosacademicos = null; // Por defecto lo dejamos en null
-
-        // Lógica para asignar el valor a idciclosacademicos según idgradoacademicos
-        if (idgradoacademicos >= 1 && idgradoacademicos <= 3) {
-            idciclosacademicos = 1;
-        } else if (idgradoacademicos >= 4 && idgradoacademicos <= 6) {
-            idciclosacademicos = 2;
-        } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
-            idciclosacademicos = 3;
-        }
-
-
         const Participante = await putParticipanteM(
             idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
             idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,

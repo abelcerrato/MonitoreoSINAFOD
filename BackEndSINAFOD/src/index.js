@@ -17,6 +17,8 @@ import ms_modulosRoutes from "./routes/ms_modulos.routes.js"
 import ms_objetosRoutes from "./routes/ms_objetos.routes.js";
 import ms_permisosRoutes from "./routes/ms_permisos.routes.js"
 
+import CargoDesempeña from "./routes/cargodesempeña.routes.js"
+
 
 import cors from "cors"
 
@@ -46,6 +48,8 @@ app.use(ms_rolesRoutes)
 app.use(ms_modulosRoutes)
 app.use(ms_objetosRoutes)
 app.use(ms_permisosRoutes)
+
+app.use(CargoDesempeña)
 
 console.log("DB_USER:", process.env.DB_USER); // Prueba si se está cargando correctamente
 
