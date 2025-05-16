@@ -39,11 +39,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
   });
 
   const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/usuarios`) // Cambia esta URL a la de tu API
+      .get(`${process.env.REACT_APP_API_URL}/formacion`) // Cambia esta URL a la de tu API
       .then((response) => {
         setRows(response.data); // Suponiendo que los datos se encuentran en response.data
         //setIsSaved(false);
@@ -52,23 +51,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
         console.error("Hubo un error al obtener los datos:", error);
       });
   }, [isSaved]);
-
-  const handleResetearContra = async (usuario) => {
-    try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/resetearContra/${usuario}`
-      );
-
-      Swal.fire({
-        title: "Contraseña Restablecida",
-        text: "La contraseña ha sido restablecida exitosamente a Temporal1*.",
-        icon: "success",
-        timer: 6000,
-      });
-    } catch (error) {
-      console.error("Error al restablecer la contraseña:", error);
-    }
-  };
 
   const handleEditClick = async (id) => {
     navigate(`/Seguridad/Actualizar_Usuario/${id}`);
@@ -99,14 +81,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
                     <EditOutlinedIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Restablecer Contraseña" arrow>
-                  <IconButton
-                    onClick={() => handleResetearContra(params.row.usuario)}
-                    sx={{ color: color.primary.azul }}
-                  >
-                    <VpnKeyOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
               </>
             ),
           },
@@ -114,9 +88,29 @@ export default function TablaActividad(isSaved, setIsSaved) {
       : []),
     { field: "id", headerName: "ID", width: 90 },
     { field: "nombre", headerName: "Nombre ", width: 230 },
-    { field: "correo", headerName: "Correo Electrónico", width: 300 },
-    { field: "usuario", headerName: "Usuario", width: 150 },
-    { field: "estado", headerName: "Estado", width: 120 },
+    { field: "modalidad", headerName: "Modalidad", width: 300 },
+    { field: "estado", headerName: "Estado", width: 150 },
+    {
+      field: "fechainicio",
+      headerName: "Estado",
+      width: 120,
+      renderCell: (params) => {
+        if (!params.value) return "";
+        const date = new Date(params.value);
+        return date.toLocaleDateString("es-ES");
+      },
+    },
+    {
+      field: "fechafinal",
+      headerName: "Estado",
+      width: 120,
+      renderCell: (params) => {
+        if (!params.value) return "";
+        const date = new Date(params.value);
+        return date.toLocaleDateString("es-ES");
+      },
+    },
+    { field: "lineamientos", headerName: "Lineamientos", width: 120 },
   ];
 
   return (

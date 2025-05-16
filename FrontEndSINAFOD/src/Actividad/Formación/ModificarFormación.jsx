@@ -39,8 +39,7 @@ const ModificarFormacion = () => {
   const [ciclos, setCiclos] = useState([]);
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
-    accionformacion: location.state?.accionformacion || "",
-    formacioninvest: "Formación",
+    formacion: location.state?.accionformacion || "",
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
@@ -59,7 +58,7 @@ const ModificarFormacion = () => {
     ambitoformacion: "",
     tipoformacion: "",
     modalidad: "",
-    duracion: 0,
+
     espaciofisico: "",
     idnivelesacademicos: "",
     cicloacademico: "",
@@ -72,7 +71,7 @@ const ModificarFormacion = () => {
     const obtenerDetalles = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/investC/${id}`
+          `${process.env.REACT_APP_API_URL}/investformacionC/${id}`
         );
         const data = response.data[0];
         const horas = data.duracion?.hours || 0;
@@ -340,7 +339,7 @@ const ModificarFormacion = () => {
     try {
       // Actualizar el registro
       const updateResponse = await axios.put(
-        `${process.env.REACT_APP_API_URL}/investC/${id}`,
+        `${process.env.REACT_APP_API_URL}/formacion/${id}`,
         cleanedFormData,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -363,13 +362,17 @@ const ModificarFormacion = () => {
     }
   };
 
-function formatDuracionForDisplay(duracion) {
-  if (!duracion) return "00:00";
-  const partes = duracion.split(" ");
-  const horas = partes[0] || "0";
-  const minutos = partes[2] || "0";
-  return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}`;
-}
+  function formatDuracionForDisplay(duracion) {
+    if (!duracion) return "00 horas 00 minutos";
+
+    const partes = duracion.split(" ");
+    const horas = partes[0] || "0";
+    const minutos = partes[2] || "0";
+
+    return `${horas.toString().padStart(2, "0")} horas ${minutos
+      .toString()
+      .padStart(2, "0")} minutos`;
+  }
 
   return (
     <>
@@ -679,7 +682,7 @@ function formatDuracionForDisplay(duracion) {
                   onChange={handleChange}
                 >
                   <MenuItem value="Planificada">Planificada</MenuItem>
-                  <MenuItem value="En Curso">En Curso</MenuItem>
+                  <MenuItem value="En curso">En Curso</MenuItem>
                   <MenuItem value="Suspendida">Suspendida</MenuItem>
                   <MenuItem value="Completada">Completada</MenuItem>
                   <MenuItem value="Cancelada">Cancelada</MenuItem>

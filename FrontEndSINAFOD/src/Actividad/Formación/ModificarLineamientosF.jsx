@@ -67,7 +67,7 @@ const ModificarLineamientos = () => {
         const obtenerDetalles = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_API_URL}/investC/${id}`
+                    `${process.env.REACT_APP_API_URL}/lineamientosformacion/${id}`
                 );
                 const data = response.data[0];
 
