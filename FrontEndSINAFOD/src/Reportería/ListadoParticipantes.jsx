@@ -171,12 +171,12 @@ const ListadoParticipantes = () => {
             // Agregar los datos como filas en la tabla
             filteredRows.forEach(item => {
                 worksheet.addRow([
-                    item.id, item.accionformacion, item.codigosace, item.nombre, item.identificacion, item.sexo,
+                    item.id, item.accionformacion, item.codigosace?? "-", item.nombre, item.identificacion, item.sexo,
                     item.nombreniveldocente ?? "-", item.nombregradodocente ?? "-",
                     item.añosdeservicio, item.codigodered, item.funcion, item.nombredeptoresidencia, item.nombremuniresidencia,
-                    item.nombrealdearesidencia, item.centroeducativo, item.nombrenivelced ?? "-",
+                    item.nombrealdearesidencia?? "-", item.centroeducativo, item.nombrenivelced ?? "-",
                     item.nombrecicloced ?? "-", item.nombregradoced ?? "-", item.tipoadministracion,
-                    item.zona, item.nombredeptoced, item.nombremunicipioced, item.nombrealdeaced,
+                    item.zona, item.nombredeptoced?? "-", item.nombremunicipioced?? "-", item.nombrealdeaced?? "-",
                 ]);
             });
 
@@ -272,7 +272,7 @@ const ListadoParticipantes = () => {
                                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                                     <MenuItem value="">Seleccionar sexo</MenuItem >
                                     <MenuItem value="Hombre">Hombre</MenuItem >
-                                    <MenuItem value="Mujer">Mujer</MenuItem >
+                                    <MenuItem value="Femenino">Mujer</MenuItem >
                                 </Select>
                             </FormControl>
                         ) : filterColumn === "zona" ? (

@@ -17,16 +17,22 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Groups3OutlinedIcon from '@mui/icons-material/Groups3Outlined';
-import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
-import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
+
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import HttpsOutlinedIcon from '@mui/icons-material/HttpsOutlined';
+
 
 
 import { useUser } from "../Components/UserContext";
 import { color } from "../Components/color";
 import { styled } from '@mui/material/styles';
+
+
+
+
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -47,13 +53,15 @@ const ProjectDrawer = ({ open }) => {
 
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
+  const [openSeguridad, setOpenSeguridad] = useState(false);
+
 
 
   // Refs y estados para los menús flotantes
   const reporteriaAnchorRef = useRef(null);
-
+  const seguridadAnchorRef = useRef(null);
   const [reporteriaMenuOpen, setReporteriaMenuOpen] = useState(false);
-
+  const [seguridadMenuOpen, setSeguridadMenuOpen] = useState(false);
 
   const handelReporteriaMenuOpen = (event) => {
     if (!open) {
@@ -61,15 +69,26 @@ const ProjectDrawer = ({ open }) => {
     }
   };
 
+  const handleSeguridadMenuOpen = (event) => {
+    if (!open) {
+      setSeguridadMenuOpen(true);
+    }
+  };
+
+
 
   const handleMenuClose = () => {
     setReporteriaMenuOpen(false);
   };
 
+  const handleMenuCloseSegu = () => {
+    setSeguridadMenuOpen(false);
+  };
   const handleItemClick = (path) => {
     navigate(path);
     handleMenuClose();
   };
+
 
   const isActive = (path) => {
     // Decodifica tanto la ruta actual como la ruta que estamos comparando
@@ -77,19 +96,16 @@ const ProjectDrawer = ({ open }) => {
     const decodedComparePath = decodeURIComponent(path);
     return decodedCurrentPath === decodedComparePath;
   };
+
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
-    isActive("/Reportería/Listado_Participantes") ||
-    isActive("/Reportería/Aldeas") ||
-    isActive("/Reportería/Etnias") ||
-    isActive("/Reportería/Área-Formación") ||
-    isActive("/Reportería/Tipo-Educador") ||
-    isActive("/Reportería/Discapacidades") ||
-    isActive("/Reportería/Niveles-Académicos") ||
-    isActive("/Reportería/Grados-Académicos") ||
-    isActive("/Reportería/Nacionalidades")
+    isActive("/Reportería/Listado_Participantes")
     ;
 
+  const isSeguridadActive =
+    isActive("/Seguridad/Usuarios") ||
+    isActive("/Seguridad/Roles-y-Permisos")
+    ;
 
 
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
@@ -142,7 +158,7 @@ const ProjectDrawer = ({ open }) => {
       </ListItemIcon>
       {open && <ListItemText primary={text} />}
       {open && isParent === "reporteria" && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
-
+      {open && isParent === "seguridad" && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
     </ListItemButton>
   );
 
@@ -190,159 +206,296 @@ const ProjectDrawer = ({ open }) => {
           onClick={() => navigate("/dashboard")}
         />
       </List>
+      {tienePermisosModulo(1) && (
+        <>
+          {open && <Divider />}
+          {/* Formación */}
+          {tienePermiso(2) && (
+            <List>
 
-      {open && <Divider />}
-      {/* Formación */}
-      <List>
+              <LightTooltip title="Nueva Formación" placement="right" disableHoverListener={open} >
+                <div>
+                  <MenuItem
+                    path="/Lineamientos_De_Formación"
+                    icon={<PostAddOutlinedIcon />}
+                    text=" Nueva Formación"
+                    onClick={() => navigate("/Lineamientos_De_Formación")}
+                  />
+                </div>
+              </LightTooltip >
 
-        <LightTooltip title="Nueva Formación" placement="right" disableHoverListener={open} >
-          <div>
-            <MenuItem
-              path="/Lineamientos_De_Formación"
-              icon={<PostAddOutlinedIcon />}
-              text=" Nueva Formación"
-              onClick={() => navigate("/Lineamientos_De_Formación")}
-            />
-          </div>
-        </LightTooltip >
-
-      </List>
-
-      {open && <Divider />}
-      {/* Investigación */}
-      <List>
-        <LightTooltip title="Nueva Investigación" placement="right" disableHoverListener={open}>
-          <div>
-            <MenuItem
-              path="/Lineamientos_De_Investigación"
-              icon={<ZoomInIcon />}
-              text="Nueva Investigación"
-              onClick={() => navigate("/Lineamientos_De_Investigación")}
-            />
-          </div>
-        </LightTooltip>
-      </List>
-
-
-      <>
-        {open && <Divider />}
-        {/* Reportería con menú flotante */}
-        <List>
-          <MenuItem
-            path="/Reportería"
-            icon={<TextSnippetOutlinedIcon />}
-            text="Reportería"
-            onClick={() => (open ? setOpenReporteria(!openRepoeteria) : null)}
-            isParent="reporteria"
-            parentActive={isReporteriaActive}
-            menuRef={reporteriaAnchorRef}
-            onMouseEnter={handelReporteriaMenuOpen}
-            onMouseLeave={handleMenuClose}
-          />
-
-          {open && (
-            <Collapse in={openRepoeteria} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
-              <List component="div" disablePadding>
-
-
-                <MenuItem
-                  path="/Reportería/Listado_De_Acciones_Formativas"
-                  icon={<TextSnippetOutlinedIcon />}
-                  text={
-                    <>
-                      Listado de<br />Cap
-                    </>
-                  }
-                  onClick={() => navigate("/Reportería/Listado_De_Acciones_Formativas")}
-                />
-
-
-                <MenuItem
-                  path="/Reportería/Listado_Participantes"
-                  icon={<TextSnippetOutlinedIcon />}
-                  text={
-                    <>
-                      Listado de<br />Participantes
-                    </>
-                  }
-                  onClick={() => navigate("/Reportería/Listado_Participantes")}
-                />
-              </List>
-            </Collapse>
+            </List>
           )}
+        </>
+      )}
 
-          {/* Menú flotante de Reportería */}
-          <Menu
-            anchorEl={reporteriaAnchorRef.current}
-            open={reporteriaMenuOpen && !open}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "left",
-            }}
-            PaperProps={{
-              sx: {
-                marginTop: 35,
-                ml: 10,
-                boxShadow: 3,
-                minWidth: 200,
-              },
-            }}
-            disableAutoFocusItem
-          >
+      {tienePermisosModulo(2) && (
+        <>
+          {open && <Divider />}
+          {/* Investigación */}
+          {tienePermiso(1) && (
+            <List>
+              <LightTooltip title="Nueva Investigación" placement="right" disableHoverListener={open}>
+                <div>
+                  <MenuItem
+                    path="/Lineamientos_De_Investigación"
+                    icon={<ZoomInIcon />}
+                    text="Nueva Investigación"
+                    onClick={() => navigate("/Lineamientos_De_Investigación")}
+                  />
+                </div>
+              </LightTooltip>
+            </List>
+          )}
+        </>
+      )}
 
-            <MuiMenuItem
-              onClick={() => handleItemClick("/Reportería/Listado_De_Acciones_Formativas")}
+      {tienePermisosModulo(3) && (
+        <>
+          {open && <Divider />}
+          {/* Reportería con menú flotante */}
+          <List>
+            <MenuItem
+              path="/Reportería"
+              icon={<TextSnippetOutlinedIcon />}
+              text="Reportería"
+              onClick={() => (open ? setOpenReporteria(!openRepoeteria) : null)}
+              isParent="reporteria"
+              parentActive={isReporteriaActive}
+              menuRef={reporteriaAnchorRef}
+              onMouseEnter={handelReporteriaMenuOpen}
+              onMouseLeave={handleMenuClose}
+            />
 
+            {open && (
+              <Collapse in={openRepoeteria} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
+                <List component="div" disablePadding>
+
+                  {tienePermiso(4) && (
+                    <MenuItem
+                      path="/Reportería/Listado_De_Acciones_Formativas"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de<br />Acciones Formativas
+                        </>
+                      }
+                      onClick={() => navigate("/Reportería/Listado_De_Acciones_Formativas")}
+                    />
+
+                  )}
+
+                  {tienePermiso(4) && (
+                    <MenuItem
+                      path="/Reportería/Listado_Participantes"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de<br />Participantes
+                        </>
+                      }
+                      onClick={() => navigate("/Reportería/Listado_Participantes")}
+                    />
+                  )}
+                </List>
+              </Collapse>
+            )}
+
+            {/* Menú flotante de Reportería */}
+            <Menu
+              anchorEl={reporteriaAnchorRef.current}
+              open={reporteriaMenuOpen && !open}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+              PaperProps={{
+                sx: {
+                  marginTop: 35,
+                  ml: 10,
+                  boxShadow: 3,
+                  minWidth: 200,
+                },
+              }}
+              disableAutoFocusItem
             >
-              <ListItemIcon>
-                <TextSnippetOutlinedIcon
-                  fontSize="small"
-                  color={isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit"}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Listado de Acciones Formativas"
-                primaryTypographyProps={{
-                  color: isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit",
-                }}
-              />
-            </MuiMenuItem>
+              {tienePermiso(4) && (
+                <MuiMenuItem
+                  onClick={() => handleItemClick("/Reportería/Listado_De_Acciones_Formativas")}
+
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Acciones Formativas"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+
+              )}
+
+              {tienePermiso(3) && (
+                <MuiMenuItem
+                  onClick={() => handleItemClick("/Reportería/Listado_Participantes")}
+
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Participantes"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
 
 
-            <MuiMenuItem
-              onClick={() => handleItemClick("/Reportería/Listado_Participantes")}
 
+            </Menu>
+          </List>
+        </>
+      )}
+
+      {tienePermisosModulo(4) && (
+        <>
+          {open && <Divider />}
+          {/* Seguridad con menú flotante */}
+          <List>
+            <MenuItem
+              path="/seguridad"
+              icon={<AdminPanelSettingsOutlinedIcon />}
+              text="Seguridad"
+              onClick={() => (open ? setOpenSeguridad(!openSeguridad) : null)}
+              isParent="seguridad"
+              parentActive={isSeguridadActive}
+              menuRef={seguridadAnchorRef}
+              onMouseEnter={handleSeguridadMenuOpen}
+              onMouseLeave={handleMenuClose}
+            />
+
+            {open && (
+              <Collapse in={openSeguridad} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
+                <List component="div" disablePadding>
+                  {tienePermiso(5) && (
+                    <MenuItem
+                      path="/Usuarios"
+                      icon={<PeopleAltOutlinedIcon />}
+                      text="Usuarios"
+                      onClick={() => navigate("/Seguridad/Usuarios")}
+                    />
+
+                  )}
+                  {tienePermiso(5) && (
+                    <MenuItem
+                      path="/Roles-y-Permisos"
+                      icon={<HttpsOutlinedIcon />}
+                      text="Roles y Permisos"
+                      onClick={() => navigate("/Seguridad/Roles-y-Permisos")}
+                    />
+                  )}
+                </List>
+              </Collapse>
+            )}
+
+            {/* Menú flotante de Seguridad */}
+            <Menu
+              anchorEl={seguridadAnchorRef.current}
+              open={seguridadMenuOpen && !open}
+              onClose={handleMenuCloseSegu}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+              PaperProps={{
+                sx: {
+                  marginTop: 43,
+                  ml: 10,
+                  boxShadow: 3,
+                  minWidth: 200,
+                },
+              }}
+              disableAutoFocusItem
             >
-              <ListItemIcon>
-                <TextSnippetOutlinedIcon
-                  fontSize="small"
-                  color={isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit"}
-                />
-              </ListItemIcon>
-              <ListItemText
-                primary="Listado de Participantes"
-                primaryTypographyProps={{
-                  color: isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit",
-                }}
-              />
-            </MuiMenuItem>
+
+              {tienePermiso(5) && (
+                <MuiMenuItem
+                  onClick={() => handleItemClick("/Seguridad/Usuarios")}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: isActive("/Seguridad/Usuarios")
+                        ? "#88CFE0"
+                        : "rgba(0, 0, 0, 0.04)",
+                    },
+                  }}
+                >
+                  <ListItemIcon>
+                    <PeopleAltOutlinedIcon
+                      fontSize="small"
+                      color={isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Usuarios"
+                    primaryTypographyProps={{
+                      color: isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
+
+              {tienePermiso(6) && (
+                <MuiMenuItem
+                  onClick={() => handleItemClick("/Seguridad/Roles-y-Permisos")}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: isActive("/Seguridad/Roles-y-Permisos")
+                        ? "#88CFE0"
+                        : "rgba(0, 0, 0, 0.04)",
+                    },
+                  }}
+                >
+                  <ListItemIcon>
+                    <HttpsOutlinedIcon
+                      fontSize="small"
+                      color={isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Roles y Permisos"
+                    primaryTypographyProps={{
+                      color: isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
+            </Menu>
+          </List>
+        </>
+      )}
 
 
 
 
-          </Menu>
-        </List>
-      </>
-
-
-
-
-      {open && <Divider />}
     </Drawer>
   );
 };

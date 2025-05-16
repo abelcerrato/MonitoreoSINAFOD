@@ -59,13 +59,11 @@ const LineamientosI = () => {
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
     formacioninvest: "",
-    creadopor: user,
-    modificadopor: user
+    creadopor: user.id,
+    modificadopor: user.id
   });
   const navigate = useNavigate();
-  const handleRedirect = () => {
-    navigate("/dashboard");
-  };
+
 
   // Manejar cambios en campos de texto y selects
   const handleChange = (e) => {
@@ -298,8 +296,8 @@ const LineamientosI = () => {
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
 
-    formDataToSend.append("creadopor", user);
-    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("creadopor", user.id);
+    formDataToSend.append("modificadopor", user.id);
     formDataToSend.append("formacioninvest", "Investigación");
 
     // Contador de archivos subidos
@@ -393,7 +391,7 @@ const LineamientosI = () => {
     <>
       <Dashboard>
 
-        <Paper sx={{ padding: 5, marginBottom: 3 }}>
+        <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
           <Grid
             item
             xs={12}
@@ -406,23 +404,31 @@ const LineamientosI = () => {
                 borderColor: color.primary.rojo,
                 color: color.primary.rojo,
               }}
-              onClick={() => handleRedirect()}
+                    onClick={() => navigate("/dashboard")}
             >
               Cerrar
             </Button>
           </Grid>
-          <Paper sx={{ padding: 3, marginBottom: 3, mt: 2 }} elevation={3}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
-                <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                  Registro de Lineamientos para Investigación
-                </Typography>
-              </Grid>
+          <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
 
-            </Grid>
+            <Typography
+              variant="h4"
+              sx={{
+                color: color.primary.azul,
+                fontSize: {
+                  xs: '1.5rem',
+                  sm: '2rem',
+                  md: '2.5rem',
+                  lg: '2rem',
+                },
+              }}
+            >
+              Registro de Lineamientos para Investigación
+            </Typography>
+
 
             <Grid container spacing={5} mt={2}>
-              <Grid item xs={12} size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">Título del Proyecto</Typography>
                 <TextField
                   fullWidth
@@ -442,8 +448,11 @@ const LineamientosI = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} size={6}>
-                <Typography variant="h6" gutterBottom>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography
+                  variant="h6"
+
+                >
                   Documento del Protocolo del Proyecto de Investigación Educativa
                 </Typography>
                 <Button
@@ -492,34 +501,6 @@ const LineamientosI = () => {
                   </Box>
                 )}
               </Grid>
-              {/*  <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">Estado del Protocolo</Typography>
-              <FormControl fullWidth error={errors.estadoprotocolo}>
-                <Select
-                  name="estadoprotocolo"
-                  value={formData.estadoprotocolo || ""}
-                  onChange={handleChange}
-                  sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: errors.estadoprotocolo ? 'red' : '',
-                    },
-                  }}
-                >
-                  <MenuItem value="" disabled>Selecione una opción</MenuItem>
-                  <MenuItem value="Incompleto">Incompleto</MenuItem>
-                  <MenuItem value="Completo">Completo</MenuItem>
-                </Select>
-                {errors.estadoprotocolo && (
-                  <FormHelperText style={{ color: 'red' }}>
-                    Debe seleccionar el estado del protocolo
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid> */}
-
-
-
-
 
             </Grid>
 
@@ -589,19 +570,27 @@ const LineamientosI = () => {
               </DialogContent>
             </Dialog>
           </Paper>
-          <Paper sx={{ padding: 3, marginBottom: 3 }} elevation={3} >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
-                <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                  Monitoreo y Seguimiento de la Investigación
-                </Typography>
-              </Grid>
+          <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: color.primary.azul,
+                fontSize: {
+                  xs: '1.5rem',
+                  sm: '2rem',
+                  md: '2.5rem',
+                  lg: '2rem',
+                },
+              }}
+            >
 
-            </Grid>
+              Monitoreo y Seguimiento de la Investigación
+            </Typography>
+
 
             <Grid container spacing={5} mt={2}>
 
-              <Grid item xs={12} size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h6" gutterBottom>
                   Documento de Monitoreo y Evaluación
                 </Typography>
@@ -651,7 +640,7 @@ const LineamientosI = () => {
                 )}
 
               </Grid>
-              <Grid item xs={12} size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h6" gutterBottom>
                   Documento de Aplicación de Investigación
                 </Typography>
@@ -686,7 +675,7 @@ const LineamientosI = () => {
                     </Typography>
                     <IconButton
                       color="primary"
-                      sx={{ background: color.azul, ml: 'auto' }}
+                      sx={{ background: color.primary.azul, ml: 'auto' }}
                       onClick={() => handlePreview('aplicacionevaluacionurl')}
                     >
                       <VisibilityIcon fontSize="small" />
@@ -770,26 +759,28 @@ const LineamientosI = () => {
               </DialogContent>
             </Dialog>
           </Paper>
-          <Box
-            sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
-          >
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.rojo }}
-              startIcon={<FastForwardOutlinedIcon />}
-              onClick={() => navigate("/Investigación")}
-            >
-              Omitir
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.azul, ml: 5 }}
-              startIcon={<SaveIcon />}
-              onClick={handleSubmit}
-            >
-              Guardar
-            </Button>
-          </Box>
+          <Grid container spacing={2} sx={{ mt: 5 }} justifyContent="flex-end">
+            <Grid item>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: color.primary.rojo }}
+                startIcon={<FastForwardOutlinedIcon />}
+                onClick={() => navigate("/Investigación")}
+              >
+                Omitir
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: color.primary.azul }}
+                startIcon={<SaveIcon />}
+                onClick={handleSubmit}
+              >
+                Guardar
+              </Button>
+            </Grid>
+          </Grid>
         </Paper>
       </Dashboard>
     </>

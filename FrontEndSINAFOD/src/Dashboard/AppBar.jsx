@@ -30,7 +30,7 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
       }
 
       // Llama al endpoint sin token (si no es necesario)
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/logout/${user.id}`);
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/cierreSesion/${user.id}`);
       console.log("Respuesta del backend:", response.data); // Para depuración
 
       // Limpieza y redirección
@@ -135,7 +135,7 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
         >
           <Grid item xs={12} sm={9}>
             <Typography variant="h6" noWrap sx={{ color: "white" }}>
-              {user}
+              {user.usuario}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={3}>
