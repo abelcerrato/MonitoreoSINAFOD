@@ -66,12 +66,13 @@ export const postInvestigacionC = async (req, res) => {
 // Se actualizan los lineamientos y se suben los archivos correspondientes
 export const putInvestigacionC = async (req, res) => {
     const { id } = req.params;
-    const { nvestigacion, tipoactividad, existeconvenio, institucionconvenio,
+    const { investigacion, tipoactividad, existeconvenio, institucionconvenio,
         presupuesto, duracion, funciondirigido, prebasica, basica, media,
         fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor } = req.body
+console.log(req.body);
 
     try {
-        const invest = await putInvestigacionM(nvestigacion, tipoactividad, existeconvenio, institucionconvenio,
+        const invest = await putInvestigacionM(investigacion, tipoactividad, existeconvenio, institucionconvenio,
             presupuesto, duracion, funciondirigido, prebasica, basica, media,
             fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, id)
         res.json({ message: "Investigacion actualizada exitosamente", user: invest });
@@ -389,7 +390,8 @@ export const putLineamientosInvestigacionC = async (req, res) => {
         };
 
         // 7. Actualizar en la base de datos
-        const updatedData = await putLineamientosM(
+        const updatedData = await putLineamientosInvesatigacionM(
+            investigacion,
             updateData.presentoprotocolo,
             updateData.presentoprotocolourl,
             updateData.estadoprotocolo,

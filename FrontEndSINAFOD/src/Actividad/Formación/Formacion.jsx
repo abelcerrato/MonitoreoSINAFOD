@@ -43,15 +43,7 @@ const Formacion = () => {
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
-    institucionresponsable: "",
-    responsablefirmas: "",
-    ambitoformacion: "",
-    tipoformacion: "",
-
-    modalidad: "",
-    plataforma: "",
     duracion: "",
-    estado: "",
     funciondirigido: "",
     prebasica: false,
     basica: false,
@@ -61,11 +53,6 @@ const Formacion = () => {
     tercerciclo: false,
     fechainicio: "",
     fechafinal: "",
-
-    participantesprog: "",
-    espaciofisico: "",
-    direccion: "",
-    zona: "",
     socializaron: "",
     observacion: "",
 

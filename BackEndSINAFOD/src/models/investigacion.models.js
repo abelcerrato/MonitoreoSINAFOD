@@ -65,7 +65,7 @@ export const postInvestigacionM = async (investigacion, tipoactividad, existecon
         const { rows } = await pool.query(`
             INSERT INTO investigacion (investigacion, tipoactividad, existeconvenio, institucionconvenio,
                                         presupuesto, duracion, funciondirigido, prebasica, basica, media, 
-                                        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor) 
+                                        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor,fechacreacion) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,  CURRENT_TIMESTAMP) 
             RETURNING id`,
             [investigacion, tipoactividad, existeconvenio, institucionconvenio,

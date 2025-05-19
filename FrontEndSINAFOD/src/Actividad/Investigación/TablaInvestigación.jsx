@@ -125,7 +125,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/formacion`) // Cambia esta URL a la de tu API
+      .get(`${process.env.REACT_APP_API_URL}/investigacion`) // Cambia esta URL a la de tu API
       .then((response) => {
         setRows(response.data); // Suponiendo que los datos se encuentran en response.data
         //setIsSaved(false);
@@ -144,7 +144,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     ) {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>investigación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -155,7 +155,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     ) {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>investigación</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -163,14 +163,14 @@ export default function TablaActividad(isSaved, setIsSaved) {
     }
   };
 
-  const handleFormacion = async (id) => {
+  const handleinvestigacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Formación/${id}`);
+    navigate(`/Actualizar_Investigación/${id}`);
   };
 
-  const handleLineamientosFormacion = async (id) => {
+  const handleLineamientosinvestigacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
+    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
   };
 
   const handleOpenQrModal = (id) => {
@@ -199,7 +199,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
               <>
                 <Tooltip title="Editar">
                   <IconButton
-                    onClick={() => handleFormacion(params.id)}
+                    onClick={() => handleinvestigacion(params.id)}
                     color="action"
                   >
                     <EditIcon />
@@ -208,21 +208,12 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
                 <Tooltip title="Actualizar Lineamientos">
                   <IconButton
-                    onClick={() => handleLineamientosFormacion(params.id)}
+                    onClick={() => handleLineamientosinvestigacion(params.id)}
                     color="success"
                   >
                     <ChecklistIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Generar QR para participantes">
-                  <IconButton
-                    sx={{ color: color.primary.azul }}
-                    onClick={() => handleOpenQrModal(params.id)}
-                  >
-                    <QrCodeScannerOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
-
                 <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
@@ -238,12 +229,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
       : []),
     { field: "id", headerName: "ID", width: 50 },
     {
-      field: "formacion",
-      headerName: "Nombre de la Formación",
+      field: "investigacion",
+      headerName: "Nombre de la Investigación",
       width: 230,
     },
-    { field: "modalidad", headerName: "Modalidad", width: 150 },
-    { field: "estado", headerName: "Estado", width: 120 },
     {
       field: "fechainicio",
       headerName: "Fecha Inicio",

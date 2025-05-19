@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import AppBarComponent from "./AppBar";
 import ProjectDrawer from "./Drawer";
 import React from "react";
-import TablaActividad from "../Actividad/Formación/TablaFormacion";
+import TablaFormacion from "../Actividad/Formación/TablaFormacion";
+import TablaInvestigacion from "../Actividad/Investigación/TablaInvestigación";
 import { useUser } from "../Components/UserContext";
 import { useLocation } from "react-router-dom";
 import CambiarContraModal from "../Login/CambiarContraModal";
@@ -13,7 +14,7 @@ const Dashboard = ({ children }) => {
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const location = useLocation();
 
-  const showTablaActividad = location.pathname === "/dashboard";
+  const showTablaFormacion = location.pathname === "/dashboard";
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -65,8 +66,8 @@ const Dashboard = ({ children }) => {
         }}
       >
         {children}
-        {showTablaActividad && <TablaActividad />}
-
+        {showTablaFormacion && <TablaFormacion />}
+        {showTablaFormacion && <TablaInvestigacion />}
         <Typography
           variant="body2"
           color="text.secondary"

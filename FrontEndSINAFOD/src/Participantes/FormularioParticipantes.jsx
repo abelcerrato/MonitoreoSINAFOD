@@ -159,7 +159,7 @@ const FormularParticipantes = () => {
       console.log("formData", formData);
       const transformedFormData = transformFormData(formData);
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/CapacitacionP/${investCap}`,
+        `${process.env.REACT_APP_API_URL}/participante/${formacioninvest}/${investCap}`,
         transformedFormData,
         {
           headers: {

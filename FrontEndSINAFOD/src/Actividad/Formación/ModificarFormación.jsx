@@ -409,7 +409,7 @@ const ModificarFormacion = () => {
                   navigate(`/Participantes`, {
                     state: {
                       investCap: id,
-                      formacioninvest: formData.formacioninvest,
+                      formacioninvest: "formacion",
                     },
                   })
                 }
