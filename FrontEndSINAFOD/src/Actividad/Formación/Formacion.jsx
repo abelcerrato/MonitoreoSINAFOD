@@ -129,6 +129,14 @@ const Formacion = () => {
           }));
         }
       }
+
+      // Nueva condición: Limpiar ciclos cuando se desmarca "Básica"
+      if (name === "basica" && !checked) {
+        newData.primerciclo = false;
+        newData.segundociclo = false;
+        newData.tercerciclo = false;
+      }
+
       // 2) Validación de campo vacío (solo aplica si no es checkbox)
       if (type !== "checkbox") {
         const isEmpty = String(sanitizedValue || "").trim() === "";
@@ -308,7 +316,7 @@ const Formacion = () => {
 
         // Si confirma, hacer el POST
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/formacion`,
+          `${process.env.REACT_APP_API_URL}/investigacion`,
           cleanedFormData,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -316,7 +324,7 @@ const Formacion = () => {
       } else {
         // Actualizar el registro
         const updateResponse = await axios.put(
-          `${process.env.REACT_APP_API_URL}/formacion/${idToUse}`,
+          `${process.env.REACT_APP_API_URL}/investigacion/${idToUse}`,
           cleanedFormData,
           { headers: { "Content-Type": "application/json" } },
           navigate("/dashboard")

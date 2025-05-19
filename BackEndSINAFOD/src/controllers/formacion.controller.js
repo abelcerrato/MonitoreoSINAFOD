@@ -239,8 +239,7 @@ export const postLineamientosFormacionC = async (req, res) => {
 
 export const putLineamientosFormacionC = async (req, res) => {
     const { id } = req.params;
-    const {
-    } = req.body;
+    const {modificadopor,formacion} = req.body;
 
     const files = req.files || {};
     const d = new Date();
@@ -357,7 +356,7 @@ export const putLineamientosFormacionC = async (req, res) => {
 
         // 6. Preparar datos finales para actualización
         const updateData = {
-            formacion: accionformacion || currentData.formacion,
+            formacion: formacion || currentData.formacion,
             criteriosfactibilidad: booleanUpdates.criteriosfactibilidad ?? currentData.criteriosfactibilidad,
             criteriosfactibilidadurl: fileUpdates.criteriosfactibilidadurl ?? null,
             requisitostecnicos: booleanUpdates.requisitostecnicos ?? currentData.requisitostecnicos,
@@ -368,6 +367,7 @@ export const putLineamientosFormacionC = async (req, res) => {
 
         // 7. Actualizar en la base de datos
         const updatedData = await putLineamientosFormacionM(
+            updateData.formacion,
             updateData.criteriosfactibilidad,
             updateData.criteriosfactibilidadurl,
             updateData.requisitostecnicos,

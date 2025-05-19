@@ -3,26 +3,21 @@ import { useState, useEffect } from "react";
 import AppBarComponent from "./AppBar";
 import ProjectDrawer from "./Drawer";
 import React from "react";
-import TablaActividad from "../Actividad/TablaAcividad";
+import TablaActividad from "../Actividad/Formación/TablaFormacion";
 import { useUser } from "../Components/UserContext";
 import { useLocation } from "react-router-dom";
 import CambiarContraModal from "../Login/CambiarContraModal";
-
 
 const Dashboard = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const location = useLocation();
 
-  const showTablaActividad =
-    location.pathname === "/dashboard";
-
-
+  const showTablaActividad = location.pathname === "/dashboard";
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
-
 
   const { user, updateUser } = useUser();
 
@@ -39,10 +34,8 @@ const Dashboard = ({ children }) => {
     setOpenChangePasswordModal(false);
 
     // Opcional: Guardar en localStorage/sessionStorage
-    sessionStorage.setItem('passwordChanged', 'true');
+    sessionStorage.setItem("passwordChanged", "true");
   };
-
-
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -71,7 +64,6 @@ const Dashboard = ({ children }) => {
           backgroundColor: "#f2f2f2",
         }}
       >
-
         {children}
         {showTablaActividad && <TablaActividad />}
 
@@ -87,7 +79,9 @@ const Dashboard = ({ children }) => {
 
         <CambiarContraModal
           open={openChangePasswordModal}
-          onClose={() => !user?.changePasswordRequired && setOpenChangePasswordModal(false)}
+          onClose={() =>
+            !user?.changePasswordRequired && setOpenChangePasswordModal(false)
+          }
           mandatory={user?.changePasswordRequired}
           onSuccess={handlePasswordChangeSuccess}
         />

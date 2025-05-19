@@ -16,6 +16,7 @@ import {
   Tab,
   Tabs,
   FormHelperText,
+  Checkbox,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
@@ -32,39 +33,42 @@ const ModificarFormacion = () => {
   const { user } = useUser();
   const { id } = useParams();
   const location = useLocation();
-
-  const [NivelEducativo, setNivelEducativo] = useState([]);
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
-  const [ciclos, setCiclos] = useState([]);
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
-    formacion: location.state?.accionformacion || "",
+    formacion: location.state?.formacion || "",
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
-    duracion: 0,
-    funciondirigido: "",
-    fechainicio: "",
-    fechafinal: "",
-    direccion: "",
-    socializaron: null,
-    zona: "",
-    observacion: "",
-    creadopor: user.id,
-    modificadopor: user.id,
     institucionresponsable: "",
     responsablefirmas: "",
     ambitoformacion: "",
     tipoformacion: "",
-    modalidad: "",
 
-    espaciofisico: "",
-    idnivelesacademicos: "",
-    cicloacademico: "",
-    estado: "",
-    participantesprog: 0,
+    modalidad: "",
     plataforma: "",
+    duracion: "",
+    estado: "",
+    funciondirigido: "",
+    prebasica: false,
+    basica: false,
+    media: false,
+    primerciclo: false,
+    segundociclo: false,
+    tercerciclo: false,
+    fechainicio: "",
+    fechafinal: "",
+
+    participantesprog: "",
+    espaciofisico: "",
+    direccion: "",
+    zona: "",
+    socializaron: "",
+    observacion: "",
+
+    creadopor: user.id,
+    modificadopor: user.id,
   });
 
   useEffect(() => {
@@ -106,34 +110,81 @@ const ModificarFormacion = () => {
 
   // Manejar cambios en campos de texto y selects
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
-    // Sanitizar el valor para que nunca sea null ni undefined
-    const sanitizedValue = value === null || value === undefined ? "" : value;
+    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
+    let sanitizedValue =
+      type === "checkbox" ? checked : value === null ? "" : value;
+
+    // 2) Validación para "participantesprog" (solo números)
+    if (name === "participantesprog") {
+      sanitizedValue = sanitizedValue.replace(/[^0-9]/g, "");
+    }
 
     setFormData((prevData) => {
+      // Base de la nueva data
       let newData = { ...prevData, [name]: sanitizedValue };
 
-      // Validación de campo vacío
-      const isEmpty = String(sanitizedValue || "").trim() === "";
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: isEmpty,
-      }));
+      // Limpiar campos según cambio de modalidad
+      if (name === "modalidad") {
+        if (sanitizedValue === "Virtual") {
+          // Limpiar campos de modalidad presencial
+          newData.espaciofisico = "";
+          newData.direccion = "";
+          setFieldErrors((prev) => ({
+            ...prev,
+            espaciofisico: false,
+            direccion: false,
+          }));
+        } else if (sanitizedValue === "Presencial") {
+          // Limpiar campo de plataforma
+          newData.plataforma = "";
+          setFieldErrors((prev) => ({
+            ...prev,
+            plataforma: false,
+          }));
+        } else if (sanitizedValue === "Bimodal") {
+          // No limpiar nada para bimodal ya que necesita ambos
+        } else {
+          // Limpiar todos los campos relacionados
+          newData.plataforma = "";
+          newData.espaciofisico = "";
+          newData.direccion = "";
+          setFieldErrors((prev) => ({
+            ...prev,
+            plataforma: false,
+            espaciofisico: false,
+            direccion: false,
+          }));
+        }
+      }
+      
+      // Nueva condición: Limpiar ciclos cuando se desmarca "Básica"
+      if (name === "basica" && !checked) {
+        newData.primerciclo = false;
+        newData.segundociclo = false;
+        newData.tercerciclo = false;
+      }
 
-      // Validación de fechas
+      // 2) Validación de campo vacío (solo aplica si no es checkbox)
+      if (type !== "checkbox") {
+        const isEmpty = String(sanitizedValue || "").trim() === "";
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: isEmpty,
+        }));
+      }
+
+      // 3) Validación de fechas (tu lógica original)
       if (name === "fechainicio" || name === "fechafinal") {
         const isValidDate =
           sanitizedValue && !isNaN(new Date(sanitizedValue).getTime());
+        newData[name] = isValidDate
+          ? new Date(sanitizedValue).toISOString().split("T")[0]
+          : "";
 
-        if (isValidDate) {
-          newData[name] = new Date(sanitizedValue).toISOString().split("T")[0];
-        } else {
-          newData[name] = "";
-        }
-
+        // Validación de rango de fechas
         const { fechainicio, fechafinal } = newData;
-
         if (
           fechainicio &&
           fechafinal &&
@@ -153,7 +204,7 @@ const ModificarFormacion = () => {
         }
       }
 
-      // Limpiar campos de convenio cuando pasamos a Interna
+      // 4) Limpiar campos de convenio (tu lógica original)
       if (name === "tipoactividad" && sanitizedValue === "Interna") {
         newData.institucionconvenio = "";
         newData.existeconvenio = "";
@@ -164,79 +215,33 @@ const ModificarFormacion = () => {
         }));
       }
 
-      // Limpiar campos de plataforma cuando pasamos a presencial
-      if (name === "modalidad" && sanitizedValue === "Presencial") {
-        newData.plataforma = "";
-        setFieldErrors((prev) => ({
-          ...prev,
-          plataforma: false,
-        }));
-      }
-
-      // Validación de minutos
+      // 5) Validación de minutos (tu lógica original)
       if (name === "minutos") {
-        if (Number(sanitizedValue) > 59) {
-          setErrorM("Solo se admiten minutos hasta 59.");
-        } else {
-          setErrorM("");
-        }
+        setErrorM(
+          Number(sanitizedValue) > 59 ? "Solo se admiten minutos hasta 59." : ""
+        );
       }
 
-      // Recalcular duración en HH:MM
-      const horas = Number(newData.horas) || 0;
-      const minutos = Number(newData.minutos) || 0;
-      newData.duracion = `${horas} hours ${minutos} minutes`;
+      // 6) Recalcular duración en HH:MM (si aplica)
+      if (name === "horas" || name === "minutos") {
+        const horas = Number(newData.horas) || 0;
+        const minutos = Number(newData.minutos) || 0;
+        newData.duracion = `${horas} hours ${minutos} minutes`;
+      }
 
       return newData;
     });
   };
 
-  // Obtener NivelEducativo al montar el componente
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/nivelesAcademicos`
-        );
-        setNivelEducativo(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
-
-  // Obtener ciclos cuando cambia el departamento seleccionado
-  useEffect(() => {
-    if (!formData.idnivelesacademicos) return; // Si no hay departamento seleccionado, no hacer la petición
-
-    const obtenerciclos = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/cicloAcademicoNivel/${formData.idnivelesacademicos}`
-        );
-        console.log("Ciclos obtenidos:", response.data);
-
-        setCiclos(response.data);
-      } catch (error) {
-        console.error("Error al obtener los ciclos", error);
-      }
-    };
-
-    obtenerciclos();
-  }, [formData.idnivelesacademicos]);
-
   // Efecto para capturar el ID si viene del flujo "Guardar"
-
   useEffect(() => {
     if (location.state?.investCap) {
       setIsFromLineamientos(true);
       // Si viene con título desde lineamientos, actualiza el formData
-      if (location.state.accionformacion) {
+      if (location.state.formacion) {
         setFormData((prev) => ({
           ...prev,
-          accionformacion: location.state.accionformacion,
+          formacion: location.state.formacion,
         }));
       }
     }
@@ -244,7 +249,7 @@ const ModificarFormacion = () => {
 
   const handleSave = async () => {
     // Lista de campos obligatorios
-    const requiredFields = ["accionformacion"];
+    const requiredFields = ["formacion"];
 
     // Detectar campos vacíos
     let errors = {};
@@ -458,12 +463,12 @@ const ModificarFormacion = () => {
               </Typography>
               <TextField
                 fullWidth
-                name="accionformacion"
-                value={formData.accionformacion}
+                name="formacion"
+                value={formData.formacion}
                 onChange={handleChange}
-                error={fieldErrors.accionformacion}
+                error={fieldErrors.formacion}
                 helperText={
-                  fieldErrors.accionformacion ? "Este campo es obligatorio" : ""
+                  fieldErrors.formacion ? "Este campo es obligatorio" : ""
                 }
                 disabled={isFromLineamientos} // Deshabilita si viene de lineamientos
                 InputProps={{
@@ -709,47 +714,90 @@ const ModificarFormacion = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Nivel Educativo</Typography>
-              <FormControl fullWidth error={fieldErrors.idnivelesacademicos}>
-                <Select
-                  name="idnivelesacademicos"
-                  value={formData.idnivelesacademicos || ""}
-                  onChange={handleChange}
-                  fullWidth
-                >
-                  {NivelEducativo.length > 0 ? (
-                    NivelEducativo.map((dep) => (
-                      <MenuItem key={dep.id} value={dep.id}>
-                        {dep.nombre}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>Cargando...</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.prebasica}
+                        onChange={handleChange}
+                        name="prebasica"
+                      />
+                    }
+                    label="Prebásica"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.basica}
+                        onChange={handleChange}
+                        name="basica"
+                      />
+                    }
+                    label="Básica"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.media}
+                        onChange={handleChange}
+                        name="media"
+                      />
+                    }
+                    label="Media"
+                  />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Ciclo Educativo</Typography>
-              <FormControl fullWidth>
-                <Select
-                  name="cicloacademico"
-                  value={formData.cicloacademico || ""}
-                  onChange={handleChange}
-                  fullWidth
-                  disabled={!ciclos.length} // Deshabilitar si no hay ciclos cargados
-                >
-                  {ciclos.length > 0 ? (
-                    ciclos.map((mun) => (
-                      <MenuItem key={mun.id} value={mun.ciclo}>
-                        {mun.ciclo}
-                      </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>Seleccione un ciclo</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            </Grid>
+
+            {formData.basica === true && (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="subtitle1">Ciclo Educativo</Typography>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.primerciclo}
+                          onChange={handleChange}
+                          name="primerciclo"
+                        />
+                      }
+                      label="Primer Ciclo"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.segundociclo}
+                          onChange={handleChange}
+                          name="segundociclo"
+                        />
+                      }
+                      label="Segundo Ciclo"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.tercerciclo}
+                          onChange={handleChange}
+                          name="tercerciclo"
+                        />
+                      }
+                      label="Tercer Ciclo"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField
@@ -853,7 +901,7 @@ const ModificarFormacion = () => {
               <FormControl fullWidth error={fieldErrors.socializaron}>
                 <Select
                   name="socializaron"
-                  value={formData.socializaron || ""}
+                  value={formData.socializaron?.toString() || ""}
                   onChange={handleChange}
                 >
                   <MenuItem value="true">Sí</MenuItem>

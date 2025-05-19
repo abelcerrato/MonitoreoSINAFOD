@@ -48,7 +48,7 @@ const LineamientosI = () => {
     const { user } = useUser();
     const { id } = useParams();
     const [formData, setFormData] = useState({
-        accionformacion: "",
+        investigacion: "",
         estadoprotocolo: "",
         presentoprotocolourl: null,
         monitoreoyevaluacionurl: null,
@@ -70,7 +70,7 @@ const LineamientosI = () => {
         const obtenerDetalles = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_API_URL}/investC/${id}`
+                  `${process.env.REACT_APP_API_URL}/investigacion/${id}`
                 );
                 const data = response.data[0];
 
@@ -248,13 +248,13 @@ const LineamientosI = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.accionformacion) {
+        if (!formData.investigacion) {
             Swal.fire("Error", "El título del proyecto es requerido", "error");
             return;
         }
 
         const formDataToSend = new FormData();
-        formDataToSend.append("accionformacion", formData.accionformacion);
+        formDataToSend.append("investigacion", formData.investigacion);
         formDataToSend.append("estadoprotocolo", formData.estadoprotocolo);
         formDataToSend.append("modificadopor", user.id);
         formDataToSend.append("formacioninvest", "Investigacion");
@@ -533,8 +533,8 @@ const LineamientosI = () => {
                             <Typography variant="subtitle1">Título del Proyecto</Typography>
                             <TextField
                                 fullWidth
-                                name="accionformacion"
-                                value={formData.accionformacion}
+                                name="investigacion"
+                                value={formData.investigacion}
                                 onChange={handleChange}
                             />
                         </Grid>

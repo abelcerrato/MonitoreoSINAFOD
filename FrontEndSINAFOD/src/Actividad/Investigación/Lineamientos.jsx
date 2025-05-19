@@ -49,11 +49,11 @@ const LineamientosI = () => {
   const [previewContent, setPreviewContent] = useState(null);
 
   const [errors, setErrors] = useState({
-    accionformacion: false,
+    investigacion: false,
     estadoprotocolo: false
   });
   const [formData, setFormData] = useState({
-    accionformacion: "",
+    investigacion: "",
     estadoprotocolo: "",
     presentoprotocolourl: null,
     monitoreoyevaluacionurl: null,
@@ -168,7 +168,7 @@ const LineamientosI = () => {
 
   //   // Resetear errores
   //   const newErrors = {
-  //     accionformacion: false,
+  //     investigacion: false,
   //     estadoprotocolo: false
   //   };
 
@@ -181,8 +181,8 @@ const LineamientosI = () => {
   //      }
   //   */
   //   // Validación del título del proyecto
-  //   if (!formData.accionformacion) {
-  //     newErrors.accionformacion = true;
+  //   if (!formData.investigacion) {
+  //     newErrors.investigacion = true;
   //     hasError = true;
   //   }
 
@@ -196,7 +196,7 @@ const LineamientosI = () => {
   //   const formDataToSend = new FormData();
 
   //   // Agregar campos de texto
-  //   formDataToSend.append("accionformacion", formData.accionformacion);
+  //   formDataToSend.append("investigacion", formData.investigacion);
   //   formDataToSend.append(
   //     "estadoprotocolo",
   //     formData.presentoprotocolourl
@@ -257,7 +257,7 @@ const LineamientosI = () => {
   //     );
   //     const investCap = response.data.id;
   //     navigate("/Investigación", {
-  //       state: { investCap, accionformacion: formData.accionformacion },
+  //       state: { investCap, investigacion: formData.investigacion },
   //     });
   //   } catch (error) {
   //     console.error("Error al enviar los datos:", error);
@@ -271,7 +271,7 @@ const LineamientosI = () => {
 
     // Resetear errores
     const newErrors = {
-      accionformacion: false,
+      investigacion: false,
 
     };
 
@@ -279,8 +279,8 @@ const LineamientosI = () => {
 
 
     // Validación del título del proyecto
-    if (!formData.accionformacion) {
-      newErrors.accionformacion = true;
+    if (!formData.investigacion) {
+      newErrors.investigacion = true;
       hasError = true;
     }
 
@@ -294,7 +294,7 @@ const LineamientosI = () => {
     const formDataToSend = new FormData();
 
     // Agregar campos de texto
-    formDataToSend.append("accionformacion", formData.accionformacion);
+    formDataToSend.append("investigacion", formData.investigacion);
 
     formDataToSend.append("creadopor", user.id);
     formDataToSend.append("modificadopor", user.id);
@@ -324,7 +324,6 @@ const LineamientosI = () => {
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
         showCancelButton: true,
-        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
         confirmButtonText: 'Sí, Registar',
@@ -339,14 +338,14 @@ const LineamientosI = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/lineamientos`,
+        `${process.env.REACT_APP_API_URL}/lineamientosinvestigacion`,
         formDataToSend
       );
 
       navigate("/Investigación", {
         state: {
           investCap: response.data.id,
-          accionformacion: formData.accionformacion,
+          investigacion: formData.investigacion,
         },
       });
     } catch (error) {
@@ -432,16 +431,16 @@ const LineamientosI = () => {
                 <Typography variant="subtitle1">Título del Proyecto</Typography>
                 <TextField
                   fullWidth
-                  name="accionformacion"
-                  value={formData.accionformacion}
+                  name="investigacion"
+                  value={formData.investigacion}
                   onChange={handleChange}
-                  error={errors.accionformacion}
-                  helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
+                  error={errors.investigacion}
+                  helperText={errors.investigacion ? "El título del proyecto es requerido" : ""}
                   FormHelperTextProps={{ style: { color: 'red' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
-                        borderColor: errors.accionformacion ? 'red' : '',
+                        borderColor: errors.investigacion ? 'red' : '',
                       },
                     },
                   }}

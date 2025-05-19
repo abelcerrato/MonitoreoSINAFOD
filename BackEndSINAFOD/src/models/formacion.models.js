@@ -154,21 +154,23 @@ export const postLineamientosFormacionM = async (formacion, criteriosfactibilida
 
 
 
-export const putLineamientosFormacionM = async (criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, modificadopor, id) => {
+export const putLineamientosFormacionM = async (formacion,criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, modificadopor, id) => {
     try {
-        const { rows } = await pool.query(`i
+        const { rows } = await pool.query(`
+
             UPDATE formacion 
             SET 
-                criteriosfactibilidad=$1,
-                criteriosfactibilidadurl=$2,
-                requisitostecnicos=$3,
-                requisitostecnicosurl=$4,
-                criterioseticos=$5,
-                criterioseticosurl=$6,
-                modificadopor=$7
-            WHERE id=$8
+            formacion=$1,
+                criteriosfactibilidad=$2,
+                criteriosfactibilidadurl=$3,
+                requisitostecnicos=$4,
+                requisitostecnicosurl=$5,
+                criterioseticos=$6,
+                criterioseticosurl=$7,
+                modificadopor=$8
+            WHERE id=$9
             RETURNING *`,
-            [ criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, modificadopor, id])
+            [ formacion,criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, modificadopor, id])
         return rows[0];
     } catch (error) {
         throw error;

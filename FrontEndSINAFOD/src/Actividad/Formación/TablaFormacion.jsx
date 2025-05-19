@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 import {
   TableContainer,
   Table,
@@ -11,34 +11,117 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Tooltip,
-  Typography,
+  TableFooter,
+  TablePagination,
   Paper,
-  Box,
-  Button,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import IconButton from "@mui/material/IconButton";
-import Dashboard from "../../Dashboard/dashboard";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
 import { color } from "../../Components/color";
-import {
-  EditOutlined as EditOutlinedIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
-import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
+import CardDetalles from "../CardDetalles";
+import ChecklistIcon from "@mui/icons-material/Checklist";
 import { DataGrid } from "@mui/x-data-grid";
+import Swal from "sweetalert2";
+import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
+import { QRCodeCanvas } from "qrcode.react";
 import { useUser } from "../../Components/UserContext";
+
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
 
 export default function TablaActividad(isSaved, setIsSaved) {
   const navigate = useNavigate();
-  const { permissions } = useUser();
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
     page: 0,
   });
+  const { permissions } = useUser();
 
   const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [qrUrl, setQrUrl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleOpen = (id) => {
+    setSelectedId(id);
+    setOpen(true);
+  };
 
   useEffect(() => {
     axios
@@ -52,17 +135,67 @@ export default function TablaActividad(isSaved, setIsSaved) {
       });
   }, [isSaved]);
 
-  const handleEditClick = async (id) => {
-    navigate(`/Seguridad/Actualizar_Usuario/${id}`);
+  const checkLineamientos = async (id) => {
+    const selectedRow = rows.find((row) => row.id === id);
+
+    if (
+      selectedRow &&
+      selectedRow.estado_lineamientos === "No Lleno Lineamientos"
+    ) {
+      await Swal.fire({
+        title: "¡Advertencia!",
+        html: `Esta <b>${selectedRow.formacioninvest}</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        icon: "warning",
+        confirmButtonText: "Ok",
+        confirmButtonColor: color.primary.azul,
+      });
+    } else if (
+      selectedRow &&
+      selectedRow.estado_lineamientos === "Lineamientos Incompletos"
+    ) {
+      await Swal.fire({
+        title: "¡Advertencia!",
+        html: `Esta <b>${selectedRow.formacioninvest}</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        icon: "warning",
+        confirmButtonText: "Ok",
+        confirmButtonColor: color.primary.azul,
+      });
+    }
+  };
+
+  const handleInvestigación = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Investigación/${id}`);
+  };
+
+  const handleLineamientosInvestigacion = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
+  };
+
+  const handleFormacion = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Formación/${id}`);
+  };
+
+  const handleLineamientosFormacion = async (id) => {
+    await checkLineamientos(id);
+    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
+  };
+
+  const handleOpenQrModal = (id) => {
+    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}`;
+    setQrUrl(qrLink);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   const tienePermiso = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.actualizar === true;
-  };
-  const tienePermisoIn = (idobjeto) => {
-    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
-    return permiso?.insertar === true;
   };
 
   const columns = [
@@ -71,14 +204,41 @@ export default function TablaActividad(isSaved, setIsSaved) {
           {
             field: "actions",
             headerName: "Acción",
+            width: 190,
             renderCell: (params) => (
               <>
-                <Tooltip title="Editar" arrow>
+                <Tooltip title="Editar">
                   <IconButton
-                    onClick={() => handleEditClick(params.id)}
-                    sx={{ color: color.primary.azul }}
+                    onClick={() => handleFormacion(params.id)}
+                    color="action"
                   >
-                    <EditOutlinedIcon />
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Actualizar Lineamientos">
+                  <IconButton
+                    onClick={() => handleLineamientosFormacion(params.id)}
+                    color="success"
+                  >
+                    <ChecklistIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Generar QR para participantes">
+                  <IconButton
+                    sx={{ color: color.primary.azul }}
+                    onClick={() => handleOpenQrModal(params.id)}
+                  >
+                    <QrCodeScannerOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Ver Detalles">
+                  <IconButton
+                    onClick={() => handleOpen(params.id)}
+                    color="info"
+                  >
+                    <RemoveRedEyeIcon />
                   </IconButton>
                 </Tooltip>
               </>
@@ -86,77 +246,74 @@ export default function TablaActividad(isSaved, setIsSaved) {
           },
         ]
       : []),
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "nombre", headerName: "Nombre ", width: 230 },
-    { field: "modalidad", headerName: "Modalidad", width: 300 },
-    { field: "estado", headerName: "Estado", width: 150 },
+    { field: "id", headerName: "ID", width: 50 },
+    {
+      field: "formacion",
+      headerName: "Nombre de la Formación",
+      width: 230,
+    },
+    { field: "modalidad", headerName: "Modalidad", width: 150 },
+    { field: "estado", headerName: "Estado", width: 120 },
     {
       field: "fechainicio",
-      headerName: "Estado",
-      width: 120,
+      headerName: "Fecha Inicio",
+      width: 150,
       renderCell: (params) => {
-        if (!params.value) return "";
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
         const date = new Date(params.value);
         return date.toLocaleDateString("es-ES");
       },
     },
     {
       field: "fechafinal",
-      headerName: "Estado",
-      width: 120,
+      headerName: "Fecha de Finalización",
+      width: 180,
       renderCell: (params) => {
-        if (!params.value) return "";
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
         const date = new Date(params.value);
         return date.toLocaleDateString("es-ES");
       },
     },
-    { field: "lineamientos", headerName: "Lineamientos", width: 120 },
+
+    {
+      field: "estado_lineamientos",
+      headerName: "Lineamientos",
+      width: 260,
+    },
   ];
 
   return (
-    <>
-      <Dashboard>
-        <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            sx={{ fontWeight: "bold", color: color.primary.azul }}
-          >
-            Usuarios
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              marginBottom: 2,
-            }}
-          >
-            {tienePermisoIn(5) && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/Seguridad/Registrar_Usuario")}
-                startIcon={<AddIcon />}
-                sx={{
-                  backgroundColor: color.primary.azul,
-                  marginLeft: 2,
-                }}
-              >
-                Nuevo
-              </Button>
-            )}
-          </Box>
+    <Paper>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSizeOptions={[5, 10, 25]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        autoHeight
+      />
 
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSizeOptions={[5, 10, 25]}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            autoHeight
-          />
-        </Paper>
-      </Dashboard>
-    </>
+      <CardDetalles
+        open={open}
+        handleClose={() => setOpen(false)}
+        id={selectedId}
+      />
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Escanea este QR</DialogTitle>
+        <DialogContent style={{ textAlign: "center" }}>
+          {qrUrl && (
+            <>
+              <QRCodeCanvas value={qrUrl} size={200} />
+              <p style={{ marginTop: "10px" }}>{qrUrl}</p>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </Paper>
   );
 }
