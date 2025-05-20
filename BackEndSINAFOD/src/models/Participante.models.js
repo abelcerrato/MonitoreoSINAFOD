@@ -69,49 +69,12 @@ export const getParticipanteIdM = async (id) => {
     }
 };
 
-/* 
+
 export const getParticipanteIdInvestM = async (id) => {
     try {
         const { rows } = await pool.query
             (`
                 SELECT p.idinvestigacion, i.investigacion, p.id as idparticipante, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
-                    p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
-                    p.añosdeservicio, p.codigodered, 
-                    p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
-                    
-                    p.idfuncion, c.cargo,
-                    p.datoscorrectos, p.autorizadatos, 
-                    mu.usuario as creadopor, p.fechacreacion, 
-                    mu2.usuario as modificadopor, p.fechamodificacion 
-                FROM participantes p
-                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
-                inner join gradosacademicos g on p.idgradoacademicos = g.id 
-                inner join departamento d on p.deptoresidencia = d.id 
-                inner join municipio m on p.municipioresidencia = m.id 
-                left join aldeas a on p.aldearesidencia = a.id 
-                left join investigacion i on p.idinvestigacion= i.id 
-                left join formacion f on p.idformacion = f.id 
-                left join cargodesempeña c on p.idfuncion = c.id
-                inner join ms_usuarios mu on p.creadopor = mu.id 
-                left join ms_usuarios mu2 on p.modificadopor = mu2.id
-                where p.idinvestigacion =$1
-
-        `, [id])
-        //console.log(rows);
-        return rows;
-    } catch (error) {
-        throw error;
-    } 
-};*/
-
-
-
-
-export const getParticipanteIdFormInvestM = async (id) => {
-    try {
-        const { rows } = await pool.query
-            (`
-            SELECT p.idinvestigacion, i.investigacion,  p.idformacion, f.formacion, p.id as idparticipante, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                     p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                     p.añosdeservicio, p.codigodered, 
                     p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
@@ -137,14 +100,65 @@ export const getParticipanteIdFormInvestM = async (id) => {
                 left join investigacion i on p.idinvestigacion= i.id 
                 left join formacion f on p.idformacion = f.id 
                 left join cargodesempeña c on p.idfuncion = c.id
-                --centro educativo
+                --centro educativo 
                 left join centroeducativo ced on ced.idparticipante = p.id 
                 left join departamento dced on ced.iddepartamento = dced.id
 	            left join municipio mced on ced.idmunicipio = mced.id 
 	            left join aldeas aced on ced.idaldea = aced.id
                 left join ms_usuarios mu on p.creadopor = mu.id 
                 left join ms_usuarios mu2 on p.modificadopor = mu2.id
-                where p.idinvestigacion =$1 or p.idformacion =$1
+                where p.idinvestigacion =$1
+
+        `, [id])
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
+
+export const getParticipanteIdFormacionM = async (id) => {
+    try {
+        const { rows } = await pool.query
+            (`
+             SELECT p.idformacion, f.formacion, p.id as idparticipante, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                    p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
+                    p.añosdeservicio, p.codigodered, 
+                    p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
+                    p.idfuncion, c.cargo,
+                    p.datoscorrectos, p.autorizadatos, 
+                    mu.usuario as creadopor, p.fechacreacion, 
+                    mu2.usuario as modificadopor, p.fechamodificacion, 
+                    --datos del centro educativo
+                    ced.id as idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.jornada, ced.zona, 
+	                ced.prebasica, ced.basica, ced.media, 
+	                ced.primero, ced.segundo, ced.tercero, ced.cuarto, ced.quinto, ced.sexto, ced.séptimo, ced.octavo, ced.noveno, 
+	                ced.btp1, ced.btp2, ced.btp3, ced.bch1, ced.bch2, ced.bch3, 
+	                ced.modalidad, 
+	                ced.iddepartamento, dced.nombre as departamentoced,
+	                ced.idmunicipio, mced.nombre  as municipioced,
+	                ced.idaldea, aced.nombre as aldeaced
+                FROM participantes p
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join gradosacademicos g on p.idgradoacademicos = g.id 
+                left join departamento d on p.deptoresidencia = d.id 
+                left join municipio m on p.municipioresidencia = m.id 
+                left join aldeas a on p.aldearesidencia = a.id 
+                left join investigacion i on p.idinvestigacion= i.id 
+                left join formacion f on p.idformacion = f.id 
+                left join cargodesempeña c on p.idfuncion = c.id
+                --centro educativo 
+                left join centroeducativo ced on ced.idparticipante = p.id 
+                left join departamento dced on ced.iddepartamento = dced.id
+	            left join municipio mced on ced.idmunicipio = mced.id 
+	            left join aldeas aced on ced.idaldea = aced.id
+                left join ms_usuarios mu on p.creadopor = mu.id 
+                left join ms_usuarios mu2 on p.modificadopor = mu2.id
+            where p.idformacion =$1
+
         `, [id])
         //console.log(rows);
         return rows;

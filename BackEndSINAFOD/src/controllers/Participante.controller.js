@@ -1,5 +1,5 @@
 
-import { getParticipanteIdInvestM, getParticipanteIdM, getParticipanteM, getParticipanteCodSACEM, getParticipanteIdentificacionM, postParticipanteM, putParticipanteM, getParticipanteIdFormInvestM } from "../models/Participante.models.js";
+import { getParticipanteIdInvestM, getParticipanteIdM, getParticipanteM, getParticipanteCodSACEM, getParticipanteIdentificacionM, postParticipanteM, putParticipanteM, getParticipanteIdFormacionM } from "../models/Participante.models.js";
 
 
 export const getParticipanteC = async (req, res) => {
@@ -33,7 +33,7 @@ export const getParticipanteIdC = async (req, res) => {
 
 
 //Trae los participantes por el id de la investigacion
-/* export const getParticipanteIdInvestC = async (req, res) => {
+export const getParticipanteIdInvestC = async (req, res) => {
     try {
         const { id } = req.params
         const Participante = await getParticipanteIdInvestM(id);
@@ -48,15 +48,15 @@ export const getParticipanteIdC = async (req, res) => {
         console.error('Error al obtener el registro:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
-} */
+}
 
 
 
-//Trae los participantes por el id de la Formacion o de la Investigacion
-export const getParticipanteIdFormInvestC = async (req, res) => {
+//Trae los participantes por el id de la Formacion 
+export const getParticipanteIdFormacionC = async (req, res) => {
     try {
         const { id } = req.params
-        const Participante = await getParticipanteIdFormInvestM(id);
+        const Participante = await getParticipanteIdFormacionM(id);
 
         if (!Participante) {
             return res.status(404).json({ message: "Registro no encontrado" });
@@ -69,6 +69,36 @@ export const getParticipanteIdFormInvestC = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+
+
+// Trae los participantes por el id de la Formacion o de la Investigacion
+export const getParticipanteIdFormInvestC = async (req, res) => {
+    try {
+        const { tipo, id } = req.params;
+
+        let Participante;
+
+        if (tipo === 'investigacion') {
+            Participante = await getParticipanteIdInvestM(id);
+        } else if (tipo === 'formacion') {
+            Participante = await getParticipanteIdFormacionM(id);
+        } else {
+            return res.status(400).json({ error: "Tipo inválido. Debe ser 'investigacion' o 'formacion'." });
+        }
+
+        if (!Participante || Participante.length === 0) {
+            return res.status(404).json({ message: "Registro no encontrado" });
+        }
+
+        res.json(Participante);
+
+    } catch (error) {
+        console.error('Error al obtener el registro:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
 
 
 
