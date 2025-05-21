@@ -77,7 +77,7 @@ const ModificarParticipante = () => {
     const obtenerDetalles = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/CapacitacionP/${id}`
+          `${process.env.REACT_APP_API_URL}/participante/${id}`
         );
 
         setFormData(response.data[0]);

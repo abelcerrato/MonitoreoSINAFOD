@@ -16,7 +16,7 @@ import {
   Paper,
   Tooltip,
   Typography,
-  Box
+  Box,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -96,12 +96,16 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
+export default function TablaPacticantes({
+  investCap,
+  isSaved,
+  setIsSaved,
+  formacioninvest,
+}) {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -117,30 +121,35 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
   };
 
   useEffect(() => {
-
-
     // Obtener los datos de los participantes después de guardar
     axios
 
-      .get(`${process.env.REACT_APP_API_URL}/CapacitacionInvest/${investCap}`)
+      .get(
+        `${process.env.REACT_APP_API_URL}/participante/${formacioninvest}/${investCap}`
+      )
       .then((response) => {
-        setRows(response.data);  // Actualizar las filas con los nuevos datos
+        setRows(response.data); // Actualizar las filas con los nuevos datos
         setIsSaved(false);
+        console.log(rows);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
       });
   }, [isSaved, investCap]);
 
-
   const handleEdit = (id) => {
     navigate(`/Modificar_Participante/${id}`); // Redirige a la página de edición con el ID
   };
 
-
   return (
     <TableContainer component={Paper}>
-      <Typography variant="h4" sx={{ color: color.primary.azul, textAlign: "center" }}>  Participantes </Typography>
+      <Typography
+        variant="h4"
+        sx={{ color: color.primary.azul, textAlign: "center" }}
+      >
+        {" "}
+        Participantes{" "}
+      </Typography>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead sx={{ backgroundColor: color.primary.azul }}>
           <TableRow>
@@ -152,8 +161,12 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
             <TableCell align="right">Sexo</TableCell>
-            <TableCell align="right">Nivel Académico del Participante</TableCell>
-            <TableCell align="right">Grado Académico del Participante</TableCell>
+            <TableCell align="right">
+              Nivel Académico del Participante
+            </TableCell>
+            <TableCell align="right">
+              Grado Académico del Participante
+            </TableCell>
             <TableCell align="right">Años de Servicio</TableCell>
             <TableCell align="right">Código de Red que Pertenece</TableCell>
             <TableCell align="right">Función</TableCell>
@@ -166,9 +179,9 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
             <TableCell align="right">Grado que Atiende</TableCell>
             <TableCell align="right">Tipo Administración</TableCell>
             <TableCell align="right">Zona Centro Educativo</TableCell>
-            <TableCell align="right">Departamento  Centro Educativo</TableCell>
-            <TableCell align="right">Municipio  Centro Educativo</TableCell>
-            <TableCell align="right">Aldea  Centro Educativo</TableCell>
+            <TableCell align="right">Departamento Centro Educativo</TableCell>
+            <TableCell align="right">Municipio Centro Educativo</TableCell>
+            <TableCell align="right">Aldea Centro Educativo</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -183,30 +196,29 @@ export default function TablaPacticantes({ investCap, isSaved, setIsSaved }) {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-
               </TableCell>
 
               <TableCell align="right">{row.codigosace}</TableCell>
               <TableCell align="right">{row.nombre}</TableCell>
               <TableCell align="right">{row.identificacion}</TableCell>
-              <TableCell align="right">{row.sexo}</TableCell>
-              <TableCell align="right">{row.nombreniveldocente}</TableCell>
-              <TableCell align="right">{row.nombregradodocente}</TableCell>
+              <TableCell align="right">{row.genero}</TableCell>
+              <TableCell align="right">{row.nivelacademico}</TableCell>
+              <TableCell align="right">{row.gradoacademico}</TableCell>
               <TableCell align="right">{row.añosdeservicio}</TableCell>
               <TableCell align="right">{row.codigodered}</TableCell>
-              <TableCell align="right">{row.funcion}</TableCell>
-              <TableCell align="right">{row.nombredeptoresidencia}</TableCell>
-              <TableCell align="right">{row.nombremuniresidencia}</TableCell>
-              <TableCell align="right">{row.nombrealdearesidencia}</TableCell>
-              <TableCell align="right">{row.centroeducativo}</TableCell>
-              <TableCell align="right">{row.nombrenivelced}</TableCell>
+              <TableCell align="right">{row.cargo}</TableCell>
+              <TableCell align="right">{row.departamento}</TableCell>
+              <TableCell align="right">{row.municipio}</TableCell>
+              <TableCell align="right">{row.aldea}</TableCell>
+              <TableCell align="right">{row.nombreced}</TableCell>
+              <TableCell align="right">{row.niveles_educativos}</TableCell>
               <TableCell align="right">{row.nombrecicloced}</TableCell>
               <TableCell align="right">{row.nombregradoced}</TableCell>
               <TableCell align="right">{row.tipoadministracion}</TableCell>
               <TableCell align="right">{row.zona}</TableCell>
-              <TableCell align="right">{row.nombredeptoced}</TableCell>
-              <TableCell align="right">{row.nombremunicipioced}</TableCell>
-              <TableCell align="right">{row.nombrealdeaced}</TableCell>
+              <TableCell align="right">{row.departamentoced}</TableCell>
+              <TableCell align="right">{row.municipioced}</TableCell>
+              <TableCell align="right">{row.aldeaced}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
