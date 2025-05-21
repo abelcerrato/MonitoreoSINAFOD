@@ -18,14 +18,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Typography,
+  Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import IconButton from "@mui/material/IconButton";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
+import { PDFViewer } from "@react-pdf/renderer";
 import { color } from "../../Components/color";
 import CardDetalles from "../CardDetalles";
 import ChecklistIcon from "@mui/icons-material/Checklist";
@@ -34,77 +33,119 @@ import Swal from "sweetalert2";
 import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
 import { QRCodeCanvas } from "qrcode.react";
 import { useUser } from "../../Components/UserContext";
+import { Add as AddIcon } from "@mui/icons-material";
+import Dashboard from "../../Dashboard/dashboard";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  Image,
+  StyleSheet,
+} from "@react-pdf/renderer";
 
-function TablePaginationActions(props) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+// Componente para el PDF
 
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
+const FormationPDF = ({
+  formacion,
+  modalidad,
+  estado,
+  fechainicio,
+  fechafinal,
+  qrUrl,
+}) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Text style={styles.title}>Información de la Formación</Text>
 
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
+      <View style={styles.section}>
+        <Text style={styles.label}>Nombre de la Formación:</Text>
+        <Text style={styles.value}>{formacion || "No especificado"}</Text>
+      </View>
 
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
+      <View style={styles.section}>
+        <Text style={styles.label}>Modalidad:</Text>
+        <Text style={styles.value}>{modalidad || "No especificada"}</Text>
+      </View>
 
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
+      <View style={styles.section}>
+        <Text style={styles.label}>Estado:</Text>
+        <Text style={styles.value}>{estado || "No especificado"}</Text>
+      </View>
 
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
+      <View style={styles.section}>
+        <Text style={styles.label}>Fecha de Inicio:</Text>
+        <Text style={styles.value}>
+          {fechainicio
+            ? new Date(fechainicio).toLocaleDateString("es-ES")
+            : "No especificada"}
+        </Text>
+      </View>
 
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
+      <View style={styles.section}>
+        <Text style={styles.label}>Fecha de Finalización:</Text>
+        <Text style={styles.value}>
+          {fechafinal
+            ? new Date(fechafinal).toLocaleDateString("es-ES")
+            : "No especificada"}
+        </Text>
+      </View>
 
-export default function TablaActividad(isSaved, setIsSaved) {
+      <View style={styles.qrContainer}>
+        <Text style={styles.label}>Código QR para participantes:</Text>
+        <Image
+          style={styles.qrImage}
+          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+            qrUrl
+          )}`}
+        />
+        <Text style={styles.url}>{qrUrl}</Text>
+      </View>
+    </Page>
+  </Document>
+);
+
+// Estilos para el PDF
+const styles = StyleSheet.create({
+  page: {
+    padding: 30,
+    fontFamily: "Helvetica",
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  section: {
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  value: {
+    fontSize: 12,
+    marginBottom: 15,
+  },
+  qrContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  qrImage: {
+    width: 150,
+    height: 150,
+  },
+  url: {
+    fontSize: 10,
+    marginTop: 10,
+    color: "#666",
+  },
+});
+
+export default function TablaActividad({ isSaved, setIsSaved }) {
   const navigate = useNavigate();
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
@@ -117,6 +158,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const [selectedId, setSelectedId] = useState(null);
   const [qrUrl, setQrUrl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [currentRow, setCurrentRow] = useState(null);
 
   const handleOpen = (id) => {
     setSelectedId(id);
@@ -125,10 +167,9 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/formacion`) // Cambia esta URL a la de tu API
+      .get(`${process.env.REACT_APP_API_URL}/formacion`)
       .then((response) => {
-        setRows(response.data); // Suponiendo que los datos se encuentran en response.data
-        //setIsSaved(false);
+        setRows(response.data);
       })
       .catch((error) => {
         console.error("Hubo un error al obtener los datos:", error);
@@ -138,10 +179,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const checkLineamientos = async (id) => {
     const selectedRow = rows.find((row) => row.id === id);
 
-    if (
-      selectedRow &&
-      selectedRow.estado_lineamientos === "No Lleno Lineamientos"
-    ) {
+    if (selectedRow?.estado_lineamientos === "No Lleno Lineamientos") {
       await Swal.fire({
         title: "¡Advertencia!",
         html: `Esta <b>formación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
@@ -150,8 +188,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
         confirmButtonColor: color.primary.azul,
       });
     } else if (
-      selectedRow &&
-      selectedRow.estado_lineamientos === "Lineamientos Incompletos"
+      selectedRow?.estado_lineamientos === "Lineamientos Incompletos"
     ) {
       await Swal.fire({
         title: "¡Advertencia!",
@@ -174,8 +211,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
   };
 
   const handleOpenQrModal = (id) => {
+    const selectedRow = rows.find((row) => row.id === id);
     const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}`;
     setQrUrl(qrLink);
+    setCurrentRow(selectedRow);
     setOpenModal(true);
   };
 
@@ -249,7 +288,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
       headerName: "Fecha Inicio",
       width: 150,
       renderCell: (params) => {
-        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        if (!params.value) return "";
         const date = new Date(params.value);
         return date.toLocaleDateString("es-ES");
       },
@@ -259,12 +298,11 @@ export default function TablaActividad(isSaved, setIsSaved) {
       headerName: "Fecha de Finalización",
       width: 180,
       renderCell: (params) => {
-        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        if (!params.value) return "";
         const date = new Date(params.value);
         return date.toLocaleDateString("es-ES");
       },
     },
-
     {
       field: "estado_lineamientos",
       headerName: "Lineamientos",
@@ -273,37 +311,101 @@ export default function TablaActividad(isSaved, setIsSaved) {
   ];
 
   return (
-    <Paper>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSizeOptions={[5, 10, 25]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        autoHeight
-      />
+    <Dashboard>
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Typography
+            variant="h3"
+            component="h2"
+            sx={{ fontWeight: "bold", color: color.primary.azul }}
+          >
+            Formaciones
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/Lineamientos_De_Formación")}
+            sx={{
+              color: color.primary.contrastText,
+              backgroundColor: color.primary.azul,
+              "&:hover": {
+                backgroundColor: color.dark,
+              },
+            }}
+          >
+            Nuevo
+          </Button>
+        </Box>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSizeOptions={[5, 10, 25]}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          autoHeight
+        />
 
-      <CardDetalles
-        open={open}
-        handleClose={() => setOpen(false)}
-        id={selectedId}
-      />
-      <Dialog
-        open={openModal}
-        onClose={handleCloseModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Escanea este QR</DialogTitle>
-        <DialogContent style={{ textAlign: "center" }}>
-          {qrUrl && (
-            <>
-              <QRCodeCanvas value={qrUrl} size={200} />
-              <p style={{ marginTop: "10px" }}>{qrUrl}</p>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </Paper>
+        <CardDetalles
+          open={open}
+          handleClose={() => setOpen(false)}
+          id={selectedId}
+        />
+
+        <Dialog
+          open={openModal}
+          onClose={handleCloseModal}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Información de la Formación</DialogTitle>
+          <DialogContent style={{ textAlign: "center", padding: "20px" }}>
+            {qrUrl && currentRow && (
+              <>
+                <QRCodeCanvas value={qrUrl} size={200} />
+                <p style={{ marginTop: "15px", wordBreak: "break-all" }}>
+                  {qrUrl}
+                </p>
+
+                <div style={{ marginTop: "25px" }}>
+                  <PDFDownloadLink
+                    document={
+                      <FormationPDF
+                        formacion={currentRow.formacion}
+                        modalidad={currentRow.modalidad}
+                        estado={currentRow.estado}
+                        fechainicio={currentRow.fechainicio}
+                        fechafinal={currentRow.fechafinal}
+                        qrUrl={qrUrl}
+                      />
+                    }
+                    fileName={`formacion_${currentRow.formacion.replace(
+                      /\s+/g,
+                      "_"
+                    )}.pdf`}
+                  >
+                    {({ loading }) => (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={loading}
+                        sx={{
+                          mt: 2,
+                          backgroundColor: color.primary.azul,
+                          "&:hover": {
+                            backgroundColor: color.dark,
+                          },
+                        }}
+                      >
+                        {loading ? "Generando PDF..." : "Descargar PDF"}
+                      </Button>
+                    )}
+                  </PDFDownloadLink>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      </Paper>
+    </Dashboard>
   );
 }

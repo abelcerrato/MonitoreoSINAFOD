@@ -31,8 +31,7 @@ const Investigacion = () => {
   const { user } = useUser();
   const location = useLocation();
   const [investCapId, setInvestCapId] = useState(null);
-  const [NivelEducativo, setNivelEducativo] = useState([]);
-  const [errorM, setErrorM] = useState("");
+
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
@@ -49,6 +48,12 @@ const Investigacion = () => {
     primerciclo: false,
     segundociclo: false,
     tercerciclo: false,
+    btp1: false,
+    btp2: false,
+    btp3: false,
+    bch1: false,
+    bch2: false,
+    bch3: false,
     fechainicio: "",
     fechafinal: "",
     direccion: "",
@@ -185,21 +190,6 @@ const Investigacion = () => {
       .replace(/days?/g, "días");
   };
 
-  // Obtener NivelEducativo al montar el componente
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/nivelesAcademicos`
-        );
-        setNivelEducativo(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
 
   const handleSave = async () => {
     // Validaciones previas (campos obligatorios, fechas, etc.)
@@ -325,13 +315,13 @@ const Investigacion = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <Grid size={{ xs: 12, md: 8 }}>
+            <Grid size={{ xs: 12, md: 9 }}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Registro de Datos sobre la Investigación
               </Typography>
             </Grid>
             <Grid
-              size={{ xs: 12, md: 4 }}
+              size={{ xs: 12, md: 3 }}
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Button
@@ -585,6 +575,87 @@ const Investigacion = () => {
                         />
                       }
                       label="Tercer Ciclo"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+            {formData.media === true && (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="subtitle1">
+                  Nivel Educativo (Para Media)
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp1}
+                          onChange={handleChange}
+                          name="btp1"
+                        />
+                      }
+                      label="BTP 1"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp2}
+                          onChange={handleChange}
+                          name="btp2"
+                        />
+                      }
+                      label="BTP 2"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp3}
+                          onChange={handleChange}
+                          name="btp3"
+                        />
+                      }
+                      label="BTP 3"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch1}
+                          onChange={handleChange}
+                          name="bch1"
+                        />
+                      }
+                      label="BCH 1"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch2}
+                          onChange={handleChange}
+                          name="bch2"
+                        />
+                      }
+                      label="BCH 2"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch3}
+                          onChange={handleChange}
+                          name="bch3"
+                        />
+                      }
+                      label="BCH 3"
                     />
                   </Grid>
                 </Grid>

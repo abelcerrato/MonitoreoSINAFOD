@@ -66,8 +66,8 @@ const Dashboard = ({ children }) => {
         }}
       >
         {children}
-        {showTablaFormacion && <TablaFormacion />}
-        {showTablaFormacion && <TablaInvestigacion />}
+        {/*         {showTablaFormacion && <TablaFormacion />}
+        {showTablaFormacion && <TablaInvestigacion />} */}
         <Typography
           variant="body2"
           color="text.secondary"

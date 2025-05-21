@@ -18,6 +18,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Typography,
+  Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
@@ -34,6 +36,8 @@ import Swal from "sweetalert2";
 import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
 import { QRCodeCanvas } from "qrcode.react";
 import { useUser } from "../../Components/UserContext";
+import { Add as AddIcon } from "@mui/icons-material";
+import Dashboard from "../../Dashboard/dashboard";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -262,37 +266,62 @@ export default function TablaActividad(isSaved, setIsSaved) {
   ];
 
   return (
-    <Paper>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSizeOptions={[5, 10, 25]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        autoHeight
-      />
+    <Dashboard>
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Typography
+            variant="h3"
+            component="h2"
+            sx={{ fontWeight: "bold", color: color.primary.azul }}
+          >
+            Investigaciones
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/Lineamientos_De_Investigación")}
+            sx={{
+              color: color.primary.contrastText,
+              backgroundColor: color.primary.azul,
+              "&:hover": {
+                backgroundColor: color.dark,
+              },
+            }}
+          >
+            Nuevo
+          </Button>
+        </Box>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSizeOptions={[5, 10, 25]}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          autoHeight
+        />
 
-      <CardDetalles
-        open={open}
-        handleClose={() => setOpen(false)}
-        id={selectedId}
-      />
-      <Dialog
-        open={openModal}
-        onClose={handleCloseModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Escanea este QR</DialogTitle>
-        <DialogContent style={{ textAlign: "center" }}>
-          {qrUrl && (
-            <>
-              <QRCodeCanvas value={qrUrl} size={200} />
-              <p style={{ marginTop: "10px" }}>{qrUrl}</p>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </Paper>
+        <CardDetalles
+          open={open}
+          handleClose={() => setOpen(false)}
+          id={selectedId}
+        />
+        <Dialog
+          open={openModal}
+          onClose={handleCloseModal}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Escanea este QR</DialogTitle>
+          <DialogContent style={{ textAlign: "center" }}>
+            {qrUrl && (
+              <>
+                <QRCodeCanvas value={qrUrl} size={200} />
+                <p style={{ marginTop: "10px" }}>{qrUrl}</p>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      </Paper>
+    </Dashboard>
   );
 }

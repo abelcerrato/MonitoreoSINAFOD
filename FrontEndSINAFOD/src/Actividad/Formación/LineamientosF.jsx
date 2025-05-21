@@ -229,22 +229,28 @@ const LineamientosF = () => {
   return (
     <>
       <Dashboard>
-        <Paper maxWidth="lg" sx={{ mt: 4, mb: 4, p: 4, overflowX: 'auto', }} elevation={3}>
-
+        <Paper
+          maxWidth="lg"
+          sx={{ mt: 4, mb: 4, p: 4, overflowX: "auto" }}
+          elevation={3}
+        >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 9 }}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Registro de Lineamientos para Formación
               </Typography>
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Grid
+              size={{ xs: 12, md: 3 }}
+              sx={{ display: "flex", justifyContent: "flex-end" }}
+            >
               <Button
                 variant="outlined"
                 sx={{
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                     onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Formaciones")}
               >
                 Cerrar
               </Button>
@@ -253,19 +259,26 @@ const LineamientosF = () => {
 
           <Grid container spacing={5} mt={2}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">   Nombre de la Formación</Typography>
+              <Typography variant="subtitle1">
+                {" "}
+                Nombre de la Formación
+              </Typography>
               <TextField
                 fullWidth
                 name="accionformacion"
                 value={formData.accionformacion}
                 onChange={handleChange}
                 error={errors.accionformacion}
-                helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
-                FormHelperTextProps={{ style: { color: 'red' } }}
+                helperText={
+                  errors.accionformacion
+                    ? "El título del proyecto es requerido"
+                    : ""
+                }
+                FormHelperTextProps={{ style: { color: "red" } }}
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: errors.accionformacion ? 'red' : '',
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: errors.accionformacion ? "red" : "",
                     },
                   },
                 }}
@@ -292,21 +305,23 @@ const LineamientosF = () => {
                 />
               </Button>
               {formData.criteriosfactibilidadurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.criteriosfactibilidadurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('criteriosfactibilidadurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("criteriosfactibilidadurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -334,21 +349,23 @@ const LineamientosF = () => {
                 />
               </Button>
               {formData.requisitostecnicosurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.requisitostecnicosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('requisitostecnicosurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("requisitostecnicosurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -371,30 +388,30 @@ const LineamientosF = () => {
                   name="criterioseticosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
-
                   ref={fileInputRefs.criterioseticosurl}
                 />
               </Button>
               {formData.criterioseticosurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.criterioseticosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('criterioseticosurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("criterioseticosurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
-
                 </Box>
               )}
             </Grid>

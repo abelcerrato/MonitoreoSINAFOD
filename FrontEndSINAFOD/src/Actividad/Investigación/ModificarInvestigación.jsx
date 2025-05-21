@@ -49,6 +49,12 @@ const Investigacion = () => {
     primerciclo: false,
     segundociclo: false,
     tercerciclo: false,
+    btp1: false,
+    btp2: false,
+    btp3: false,
+    bch1: false,
+    bch2: false,
+    bch3: false,
     fechainicio: "",
     fechafinal: "",
     direccion: "",
@@ -302,7 +308,6 @@ const Investigacion = () => {
       }
     }
 
-
     const cleanedFormData = Object.fromEntries(
       Object.entries(formData).map(([key, value]) => [
         key,
@@ -354,7 +359,7 @@ const Investigacion = () => {
                 startIcon={<Groups2OutlinedIcon />}
                 onClick={() =>
                   navigate("/Participantes", {
-                    state: { formacioninvest: "investigacion" },
+                    state: { formacioninvest: "investigacion", investCap: id },
                   })
                 }
               >
@@ -616,6 +621,87 @@ const Investigacion = () => {
                         />
                       }
                       label="Tercer Ciclo"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+            {formData.media === true && (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="subtitle1">
+                  Nivel Educativo (Para Media)
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp1}
+                          onChange={handleChange}
+                          name="btp1"
+                        />
+                      }
+                      label="BTP 1"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp2}
+                          onChange={handleChange}
+                          name="btp2"
+                        />
+                      }
+                      label="BTP 2"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.btp3}
+                          onChange={handleChange}
+                          name="btp3"
+                        />
+                      }
+                      label="BTP 3"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch1}
+                          onChange={handleChange}
+                          name="bch1"
+                        />
+                      }
+                      label="BCH 1"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch2}
+                          onChange={handleChange}
+                          name="bch2"
+                        />
+                      }
+                      label="BCH 2"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.bch3}
+                          onChange={handleChange}
+                          name="bch3"
+                        />
+                      }
+                      label="BCH 3"
                     />
                   </Grid>
                 </Grid>

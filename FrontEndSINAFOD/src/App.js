@@ -36,6 +36,10 @@ import { UserProvider } from './Components/UserContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
+import TablaFormacion from './Actividad/Formación/TablaFormacion';
+import TablaInvestigacion from './Actividad/Investigación/TablaInvestigación';
+
+
 import { PERMISSIONS } from './Components/permissions';
 const ProtectedRoute = () => {
   const navigate = useNavigate();
@@ -152,6 +156,14 @@ function App() {
 
             {/* Investigación */}
             <Route
+              path="/Listado_De_Investigaciones"
+              element={
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                  <TablaInvestigacion />
+                </PermissionValidator>
+              }
+            />
+            <Route
               path="/Lineamientos_De_Investigación"
               element={
                 <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
@@ -185,6 +197,14 @@ function App() {
             />
 
             {/* Formación */}
+            <Route
+              path="/Listado_De_Formaciones"
+              element={
+                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                  <TablaFormacion />
+                </PermissionValidator>
+              }
+            />
             <Route
               path="/Lineamientos_De_Formación"
               element={

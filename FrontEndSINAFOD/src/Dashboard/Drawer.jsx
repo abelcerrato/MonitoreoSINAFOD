@@ -10,28 +10,22 @@ import {
   Menu,
   MenuItem as MuiMenuItem,
 } from "@mui/material";
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import HttpsOutlinedIcon from '@mui/icons-material/HttpsOutlined';
-
-
+import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import HttpsOutlinedIcon from "@mui/icons-material/HttpsOutlined";
 
 import { useUser } from "../Components/UserContext";
 import { color } from "../Components/color";
-import { styled } from '@mui/material/styles';
-
-
-
+import { styled } from "@mui/material/styles";
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -44,8 +38,6 @@ const LightTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-
-
 const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,8 +46,6 @@ const ProjectDrawer = ({ open }) => {
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
-
-
 
   // Refs y estados para los menús flotantes
   const reporteriaAnchorRef = useRef(null);
@@ -75,8 +65,6 @@ const ProjectDrawer = ({ open }) => {
     }
   };
 
-
-
   const handleMenuClose = () => {
     setReporteriaMenuOpen(false);
   };
@@ -89,7 +77,6 @@ const ProjectDrawer = ({ open }) => {
     handleMenuClose();
   };
 
-
   const isActive = (path) => {
     // Decodifica tanto la ruta actual como la ruta que estamos comparando
     const decodedCurrentPath = decodeURIComponent(location.pathname);
@@ -99,15 +86,9 @@ const ProjectDrawer = ({ open }) => {
 
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
-    isActive("/Reportería/Listado_Participantes")
-    ;
-
+    isActive("/Reportería/Listado_Participantes");
   const isSeguridadActive =
-    isActive("/Seguridad/Usuarios") ||
-    isActive("/Seguridad/Roles-y-Permisos")
-    ;
-
-
+    isActive("/Seguridad/Usuarios") || isActive("/Seguridad/Roles-y-Permisos");
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
     const active = isParent ? parentActive : isActive(path);
 
@@ -121,8 +102,8 @@ const ProjectDrawer = ({ open }) => {
         backgroundColor: active
           ? "#88CFE0"
           : !open
-            ? color.primary.azul
-            : "rgba(0, 0, 0, 0.04)",
+          ? color.primary.azul
+          : "rgba(0, 0, 0, 0.04)",
         "& .MuiListItemIcon-root, & .MuiListItemText-root": {
           color: active || !open ? "white" : "inherit",
         },
@@ -136,7 +117,17 @@ const ProjectDrawer = ({ open }) => {
     };
   };
 
-  const MenuItem = ({ path, icon, text, onClick, isParent, parentActive, menuRef, onMouseEnter, onMouseLeave }) => (
+  const MenuItem = ({
+    path,
+    icon,
+    text,
+    onClick,
+    isParent,
+    parentActive,
+    menuRef,
+    onMouseEnter,
+    onMouseLeave,
+  }) => (
     <ListItemButton
       onClick={onClick}
       sx={getMenuItemStyles(path, isParent, parentActive)}
@@ -157,21 +148,23 @@ const ProjectDrawer = ({ open }) => {
         {icon}
       </ListItemIcon>
       {open && <ListItemText primary={text} />}
-      {open && isParent === "reporteria" && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
-      {open && isParent === "seguridad" && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
+      {open &&
+        isParent === "reporteria" &&
+        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
+      {open &&
+        isParent === "seguridad" &&
+        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
     </ListItemButton>
   );
 
-
   const tienePermisosModulo = (idModulo) => {
-    return permissions?.some(p => p.idmodulo === idModulo && p.consultar);
+    return permissions?.some((p) => p.idmodulo === idModulo && p.consultar);
   };
 
   const tienePermiso = (idobjeto) => {
-    const permiso = permissions?.find(p => p.idobjeto === idobjeto);
+    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.consultar === true;
   };
-
 
   return (
     <Drawer
@@ -212,18 +205,20 @@ const ProjectDrawer = ({ open }) => {
           {/* Formación */}
           {tienePermiso(2) && (
             <List>
-
-              <LightTooltip title="Nueva Formación" placement="right" disableHoverListener={open} >
+              <LightTooltip
+                title="Nueva Formación"
+                placement="right"
+                disableHoverListener={open}
+              >
                 <div>
                   <MenuItem
-                    path="/Lineamientos_De_Formación"
+                    path="/Listado_De_Formaciones"
                     icon={<PostAddOutlinedIcon />}
                     text=" Nueva Formación"
-                    onClick={() => navigate("/Lineamientos_De_Formación")}
+                    onClick={() => navigate("/Listado_De_Formaciones")}
                   />
                 </div>
-              </LightTooltip >
-
+              </LightTooltip>
             </List>
           )}
         </>
@@ -235,13 +230,17 @@ const ProjectDrawer = ({ open }) => {
           {/* Investigación */}
           {tienePermiso(1) && (
             <List>
-              <LightTooltip title="Nueva Investigación" placement="right" disableHoverListener={open}>
+              <LightTooltip
+                title="Nueva Investigación"
+                placement="right"
+                disableHoverListener={open}
+              >
                 <div>
                   <MenuItem
-                    path="/Lineamientos_De_Investigación"
+                    path="/Listado_De_Investigaciones"
                     icon={<ZoomInIcon />}
                     text="Nueva Investigación"
-                    onClick={() => navigate("/Lineamientos_De_Investigación")}
+                    onClick={() => navigate("/Listado_De_Investigaciones")}
                   />
                 </div>
               </LightTooltip>
@@ -268,21 +267,28 @@ const ProjectDrawer = ({ open }) => {
             />
 
             {open && (
-              <Collapse in={openRepoeteria} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
+              <Collapse
+                in={openRepoeteria}
+                timeout="auto"
+                unmountOnExit
+                sx={{ ml: 2.5 }}
+              >
                 <List component="div" disablePadding>
-
                   {tienePermiso(4) && (
                     <MenuItem
                       path="/Reportería/Listado_De_Acciones_Formativas"
                       icon={<TextSnippetOutlinedIcon />}
                       text={
                         <>
-                          Listado de<br />Acciones Formativas
+                          Listado de
+                          <br />
+                          Acciones Formativas
                         </>
                       }
-                      onClick={() => navigate("/Reportería/Listado_De_Acciones_Formativas")}
+                      onClick={() =>
+                        navigate("/Reportería/Listado_De_Acciones_Formativas")
+                      }
                     />
-
                   )}
 
                   {tienePermiso(4) && (
@@ -291,10 +297,14 @@ const ProjectDrawer = ({ open }) => {
                       icon={<TextSnippetOutlinedIcon />}
                       text={
                         <>
-                          Listado de<br />Participantes
+                          Listado de
+                          <br />
+                          Participantes
                         </>
                       }
-                      onClick={() => navigate("/Reportería/Listado_Participantes")}
+                      onClick={() =>
+                        navigate("/Reportería/Listado_Participantes")
+                      }
                     />
                   )}
                 </List>
@@ -326,47 +336,61 @@ const ProjectDrawer = ({ open }) => {
             >
               {tienePermiso(4) && (
                 <MuiMenuItem
-                  onClick={() => handleItemClick("/Reportería/Listado_De_Acciones_Formativas")}
-
+                  onClick={() =>
+                    handleItemClick(
+                      "/Reportería/Listado_De_Acciones_Formativas"
+                    )
+                  }
                 >
                   <ListItemIcon>
                     <TextSnippetOutlinedIcon
                       fontSize="small"
-                      color={isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit"}
+                      color={
+                        isActive("/Reportería/Listado_De_Acciones_Formativas")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
                     primary="Listado de Acciones Formativas"
                     primaryTypographyProps={{
-                      color: isActive("/Reportería/Listado_De_Acciones_Formativas") ? color.primary.azul : "inherit",
+                      color: isActive(
+                        "/Reportería/Listado_De_Acciones_Formativas"
+                      )
+                        ? color.primary.azul
+                        : "inherit",
                     }}
                   />
                 </MuiMenuItem>
-
               )}
 
               {tienePermiso(3) && (
                 <MuiMenuItem
-                  onClick={() => handleItemClick("/Reportería/Listado_Participantes")}
-
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_Participantes")
+                  }
                 >
                   <ListItemIcon>
                     <TextSnippetOutlinedIcon
                       fontSize="small"
-                      color={isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit"}
+                      color={
+                        isActive("/Reportería/Listado_Participantes")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
                     primary="Listado de Participantes"
                     primaryTypographyProps={{
-                      color: isActive("/Reportería/Listado_Participantes") ? color.primary.azul : "inherit",
+                      color: isActive("/Reportería/Listado_Participantes")
+                        ? color.primary.azul
+                        : "inherit",
                     }}
                   />
                 </MuiMenuItem>
               )}
-
-
-
             </Menu>
           </List>
         </>
@@ -390,7 +414,12 @@ const ProjectDrawer = ({ open }) => {
             />
 
             {open && (
-              <Collapse in={openSeguridad} timeout="auto" unmountOnExit sx={{ ml: 2.5 }}>
+              <Collapse
+                in={openSeguridad}
+                timeout="auto"
+                unmountOnExit
+                sx={{ ml: 2.5 }}
+              >
                 <List component="div" disablePadding>
                   {tienePermiso(5) && (
                     <MenuItem
@@ -399,7 +428,6 @@ const ProjectDrawer = ({ open }) => {
                       text="Usuarios"
                       onClick={() => navigate("/Seguridad/Usuarios")}
                     />
-
                   )}
                   {tienePermiso(5) && (
                     <MenuItem
@@ -436,7 +464,6 @@ const ProjectDrawer = ({ open }) => {
               }}
               disableAutoFocusItem
             >
-
               {tienePermiso(5) && (
                 <MuiMenuItem
                   onClick={() => handleItemClick("/Seguridad/Usuarios")}
@@ -451,13 +478,19 @@ const ProjectDrawer = ({ open }) => {
                   <ListItemIcon>
                     <PeopleAltOutlinedIcon
                       fontSize="small"
-                      color={isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit"}
+                      color={
+                        isActive("/Seguridad/Usuarios")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
                     primary="Usuarios"
                     primaryTypographyProps={{
-                      color: isActive("/Seguridad/Usuarios") ? color.primary.azul : "inherit",
+                      color: isActive("/Seguridad/Usuarios")
+                        ? color.primary.azul
+                        : "inherit",
                     }}
                   />
                 </MuiMenuItem>
@@ -477,13 +510,19 @@ const ProjectDrawer = ({ open }) => {
                   <ListItemIcon>
                     <HttpsOutlinedIcon
                       fontSize="small"
-                      color={isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit"}
+                      color={
+                        isActive("/Seguridad/Roles-y-Permisos")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
                     />
                   </ListItemIcon>
                   <ListItemText
                     primary="Roles y Permisos"
                     primaryTypographyProps={{
-                      color: isActive("/Seguridad/Roles-y-Permisos") ? color.primary.azul : "inherit",
+                      color: isActive("/Seguridad/Roles-y-Permisos")
+                        ? color.primary.azul
+                        : "inherit",
                     }}
                   />
                 </MuiMenuItem>
@@ -492,10 +531,6 @@ const ProjectDrawer = ({ open }) => {
           </List>
         </>
       )}
-
-
-
-
     </Drawer>
   );
 };
