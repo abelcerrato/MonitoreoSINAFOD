@@ -42,6 +42,7 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
+  console.log(permissions);
 
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
@@ -199,7 +200,7 @@ const ProjectDrawer = ({ open }) => {
           onClick={() => navigate("/dashboard")}
         />
       </List>
-      {tienePermisosModulo(1) && (
+      {tienePermisosModulo(2) && (
         <>
           {open && <Divider />}
           {/* Formación */}
@@ -224,7 +225,7 @@ const ProjectDrawer = ({ open }) => {
         </>
       )}
 
-      {tienePermisosModulo(2) && (
+      {tienePermisosModulo(1) && (
         <>
           {open && <Divider />}
           {/* Investigación */}

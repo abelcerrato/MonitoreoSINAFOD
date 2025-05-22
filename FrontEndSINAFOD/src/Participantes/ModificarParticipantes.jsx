@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   Tab,
   Tabs,
+  Checkbox
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -300,9 +301,7 @@ const ModificarParticipante = () => {
     obtenerMunicipios();
   }, [formData.deptoresidencia]);
 
-  {
-    /* Nivel academico del participante */
-  }
+ 
   // Obtener NivelEducativo al montar el componente
   useEffect(() => {
     const obtenerNivelEducativo = async () => {
@@ -584,55 +583,211 @@ const ModificarParticipante = () => {
             {/* Tab 2: Datos del Centro Educativo */}
             <TabPanel value="2">
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">
-                    Nivel Académico que Atiende
-                  </Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      name="idnivelesacademicos"
-                      value={formData.idnivelesacademicos || ""}
-                      onChange={handleChange}
-                    >
-                      <MenuItem value="" disabled>
-                        Seleccione un nivel académico
-                      </MenuItem>
-                      {NivelEducativo.length > 0 ? (
-                        NivelEducativo.map((dep) => (
-                          <MenuItem key={dep.id} value={dep.id}>
-                            {dep.nombre}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem disabled>Cargando...</MenuItem>
-                      )}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">
-                    Grado Educativo que Atiende
-                  </Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      name="idgradosacademicos"
-                      value={formData.idgradosacademicos || ""}
-                      onChange={handleChange}
-                      disabled={!gardo.length}
-                    >
-                      <MenuItem value="" disabled>
-                        Seleccione un grado académico
-                      </MenuItem>
-                      {gardo.map((mun) => (
-                        <MenuItem key={mun.id} value={mun.id}>
-                          {mun.grado}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
+                  <Grid size={{ xs: 12, md: 6 }}>
+                                  <Typography variant="subtitle1">Nivel Educativo</Typography>
+                
+                                  <Grid container spacing={2}>
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            checked={formData.prebasica}
+                                            onChange={handleChange}
+                                            name="prebasica"
+                                          />
+                                        }
+                                        label="Prebásica"
+                                      />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            checked={formData.basica}
+                                            onChange={handleChange}
+                                            name="basica"
+                                          />
+                                        }
+                                        label="Básica"
+                                      />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            checked={formData.media}
+                                            onChange={handleChange}
+                                            name="media"
+                                          />
+                                        }
+                                        label="Media"
+                                      />
+                                    </Grid>
+                                  </Grid>
+                                </Grid>
+                
+                                {formData.basica === true && (
+                                  <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="subtitle1">
+                                      Grados Académicos (Básica)
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.primero}
+                                              onChange={handleChange}
+                                              name="primero"
+                                            />
+                                          }
+                                          label="Primer"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.segundo}
+                                              onChange={handleChange}
+                                              name="segundo"
+                                            />
+                                          }
+                                          label="Segundo"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.tercero}
+                                              onChange={handleChange}
+                                              name="tercero"
+                                            />
+                                          }
+                                          label="Tercer"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.cuarto}
+                                              onChange={handleChange}
+                                              name="cuarto"
+                                            />
+                                          }
+                                          label="Cuarto"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.quinto}
+                                              onChange={handleChange}
+                                              name="quinto"
+                                            />
+                                          }
+                                          label="Quinto"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.sexto}
+                                              onChange={handleChange}
+                                              name="sexto"
+                                            />
+                                          }
+                                          label="Sexto"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.séptimo}
+                                              onChange={handleChange}
+                                              name="séptimo"
+                                            />
+                                          }
+                                          label="Séptimo"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.octavo}
+                                              onChange={handleChange}
+                                              name="octavo"
+                                            />
+                                          }
+                                          label="Octavo"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.noveno}
+                                              onChange={handleChange}
+                                              name="noveno"
+                                            />
+                                          }
+                                          label="Noveno"
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                )}
+                                {formData.media === true && (
+                                  <Grid size={{ xs: 12, md: 6 }}>
+                                    <Typography variant="subtitle1">
+                                      Grados Académicos (Media)
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.btp1}
+                                              onChange={handleChange}
+                                              name="btp1"
+                                            />
+                                          }
+                                          label="Décimo"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.btp2}
+                                              onChange={handleChange}
+                                              name="btp2"
+                                            />
+                                          }
+                                          label="Undécimo"
+                                        />
+                                      </Grid>
+                                      <Grid size={{ xs: 12, md: 4 }}>
+                                        <FormControlLabel
+                                          control={
+                                            <Checkbox
+                                              checked={formData.btp3}
+                                              onChange={handleChange}
+                                              name="btp3"
+                                            />
+                                          }
+                                          label="Duodécimo"
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                )}
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Centro Educativo</Typography>
                   <TextField
