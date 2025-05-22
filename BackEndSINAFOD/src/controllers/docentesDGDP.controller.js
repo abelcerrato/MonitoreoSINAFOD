@@ -234,7 +234,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
             //insertar en participante
             const Participante = await postParticipanteM(
-                idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
                 deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor)
 
@@ -258,7 +258,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
             //insertar en participante
             const Participante = await postParticipanteM(
-                idinvestigacion, idformacion, identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
                 deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor)
 

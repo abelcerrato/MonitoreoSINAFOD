@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { getParticipanteC, getParticipanteIdC, getParticipanteIdFormacionC, getParticipanteIdFormInvestC, getParticipanteIdInvestC, putParticipanteC  } from "../controllers/Participante.controller.js";
+import { getParticipanteC, getParticipanteIdC, getParticipanteIdFormacionC, getParticipanteIdFormInvestC, getParticipanteIdInvestC, postParticipantesIFCedC, putParticipanteC  } from "../controllers/Participante.controller.js";
 import { getFiltroDocentesC } from "../controllers/docentesDGDP.controller.js";
 const router=Router();
 
@@ -13,6 +13,9 @@ router.put('/participante/:id', putParticipanteC)
 
 
 router.get('/participante/:tipo/:id', getParticipanteIdFormInvestC)
+
+
+router.post('/participanteInvFormCed', postParticipantesIFCedC) //ruta que refgistra todos los participantes con la formacion o investigacion a la que pertenece y centro educativo
 
 
 

@@ -62,12 +62,12 @@ export const postDocentesM = async (codigosace, nombre, identificacion, correo, 
         const { rows } = await pool.query(`
             INSERT INTO docentesdgdp (codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea, 
                                         genero, institucion, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`, 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`, 
             [codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
                 genero, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona])
          // Log for debugging
         //console.log(rows);
-        return rows
+        return rows[0].id
     } catch (error) {
         throw error;
     }
@@ -117,7 +117,7 @@ export const getDocenteIdentificacionM = async (filtro) => {
         if (rows.length === 0) {
             return null
         }
-        return rows
+        return rows[0].id
     } catch (error) {
         throw error;
     }
