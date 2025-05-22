@@ -107,7 +107,7 @@ export const getParticipanteIdInvestM = async (id) => {
               SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
-                p.idnivelacademicos, p.idcicloacademicos, p.idgradoacademicos, 
+                p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
                 p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
@@ -150,6 +150,9 @@ export const getParticipanteIdInvestM = async (id) => {
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id 
+                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
+                inner join gradosacademicos g on p.idgradoacademicos = g.id 
                 inner join cargodesempeña c on p.idfuncion = c.id
                 inner join participantesinvestigacion pi on p.id= pi.idparticipante 
                 INNER join investigacion i on pi.idinvestigacion =i.id 
@@ -182,7 +185,7 @@ export const getParticipanteIdFormacionM = async (id) => {
              SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
-                p.idnivelacademicos, p.idcicloacademicos, p.idgradoacademicos, 
+                p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
                 p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
@@ -229,7 +232,10 @@ export const getParticipanteIdFormacionM = async (id) => {
                 FROM participantes as p
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
-                left join aldeas ares on p.aldearesidencia = ares.id 
+                left join aldeas ares on p.aldearesidencia = ares.id
+                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
+                inner join gradosacademicos g on p.idgradoacademicos = g.id  
                 inner join cargodesempeña c on p.idfuncion = c.id
                 
                 inner join participantesformacion pf on p.id = pf.idparticipante 
