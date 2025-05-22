@@ -64,7 +64,6 @@ const FormularParticipantes = () => {
     idnivelacademicos: "",
     idgradoacademicos: null,
 
-
     centroeducativo: "",
     prebasica: false,
     basica: false,
@@ -87,7 +86,7 @@ const FormularParticipantes = () => {
 
     zona: "",
     idmunicipio: "",
-    iddepartamento: "",    
+    iddepartamento: "",
     idaldea: null,
     tipoadministracion: "Gubernamental",
     creadopor: user.id,
@@ -834,7 +833,7 @@ const FormularParticipantes = () => {
                 {formData.basica === true && (
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Nivel Educativo (Para Básica)
+                      Grados Académicos (Básica)
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 12, md: 4 }}>
@@ -951,7 +950,7 @@ const FormularParticipantes = () => {
                 {formData.media === true && (
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Nivel Educativo (Para Media)
+                      Grados Académicos (Media)
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 12, md: 4 }}>
@@ -963,7 +962,7 @@ const FormularParticipantes = () => {
                               name="btp1"
                             />
                           }
-                          label="BTP 1"
+                          label="Décimo"
                         />
                       </Grid>
                       <Grid size={{ xs: 12, md: 4 }}>
@@ -975,7 +974,7 @@ const FormularParticipantes = () => {
                               name="btp2"
                             />
                           }
-                          label="BTP 2"
+                          label="Undécimo"
                         />
                       </Grid>
                       <Grid size={{ xs: 12, md: 4 }}>
@@ -987,43 +986,7 @@ const FormularParticipantes = () => {
                               name="btp3"
                             />
                           }
-                          label="BTP 3"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.bch1}
-                              onChange={handleChange}
-                              name="bch1"
-                            />
-                          }
-                          label="BCH 1"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.bch2}
-                              onChange={handleChange}
-                              name="bch2"
-                            />
-                          }
-                          label="BCH 2"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.bch3}
-                              onChange={handleChange}
-                              name="bch3"
-                            />
-                          }
-                          label="BCH 3"
+                          label="Duodécimo"
                         />
                       </Grid>
                     </Grid>
