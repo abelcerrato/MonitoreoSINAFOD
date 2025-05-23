@@ -143,7 +143,7 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
 
 
 
-export const postCentroEducativoM = async (nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea) => {
+export const postCentroEducativoM = async (nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO centroeducativo ( 
@@ -153,7 +153,7 @@ export const postCentroEducativoM = async (nombreced, codigosaceCed, tipoadminis
             ) 
             RETURNING id
             `,
-            [nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea]);
+            [nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea]);
         return rows[0].id;
     } catch (error) {
         console.error("ERROR AL INSERTAR EL CENTRO EDUCATIVO DEL PARTICIPANTE:", error.message);
@@ -165,7 +165,7 @@ export const postCentroEducativoM = async (nombreced, codigosaceCed, tipoadminis
 
 
 
-export const putCentroEducativoM = async (nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, id) => {
+export const putCentroEducativoM = async (nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, id) => {
     try {
         const { rows } = await pool.query(`
                 UPDATE centroeducativo 
@@ -173,7 +173,7 @@ export const putCentroEducativoM = async (nombreced, codigosaceCed, tipoadminist
                     nombreced = $1, codigosace = $2, tipoadministracion = $3, tipocentro = $4, zona = $5, iddepartamento = $6, idmunicipio = $7, idaldea = $8,  
                 WHERE id = $9
                 RETURNING *`,
-            [nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, id])
+            [nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, id])
         return rows[0]
     } catch (error) {
         throw error;

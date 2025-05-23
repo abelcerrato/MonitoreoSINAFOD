@@ -226,7 +226,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
         deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor,
 
-        nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
+        nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
 
         cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo,
 
@@ -246,7 +246,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     try {
         const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
         const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
-        const resultado4 = await getIdCentroEducativoSACEM(codigosaceCed); // idcentroeducativo
+        const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
         const iddocente = resultado1;
         const idparticipante = resultado3;
@@ -270,7 +270,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         if (!iddocente && !idparticipante && !idcentroeducativo) {
             // Insertar docente
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
-                genero, nombreced, codigosaceCed, idnivelacademicos, idciclosacademicos, zona);
+                genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             response.docentes = docente;
 
             // Insertar participante
@@ -294,7 +294,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
             // Insertar centro educativo
             const centro = await postCentroEducativoM(
-                nombreced, codigosaceCed, tipoadministracion, tipocentro, zona,
+                nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
                 iddepartamento, idmunicipio, idaldea, idPart
             );
             response.ced = centro;
@@ -336,7 +336,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             }
 
             const centro = await postCentroEducativoM(
-                nombreced, codigosaceCed, tipoadministracion, tipocentro, zona,
+                nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
                 iddepartamento, idmunicipio, idaldea, idPart
             );
             response.ced = centro;
@@ -359,7 +359,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         // CASO 3: No existe docente, pero sí existe participante y centro educativo
         else if (!iddocente && idparticipante && idcentroeducativo) {
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
-                genero, nombreced, codigosaceCed, idnivelacademicos, idciclosacademicos, zona);
+                genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             response.docentes = docente;
 
             if (Array.isArray(idformacion)) {
@@ -389,7 +389,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         else if (iddocente && idparticipante && !idcentroeducativo) {
             // Insertar centro educativo
             const centro = await postCentroEducativoM(
-                nombreced, codigosaceCed, tipoadministracion, tipocentro, zona,
+                nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
                 iddepartamento, idmunicipio, idaldea, idparticipante
             );
             response.ced = centro;
