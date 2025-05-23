@@ -142,7 +142,8 @@ function App() {
           <Route path="/" element={<SignIn />} />
 
           <Route
-            path="/Formulario-De-Participante/:id"
+        /*     path="/Formulario-De-Participante/:id" */
+            path="/Formulario-De-Participante"
             element={
 
               <FormularioExterno />

@@ -46,71 +46,48 @@ import {
 } from "@react-pdf/renderer";
 
 // Componente para el PDF
-
-const FormationPDF = ({
-  formacion,
-  modalidad,
-  estado,
-  fechainicio,
-  fechafinal,
-  qrUrl,
-}) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Información de la Formación</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Nombre de la Formación:</Text>
-        <Text style={styles.value}>{formacion || "No especificado"}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Modalidad:</Text>
-        <Text style={styles.value}>{modalidad || "No especificada"}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Estado:</Text>
-        <Text style={styles.value}>{estado || "No especificado"}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Fecha de Inicio:</Text>
-        <Text style={styles.value}>
-          {fechainicio
-            ? new Date(fechainicio).toLocaleDateString("es-ES")
-            : "No especificada"}
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Fecha de Finalización:</Text>
-        <Text style={styles.value}>
-          {fechafinal
-            ? new Date(fechafinal).toLocaleDateString("es-ES")
-            : "No especificada"}
-        </Text>
-      </View>
-
-      <View style={styles.qrContainer}>
-        <Text style={styles.label}>Código QR para participantes:</Text>
-        <Image
-          style={styles.qrImage}
-          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-            qrUrl
-          )}`}
-        />
-        <Text style={styles.url}>{qrUrl}</Text>
-      </View>
-    </Page>
-  </Document>
-);
+import logoDGDP from "../../Components/img/Logo DGDP_FondoB.png";
+import logoSE from "../../Components/img/LogoEducacion.png";
+import marcaH from "../../Components/img/5 estrellas y H.png";
 
 // Estilos para el PDF
+
 const styles = StyleSheet.create({
   page: {
+    position: "relative",
     padding: 30,
     fontFamily: "Helvetica",
+  },
+  backgroundColumn: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 40,
+    height: "100%",
+    backgroundColor: color.primary.azul,
+  },
+  logoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 120,
+    height: "auto",
+  },
+  marcaH: {
+    position: "absolute",
+    padding: 5,
+    bottom: 100,
+    left: 35,
+    width: 80,
+    height: 40,
+    backgroundColor: color.primary.azul,
+  },
+  content: {
+    marginTop: 20,
+    paddingHorizontal: 60,
   },
   title: {
     fontSize: 18,
@@ -145,6 +122,70 @@ const styles = StyleSheet.create({
   },
 });
 
+const FormationPDF = ({
+  formacion,
+  modalidad,
+  estado,
+  fechainicio,
+  fechafinal,
+  qrUrl,
+}) => (
+  <Document>
+    <Page size="LETTER" style={styles.page}>
+      <View style={styles.backgroundColumn} />
+
+      <View style={styles.logoContainer}>
+        <Image style={styles.logo} src={logoDGDP} />
+        <Image style={styles.logo} src={logoSE} />
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.title}>Información de la Formación</Text>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Nombre de la Formación:</Text>
+          <Text style={styles.value}>{formacion || "No especificado"}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Modalidad:</Text>
+          <Text style={styles.value}>{modalidad || "No especificada"}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Fecha de Inicio:</Text>
+          <Text style={styles.value}>
+            {fechainicio
+              ? new Date(fechainicio).toLocaleDateString("es-ES")
+              : "No especificada"}
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Fecha de Finalización:</Text>
+          <Text style={styles.value}>
+            {fechafinal
+              ? new Date(fechafinal).toLocaleDateString("es-ES")
+              : "No especificada"}
+          </Text>
+        </View>
+
+        <View style={styles.qrContainer}>
+          <Text style={styles.label}>Código QR para participantes:</Text>
+          <Image
+            style={styles.qrImage}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+              qrUrl
+            )}`}
+          />
+          <Text style={styles.url}>{qrUrl}</Text>
+        </View>
+      </View>
+      <Image style={styles.marcaH} src={marcaH} />
+    </Page>
+  </Document>
+);
+
 export default function TablaActividad({ isSaved, setIsSaved }) {
   const navigate = useNavigate();
   const [paginationModel, setPaginationModel] = useState({
@@ -159,6 +200,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
   const [qrUrl, setQrUrl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleOpen = (id) => {
     setSelectedId(id);
@@ -354,19 +396,32 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
         <Dialog
           open={openModal}
           onClose={handleCloseModal}
-          maxWidth="sm"
+          maxWidth="lg"
           fullWidth
         >
           <DialogTitle>Información de la Formación</DialogTitle>
           <DialogContent style={{ textAlign: "center", padding: "20px" }}>
             {qrUrl && currentRow && (
               <>
-                <QRCodeCanvas value={qrUrl} size={200} />
-                <p style={{ marginTop: "15px", wordBreak: "break-all" }}>
-                  {qrUrl}
-                </p>
+                {!showPreview && (
+                  <>
+                    <QRCodeCanvas value={qrUrl} size={200} />
+                    <p style={{ marginTop: "15px", wordBreak: "break-all" }}>
+                      {qrUrl}
+                    </p>
+                  </>
+                )}
 
                 <div style={{ marginTop: "25px" }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowPreview(!showPreview)}
+                    sx={{ mr: 2 }}
+                  >
+                    {showPreview ? "Ocultar Vista Previa" : "Vista Previa"}
+                  </Button>
+
                   <PDFDownloadLink
                     document={
                       <FormationPDF
@@ -389,7 +444,6 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                         color="primary"
                         disabled={loading}
                         sx={{
-                          mt: 2,
                           backgroundColor: color.primary.azul,
                           "&:hover": {
                             backgroundColor: color.dark,
@@ -401,6 +455,21 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                     )}
                   </PDFDownloadLink>
                 </div>
+
+                {showPreview && (
+                  <div style={{ marginTop: "30px", height: "600px" }}>
+                    <PDFViewer width="100%" height="100%">
+                      <FormationPDF
+                        formacion={currentRow.formacion}
+                        modalidad={currentRow.modalidad}
+                        estado={currentRow.estado}
+                        fechainicio={currentRow.fechainicio}
+                        fechafinal={currentRow.fechafinal}
+                        qrUrl={qrUrl}
+                      />
+                    </PDFViewer>
+                  </div>
+                )}
               </>
             )}
           </DialogContent>

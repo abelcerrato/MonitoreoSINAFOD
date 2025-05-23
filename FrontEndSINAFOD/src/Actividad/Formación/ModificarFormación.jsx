@@ -164,7 +164,7 @@ const ModificarFormacion = () => {
           }));
         }
       }
-      
+
       // Nueva condición: Limpiar ciclos cuando se desmarca "Básica"
       if (name === "basica" && !checked) {
         newData.primerciclo = false;
@@ -807,7 +807,7 @@ const ModificarFormacion = () => {
             {formData.media === true && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Nivel Educativo (Para Media)
+                  Grados Académicos ()
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 4 }}>

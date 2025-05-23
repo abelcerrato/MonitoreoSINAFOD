@@ -51,11 +51,14 @@ const FormularParticipantes = () => {
   const [formData, setFormData] = useState({
     idinvestigacioncap: investCap,
     correo: "",
+    fechanacimiento: "",
+    edad: "",
+    telefono: "",
     identificacion: "",
     codigosace: "",
     nombre: "",
     idfuncion: "",
-    sexo: "",
+    genero: "",
     añosdeservicio: 0,
     codigodered: "",
     deptoresidencia: "",
@@ -64,7 +67,7 @@ const FormularParticipantes = () => {
     idnivelacademicos: "",
     idgradoacademicos: null,
 
-    centroeducativo: "",
+    nombreced: "",
     prebasica: false,
     basica: false,
     media: false,
@@ -99,7 +102,7 @@ const FormularParticipantes = () => {
       codigosace: "",
       nombre: "",
       idfuncion: "",
-      sexo: "",
+      genero: "",
       añosdeservicio: 0,
       codigodered: "",
       deptoresidencia: "",
@@ -109,7 +112,7 @@ const FormularParticipantes = () => {
       idgradoacademicos: null,
 
       idaldea: "",
-      centroeducativo: "",
+      nombreced: "",
       prebasica: false,
       basica: false,
       media: false,
@@ -144,14 +147,14 @@ const FormularParticipantes = () => {
       "identificacion",
       "nombre",
       "idfuncion",
-      "sexo",
+      "genero",
       "añosdeservicio",
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
       /*   "idgradoacademicos" , */
 
-      "centroeducativo",
+      "nombreced",
       /*  "idnivelesacademicos",
       "idgradosacademicos" , */
       "zona",
@@ -220,34 +223,63 @@ const FormularParticipantes = () => {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => {
-      // Para checkboxes usamos 'checked', para otros campos usamos 'value'
-      const newValue = type === "checkbox" ? checked : value;
-      let newData = { ...prevData, [name]: newValue };
-
-      // Convertimos el valor a string para evitar errores con `.trim()`
-      const valueStr = String(type === "checkbox" ? checked : value || "");
-
-      // Quitar error si el usuario llena un campo vacío (solo para no-checkboxes)
-      if (type !== "checkbox") {
-        setFieldErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: valueStr.trim() === "" ? true : false,
-        }));
-      }
-
+      let updatedData = { ...prevData };
       // Validación para años de servicio (solo números positivos)
-      if (name === "añosdeservicio" && type !== "checkbox") {
+      if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
           return prevData; // Si no es un número positivo, no actualiza el estado
         }
       }
 
-      return newData;
+      // Si es el campo de fecha, validamos el formato
+      if (name === "fechanacimiento") {
+        // Si el usuario borra el campo, lo limpiamos
+        if (!value) {
+          updatedData.fechanacimiento = "";
+          updatedData.edad = "";
+          return updatedData;
+        }
+
+        // Convertimos a Date para validar
+        const dateObj = new Date(value);
+
+        // Si la fecha es inválida, no actualizamos
+        if (isNaN(dateObj.getTime())) {
+          return prevData;
+        }
+
+        // Formateamos a YYYY-MM-DD (formato que acepta el input date)
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
+
+        updatedData.fechanacimiento = formattedDate;
+
+        // Calculamos la edad
+        const today = new Date();
+        let age = today.getFullYear() - year;
+        const monthDiff = today.getMonth() - dateObj.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < dateObj.getDate())
+        ) {
+          age--;
+        }
+
+        updatedData.edad = age.toString();
+      } else {
+        updatedData[name] = newValue;
+      }
+
+      return updatedData;
     });
   };
-
+  
   // Obtener cargos que desempeña del centro educativo
   useEffect(() => {
     const obteneridfuncion = async () => {
@@ -447,7 +479,7 @@ const FormularParticipantes = () => {
       identificacion: docente.identificacion || "",
       nombre: docente.nombre || "",
       idfuncion: docente.idfuncion || "",
-      sexo: docente.sexo || "",
+      genero: docente.genero || "",
       añosdeservicio: docente.añosdeservicio || "",
       codigodered: docente.codigodered || "",
       deptoresidencia: docente.iddeptoresidencia || "",
@@ -455,7 +487,7 @@ const FormularParticipantes = () => {
       aldearesidencia: docente.idaldearesidencia || "",
       idnivelacademicos: docente.ididnivelacademicos || "",
       idgradoacademicos: docente.ididgradoacademicos || "",
-      centroeducativo: docente.centroeducativo || "",
+      nombreced: docente.nombreced || "",
       idnivelesacademicos: docente.idnivelesacademicos || "",
       idgradosacademicos: docente.idgradosacademicos || "",
       zona: docente.zona || "",
@@ -583,14 +615,14 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <FormControl error={fieldErrors.sexo}>
-                    <Typography variant="subtitle1">Sexo</Typography>
+                  <FormControl error={fieldErrors.genero}>
+                    <Typography variant="subtitle1">Genero</Typography>
                     <RadioGroup
                       row
-                      name="sexo"
-                      value={formData.sexo}
+                      name="genero"
+                      value={formData.genero}
                       onChange={(e) =>
-                        setFormData({ ...formData, sexo: e.target.value })
+                        setFormData({ ...formData, genero: e.target.value })
                       }
                     >
                       <FormControlLabel
@@ -604,10 +636,63 @@ const FormularParticipantes = () => {
                         label="Hombre"
                       />
                     </RadioGroup>
-                    {fieldErrors.sexo && (
+                    {fieldErrors.genero && (
                       <FormHelperText>Este campo es obligatorio</FormHelperText>
                     )}
                   </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">
+                        Fecha de Nacimiento
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        name="fechanacimiento"
+                        value={formData.fechanacimiento}
+                        onChange={handleChange}
+                        type="date"
+                        InputLabelProps={{
+                          shrink: true, // Evita que la etiqueta se superponga
+                        }}
+                        inputProps={{
+                          placeholder: "YYYY-MM-DD", // Guía al usuario
+                        }}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">Edad</Typography>
+                      <TextField
+                        fullWidth
+                        name="edad"
+                        value={formData.edad || ""}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Correo Electrónico
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="correo"
+                    value={formData.correo}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Teléfono</Typography>
+                  <TextField
+                    fullWidth
+                    name="telefono"
+                    value={formData.telefono}
+                    onChange={handleChange}
+                  />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>
@@ -977,13 +1062,14 @@ const FormularParticipantes = () => {
                           label="Undécimo"
                         />
                       </Grid>
+
                       <Grid size={{ xs: 12, md: 4 }}>
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={formData.btp3}
+                              checked={formData.bch3}
                               onChange={handleChange}
-                              name="btp3"
+                              name="bch3"
                             />
                           }
                           label="Duodécimo"
@@ -996,14 +1082,12 @@ const FormularParticipantes = () => {
                   <Typography variant="subtitle1">Centro Educativo</Typography>
                   <TextField
                     fullWidth
-                    name="centroeducativo"
-                    value={formData.centroeducativo}
+                    name="nombreced"
+                    value={formData.nombreced}
                     onChange={handleChange}
-                    error={fieldErrors.centroeducativo}
+                    error={fieldErrors.nombreced}
                     helperText={
-                      fieldErrors.centroeducativo
-                        ? "Este campo es obligatorio"
-                        : ""
+                      fieldErrors.nombreced ? "Este campo es obligatorio" : ""
                     }
                   />
                 </Grid>
@@ -1224,7 +1308,7 @@ const FormularParticipantes = () => {
                             fontWeight="bold"
                           >
                             Centro Educativo:{" "}
-                            {docente.centroeducativo || "No especificado"}
+                            {docente.nombreced || "No especificado"}
                           </Box>
                           <Box component="span" display="block">
                             Nivel Educativo que Atiende:{" "}

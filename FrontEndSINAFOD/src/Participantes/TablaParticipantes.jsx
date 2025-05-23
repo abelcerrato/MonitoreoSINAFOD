@@ -137,8 +137,8 @@ export default function TablaPacticantes({
       });
   }, [isSaved, investCap]);
 
-  const handleEdit = (id) => {
-    navigate(`/Modificar_Participante/${id}`); // Redirige a la página de edición con el ID
+  const handleEdit = (idparticipante) => {
+    navigate(`/Modificar_Participante/${idparticipante}`); // Redirige a la página de edición con el ID
   };
 
   return (
@@ -175,7 +175,6 @@ export default function TablaPacticantes({
             <TableCell align="right">Aldea en la que Reside</TableCell>
             <TableCell align="right">Centro Educativo</TableCell>
             <TableCell align="right">Nivel Académico que Atiende</TableCell>
-            <TableCell align="right">Ciclo Educativo que Atiende</TableCell>
             <TableCell align="right">Grado que Atiende</TableCell>
             <TableCell align="right">Tipo Administración</TableCell>
             <TableCell align="right">Zona Centro Educativo</TableCell>
@@ -192,7 +191,10 @@ export default function TablaPacticantes({
             <TableRow key={row.name}>
               <TableCell style={{ width: 160 }} align="center">
                 <Tooltip title="Editar">
-                  <IconButton onClick={() => handleEdit(row.id)} color="action">
+                  <IconButton
+                    onClick={() => handleEdit(row.idparticipante)}
+                    color="action"
+                  >
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
@@ -211,9 +213,8 @@ export default function TablaPacticantes({
               <TableCell align="right">{row.municipio}</TableCell>
               <TableCell align="right">{row.aldea}</TableCell>
               <TableCell align="right">{row.nombreced}</TableCell>
-              <TableCell align="right">{row.niveles_educativos}</TableCell>
-              <TableCell align="right">{row.nombrecicloced}</TableCell>
-              <TableCell align="right">{row.nombregradoced}</TableCell>
+              <TableCell align="right">{row.nivelacademico_ced}</TableCell>
+              <TableCell align="right">{row.gradoacademico_ced}</TableCell>
               <TableCell align="right">{row.tipoadministracion}</TableCell>
               <TableCell align="right">{row.zona}</TableCell>
               <TableCell align="right">{row.departamentoced}</TableCell>

@@ -190,7 +190,6 @@ const Investigacion = () => {
       .replace(/days?/g, "días");
   };
 
-
   const handleSave = async () => {
     // Validaciones previas (campos obligatorios, fechas, etc.)
     const requiredFields = ["investigacion", "tipoactividad", "socializaron"];
@@ -583,7 +582,7 @@ const Investigacion = () => {
             {formData.media === true && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Nivel Educativo (Para Media)
+                  Grados Académicos ()
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 4 }}>
