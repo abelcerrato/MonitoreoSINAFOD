@@ -94,6 +94,8 @@ export const putDocentesM = async (codigosace, nombre, correo, departamentoced, 
 
 //para buscar por identificacion en tabla de docentesdgdp
 export const getDocenteIdentificacionM = async (filtro) => {
+    console.log(filtro);
+    
     try {
 
         const { rows } = await pool.query(`
@@ -112,12 +114,12 @@ export const getDocenteIdentificacionM = async (filtro) => {
             left join nivelesacademicos n on dgdp.idnivelesacademicos =n.id 
             left join ciclosacademicos c on dgdp.idciclosacademicos =c.id
             where dgdp.identificacion=$1
-            ORDER BY dgdp.id DESC `, [filtro])
+            `, [filtro])
        // console.log(rows);
         if (rows.length === 0) {
             return null
         }
-        return rows[0].id
+        return rows
     } catch (error) {
         throw error;
     }

@@ -147,12 +147,13 @@ export const getFiltroDocenteC = async (req, res) => {
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocenteC = async (req, res) => {
     const { filtro } = req.params;
-    try {
+    try { 
+       // const docentes = await getDocenteIdentificacionM(filtro);
         const resultados = await Promise.all([
-            getParticipanteCodSACEM(filtro),
+            //getParticipanteCodSACEM(filtro),
             getParticipanteIdentificacionM(filtro),
-            getDocenteIdentificacionM(filtro),
-            getDocenteCodSACEM(filtro)
+            getDocenteIdentificacionM(filtro), 
+           // getDocenteCodSACEM(filtro)
         ]);
 
         // Buscar el primer resultado que no esté vacío o null
@@ -162,7 +163,14 @@ export const getFiltroDocenteC = async (req, res) => {
             return res.json(resultadoValido);
         }
 
-        return res.status(404).json({ mensaje: 'No se encontraron registros para el filtro proporcionado.' });
+        return res.status(404).json({ 
+            mensaje: 'No se encontraron registros para el filtro proporcionado.',
+            //docentes
+        
+        });
+
+   
+
     } catch (error) {
         console.error('Error al obtener datos:', error);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
