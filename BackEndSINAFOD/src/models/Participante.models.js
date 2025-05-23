@@ -350,7 +350,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
-                pced.idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
+                pced.idcentroeducativo, ced.nombreced, ced.codigosace as codigosaceCed, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
                 pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
                     CONCAT_WS(', ',
                         CASE WHEN pced.prebasica THEN 'Prebásica' END,
