@@ -18,7 +18,12 @@ import {
   FormHelperText,
   ListItem,
   ListItemText,
-  Checkbox
+  Checkbox,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Autocomplete,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -35,25 +40,28 @@ const FormularioExterno = () => {
   const { id: investCap } = useParams();
   const [docentesEncontrados, setDocentesEncontrados] = useState([]);
   const [openSeleccionModal, setOpenSeleccionModal] = useState(false);
-
+  const [cargos, setCargos] = useState([]);
   const { user } = useUser();
   const navigate = useNavigate();
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [departamentosRE, setDepartamentosRE] = useState([]);
   const [municipiosRE, setMunicipiosRE] = useState([]);
-  const [NivelEducativo, setNivelEducativo] = useState([]);
-  const [gardo, setGrado] = useState([]);
+  const [showFormaciones, setShowFormaciones] = useState(true);
+  const [formaciones, setFormaciones] = useState([]);
   const [aldeas, setAldea] = useState([]);
   const [aldeasP, setAldeaP] = useState([]);
   const [gardoP, setGradoP] = useState([]);
+  const [centroseducativos, setCentrosEducativos] = useState([]);
   const [openDNIModal, setOpenDNIModal] = useState(true);
   const [tempDNI, setTempDNI] = useState("");
   const [dniError, setDniError] = useState("");
   const [formData, setFormData] = useState({
-    idinvestigacioncap: investCap,
+    idinvestigacion: [],
+    idformacion: [],
     correo: "",
     telefono: "",
+    edad: "",
     fechanacimiento: "",
     identificacion: "",
     codigosace: "",
@@ -67,8 +75,11 @@ const FormularioExterno = () => {
     aldearesidencia: null,
     idnivelacademicos: "",
     idgradoacademicos: null,
+    caserio: "",
+    tipocentro: "",
 
     nombreced: "",
+    codigosaceced: "",
     prebasica: false,
     basica: false,
     media: false,
@@ -81,13 +92,11 @@ const FormularioExterno = () => {
     séptimo: false,
     octavo: false,
     noveno: false,
-    btp1: false,
-    btp2: false,
-    btp3: false,
-    bch1: false,
-    bch2: false,
-    bch3: false,
-
+    decimo: false,
+    onceavo: false,
+    doceavo: false,
+    datoscorrectos: false,
+    autorizadatos: false,
     zona: "",
     idmunicipio: "",
     iddepartamento: "",
@@ -100,23 +109,24 @@ const FormularioExterno = () => {
     identificacion: false,
     codigosace: false,
     nombre: false,
-    funcion: false,
+    idfuncion: false,
     genero: false,
     añosdeservicio: 0,
     codigodered: false,
     deptoresidencia: false,
     municipioresidencia: false,
     aldearesidencia: false,
-    nivelacademicodocente: false,
-    gradoacademicodocente: false,
-
-    aldeaced: false,
-    centroeducativo: false,
+    idnivelacademicos: false,
+    idgradoacademicos: false,
+    codigosaceced: "",
+    tipocentro: false,
+    idaldea: false,
+    nombreced: false,
     idnivelesacademicos: false,
     idgradosacademicos: false,
     zona: false,
-    municipioced: false,
-    departamentoced: false,
+    idmunicipio: false,
+    iddepartamento: false,
     tipoadministracion: false,
   });
   const limpiarCampos = () => {
@@ -125,23 +135,23 @@ const FormularioExterno = () => {
       identificacion: "",
       codigosace: "",
       nombre: "",
-      funcion: "",
+      idfuncion: "",
       genero: "",
       añosdeservicio: 0,
       codigodered: "",
       deptoresidencia: "",
       municipioresidencia: "",
       aldearesidencia: "",
-      nivelacademicodocente: "",
-      gradoacademicodocente: null,
-
-      aldeaced: "",
-      centroeducativo: "",
+      idnivelacademicos: "",
+      idgradoacademicos: null,
+      tipocentro: false,
+      idaldea: "",
+      nombreced: "",
       idnivelesacademicos: "",
       idgradosacademicos: null,
       zona: "",
-      municipioced: "",
-      departamentoced: "",
+      idmunicipio: "",
+      iddepartamento: "",
       creadopor: prevState.creadopor,
     }));
   };
@@ -150,17 +160,18 @@ const FormularioExterno = () => {
     const requiredFields = [
       "identificacion",
       "nombre",
-      "funcion",
+      "idfuncion",
       "genero",
       "añosdeservicio",
       "deptoresidencia",
       "municipioresidencia",
-      "nivelacademicodocente",
-      "centroeducativo",
-      "idnivelesacademicos",
+      "idnivelacademicos",
+      "nombreced",
+
       "zona",
-      "municipioced",
-      "departamentoced",
+      "tipocentro",
+      "idmunicipio",
+      "iddepartamento",
       "tipoadministracion",
     ];
 
@@ -197,7 +208,7 @@ const FormularioExterno = () => {
       console.log("Datos a enviar:", dataToSend);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/CapacitacionP/${investCap}`,
+        `${process.env.REACT_APP_API_URL}/participanteInvFormCed`,
         dataToSend,
         {
           headers: {
@@ -304,12 +315,12 @@ const FormularioExterno = () => {
 
   // Obtener municipios del centro educativo
   useEffect(() => {
-    if (!formData.departamentoced) return; // Si no hay departamento seleccionado, no hacer la petición
+    if (!formData.iddepartamento) return; // Si no hay departamento seleccionado, no hacer la petición
 
     const obtenerMunicipios = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/municipios/${formData.departamentoced}`
+          `${process.env.REACT_APP_API_URL}/municipios/${formData.iddepartamento}`
         );
         setMunicipios(response.data);
       } catch (error) {
@@ -318,16 +329,16 @@ const FormularioExterno = () => {
     };
 
     obtenerMunicipios();
-  }, [formData.departamentoced]);
+  }, [formData.iddepartamento]);
 
   // Obtener aldea del centro educativo
   useEffect(() => {
-    if (!formData.municipioced) return; // Si no hay departamento seleccionado, no hacer la petición
+    if (!formData.idmunicipio) return; // Si no hay departamento seleccionado, no hacer la petición
 
     const obtenerMunicipios = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioced}`
+          `${process.env.REACT_APP_API_URL}/aldeas/${formData.idmunicipio}`
         );
         setAldea(response.data);
       } catch (error) {
@@ -336,42 +347,7 @@ const FormularioExterno = () => {
     };
 
     obtenerMunicipios();
-  }, [formData.municipioced]);
-
-  // Obtener NivelEducativo al que atiende
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/nivelesAcademicos`
-        );
-        setNivelEducativo(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
-
-  // Obtener gardo al que atiende
-  useEffect(() => {
-    if (!formData.idnivelesacademicos) return;
-
-    const obtenergardo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelesacademicos}`
-        );
-
-        setGrado(response.data);
-      } catch (error) {
-        console.error("Error al obtener los gardo", error);
-      }
-    };
-
-    obtenergardo();
-  }, [formData.idnivelesacademicos]);
+  }, [formData.idmunicipio]);
 
   // Obtener aldea del participante
   useEffect(() => {
@@ -383,6 +359,7 @@ const FormularioExterno = () => {
           `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioresidencia}`
         );
         setAldeaP(response.data);
+        console.log("aldeas", response.data);
       } catch (error) {
         console.error("Error al obtener los municipios", error);
       }
@@ -425,13 +402,13 @@ const FormularioExterno = () => {
     obtenerMunicipios();
   }, [formData.deptoresidencia]);
 
-  // Obtener gardo cuando cambia el departamento seleccionado
+  // Obtener gardo cuando cambia el nivel educativo seleccionado
   useEffect(() => {
-    if (!formData.nivelacademicodocente) return;
+    if (!formData.idnivelacademicos) return;
     const obtenergardo = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.nivelacademicodocente}`
+          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelacademicos}`
         );
         setGradoP(response.data);
       } catch (error) {
@@ -440,23 +417,60 @@ const FormularioExterno = () => {
     };
 
     obtenergardo();
-  }, [formData.nivelacademicodocente]);
-
+  }, [formData.idnivelacademicos]);
+  //Get para traer todas las formaciones con estado Planificadas
   useEffect(() => {
-    const obtenerDetalles = async () => {
+    const obtenerFomaciones = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/investC/${investCap}`
+          `${process.env.REACT_APP_API_URL}/formacion`
         );
 
-        setFormData(response.data[0]);
+        // Filtrar solo las formaciones con estado "Planificada"
+        const formacionesPlanificadas = response.data.filter(
+          (formacion) => formacion.estado === "Planificada"
+        );
+
+        setFormaciones(formacionesPlanificadas);
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
     };
 
-    obtenerDetalles();
-  }, [investCap]);
+    obtenerFomaciones();
+  }, []);
+
+  // Obtener departamentos del participante
+  useEffect(() => {
+    const obtenerCentrosEducativos = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/centroeducativo`
+        );
+        setCentrosEducativos(response.data);
+      } catch (error) {
+        console.error("Error al obtener los departamentos", error);
+      }
+    };
+
+    obtenerCentrosEducativos();
+  }, []);
+
+  // Obtener cargos que desempeña del centro educativo
+  useEffect(() => {
+    const obteneridfuncion = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/cargodes`
+        );
+        setCargos(response.data);
+      } catch (error) {
+        console.error("Error al obtener los cargos que desempeña", error);
+      }
+    };
+
+    obteneridfuncion();
+  }, []);
 
   const obtenerDNI = async (campo) => {
     try {
@@ -474,6 +488,7 @@ const FormularioExterno = () => {
             icon: "success",
             timer: 6000,
           });
+          console.log(response.data);
         } else {
           // Si hay múltiples registros
           setDocentesEncontrados(response.data);
@@ -483,6 +498,7 @@ const FormularioExterno = () => {
             response.data.length,
             "registros"
           );
+          console.log(response.data);
         }
       }
     } catch (error) {
@@ -497,53 +513,80 @@ const FormularioExterno = () => {
   };
 
   const llenarFormulario = (docente) => {
+    const fechaNacimiento = new Date(docente.fechanacimiento);
+    const fechaFormateada = fechaNacimiento.toISOString().split("T")[0];
     setFormData((prev) => ({
       ...prev,
+      /*Datos del participante */
       codigosace: docente.codigosace || "",
-      //identificacion: docente.identificacion || "",
       nombre: docente.nombre || "",
-      funcion: docente.funcion || "",
       genero: docente.genero || "",
+      fechanacimiento: fechaFormateada || "",
+      edad: docente.edad || "",
+      correo: docente.correo || "",
+      telefono: docente.telefono || "",
+      idnivelacademicos: docente.idnivelacademicos || "",
+      idgradoacademicos: docente.idgradoacademicos || "",
       añosdeservicio: docente.añosdeservicio || "",
       codigodered: docente.codigodered || "",
-      deptoresidencia: docente.iddeptoresidencia || "",
-      municipioresidencia: docente.idmuniresidencia || "",
-      aldearesidencia: docente.idaldearesidencia || "",
-      nivelacademicodocente: docente.idnivelacademicodocente || "",
-      gradoacademicodocente: docente.idgradoacademicodocente || "",
+      deptoresidencia: docente.deptoresidencia || "",
+      municipioresidencia: docente.municipioresidencia || "",
+      aldearesidencia: docente.aldearesidencia || "",
+      caserio: docente.caserio || "",
 
-      centroeducativo: docente.centroeducativo || "",
-      idnivelesacademicos: docente.idnivelesacademicos || "",
-      idgradosacademicos: docente.idgradosacademicos || "",
-      zona: docente.zona || "",
-      municipioced: docente.municipioced || "",
-      departamentoced: docente.departamentoced || "",
-      aldeaced: docente.aldeaced || "",
+      /*Datos del centro educativo */
+      prebasica: docente.prebasica || false,
+      basica: docente.basica || false,
+      media: docente.media || false,
+      primero: docente.primero || false,
+      segundo: docente.segundo || false,
+      tercero: docente.tercero || false,
+      cuarto: docente.cuarto || false,
+      quinto: docente.quinto || false,
+      sexto: docente.sexto || false,
+      séptimo: docente.séptimo || false,
+      octavo: docente.octavo || false,
+      noveno: docente.noveno || false,
+      decimo: docente.decimo || false,
+      onceavo: docente.onceavo || false,
+      doceavo: docente.doceavo || false,
+      idfuncion: docente.idfuncion || "",
+      nombreced: docente.nombreced || "",
+      codigosaceced: docente.codigosaceced || "",
       tipoadministracion: docente.tipoadministracion || "Gubernamental",
+      tipocentro: docente.tipocentro || "",
+      jornada: docente.jornada || "",
+
+      zona: docente.zona || "",
+      idmunicipio: docente.idmunicipio || "",
+      iddepartamento: docente.iddepartamento || "",
+      idaldea: docente.idaldea || "",
+      datoscorrectos: docente.datoscorrectos || false,
+      autorizadatos: docente.autorizadatos || false,
     }));
 
     setCamposBloqueados({
       codigosace: !!docente.codigosace,
       identificacion: !!docente.identificacion,
       nombre: !!docente.nombre,
-      funcion: !!docente.funcion,
+      idfuncion: !!docente.idfuncion,
       genero: !!docente.genero,
       añosdeservicio: !!docente.añosdeservicio,
 
       codigodered: !!docente.codigodered,
-      deptoresidencia: !!docente.iddeptoresidencia,
-      municipioresidencia: !!docente.idmuniresidencia,
-      aldearesidencia: !!docente.idaldearesidencia,
-      nivelacademicodocente: !!docente.nivelacademicodocente,
-      gradoacademicodocente: !!docente.gradoacademicodocente,
+      deptoresidencia: !!docente.deptoresidencia,
+      municipioresidencia: !!docente.municipioresidencia,
+      aldearesidencia: !!docente.aldearesidencia,
+      idnivelacademicos: !!docente.idnivelacademicos,
+      idgradoacademicos: !!docente.idgradoacademicos,
 
-      centroeducativo: !!docente.centroeducativo,
+      nombreced: !!docente.idcentroeducativo,
       idnivelesacademicos: !!docente.idnivelesacademicos,
       idgradosacademicos: !!docente.idgradosacademicos,
       zona: !!docente.zona,
-      municipioced: !!docente.municipioced,
-      departamentoced: !!docente.departamentoced,
-      aldeaced: !!docente.aldeaced,
+      idmunicipio: !!docente.idmunicipio,
+      iddepartamento: !!docente.iddepartamento,
+      idaldea: !!docente.idaldea,
       tipoadministracion: !!docente.tipoadministracion,
     });
   };
@@ -588,7 +631,7 @@ const FormularioExterno = () => {
     </Box>
   );
 
-  // 1. Verificar al cargar si ya se envió el formulario
+  /*   // 1. Verificar al cargar si ya se envió el formulario
   useEffect(() => {
     if (localStorage.getItem(`formSubmitted_${investCap}`)) {
       setFormSubmitted(true);
@@ -603,6 +646,203 @@ const FormularioExterno = () => {
       window.onpopstate = () => window.history.go(1);
     }
   }, [formSubmitted, investCap]);
+ */
+  const FormacionesPreview = ({ formaciones, onContinue }) => {
+    const [seleccionadas, setSeleccionadas] = useState([]);
+
+    const toggleSeleccion = (id) => {
+      setSeleccionadas((prev) =>
+        prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      );
+    };
+
+    const handleContinue = () => {
+      // Llamar a la función onContinue con las formaciones seleccionadas
+      onContinue(seleccionadas);
+    };
+
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f0f2f5",
+          padding: 4,
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 4, color: color.primary.azul }}>
+          Formaciones Disponibles
+        </Typography>
+
+        <Typography variant="subtitle1" sx={{ mb: 3 }}>
+          Selecciona una o más formaciones a las que deseas preinscribirte
+        </Typography>
+
+        <Grid container spacing={3} sx={{ maxWidth: "1200px", mb: 4 }}>
+          {formaciones.map((formacion) => (
+            <Grid item xs={12} md={6} lg={4} key={formacion.id}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  border: seleccionadas.includes(formacion.id)
+                    ? `2px solid ${color.primary.azul}`
+                    : "2px solid transparent",
+                  cursor: "pointer",
+                  transition: "border 0.3s ease",
+                  "&:hover": {
+                    boxShadow: 3,
+                  },
+                }}
+                onClick={() => toggleSeleccion(formacion.id)}
+              >
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box display="flex" alignItems="center" mb={1}>
+                    <Checkbox
+                      checked={seleccionadas.includes(formacion.id)}
+                      onChange={() => toggleSeleccion(formacion.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      color="primary"
+                      sx={{ mr: 1 }}
+                    />
+                    <Typography variant="h5" component="div">
+                      {formacion.formacion}
+                    </Typography>
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Tipo:</strong> {formacion.tipoformacion}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Modalidad:</strong> {formacion.modalidad}
+                    {formacion.modalidad === "Virtual" &&
+                      formacion.plataforma &&
+                      ` (${formacion.plataforma})`}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Duración:</strong> {formacion.duracion.hours}h{" "}
+                    {formacion.duracion.minutes}m
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Fecha inicio:</strong>{" "}
+                    {new Date(formacion.fechainicio).toLocaleDateString()}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Fecha final:</strong>{" "}
+                    {new Date(formacion.fechafinal).toLocaleDateString()}
+                  </Typography>
+
+                  <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Estado:</strong>
+                    </Typography>
+                    <Chip
+                      label={formacion.estado}
+                      size="small"
+                      color={
+                        formacion.estado === "Completada"
+                          ? "success"
+                          : formacion.estado === "En curso"
+                          ? "primary"
+                          : "default"
+                      }
+                      sx={{ ml: 1 }}
+                    />
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Dirigido a:</strong> {formacion.funciondirigido}
+                  </Typography>
+
+                  {formacion.espaciofisico && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      <strong>Lugar:</strong> {formacion.espaciofisico}
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleContinue}
+          disabled={seleccionadas.length === 0}
+          sx={{
+            mt: 2,
+            mb: 4,
+            padding: "10px 30px",
+            backgroundColor: color.primary.azul,
+            "&:disabled": {
+              backgroundColor: "#e0e0e0",
+              color: "#a0a0a0",
+            },
+            "&:hover": {
+              backgroundColor: color.primary.azulOscuro,
+            },
+          }}
+        >
+          Preinscripción ({seleccionadas.length} seleccionadas)
+        </Button>
+      </Box>
+    );
+  };
+
+  // Render condicional
+  // En tu componente principal, reemplaza el if(showFormaciones) por:
+  if (showFormaciones) {
+    return (
+      <FormacionesPreview
+        formaciones={formaciones}
+        onContinue={(idsSeleccionados) => {
+          setFormData((prev) => ({
+            ...prev,
+            idformacion: idsSeleccionados,
+          }));
+          setShowFormaciones(false);
+          setOpenDNIModal(true);
+        }}
+      />
+    );
+  }
 
   return (
     <>
@@ -882,21 +1122,21 @@ const FormularioExterno = () => {
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl
                   fullWidth
-                  error={fieldErrors.nivelacademicodocente}
-                  disabled={camposBloqueados.nivelacademicodocente}
+                  error={fieldErrors.idnivelacademicos}
+                  disabled={camposBloqueados.idnivelacademicos}
                 >
                   <Typography variant="subtitle1">Nivel Educativo*</Typography>
                   <Select
                     fullWidth
-                    name="nivelacademicodocente"
-                    value={formData.nivelacademicodocente || ""}
+                    name="idnivelacademicos"
+                    value={formData.idnivelacademicos || ""}
                     onChange={handleChange}
-                    disabled={camposBloqueados.nivelacademicodocente}
+                    disabled={camposBloqueados.idnivelacademicos}
                   >
                     <MenuItem value="3">Media</MenuItem>
                     <MenuItem value="4">Superior</MenuItem>
                   </Select>
-                  {fieldErrors.nivelacademicodocente && (
+                  {fieldErrors.idnivelacademicos && (
                     <FormHelperText>Este campo es obligatorio</FormHelperText>
                   )}
                 </FormControl>
@@ -905,16 +1145,16 @@ const FormularioExterno = () => {
                 <Typography variant="subtitle1">Grado Académico</Typography>
                 <FormControl
                   fullWidth
-                  disabled={camposBloqueados.gradoacademicodocente}
+                  disabled={camposBloqueados.idgradoacademicos}
                 >
                   <Select
                     fullWidth
-                    name="gradoacademicodocente"
-                    value={formData.gradoacademicodocente || ""}
+                    name="idgradoacademicos"
+                    value={formData.idgradoacademicos || ""}
                     onChange={handleChange}
                     disabled={!gardoP.length}
                     inputProps={{
-                      readOnly: camposBloqueados.gradoacademicodocente,
+                      readOnly: camposBloqueados.idgradoacademicos,
                     }}
                   >
                     <MenuItem value="" disabled>
@@ -957,24 +1197,6 @@ const FormularioExterno = () => {
                   onChange={handleChange}
                   InputProps={{
                     readOnly: camposBloqueados.codigodered,
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Cargo que Desempeña*
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="funcion"
-                  value={formData.funcion}
-                  onChange={handleChange}
-                  error={fieldErrors.funcion}
-                  helperText={
-                    fieldErrors.funcion ? "Este campo es obligatorio" : ""
-                  }
-                  InputProps={{
-                    readOnly: camposBloqueados.funcion,
                   }}
                 />
               </Grid>
@@ -1074,6 +1296,15 @@ const FormularioExterno = () => {
                   </Select>
                 </FormControl>
               </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">Caserio</Typography>
+                <TextField
+                  fullWidth
+                  name="caserio"
+                  value={formData.caserio}
+                  onChange={handleChange}
+                />
+              </Grid>
             </Grid>
 
             <Grid container spacing={2}>
@@ -1085,227 +1316,271 @@ const FormularioExterno = () => {
                   Datos del Centro Educativo Que Representa
                 </Typography>
               </Grid>
-    <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Nivel Educativo</Typography>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="subtitle1">Nivel Educativo</Typography>
 
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.prebasica}
+                          onChange={handleChange}
+                          name="prebasica"
+                        />
+                      }
+                      label="Prebásica"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.basica}
+                          onChange={handleChange}
+                          name="basica"
+                        />
+                      }
+                      label="Básica"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.media}
+                          onChange={handleChange}
+                          name="media"
+                        />
+                      }
+                      label="Media"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              {formData.basica === true && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Grados Académicos (Básica)
+                  </Typography>
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={formData.prebasica}
+                            checked={formData.primero}
                             onChange={handleChange}
-                            name="prebasica"
+                            name="primero"
                           />
                         }
-                        label="Prebásica"
+                        label="Primer"
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={formData.basica}
+                            checked={formData.segundo}
                             onChange={handleChange}
-                            name="basica"
+                            name="segundo"
                           />
                         }
-                        label="Básica"
+                        label="Segundo"
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={formData.media}
+                            checked={formData.tercero}
                             onChange={handleChange}
-                            name="media"
+                            name="tercero"
                           />
                         }
-                        label="Media"
+                        label="Tercer"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.cuarto}
+                            onChange={handleChange}
+                            name="cuarto"
+                          />
+                        }
+                        label="Cuarto"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.quinto}
+                            onChange={handleChange}
+                            name="quinto"
+                          />
+                        }
+                        label="Quinto"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.sexto}
+                            onChange={handleChange}
+                            name="sexto"
+                          />
+                        }
+                        label="Sexto"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.séptimo}
+                            onChange={handleChange}
+                            name="séptimo"
+                          />
+                        }
+                        label="Séptimo"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.octavo}
+                            onChange={handleChange}
+                            name="octavo"
+                          />
+                        }
+                        label="Octavo"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.noveno}
+                            onChange={handleChange}
+                            name="noveno"
+                          />
+                        }
+                        label="Noveno"
                       />
                     </Grid>
                   </Grid>
                 </Grid>
+              )}
+              {formData.media === true && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Grados Académicos (Media)
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.decimo}
+                            onChange={handleChange}
+                            name="decimo"
+                          />
+                        }
+                        label="Décimo"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.onceavo}
+                            onChange={handleChange}
+                            name="onceavo"
+                          />
+                        }
+                        label="Undécimo"
+                      />
+                    </Grid>
 
-                {formData.basica === true && (
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Grados Académicos (Básica)
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.primero}
-                              onChange={handleChange}
-                              name="primero"
-                            />
-                          }
-                          label="Primer"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.segundo}
-                              onChange={handleChange}
-                              name="segundo"
-                            />
-                          }
-                          label="Segundo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.tercero}
-                              onChange={handleChange}
-                              name="tercero"
-                            />
-                          }
-                          label="Tercer"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.cuarto}
-                              onChange={handleChange}
-                              name="cuarto"
-                            />
-                          }
-                          label="Cuarto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.quinto}
-                              onChange={handleChange}
-                              name="quinto"
-                            />
-                          }
-                          label="Quinto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.sexto}
-                              onChange={handleChange}
-                              name="sexto"
-                            />
-                          }
-                          label="Sexto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.séptimo}
-                              onChange={handleChange}
-                              name="séptimo"
-                            />
-                          }
-                          label="Séptimo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.octavo}
-                              onChange={handleChange}
-                              name="octavo"
-                            />
-                          }
-                          label="Octavo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.noveno}
-                              onChange={handleChange}
-                              name="noveno"
-                            />
-                          }
-                          label="Noveno"
-                        />
-                      </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.doceavo}
+                            onChange={handleChange}
+                            name="doceavo"
+                          />
+                        }
+                        label="Duodécimo"
+                      />
                     </Grid>
                   </Grid>
-                )}
-                {formData.media === true && (
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Grados Académicos (Media)
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.btp1}
-                              onChange={handleChange}
-                              name="btp1"
-                            />
-                          }
-                          label="Décimo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.btp2}
-                              onChange={handleChange}
-                              name="btp2"
-                            />
-                          }
-                          label="Undécimo"
-                        />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.bch3}
-                              onChange={handleChange}
-                              name="bch3"
-                            />
-                          }
-                          label="Duodécimo"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                )}
+                </Grid>
+              )}
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Centro Educativo*</Typography>
+                <Typography variant="subtitle1">
+                  Cargo que Desempeña en el Centro Educativo
+                </Typography>
+                <FormControl fullWidth error={fieldErrors.idfuncion}>
+                  <Select
+                    name="idfuncion"
+                    value={formData.idfuncion}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="" disabled>
+                      Seleccione un cargo
+                    </MenuItem>
+                    {cargos.length > 0 ? (
+                      cargos.map((dep) => (
+                        <MenuItem key={dep.id} value={dep.id}>
+                          {dep.cargo}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>Cargando...</MenuItem>
+                    )}
+                  </Select>
+                  {fieldErrors.idfuncion && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">Centro Educativo</Typography>
+                <FormControl fullWidth disabled={camposBloqueados.nombreced}>
+                  <Autocomplete
+                    freeSolo
+                    disabled={camposBloqueados.nombreced}
+                    options={centroseducativos.map((cen) => cen.nombreced)}
+                    value={formData.nombreced || ""}
+                    onInputChange={(event, newInputValue) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        nombreced: newInputValue,
+                      }));
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">
+                  Código SACE del Centro Educativo*
+                </Typography>
                 <TextField
                   fullWidth
-                  name="centroeducativo"
-                  value={formData.centroeducativo}
+                  name="codigosaceced"
+                  value={formData.codigosaceced}
                   onChange={handleChange}
-                  error={fieldErrors.centroeducativo}
-                  helperText={
-                    fieldErrors.centroeducativo
-                      ? "Este campo es obligatorio"
-                      : ""
-                  }
-                  inputProps={{
-                    readOnly: camposBloqueados.centroeducativo,
+                  InputProps={{
+                    readOnly: camposBloqueados.codigosaceced,
                   }}
                 />
               </Grid>
@@ -1345,6 +1620,62 @@ const FormularioExterno = () => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
+                <FormControl
+                  fullWidth
+                  error={fieldErrors.tipocentro}
+                  disabled={camposBloqueados.tipocentro}
+                >
+                  <Typography variant="subtitle1">
+                    Tipo de Centro Educativo*
+                  </Typography>
+                  <Select
+                    fullWidth
+                    name="tipocentro"
+                    value={formData.tipocentro || ""}
+                    onChange={handleChange}
+                    disabled={camposBloqueados.tipocentro}
+                  >
+                    <MenuItem value="Unidocente">Unidocente</MenuItem>
+                    <MenuItem value="Bidocente">Bidocente</MenuItem>
+                    <MenuItem value="Multidocente">Multidocente</MenuItem>
+                    <MenuItem value="No es centro educativo">
+                      No es centro educativo
+                    </MenuItem>
+                  </Select>
+                  {fieldErrors.tipocentro && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <FormControl
+                  fullWidth
+                  error={fieldErrors.jornada}
+                  disabled={camposBloqueados.jornada}
+                >
+                  <Typography variant="subtitle1">
+                    Jornada que Atiende*
+                  </Typography>
+                  <Select
+                    fullWidth
+                    name="jornada"
+                    value={formData.jornada || ""}
+                    onChange={handleChange}
+                    disabled={camposBloqueados.jornada}
+                  >
+                    <MenuItem value="Matutina">Matutina</MenuItem>
+                    <MenuItem value="Vespertina">Vespertina</MenuItem>
+                    <MenuItem value="Nocturna">Nocturna</MenuItem>
+                    <MenuItem value="Mixta">Mixta</MenuItem>
+                    <MenuItem value="Ninguna">Ninguna</MenuItem>
+                  </Select>
+                  {fieldErrors.jornada && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
                   Zona Centro Educativo*
                 </Typography>
@@ -1375,15 +1706,15 @@ const FormularioExterno = () => {
                 </Typography>
                 <FormControl
                   fullWidth
-                  disabled={camposBloqueados.departamentoced}
-                  error={fieldErrors.departamentoced}
+                  disabled={camposBloqueados.iddepartamento}
+                  error={fieldErrors.iddepartamento}
                 >
                   <Select
-                    name="departamentoced"
-                    value={formData.departamentoced || ""}
+                    name="iddepartamento"
+                    value={formData.iddepartamento || ""}
                     onChange={handleChange}
                     inputProps={{
-                      readOnly: camposBloqueados.departamentoced,
+                      readOnly: camposBloqueados.iddepartamento,
                     }}
                   >
                     <MenuItem value="">Seleccione un departamento</MenuItem>
@@ -1397,7 +1728,7 @@ const FormularioExterno = () => {
                       <MenuItem disabled>Cargando...</MenuItem>
                     )}
                   </Select>
-                  {fieldErrors.departamentoced && (
+                  {fieldErrors.iddepartamento && (
                     <FormHelperText>Este campo es obligatorio</FormHelperText>
                   )}
                 </FormControl>
@@ -1408,17 +1739,17 @@ const FormularioExterno = () => {
                 </Typography>
                 <FormControl
                   fullWidth
-                  disabled={camposBloqueados.municipioced}
-                  error={fieldErrors.municipioced}
+                  disabled={camposBloqueados.idmunicipio}
+                  error={fieldErrors.idmunicipio}
                 >
                   <Select
-                    id="municipioced"
-                    name="municipioced"
-                    value={formData.municipioced || ""}
+                    id="idmunicipio"
+                    name="idmunicipio"
+                    value={formData.idmunicipio || ""}
                     onChange={handleChange}
                     disabled={!municipios.length}
                     inputProps={{
-                      readOnly: camposBloqueados.municipioced,
+                      readOnly: camposBloqueados.idmunicipio,
                     }}
                   >
                     <MenuItem value="" disabled>
@@ -1430,7 +1761,7 @@ const FormularioExterno = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                  {fieldErrors.municipioced && (
+                  {fieldErrors.idmunicipio && (
                     <FormHelperText>Este campo es obligatorio</FormHelperText>
                   )}
                 </FormControl>
@@ -1439,14 +1770,14 @@ const FormularioExterno = () => {
                 <Typography variant="subtitle1">
                   Aldea Centro Educativo
                 </Typography>
-                <FormControl disabled={camposBloqueados.aldeaced} fullWidth>
+                <FormControl disabled={camposBloqueados.idaldea} fullWidth>
                   <Select
-                    name="aldeaced"
-                    value={formData.aldeaced || ""}
+                    name="idaldea"
+                    value={formData.idaldea || ""}
                     onChange={handleChange}
                     disabled={!aldeas.length}
                     inputProps={{
-                      readOnly: camposBloqueados.aldeaced,
+                      readOnly: camposBloqueados.idaldea,
                     }}
                   >
                     <MenuItem value="">Seleccione una aldea</MenuItem>
@@ -1461,6 +1792,30 @@ const FormularioExterno = () => {
                     )}
                   </Select>
                 </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.datoscorrectos}
+                      onChange={handleChange}
+                      name="datoscorrectos"
+                    />
+                  }
+                  label="Declaración que los datos proporcionados son correctos."
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.autorizadatos}
+                      onChange={handleChange}
+                      name="autorizadatos"
+                    />
+                  }
+                  label="Autorización para el uso de información con fines administrativos y educativos"
+                />
               </Grid>
             </Grid>
 
@@ -1526,7 +1881,7 @@ const FormularioExterno = () => {
                     >
                       <ListItemText
                         primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.centroeducativo || "Sin centro educativo"
+                          docente.nombreced || "Sin centro educativo"
                         }`}
                         secondary={
                           <>
@@ -1536,7 +1891,7 @@ const FormularioExterno = () => {
                               fontWeight="bold"
                             >
                               Centro Educativo:{" "}
-                              {docente.centroeducativo || "No especificado"}
+                              {docente.nombreced || "No especificado"}
                             </Box>
                             <Box component="span" display="block">
                               Nivel Educativo que Atiende:{" "}
