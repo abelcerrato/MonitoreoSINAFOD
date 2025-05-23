@@ -348,22 +348,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
                 p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
                 
-                -------------------DATOS DE LA FORMACION------------------
-                pf.idformacion, f.formacion, f.tipoactividad, f.existeconvenio, f.institucionconvenio, f.responsablefirmas, f.ambitoformacion, f.tipoformacion, f.modalidad, f.plataforma, f.duracion, f.estado, f.funciondirigido,
-                f.prebasica, f.basica, f.media, 
-                    CONCAT_WS(', ',
-                        CASE when f.prebasica THEN 'Prebásica' END,
-                        CASE WHEN f.basica THEN 'Básica' END,
-                        CASE WHEN f.media THEN 'Media' END
-                    ) AS nivelacademico_form,
-                f.primerciclo, f.segundociclo, f.tercerciclo, 
-                    CONCAT_WS(', ',
-                        CASE when f.primerciclo THEN 'Primer Ciclo' END,
-                        CASE WHEN f.segundociclo THEN 'Segundo Ciclo' END,
-                        CASE WHEN f.tercerciclo THEN 'Tercer Ciclo' END
-                    ) AS cicloacademico_form,
-                f.fechainicio, f.fechafinal, f.participantesprog, f.espaciofisico, f.direccion, f.zona, f.socializaron, f.observacion,
-                f.criteriosfactibilidad, f.criteriosfactibilidadurl, f.requisitostecnicos, f.requisitostecnicosurl, f.criterioseticos, f.criterioseticosurl,
+
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
                 pced.idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
                 pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
@@ -395,9 +380,6 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
                 inner join gradosacademicos g on p.idgradoacademicos = g.id  
                 inner join cargodesempeña c on p.idfuncion = c.id
-                
-                inner join participantesformacion pf on p.id = pf.idparticipante 
-                INNER join formacion f on pf.idformacion = f.id 
                 inner join participantescentroeducativo pced on p.id = pced.idparticipante 
                 inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
                 inner join cargodesempeña c2 on pced.cargo = c2.id
