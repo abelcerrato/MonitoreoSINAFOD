@@ -18,7 +18,6 @@ import {
   FormHelperText,
   ListItem,
   ListItemText,
-  Checkbox
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -228,11 +227,20 @@ const FormularioExterno = () => {
   };
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? checked : value;
+    const { name, value } = event.target;
 
     setFormData((prevData) => {
-      let updatedData = { ...prevData };
+      let newData = { ...prevData, [name]: value };
+
+      // Convertimos el valor a string para evitar errores con `.trim()`
+      const valueStr = String(value || "");
+
+      // Quitar error si el usuario llena un campo vacío
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: valueStr.trim() === "" ? true : false,
+      }));
+
       // Validación para años de servicio (solo números positivos)
       if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
@@ -240,49 +248,7 @@ const FormularioExterno = () => {
         }
       }
 
-      // Si es el campo de fecha, validamos el formato
-      if (name === "fechanacimiento") {
-        // Si el usuario borra el campo, lo limpiamos
-        if (!value) {
-          updatedData.fechanacimiento = "";
-          updatedData.edad = "";
-          return updatedData;
-        }
-
-        // Convertimos a Date para validar
-        const dateObj = new Date(value);
-
-        // Si la fecha es inválida, no actualizamos
-        if (isNaN(dateObj.getTime())) {
-          return prevData;
-        }
-
-        // Formateamos a YYYY-MM-DD (formato que acepta el input date)
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day}`;
-
-        updatedData.fechanacimiento = formattedDate;
-
-        // Calculamos la edad
-        const today = new Date();
-        let age = today.getFullYear() - year;
-        const monthDiff = today.getMonth() - dateObj.getMonth();
-
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < dateObj.getDate())
-        ) {
-          age--;
-        }
-
-        updatedData.edad = age.toString();
-      } else {
-        updatedData[name] = newValue;
-      }
-
-      return updatedData;
+      return newData;
     });
   };
 
@@ -1085,212 +1051,69 @@ const FormularioExterno = () => {
                   Datos del Centro Educativo Que Representa
                 </Typography>
               </Grid>
-    <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Nivel Educativo</Typography>
-
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.prebasica}
-                            onChange={handleChange}
-                            name="prebasica"
-                          />
-                        }
-                        label="Prebásica"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.basica}
-                            onChange={handleChange}
-                            name="basica"
-                          />
-                        }
-                        label="Básica"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.media}
-                            onChange={handleChange}
-                            name="media"
-                          />
-                        }
-                        label="Media"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                {formData.basica === true && (
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Grados Académicos (Básica)
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.primero}
-                              onChange={handleChange}
-                              name="primero"
-                            />
-                          }
-                          label="Primer"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.segundo}
-                              onChange={handleChange}
-                              name="segundo"
-                            />
-                          }
-                          label="Segundo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.tercero}
-                              onChange={handleChange}
-                              name="tercero"
-                            />
-                          }
-                          label="Tercer"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.cuarto}
-                              onChange={handleChange}
-                              name="cuarto"
-                            />
-                          }
-                          label="Cuarto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.quinto}
-                              onChange={handleChange}
-                              name="quinto"
-                            />
-                          }
-                          label="Quinto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.sexto}
-                              onChange={handleChange}
-                              name="sexto"
-                            />
-                          }
-                          label="Sexto"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.séptimo}
-                              onChange={handleChange}
-                              name="séptimo"
-                            />
-                          }
-                          label="Séptimo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.octavo}
-                              onChange={handleChange}
-                              name="octavo"
-                            />
-                          }
-                          label="Octavo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.noveno}
-                              onChange={handleChange}
-                              name="noveno"
-                            />
-                          }
-                          label="Noveno"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                )}
-                {formData.media === true && (
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Grados Académicos (Media)
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.btp1}
-                              onChange={handleChange}
-                              name="btp1"
-                            />
-                          }
-                          label="Décimo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.btp2}
-                              onChange={handleChange}
-                              name="btp2"
-                            />
-                          }
-                          label="Undécimo"
-                        />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData.bch3}
-                              onChange={handleChange}
-                              name="bch3"
-                            />
-                          }
-                          label="Duodécimo"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                )}
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">
+                  Nivel Educativo que Atiende*
+                </Typography>
+                <FormControl
+                  fullWidth
+                  disabled={camposBloqueados.idnivelesacademicos}
+                  error={fieldErrors.idnivelesacademicos}
+                >
+                  <Select
+                    name="idnivelesacademicos"
+                    value={formData.idnivelesacademicos || ""}
+                    onChange={handleChange}
+                    inputProps={{
+                      readOnly: camposBloqueados.idnivelesacademicos,
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Seleccione un nivel educativo
+                    </MenuItem>
+                    {NivelEducativo.length > 0 ? (
+                      NivelEducativo.map((dep) => (
+                        <MenuItem key={dep.id} value={dep.id}>
+                          {dep.nombre}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>Cargando...</MenuItem>
+                    )}
+                  </Select>
+                  {fieldErrors.idnivelesacademicos && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">
+                  Grado Académico que Atiende*
+                </Typography>
+                <FormControl
+                  fullWidth
+                  disabled={camposBloqueados.idgradosacademicos}
+                >
+                  <Select
+                    name="idgradosacademicos"
+                    value={formData.idgradosacademicos || ""}
+                    onChange={handleChange}
+                    disabled={!gardo.length}
+                    inputProps={{
+                      readOnly: camposBloqueados.idgradosacademicos,
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Seleccione un grado académico
+                    </MenuItem>
+                    {gardo.map((mun) => (
+                      <MenuItem key={mun.id} value={mun.id}>
+                        {mun.grado}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">Centro Educativo*</Typography>
                 <TextField
