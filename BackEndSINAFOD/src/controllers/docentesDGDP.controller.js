@@ -1,6 +1,6 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
-import { getParticipanteCodSACEM, getParticipanteDNIM, getParticipanteIdentificacionM, postParticipanteM } from "../models/Participante.models.js";
-import { getIdCentroEducativoSACEM, postCentroEducativoM } from "../models/centroeducativo.models.js";
+import { getParticipanteCodSACEM, getParticipanteDNIM, getParticipanteIdentificacionM, postParticipanteFormacionM, postParticipanteInvestigacionM, postParticipanteM } from "../models/Participante.models.js";
+import { getIdCentroEducativoSACEM, postCentroEducativoM, postCentroEducativoParticipanteM } from "../models/centroeducativo.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
@@ -305,7 +305,7 @@ export const getFiltroDocentesC = async (req, res) => {
                     response.participantes = participante;
         
                     const idPart = participante;
-        
+     
                     if (Array.isArray(idformacion)) {
                         response.formacion = [];
                         for (const form of idformacion) {
@@ -319,7 +319,7 @@ export const getFiltroDocentesC = async (req, res) => {
                         iddepartamento, idmunicipio, idaldea, idPart
                     );
                     response.ced = centro;
-        
+                    
                     const relacionCed = await postCentroEducativoParticipanteM(
                         centro, idPart, cargo, jornada, modalidad,
                         prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
