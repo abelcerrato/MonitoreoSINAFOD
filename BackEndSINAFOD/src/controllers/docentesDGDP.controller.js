@@ -1,5 +1,5 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
-import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postParticipanteM } from "../models/Participante.models.js";
+import { getParticipanteCodSACEM, getParticipanteDNIM, getParticipanteIdentificacionM, postParticipanteM } from "../models/Participante.models.js";
 import { getIdCentroEducativoSACEM, postCentroEducativoM } from "../models/centroeducativo.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
