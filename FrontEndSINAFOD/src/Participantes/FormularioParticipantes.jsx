@@ -49,7 +49,7 @@ const FormularParticipantes = () => {
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
-    idinvestigacioncap: investCap,
+    idformacion: investCap,
     correo: "",
     fechanacimiento: "",
     edad: "",
@@ -279,7 +279,7 @@ const FormularParticipantes = () => {
       return updatedData;
     });
   };
-  
+
   // Obtener cargos que desempeña del centro educativo
   useEffect(() => {
     const obteneridfuncion = async () => {

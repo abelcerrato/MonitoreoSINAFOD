@@ -51,12 +51,6 @@ const Formacion = () => {
     primerciclo: false,
     segundociclo: false,
     tercerciclo: false,
-    btp1: false,
-    btp2: false,
-    btp3: false,
-    bch1: false,
-    bch2: false,
-    bch3: false,
     fechainicio: "",
     fechafinal: "",
     socializaron: "",
@@ -217,6 +211,7 @@ const Formacion = () => {
     // Lista de campos obligatorios
     const requiredFields = [
       "formacion",
+      "existeconvenio",
       "tipoactividad",
       "fechainicio",
       "fechafinal",
@@ -309,7 +304,7 @@ const Formacion = () => {
 
         // Si confirma, hacer el POST
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/investigacion`,
+          `${process.env.REACT_APP_API_URL}/formacion`,
           cleanedFormData,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -317,7 +312,7 @@ const Formacion = () => {
       } else {
         // Actualizar el registro
         const updateResponse = await axios.put(
-          `${process.env.REACT_APP_API_URL}/investigacion/${idToUse}`,
+          `${process.env.REACT_APP_API_URL}/formacion/${idToUse}`,
           cleanedFormData,
           { headers: { "Content-Type": "application/json" } },
           navigate("/dashboard")
@@ -729,10 +724,10 @@ const Formacion = () => {
                 </Grid>
               </Grid>
             )}
-            {formData.media === true && (
+            {/* {formData.media === true && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Grados Académicos ()
+                  Grados Académicos 
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 4 }}>
@@ -809,7 +804,7 @@ const Formacion = () => {
                   </Grid>
                 </Grid>
               </Grid>
-            )}
+            )} */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField
