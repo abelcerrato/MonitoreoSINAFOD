@@ -255,6 +255,8 @@ export const getFiltroDocentesC = async (req, res) => {
 
         // CASO 1: No existe docente, ni participante, ni centro educativo
         if (!iddocente && !idparticipante && !idcentroeducativo) {
+            console.log('CASO 1: No existe docente, ni participante, ni centro educativo');
+
             // Insertar docente
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
@@ -302,7 +304,8 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 2: Existe docente, pero no participante ni centro educativo
-        else if (iddocente && !idparticipante && !idcentroeducativo) {
+        else if (!idparticipante && !idcentroeducativo && iddocente) {
+            console.log('CASO 2: Existe docente, pero no participante ni centro educativo');
             const participante = await postParticipanteM(
                 identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
@@ -342,6 +345,9 @@ export const getFiltroDocentesC = async (req, res) => {
         }
         // CASO 3: No existe docente, pero sí existe participante y centro educativo
         else if (!iddocente && idparticipante && idcentroeducativo) {
+
+            console.log('CASO 3: No existe docente, pero sí existe participante y centro educativo');
+
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             docentes = docente;
@@ -367,8 +373,8 @@ export const getFiltroDocentesC = async (req, res) => {
         }
 
         // CASO 4: Existe docente y participante, pero NO existe centro educativo
-        else if (iddocente && idparticipante && !idcentroeducativo) {
-
+        else if (!idcentroeducativo && iddocente && idparticipante) {
+            console.log('CASO 4: Existe docente y participante, pero NO existe centro educativo');
 
             // Inserciones condicionales según el tipo
             if (tipo === 'formacion' && idformacion && idparticipante) {
@@ -398,7 +404,9 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 5: Existe docente y centro educativo, pero NO existe participante
-        else if (iddocente && !idparticipante && idcentroeducativo) {
+        else if (!idparticipante && iddocente && idcentroeducativo) {
+
+            console.log('CASO 5: Existe docente y centro educativo, pero NO existe participante');
             const participante = await postParticipanteM(
                 identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
@@ -429,6 +437,8 @@ export const getFiltroDocentesC = async (req, res) => {
         }
         // CASO 6: Existe en centro educativo, pero NO existe participante ni en docente
         else if (!iddocente && !idparticipante && idcentroeducativo) {
+
+            console.log('CASO 6: Existe en centro educativo, pero NO existe participante ni en docente');
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             docentes = docente;
@@ -467,7 +477,7 @@ export const getFiltroDocentesC = async (req, res) => {
         // CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario
         else {
 
-
+            console.log('CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario');
             // Inserciones condicionales según el tipo
             if (tipo === 'formacion' && idformacion && idparticipante) {
 
