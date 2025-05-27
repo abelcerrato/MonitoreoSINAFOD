@@ -254,7 +254,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
 
         // CASO 1: No existe docente, ni participante, ni centro educativo
-        if (iddocente == null && idparticipante == null && idcentroeducativo == null) {
+        if (!iddocente && !idparticipante && !idcentroeducativo) {
             // Insertar docente
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
@@ -302,7 +302,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 2: Existe docente, pero no participante ni centro educativo
-        else if (iddocente && idparticipante == null && idcentroeducativo == null) {
+        else if (iddocente && !idparticipante && !idcentroeducativo) {
             const participante = await postParticipanteM(
                 identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
@@ -341,7 +341,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 3: No existe docente, pero sí existe participante y centro educativo
-        else if (iddocente == null && idparticipante && idcentroeducativo) {
+        else if (!iddocente && idparticipante && idcentroeducativo) {
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             docentes = docente;
@@ -365,8 +365,9 @@ export const getFiltroDocentesC = async (req, res) => {
             }
 
         }
+
         // CASO 4: Existe docente y participante, pero NO existe centro educativo
-        else if (iddocente && idparticipante && idcentroeducativo == null) {
+        else if (iddocente && idparticipante && !idcentroeducativo) {
 
 
             // Inserciones condicionales según el tipo
@@ -397,7 +398,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 5: Existe docente y centro educativo, pero NO existe participante
-        else if (iddocente && idparticipante == null && idcentroeducativo) {
+        else if (iddocente && !idparticipante && idcentroeducativo) {
             const participante = await postParticipanteM(
                 identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
@@ -427,7 +428,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
         }
         // CASO 6: Existe en centro educativo, pero NO existe participante ni en docente
-        else if (iddocente == null && idparticipante == null && idcentroeducativo) {
+        else if (!iddocente && !idparticipante && idcentroeducativo) {
             const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
                 genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
             docentes = docente;
@@ -469,7 +470,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
             // Inserciones condicionales según el tipo
             if (tipo === 'formacion' && idformacion && idparticipante) {
-                
+
                 form = await postParticipanteFormacionM(idformacion, idparticipante);
                 const relacionCed = await postCentroEducativoParticipanteM(
                     idcentroeducativo, idparticipante, cargo, jornada, modalidad,
