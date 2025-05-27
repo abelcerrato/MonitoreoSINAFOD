@@ -201,7 +201,7 @@ export const postCentroEducativoParticipanteM = async (idcentroeducativo, idpart
             [idcentroeducativo, idparticipante, cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo]);
         return rows[0].id;
     } catch (error) {
-        console.error("ERROR AL INSERTAR EL CENTRO EDUCATIVO DEL PARTICIPANTE:", error.message);
+        console.error("ERROR AL INSERTAR LA RELACION DEL CENTRO EDUCATIVO Y EL PARTICIPANTE:", error.message);
         throw error;
     }
 };
