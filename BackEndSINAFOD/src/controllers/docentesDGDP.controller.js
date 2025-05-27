@@ -232,7 +232,7 @@ export const getFiltroDocentesC = async (req, res) => {
     try {
         // Buscar por identificación de docente y por codigo sace
         const resultado1 = await getDocenteIdentificacionM(identificacion);
-        const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
+        const resultado3 = await getParticipanteIdentificacionM(identificacion); // idparticipante
         const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
         const iddocente = resultado1;
