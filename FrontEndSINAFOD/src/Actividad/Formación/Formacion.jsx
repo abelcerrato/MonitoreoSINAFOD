@@ -211,7 +211,6 @@ const Formacion = () => {
     // Lista de campos obligatorios
     const requiredFields = [
       "formacion",
-      "existeconvenio",
       "tipoactividad",
       "fechainicio",
       "fechafinal",

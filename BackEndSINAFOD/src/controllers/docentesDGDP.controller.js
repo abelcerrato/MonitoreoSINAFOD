@@ -163,10 +163,8 @@ export const getFiltroDocenteC = async (req, res) => {
             return res.json(resultadoValido);
         }
 
-        return res.status(404).json({
+        return res.status(202).json({
             mensaje: 'No se encontraron registros para el filtro proporcionado.',
-            //docentes
-
         });
 
 

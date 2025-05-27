@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+
 import axios from "axios";
 import {
   TextField,
@@ -23,23 +25,20 @@ import {
 } from "@mui/material";
 import { color } from "../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import Dashboard from "../Dashboard/dashboard";
-import { useUser } from "../Components/UserContext";
 import Swal from "sweetalert2";
 
 const FormularioExterno = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
-  const { id: investCap } = useParams();
-  console.log(investCap);
-
+  const [docentesEncontrados, setDocentesEncontrados] = useState([]);
+  const [openSeleccionModal, setOpenSeleccionModal] = useState(false);
   const [cargos, setCargos] = useState([]);
   const [funcion, setFuncion] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [departamentosRE, setDepartamentosRE] = useState([]);
   const [municipiosRE, setMunicipiosRE] = useState([]);
+  const { id: investCap } = useParams();
   const [aldeas, setAldea] = useState([]);
   const [aldeasP, setAldeaP] = useState([]);
   const [gardoP, setGradoP] = useState([]);
@@ -326,7 +325,7 @@ const FormularioExterno = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
-  // Obtener departamentos del participante
+  // Obtener centreos educativos del participante
   useEffect(() => {
     const obtenerCentrosEducativos = async () => {
       try {
@@ -342,7 +341,7 @@ const FormularioExterno = () => {
     obtenerCentrosEducativos();
   }, []);
 
-  // Obtener cargos que desempeña del centro educativo
+  // Obtener cargos que desempeña en el centro educativo
   useEffect(() => {
     const obtenercargo = async () => {
       try {
@@ -374,6 +373,7 @@ const FormularioExterno = () => {
     obtenerfuncion();
   }, []);
 
+  //Envia el id de la formacion, para traer el nombre
   useEffect(() => {
     const obtenerDetalles = async () => {
       try {
@@ -391,7 +391,7 @@ const FormularioExterno = () => {
     obtenerDetalles();
   }, [investCap]);
 
-  const obtenerDNI = async (campo) => {
+  const obtenerDNI = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/filtroDocentes/${tempDNI}`
@@ -407,6 +407,16 @@ const FormularioExterno = () => {
             icon: "success",
             timer: 6000,
           });
+          console.log(response.data);
+        } else {
+          // Si hay múltiples registros
+          setDocentesEncontrados(response.data);
+          setOpenSeleccionModal(true);
+          console.log(
+            "Mostrando modal de selección con",
+            response.data.length,
+            "registros"
+          );
           console.log(response.data);
         }
       }
@@ -530,7 +540,7 @@ const FormularioExterno = () => {
     setOpenDNIModal(true);
   }, []);
 
-  const ThankYouView = ({ accionFormacion }) => (
+  const ThankYouView = () => (
     <Box
       sx={{
         minHeight: "100vh",
@@ -545,14 +555,7 @@ const FormularioExterno = () => {
     >
       <Paper sx={{ padding: 5, maxWidth: 600 }} elevation={3}>
         <Typography variant="h4" sx={{ color: color.primary.azul, mb: 3 }}>
-          ¡Gracias por participar!
-        </Typography>
-        <Typography variant="h5" sx={{ mb: 3 }}>
-          {accionFormacion}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 4 }}>
-          Agradecemos tu participación en esta actividad. Tus datos han sido
-          registrados exitosamente.
+          ¡Inscripción Realizada!
         </Typography>
         <Button
           variant="contained"
@@ -1241,7 +1244,7 @@ const FormularioExterno = () => {
                             disabled={camposBloqueados.primero}
                           />
                         }
-                        label="Primer"
+                        label="Primero"
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
@@ -1460,6 +1463,10 @@ const FormularioExterno = () => {
                   name="codigosaceced"
                   value={formData.codigosaceced}
                   onChange={handleChange}
+                  error={fieldErrors.codigosaceced}
+                  helperText={
+                    fieldErrors.codigosaceced ? "Este campo es obligatorio" : ""
+                  }
                   InputProps={{
                     readOnly: camposBloqueados.codigosaceced,
                   }}
@@ -1721,6 +1728,91 @@ const FormularioExterno = () => {
                 Guardar
               </Button>
             </Box>
+            <Modal
+              open={openSeleccionModal}
+              onClose={() => {}} // Elimina la función onClose o déjala vacía
+              aria-labelledby="seleccion-docente-title"
+              disableBackdropClick // Esta prop evita que se cierre al hacer clic en el backdrop
+              disableEscapeKeyDown // Esta prop evita que se cierre con la tecla ESC
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "60%",
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  id="seleccion-docente-title"
+                  variant="h6"
+                  component="h2"
+                  sx={{ mb: 2 }}
+                >
+                  Se encontraron múltiples registros
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  Por favor seleccione el registro correcto:
+                </Typography>
+
+                <List>
+                  {docentesEncontrados.map((docente, index) => (
+                    <ListItem
+                      key={index}
+                      button
+                      onClick={() => {
+                        llenarFormulario(docente);
+                        setOpenSeleccionModal(false);
+                      }}
+                      sx={{
+                        borderBottom: "1px solid #eee",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${docente.nombre || "Sin nombre"} - ${
+                          docente.nombreced || "Sin centro educativo"
+                        }`}
+                        secondary={
+                          <>
+                            <Box
+                              component="span"
+                              display="block"
+                              fontWeight="bold"
+                            >
+                              Centro Educativo:{" "}
+                              {docente.nombreced || "No especificado"}
+                            </Box>
+                            <Box component="span" display="block">
+                              Nivel Educativo que Atiende:{" "}
+                              {docente.nombrenivelced || ""} - Grado Educativo
+                              que Atiende: {docente.nombregradoced || ""}
+                            </Box>
+                          </>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+
+                {/* <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenSeleccionModal(false)}
+                    sx={{ mr: 2 }}
+                  >
+                    Cancelar
+                  </Button>
+                </Box> */}
+              </Box>
+            </Modal>
           </Paper>
         </Box>
       )}

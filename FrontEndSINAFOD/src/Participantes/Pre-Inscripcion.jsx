@@ -398,7 +398,7 @@ const PreInscripcion = () => {
     obtenerfuncion();
   }, []);
 
-  const obtenerDNI = async (campo) => {
+  const obtenerDNI = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/filtroDocentes/${tempDNI}`
@@ -1370,6 +1370,7 @@ const PreInscripcion = () => {
                 >
                   Datos del Centro Educativo Que Representa
                 </Typography>
+                
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">Nivel Educativo*</Typography>
@@ -1433,7 +1434,7 @@ const PreInscripcion = () => {
                             disabled={camposBloqueados.primero}
                           />
                         }
-                        label="Primer"
+                        label="Primero"
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>

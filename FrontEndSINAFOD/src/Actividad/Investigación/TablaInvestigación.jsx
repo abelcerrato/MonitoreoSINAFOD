@@ -177,11 +177,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
   };
 
-  const handleOpenQrModal = (id) => {
-    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}`;
-    setQrUrl(qrLink);
-    setOpenModal(true);
-  };
+
 
   const handleCloseModal = () => {
     setOpenModal(false);

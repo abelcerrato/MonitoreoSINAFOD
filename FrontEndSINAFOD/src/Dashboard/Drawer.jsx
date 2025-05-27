@@ -42,8 +42,6 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
-  console.log(permissions);
-
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);

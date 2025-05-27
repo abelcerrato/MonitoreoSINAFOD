@@ -285,7 +285,7 @@ const Investigacion = () => {
       navigate("/Participantes", {
         state: {
           investCap: idToUse,
-          formacioninvest: formData.formacioninvest,
+          formacioninvest: "investigacion",
         },
       });
     } catch (error) {
