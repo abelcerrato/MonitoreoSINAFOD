@@ -342,7 +342,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
             (`
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre,TO_CHAR(p.fechanacimiento, 'DD/MM/YYYY') AS fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
