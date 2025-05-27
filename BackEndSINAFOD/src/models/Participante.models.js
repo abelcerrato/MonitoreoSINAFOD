@@ -350,7 +350,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
-                pced.idcentroeducativo, ced.nombreced, ced.codigosace as codigosaceced, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
+                pced.idcentroeducativo, ced.nombreced, ced.codigosace as codigosaceced, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo , c2.cargo as cargoced, pced.jornada, pced.modalidad, 
                 pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
                     CONCAT_WS(', ',
                         CASE WHEN pced.prebasica THEN 'Prebásica' END,
@@ -385,7 +385,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 inner join cargodesempeña c2 on pced.cargo = c2.id
                 inner join departamento dced on ced.iddepartamento = dced.id 
                 inner join municipio mced on ced.idmunicipio = mced.id
-                inner join aldeas aced on ced.idaldea = aced.id 
+                left join aldeas aced on ced.idaldea = aced.id 
             WHERE p.identificacion=$1
             order by p.id desc
         `, [filtro])

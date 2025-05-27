@@ -19,27 +19,29 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
   Autocomplete,
 } from "@mui/material";
 import { color } from "../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import Dashboard from "../Dashboard/dashboard";
-import { useUser } from "../Components/UserContext";
 import Swal from "sweetalert2";
 
-const FormularioExterno = () => {
+const PreInscripcion = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
-  const { id: investCap } = useParams();
-  console.log(investCap);
-
+  const [docentesEncontrados, setDocentesEncontrados] = useState([]);
+  const [openSeleccionModal, setOpenSeleccionModal] = useState(false);
   const [cargos, setCargos] = useState([]);
   const [funcion, setFuncion] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [departamentosRE, setDepartamentosRE] = useState([]);
   const [municipiosRE, setMunicipiosRE] = useState([]);
+  const [showFormaciones, setShowFormaciones] = useState(true);
+  const [formaciones, setFormaciones] = useState([]);
   const [aldeas, setAldea] = useState([]);
   const [aldeasP, setAldeaP] = useState([]);
   const [gardoP, setGradoP] = useState([]);
@@ -48,8 +50,8 @@ const FormularioExterno = () => {
   const [tempDNI, setTempDNI] = useState("");
   const [dniError, setDniError] = useState("");
   const [formData, setFormData] = useState({
-    idformacion: investCap,
-    formacion: "",
+    idinvestigacion: [],
+    idformacion: [],
     correo: "",
     telefono: "",
     edad: "",
@@ -267,6 +269,7 @@ const FormularioExterno = () => {
           `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioresidencia}`
         );
         setAldeaP(response.data);
+        console.log("aldeas", response.data);
       } catch (error) {
         console.error("Error al obtener los municipios", error);
       }
@@ -325,6 +328,27 @@ const FormularioExterno = () => {
 
     obtenergardo();
   }, [formData.idnivelacademicos]);
+  //Get para traer todas las formaciones con estado Planificadas
+  useEffect(() => {
+    const obtenerFomaciones = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/formacion`
+        );
+
+        // Filtrar solo las formaciones con estado "Planificada"
+        const formacionesPlanificadas = response.data.filter(
+          (formacion) => formacion.estado === "Planificada"
+        );
+
+        setFormaciones(formacionesPlanificadas);
+      } catch (error) {
+        console.error("Error al obtener los datos", error);
+      }
+    };
+
+    obtenerFomaciones();
+  }, []);
 
   // Obtener departamentos del participante
   useEffect(() => {
@@ -374,23 +398,6 @@ const FormularioExterno = () => {
     obtenerfuncion();
   }, []);
 
-  useEffect(() => {
-    const obtenerDetalles = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/investformacionC/${investCap}`
-        );
-
-        setFormData(response.data[0]);
-        console.log("investformacionC", response.data[0]);
-      } catch (error) {
-        console.error("Error al obtener los datos", error);
-      }
-    };
-
-    obtenerDetalles();
-  }, [investCap]);
-
   const obtenerDNI = async (campo) => {
     try {
       const response = await axios.get(
@@ -407,6 +414,16 @@ const FormularioExterno = () => {
             icon: "success",
             timer: 6000,
           });
+          console.log(response.data);
+        } else {
+          // Si hay múltiples registros
+          setDocentesEncontrados(response.data);
+          setOpenSeleccionModal(true); // Asegúrate de que esto se ejecute
+          console.log(
+            "Mostrando modal de selección con",
+            response.data.length,
+            "registros"
+          );
           console.log(response.data);
         }
       }
@@ -530,7 +547,7 @@ const FormularioExterno = () => {
     setOpenDNIModal(true);
   }, []);
 
-  const ThankYouView = ({ accionFormacion }) => (
+  const ThankYouView = () => (
     <Box
       sx={{
         minHeight: "100vh",
@@ -545,14 +562,7 @@ const FormularioExterno = () => {
     >
       <Paper sx={{ padding: 5, maxWidth: 600 }} elevation={3}>
         <Typography variant="h4" sx={{ color: color.primary.azul, mb: 3 }}>
-          ¡Gracias por participar!
-        </Typography>
-        <Typography variant="h5" sx={{ mb: 3 }}>
-          {accionFormacion}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 4 }}>
-          Agradecemos tu participación en esta actividad. Tus datos han sido
-          registrados exitosamente.
+          ¡Inscripción Realizada!
         </Typography>
         <Button
           variant="contained"
@@ -581,6 +591,204 @@ const FormularioExterno = () => {
     }
   }, [formSubmitted, investCap]);
  */
+
+  const FormacionesPreview = ({ formaciones, onContinue }) => {
+    const [seleccionadas, setSeleccionadas] = useState([]);
+
+    const toggleSeleccion = (id) => {
+      setSeleccionadas((prev) =>
+        prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      );
+    };
+
+    const handleContinue = () => {
+      // Llamar a la función onContinue con las formaciones seleccionadas
+      onContinue(seleccionadas);
+    };
+
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f0f2f5",
+          padding: 4,
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 4, color: color.primary.azul }}>
+          Formaciones Disponibles
+        </Typography>
+
+        <Typography variant="subtitle1" sx={{ mb: 3 }}>
+          Selecciona una o más formaciones a las que deseas preinscribirte
+        </Typography>
+
+        <Grid container spacing={3} sx={{ maxWidth: "1200px", mb: 4 }}>
+          {formaciones.map((formacion) => (
+            <Grid item xs={12} md={6} lg={4} key={formacion.id}>
+              <Card
+                sx={{
+                  width: "300px",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  border: seleccionadas.includes(formacion.id)
+                    ? `2px solid ${color.primary.azul}`
+                    : "2px solid transparent",
+                  cursor: "pointer",
+                  transition: "border 0.3s ease",
+                  "&:hover": {
+                    boxShadow: 3,
+                  },
+                }}
+                onClick={() => toggleSeleccion(formacion.id)}
+              >
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box display="flex" alignItems="center" mb={1}>
+                    <Checkbox
+                      checked={seleccionadas.includes(formacion.id)}
+                      onChange={() => toggleSeleccion(formacion.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      color="primary"
+                      sx={{ mr: 1 }}
+                    />
+                    <Typography variant="h5" component="div">
+                      {formacion.formacion}
+                    </Typography>
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Tipo:</strong> {formacion.tipoformacion}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Modalidad:</strong> {formacion.modalidad}
+                    {formacion.modalidad === "Virtual" &&
+                      formacion.plataforma &&
+                      ` (${formacion.plataforma})`}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Duración:</strong> {formacion.duracion.hours}h{" "}
+                    {formacion.duracion.minutes}m
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Fecha inicio:</strong>{" "}
+                    {new Date(formacion.fechainicio).toLocaleDateString()}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Fecha final:</strong>{" "}
+                    {new Date(formacion.fechafinal).toLocaleDateString()}
+                  </Typography>
+
+                  <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Estado:</strong>
+                    </Typography>
+                    <Chip
+                      label={formacion.estado}
+                      size="small"
+                      color={
+                        formacion.estado === "Completada"
+                          ? "success"
+                          : formacion.estado === "En curso"
+                          ? "primary"
+                          : "default"
+                      }
+                      sx={{ ml: 1 }}
+                    />
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    <strong>Dirigido a:</strong> {formacion.funciondirigido}
+                  </Typography>
+
+                  {formacion.espaciofisico && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      <strong>Lugar:</strong> {formacion.espaciofisico}
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleContinue}
+          disabled={seleccionadas.length === 0}
+          sx={{
+            mt: 2,
+            mb: 4,
+            padding: "10px 30px",
+            backgroundColor: color.primary.azul,
+            "&:disabled": {
+              backgroundColor: "#e0e0e0",
+              color: "#a0a0a0",
+            },
+            "&:hover": {
+              backgroundColor: color.primary.azulOscuro,
+            },
+          }}
+        >
+          Preinscripción ({seleccionadas.length} seleccionadas)
+        </Button>
+      </Box>
+    );
+  };
+
+  // Render condicional
+  // En tu componente principal, reemplaza el if(showFormaciones) por:
+  if (showFormaciones) {
+    return (
+      <FormacionesPreview
+        formaciones={formaciones}
+        onContinue={(idsSeleccionados) => {
+          setFormData((prev) => ({
+            ...prev,
+            idformacion: idsSeleccionados,
+          }));
+          setShowFormaciones(false);
+          setOpenDNIModal(true);
+        }}
+      />
+    );
+  }
 
   const handleSave = async () => {
     const requiredFields = [
@@ -639,7 +847,7 @@ const FormularioExterno = () => {
       console.log("Datos a enviar:", dataToSend);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/participante/formacion/${investCap}`,
+        `${process.env.REACT_APP_API_URL}/participanteInvFormCed`,
         dataToSend,
         {
           headers: {
@@ -783,22 +991,6 @@ const FormularioExterno = () => {
                   }}
                 >
                   Registro de Participante
-                </Typography>
-                <Typography
-                  sx={{
-                    color: color.primary.azul,
-                    fontWeight: "bold", // Negrita
-                    fontStyle: "italic", // Cursiva
-                    textAlign: "center",
-                    fontSize: {
-                      xs: "1.2rem",
-                      sm: "1.5rem",
-                      md: "2rem",
-                      lg: "2.5rem",
-                    },
-                  }}
-                >
-                  {formData.formacion}
                 </Typography>
               </Grid>
 
@@ -1721,6 +1913,91 @@ const FormularioExterno = () => {
                 Guardar
               </Button>
             </Box>
+            <Modal
+              open={openSeleccionModal}
+              onClose={() => {}} // Elimina la función onClose o déjala vacía
+              aria-labelledby="seleccion-docente-title"
+              disableBackdropClick // Esta prop evita que se cierre al hacer clic en el backdrop
+              disableEscapeKeyDown // Esta prop evita que se cierre con la tecla ESC
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "60%",
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  id="seleccion-docente-title"
+                  variant="h6"
+                  component="h2"
+                  sx={{ mb: 2 }}
+                >
+                  Se encontraron múltiples registros
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  Por favor seleccione el registro correcto:
+                </Typography>
+
+                <List>
+                  {docentesEncontrados.map((docente, index) => (
+                    <ListItem
+                      key={index}
+                      button
+                      onClick={() => {
+                        llenarFormulario(docente);
+                        setOpenSeleccionModal(false);
+                      }}
+                      sx={{
+                        borderBottom: "1px solid #eee",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${docente.nombre || "Sin nombre"} - ${
+                          docente.nombreced || "Sin centro educativo"
+                        }`}
+                        secondary={
+                          <>
+                            <Box
+                              component="span"
+                              display="block"
+                              fontWeight="bold"
+                            >
+                              Centro Educativo:{" "}
+                              {docente.nombreced || "No especificado"}
+                            </Box>
+                            <Box component="span" display="block">
+                              Nivel Educativo que Atiende:{" "}
+                              {docente.nombrenivelced || ""} - Grado Educativo
+                              que Atiende: {docente.nombregradoced || ""}
+                            </Box>
+                          </>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+
+                {/* <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenSeleccionModal(false)}
+                    sx={{ mr: 2 }}
+                  >
+                    Cancelar
+                  </Button>
+                </Box> */}
+              </Box>
+            </Modal>
           </Paper>
         </Box>
       )}
@@ -1728,4 +2005,4 @@ const FormularioExterno = () => {
   );
 };
 
-export default FormularioExterno;
+export default PreInscripcion;

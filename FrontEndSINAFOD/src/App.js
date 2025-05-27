@@ -41,6 +41,8 @@ import TablaInvestigacion from './Actividad/Investigación/TablaInvestigación';
 
 
 import { PERMISSIONS } from './Components/permissions';
+import PreInscripcion from './Participantes/Pre-Inscripcion';
+
 const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = React.useState(false);
@@ -142,12 +144,16 @@ function App() {
           <Route path="/" element={<SignIn />} />
 
           <Route
-        /*     path="/Formulario-De-Participante/:id" */
-            path="/Formulario-De-Participante"
+          path="/Formulario-De-Participante/:id"
             element={
-
               <FormularioExterno />
+            }
+          />
 
+          <Route
+            path="/Formulario-De-Inscripción"
+            element={
+              <PreInscripcion />
             }
           />
 
