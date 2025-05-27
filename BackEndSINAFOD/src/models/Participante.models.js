@@ -150,19 +150,19 @@ export const getParticipanteIdInvestM = async (id) => {
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id 
-                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
                 left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
-                inner join gradosacademicos g on p.idgradoacademicos = g.id 
-                inner join cargodesempeña c on p.idfuncion = c.id
-                inner join participantesinvestigacion pi on p.id= pi.idparticipante 
-                INNER join investigacion i on pi.idinvestigacion =i.id 
+                left join gradosacademicos g on p.idgradoacademicos = g.id 
+                left join cargodesempeña c on p.idfuncion = c.id
+                left join participantesinvestigacion pi on p.id= pi.idparticipante 
+                left join investigacion i on pi.idinvestigacion =i.id 
                 
-                inner join participantescentroeducativo pced on p.id = pced.idparticipante 
-                inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
-                inner join cargodesempeña c2 on pced.cargo = c2.id
-                inner join departamento dced on ced.iddepartamento = dced.id 
-                inner join municipio mced on ced.idmunicipio = mced.id
-                inner join aldeas aced on ced.idaldea = aced.id 
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
+                left join aldeas aced on ced.idaldea = aced.id 
 
                 WHERE pi.idinvestigacion = $1;
 
@@ -233,19 +233,19 @@ export const getParticipanteIdFormacionM = async (id) => {
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id
-                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
                 left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
-                inner join gradosacademicos g on p.idgradoacademicos = g.id  
-                inner join cargodesempeña c on p.idfuncion = c.id
+                left join gradosacademicos g on p.idgradoacademicos = g.id  
+                left join cargodesempeña c on p.idfuncion = c.id
                 
-                inner join participantesformacion pf on p.id = pf.idparticipante 
-                INNER join formacion f on pf.idformacion = f.id 
-                inner join participantescentroeducativo pced on p.id = pced.idparticipante 
-                inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
-                inner join cargodesempeña c2 on pced.cargo = c2.id
-                inner join departamento dced on ced.iddepartamento = dced.id 
-                inner join municipio mced on ced.idmunicipio = mced.id
-                inner join aldeas aced on ced.idaldea = aced.id 
+                left join participantesformacion pf on p.id = pf.idparticipante 
+                left join formacion f on pf.idformacion = f.id 
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
+                left join aldeas aced on ced.idaldea = aced.id 
             where pf.idformacion =$1
 
         `, [id])
