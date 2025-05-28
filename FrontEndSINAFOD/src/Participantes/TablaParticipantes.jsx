@@ -137,8 +137,8 @@ export default function TablaPacticantes({
       });
   }, [isSaved, investCap]);
 
-  const handleEdit = (idparticipante) => {
-    navigate(`/Modificar_Participante/${idparticipante}`); // Redirige a la página de edición con el ID
+  const handleEdit = (id) => {
+    navigate(`/Modificar_Participante/${id}`, {state: {formacioninvest: formacioninvest}}); 
   };
 
   return (
@@ -157,7 +157,6 @@ export default function TablaPacticantes({
               Acciones
             </TableCell>
 
-            <TableCell align="right">Código SACE</TableCell>
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
             <TableCell align="right">Sexo</TableCell>
@@ -173,6 +172,7 @@ export default function TablaPacticantes({
             <TableCell align="right">Departamento en el que Reside</TableCell>
             <TableCell align="right">Municipio en el que Reside</TableCell>
             <TableCell align="right">Aldea en la que Reside</TableCell>
+            <TableCell align="right">Código SACE del Centro</TableCell>
             <TableCell align="right">Centro Educativo</TableCell>
             <TableCell align="right">Nivel Académico que Atiende</TableCell>
             <TableCell align="right">Grado que Atiende</TableCell>
@@ -191,16 +191,12 @@ export default function TablaPacticantes({
             <TableRow key={row.name}>
               <TableCell style={{ width: 160 }} align="center">
                 <Tooltip title="Editar">
-                  <IconButton
-                    onClick={() => handleEdit(row.idparticipante)}
-                    color="action"
-                  >
+                  <IconButton onClick={() => handleEdit(row.id)} color="action">
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
               </TableCell>
 
-              <TableCell align="right">{row.codigosace}</TableCell>
               <TableCell align="right">{row.nombre}</TableCell>
               <TableCell align="right">{row.identificacion}</TableCell>
               <TableCell align="right">{row.genero}</TableCell>
@@ -212,6 +208,7 @@ export default function TablaPacticantes({
               <TableCell align="right">{row.departamento}</TableCell>
               <TableCell align="right">{row.municipio}</TableCell>
               <TableCell align="right">{row.aldea}</TableCell>
+              <TableCell align="right">{row.codigosace}</TableCell>
               <TableCell align="right">{row.nombreced}</TableCell>
               <TableCell align="right">{row.nivelacademico_ced}</TableCell>
               <TableCell align="right">{row.gradoacademico_ced}</TableCell>

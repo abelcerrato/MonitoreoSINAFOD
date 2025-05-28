@@ -51,9 +51,6 @@ const FormularParticipantes = () => {
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
-    idformacion: investCap,
-
-    formacion: "",
     correo: "",
     telefono: "",
     edad: "",
@@ -129,15 +126,15 @@ const FormularParticipantes = () => {
       cuarto: false,
       quinto: false,
       sexto: false,
-      séptimo: false,
+      septimo: false,
       octavo: false,
       noveno: false,
-      btp1: false,
-      btp2: false,
+      decimo: false,
+      onceavo: false,
       btp3: false,
       bch1: false,
       bch2: false,
-      bch3: false,
+      doceavo: false,
       zona: "",
       idmunicipio: "",
       iddepartamento: "",
@@ -1065,9 +1062,9 @@ const FormularParticipantes = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={formData.séptimo}
+                                checked={formData.septimo}
                                 onChange={handleChange}
-                                name="séptimo"
+                                name="septimo"
                               />
                             }
                             label="Séptimo"
@@ -1110,9 +1107,9 @@ const FormularParticipantes = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={formData.btp1}
+                                checked={formData.decimo}
                                 onChange={handleChange}
-                                name="btp1"
+                                name="decimo"
                               />
                             }
                             label="Décimo"
@@ -1122,9 +1119,9 @@ const FormularParticipantes = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={formData.btp2}
+                                checked={formData.onceavo}
                                 onChange={handleChange}
-                                name="btp2"
+                                name="onceavo"
                               />
                             }
                             label="Undécimo"
@@ -1135,9 +1132,9 @@ const FormularParticipantes = () => {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={formData.bch3}
+                                checked={formData.doceavo}
                                 onChange={handleChange}
-                                name="bch3"
+                                name="doceavo"
                               />
                             }
                             label="Duodécimo"
