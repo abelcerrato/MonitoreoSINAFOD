@@ -64,6 +64,9 @@ const ModificarParticipante = () => {
     caserio: "",
     tipocentro: "",
 
+    idcentroeducativo: "",
+    idcentropart: "",
+    
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
