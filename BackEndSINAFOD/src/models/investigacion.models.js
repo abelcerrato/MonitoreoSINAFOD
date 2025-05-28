@@ -60,17 +60,17 @@ export const getIdInvestigacionM = async (id) => {
 /////////////////////////////
 export const postInvestigacionM = async (investigacion, tipoactividad, existeconvenio, institucionconvenio,
     presupuesto, duracion, funciondirigido, prebasica, basica, media,
-    fechainicio, fechafinal, direccion, socializaron, observacion, creadopor) => {
+    fechainicio, fechafinal, direccion, socializaron, observacion, creadopor, tipomoneda) => {
     try {
         const { rows } = await pool.query(`
             INSERT INTO investigacion (investigacion, tipoactividad, existeconvenio, institucionconvenio,
                                         presupuesto, duracion, funciondirigido, prebasica, basica, media, 
                                         fechainicio, fechafinal, direccion, socializaron, observacion, creadopor,fechacreacion) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,  CURRENT_TIMESTAMP) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,  CURRENT_TIMESTAMP, $17) 
             RETURNING id`,
             [investigacion, tipoactividad, existeconvenio, institucionconvenio,
                 presupuesto, duracion, funciondirigido, prebasica, basica, media,
-                fechainicio, fechafinal, direccion, socializaron, observacion, creadopor
+                fechainicio, fechafinal, direccion, socializaron, observacion, creadopor, tipomoneda
             ])
         console.log("Id investigacion: " + rows[0].id);
         return { id: rows[0].id };
@@ -85,7 +85,7 @@ export const postInvestigacionM = async (investigacion, tipoactividad, existecon
 
 export const putInvestigacionM = async (investigacion, tipoactividad, existeconvenio, institucionconvenio,
     presupuesto, duracion, funciondirigido, prebasica, basica, media,
-    fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, id) => {
+    fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, tipomoneda, id) => {
     try {
         const { rows } = await pool.query(`
             UPDATE investigacion
@@ -105,12 +105,13 @@ export const putInvestigacionM = async (investigacion, tipoactividad, existeconv
                 direccion=$13, 
                 socializaron=$14, 
                 observacion=$15, 
-                modificadopor=$16
-            WHERE id=$17
+                modificadopor=$16,
+                tipomoneda=$17
+            WHERE id=$18
             RETURNING *`,
             [investigacion, tipoactividad, existeconvenio, institucionconvenio,
                 presupuesto, duracion, funciondirigido, prebasica, basica, media,
-                fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, id
+                fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, tipomoneda, id
             ])
 
         return rows[0]

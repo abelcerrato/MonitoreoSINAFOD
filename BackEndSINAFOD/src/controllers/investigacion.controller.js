@@ -44,13 +44,13 @@ export const getIdInvestigacionC = async (req, res) => {
 export const postInvestigacionC = async (req, res) => {
     const { investigacion, tipoactividad, existeconvenio, institucionconvenio,
         presupuesto, duracion, funciondirigido, prebasica, basica, media,
-        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor } = req.body
+        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor, tipomoneda } = req.body
     console.log("datos", req.body);
 
     try {
         const invest = await postInvestigacionM(investigacion, tipoactividad, existeconvenio, institucionconvenio,
             presupuesto, duracion, funciondirigido, prebasica, basica, media,
-            fechainicio, fechafinal, direccion, socializaron, observacion, creadopor
+            fechainicio, fechafinal, direccion, socializaron, observacion, creadopor, tipomoneda
         )
 
         res.json({ message: "Investigacion  agregada exitosamente", id: invest.id });
@@ -68,13 +68,13 @@ export const putInvestigacionC = async (req, res) => {
     const { id } = req.params;
     const { investigacion, tipoactividad, existeconvenio, institucionconvenio,
         presupuesto, duracion, funciondirigido, prebasica, basica, media,
-        fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor } = req.body
+        fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, tipomoneda } = req.body
 console.log(req.body);
 
     try {
         const invest = await putInvestigacionM(investigacion, tipoactividad, existeconvenio, institucionconvenio,
             presupuesto, duracion, funciondirigido, prebasica, basica, media,
-            fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, id)
+            fechainicio, fechafinal, direccion, socializaron, observacion, modificadopor, tipomoneda, id)
         res.json({ message: "Investigacion actualizada exitosamente", user: invest });
     } catch (error) {
         console.error('Error al actualizar la investigacion: ', error);
