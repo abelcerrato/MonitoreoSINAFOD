@@ -190,7 +190,7 @@ export const putParticipanteC = async (req, res) => {
         deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos,
         modificadopor, 
         //datos del centro educativo
-        idcentroeducativo, nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
+        idcentroeducativo, nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
         //datos de la relacion del centro educativo con el participante
         idcentropart, cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero,
         cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo
@@ -216,7 +216,7 @@ export const putParticipanteC = async (req, res) => {
         );
 
         const CentroEducativo = await putCentroEducativoM(
-            nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idcentroeducativo)
+            nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idcentroeducativo)
 
         const CentroEducativoPart = await putCentroEducativoParticipanteM(
             idcentroeducativo, id, cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero,
