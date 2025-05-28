@@ -1,8 +1,8 @@
 import { pool } from "../db.js";
 
 export const getParticipanteM = async () => {
-  try {
-    const { rows } = await pool.query(`
+    try {
+        const { rows } = await pool.query(`
             SELECT p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                 p.añosdeservicio, p.codigodered, 
@@ -22,17 +22,17 @@ export const getParticipanteM = async () => {
             inner join ms_usuarios mu on p.creadopor = mu.id 
             left join ms_usuarios mu2 on p.modificadopor = mu2.id 
         `);
-    //console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getParticipanteDNIM = async (identificacion) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             SELECT p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                 p.añosdeservicio, p.codigodered, 
@@ -55,21 +55,21 @@ export const getParticipanteDNIM = async (identificacion) => {
             WHERE p.identificacion=$1
             order by p.id desc
         `,
-      [identificacion]
-    );
-    if (rows.length === 0) {
-      return null;
+            [identificacion]
+        );
+        if (rows.length === 0) {
+            return null;
+        }
+        return rows[0].id;
+    } catch (error) {
+        throw error;
     }
-    return rows[0].id;
-  } catch (error) {
-    throw error;
-  }
 };
 
 export const getParticipanteIdM = async (id) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
@@ -80,7 +80,7 @@ export const getParticipanteIdM = async (id) => {
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
-                pced.idcentroeducativo, ced.nombreced, ced.codigosace as codigosaceced, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo , c2.cargo as cargoced, pced.jornada, pced.modalidad, 
+                pced.id as idcentropart, pced.idcentroeducativo, ced.nombreced, ced.codigosace as codigosaceced, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo , c2.cargo as cargoced, pced.jornada, pced.modalidad, 
                 pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
                     CONCAT_WS(', ',
                         CASE WHEN pced.prebasica THEN 'Prebásica' END,
@@ -119,19 +119,19 @@ export const getParticipanteIdM = async (id) => {
             WHERE p.id=$1
             order by p.id desc
         `,
-      [id]
-    );
-    console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+            [id]
+        );
+        console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getParticipanteIdInvestM = async (id) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
               SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
@@ -196,19 +196,19 @@ export const getParticipanteIdInvestM = async (id) => {
 
 
         `,
-      [id]
-    );
-    //console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+            [id]
+        );
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getParticipanteIdFormacionM = async (id) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
              SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
@@ -276,40 +276,40 @@ export const getParticipanteIdFormacionM = async (id) => {
             where pf.idformacion =$1
 
         `,
-      [id]
-    );
-    //console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+            [id]
+        );
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const postParticipanteM = async (
-  identificacion,
-  codigosace,
-  correo,
-  nombre,
-  fechanacimiento,
-  edad,
-  telefono,
-  genero,
-  idfuncion,
-  idnivelacademicos,
-  idgradoacademicos,
-  añosdeservicio,
-  codigodered,
-  deptoresidencia,
-  municipioresidencia,
-  aldearesidencia,
-  caserio,
-  datoscorrectos,
-  autorizadatos,
-  creadopor
+    identificacion,
+    codigosace,
+    correo,
+    nombre,
+    fechanacimiento,
+    edad,
+    telefono,
+    genero,
+    idfuncion,
+    idnivelacademicos,
+    idgradoacademicos,
+    añosdeservicio,
+    codigodered,
+    deptoresidencia,
+    municipioresidencia,
+    aldearesidencia,
+    caserio,
+    datoscorrectos,
+    autorizadatos,
+    creadopor
 ) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             INSERT INTO participantes (
                 identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered, 
@@ -320,63 +320,46 @@ export const postParticipanteM = async (
             ) 
             RETURNING id
         `,
-      [
-        identificacion,
-        codigosace,
-        correo,
-        nombre,
-        fechanacimiento,
-        edad,
-        telefono,
-        genero,
-        idfuncion,
-        idnivelacademicos,
-        idgradoacademicos,
-        añosdeservicio,
-        codigodered,
-        deptoresidencia,
-        municipioresidencia,
-        aldearesidencia,
-        caserio,
-        datoscorrectos,
-        autorizadatos,
-        creadopor,
-      ]
-    );
+            [
+                identificacion,
+                codigosace,
+                correo,
+                nombre,
+                fechanacimiento,
+                edad,
+                telefono,
+                genero,
+                idfuncion,
+                idnivelacademicos,
+                idgradoacademicos,
+                añosdeservicio,
+                codigodered,
+                deptoresidencia,
+                municipioresidencia,
+                aldearesidencia,
+                caserio,
+                datoscorrectos,
+                autorizadatos,
+                creadopor,
+            ]
+        );
 
-    return rows[0].id;
-  } catch (error) {
-    console.error("Error en postParticipanteM:", error.message);
-    throw error;
-  }
+        return rows[0].id;
+    } catch (error) {
+        console.error("Error en postParticipanteM:", error.message);
+        throw error;
+    }
 };
 
 export const putParticipanteM = async (
-  identificacion,
-  codigosace,
-  correo,
-  nombre,
-  fechanacimiento,
-  edad,
-  telefono,
-  genero,
-  idfuncion,
-  idnivelacademicos,
-  idgradoacademicos,
-  añosdeservicio,
-  codigodered,
-  deptoresidencia,
-  municipioresidencia,
-  aldearesidencia,
-  caserio,
-  datoscorrectos,
-  autorizadatos,
-  modificadopor,
-  id
+    identificacion, codigosace, correo, nombre, fechanacimiento,
+    edad, telefono, genero, idfuncion, idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+    deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos,
+    modificadopor, id
 ) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
                 UPDATE participantes
                 SET 
                 
@@ -402,43 +385,26 @@ export const putParticipanteM = async (
                 modificadopor=$20
                 WHERE id=$21
                 RETURNING *`,
-      [
-        identificacion,
-        codigosace,
-        correo,
-        nombre,
-        fechanacimiento,
-        edad,
-        telefono,
-        genero,
-        idfuncion,
-        idnivelacademicos,
-        idgradoacademicos,
-        añosdeservicio,
-        codigodered,
-        deptoresidencia,
-        municipioresidencia,
-        aldearesidencia,
-        caserio,
-        datoscorrectos,
-        autorizadatos,
-        modificadopor,
-        id,
-      ]
-    );
+            [
+                identificacion, codigosace, correo, nombre, fechanacimiento,
+                edad, telefono, genero, idfuncion, idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos,
+                modificadopor, id
+            ]
+        );
 
-    return rows[0];
-  } catch (error) {
-    throw error;
-  }
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
 };
 
 //para buscar por identificacion en tabla de docentesdgdp
 
 export const getParticipanteIdentificacionM = async (filtro) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
@@ -488,21 +454,21 @@ export const getParticipanteIdentificacionM = async (filtro) => {
             WHERE p.identificacion=$1
             order by p.id desc
         `,
-      [filtro]
-    );
-    //console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+            [filtro]
+        );
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 //para buscar por codigo SACE en tabla de docentesdgdp
 
 export const getParticipanteCodSACEM = async (filtro) => {
-  try {
-    const { rows } = await pool.query(
-      ` SELECT p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+    try {
+        const { rows } = await pool.query(
+            ` SELECT p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
@@ -524,53 +490,53 @@ export const getParticipanteCodSACEM = async (filtro) => {
             WHERE p.codigosace=$1
             order by p.id desc
         `,
-      [filtro]
-    );
-    //console.log(rows);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
+            [filtro]
+        );
+        //console.log(rows);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const postParticipanteInvestigacionM = async (
-  idinvestigacion,
-  idparticipante
+    idinvestigacion,
+    idparticipante
 ) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             INSERT INTO participantesinvestigacion ( idinvestigacion, idparticipante ) 
             VALUES ( $1, $2 ) 
             RETURNING id
         `,
-      [idinvestigacion, idparticipante]
-    );
+            [idinvestigacion, idparticipante]
+        );
 
-    return rows[0];
-  } catch (error) {
-    console.error("Error en postParticipanteInvestigacionM:", error.message);
-    throw error;
-  }
+        return rows[0];
+    } catch (error) {
+        console.error("Error en postParticipanteInvestigacionM:", error.message);
+        throw error;
+    }
 };
 
 export const postParticipanteFormacionM = async (
-  idformacion,
-  idparticipante
+    idformacion,
+    idparticipante
 ) => {
-  try {
-    const { rows } = await pool.query(
-      `
+    try {
+        const { rows } = await pool.query(
+            `
             INSERT INTO participantesformacion ( idformacion, idparticipante ) 
             VALUES ( $1, $2 ) 
             RETURNING id
         `,
-      [idformacion, idparticipante]
-    );
+            [idformacion, idparticipante]
+        );
 
-    return rows[0];
-  } catch (error) {
-    console.error("Error en postParticipanteInvestigacionM:", error.message);
-    throw error;
-  }
+        return rows[0];
+    } catch (error) {
+        console.error("Error en postParticipanteInvestigacionM:", error.message);
+        throw error;
+    }
 };
