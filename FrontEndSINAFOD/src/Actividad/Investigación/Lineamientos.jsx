@@ -58,6 +58,7 @@ const LineamientosI = () => {
     presentoprotocolourl: null,
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
+    divulgacionresultadosurl: null,
     formacioninvest: "",
     creadopor: user.id,
     modificadopor: user.id,
@@ -78,6 +79,7 @@ const LineamientosI = () => {
     presentoprotocolourl: "",
     monitoreoyevaluacionurl: "",
     aplicacionevaluacionurl: "",
+    divulgacionresultadosurl: "",
   });
 
   const handleFileChange = (e) => {
@@ -148,6 +150,7 @@ const LineamientosI = () => {
     presentoprotocolourl: React.useRef(null),
     monitoreoyevaluacionurl: React.useRef(null),
     aplicacionevaluacionurl: React.useRef(null),
+    divulgacionresultadosurl: React.useRef(null),
   };
 
   const handleRemoveFile = (fieldName) => {
@@ -309,6 +312,7 @@ const LineamientosI = () => {
       "presentoprotocolourl",
       "monitoreoyevaluacionurl",
       "aplicacionevaluacionurl",
+      "divulgacionresultadosurl",
     ];
 
     // Agregar archivos si existen
@@ -514,81 +518,6 @@ const LineamientosI = () => {
                 )}
               </Grid>
             </Grid>
-
-            {/* Modal de vista previa */}
-            <Dialog
-              open={previewOpen}
-              onClose={() => setPreviewOpen(false)}
-              maxWidth="md"
-              fullWidth
-            >
-              <DialogTitle>
-                Vista previa del documento
-                <IconButton
-                  onClick={() => setPreviewOpen(false)}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </DialogTitle>
-              <DialogContent dividers>
-                {previewContent?.type === "pdf" && (
-                  <iframe
-                    src={previewContent.url}
-                    width="100%"
-                    height="500px"
-                    style={{ border: "none" }}
-                    title="Vista previa PDF"
-                  />
-                )}
-                {previewContent?.type === "image" && (
-                  <img
-                    src={previewContent.url}
-                    alt="Vista previa"
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "500px",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                )}
-                {previewContent?.type === "other" && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: "200px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <DescriptionIcon
-                      sx={{ fontSize: 60, color: color.primary.azul }}
-                    />
-                    <Typography variant="h6" sx={{ mt: 2 }}>
-                      {previewContent.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      No hay vista previa disponible para este tipo de archivo
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{ mt: 2, backgroundColor: color.primary.azul }}
-                      onClick={() => window.open(previewContent.url, "_blank")}
-                    >
-                      Descargar archivo
-                    </Button>
-                  </Box>
-                )}
-              </DialogContent>
-            </Dialog>
           </Paper>
           <Paper
             maxWidth="lg"
@@ -718,82 +647,61 @@ const LineamientosI = () => {
                   </Box>
                 )}
               </Grid>
-            </Grid>
 
-            {/* Modal de vista previa */}
-            <Dialog
-              open={previewOpen}
-              onClose={() => setPreviewOpen(false)}
-              maxWidth="md"
-              fullWidth
-            >
-              <DialogTitle>
-                Vista previa del documento
-                <IconButton
-                  onClick={() => setPreviewOpen(false)}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="h6">
+                  Linemaientos para la Difución y Divulagación de Resultados
+                </Typography>
+                <Button
+                  component="label"
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  sx={{ mb: 2, backgroundColor: color.primary.azul }}
                 >
-                  <CloseIcon />
-                </IconButton>
-              </DialogTitle>
-              <DialogContent dividers>
-                {previewContent?.type === "pdf" && (
-                  <iframe
-                    src={previewContent.url}
-                    width="100%"
-                    height="500px"
-                    style={{ border: "none" }}
-                    title="Vista previa PDF"
+                  Seleccionar archivo
+                  <VisuallyHiddenInput
+                    type="file"
+                    name="divulgacionresultadosurl"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileChange}
+                    ref={fileInputRefs.divulgacionresultadosurl}
                   />
-                )}
-                {previewContent?.type === "image" && (
-                  <img
-                    src={previewContent.url}
-                    alt="Vista previa"
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "500px",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                )}
-                {previewContent?.type === "other" && (
+                </Button>
+                {formData.divulgacionresultadosurl && (
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column",
                       alignItems: "center",
-                      justifyContent: "center",
-                      height: "200px",
-                      textAlign: "center",
+                      gap: 1,
+                      mt: 1,
+                      p: 1,
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: 1,
                     }}
                   >
-                    <DescriptionIcon
-                      sx={{ fontSize: 60, color: color.primary.azul }}
-                    />
-                    <Typography variant="h6" sx={{ mt: 2 }}>
-                      {previewContent.name}
+                    <Typography variant="body2">
+                      {formData.divulgacionresultadosurl.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      No hay vista previa disponible para este tipo de archivo
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{ mt: 2, backgroundColor: color.primary.azul }}
-                      onClick={() => window.open(previewContent.url, "_blank")}
+                    <IconButton
+                      sx={{ color: color.primary.azul, ml: "auto" }}
+                      size="small"
+                      onClick={() => handlePreview("divulgacionresultadosurl")}
                     >
-                      Descargar archivo
-                    </Button>
+                      <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={() =>
+                        handleRemoveFile("divulgacionresultadosurl")
+                      }
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
                   </Box>
                 )}
-              </DialogContent>
-            </Dialog>
+              </Grid>
+            </Grid>
           </Paper>
           <Grid container spacing={2} sx={{ mt: 5 }} justifyContent="flex-end">
             <Grid item>
@@ -817,6 +725,81 @@ const LineamientosI = () => {
               </Button>
             </Grid>
           </Grid>
+
+          {/* Modal de vista previa */}
+          <Dialog
+            open={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle>
+              Vista previa del documento
+              <IconButton
+                onClick={() => setPreviewOpen(false)}
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              {previewContent?.type === "pdf" && (
+                <iframe
+                  src={previewContent.url}
+                  width="100%"
+                  height="500px"
+                  style={{ border: "none" }}
+                  title="Vista previa PDF"
+                />
+              )}
+              {previewContent?.type === "image" && (
+                <img
+                  src={previewContent.url}
+                  alt="Vista previa"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "500px",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              )}
+              {previewContent?.type === "other" && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "200px",
+                    textAlign: "center",
+                  }}
+                >
+                  <DescriptionIcon
+                    sx={{ fontSize: 60, color: color.primary.azul }}
+                  />
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    {previewContent.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    No hay vista previa disponible para este tipo de archivo
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2, backgroundColor: color.primary.azul }}
+                    onClick={() => window.open(previewContent.url, "_blank")}
+                  >
+                    Descargar archivo
+                  </Button>
+                </Box>
+              )}
+            </DialogContent>
+          </Dialog>
         </Paper>
       </Dashboard>
     </>

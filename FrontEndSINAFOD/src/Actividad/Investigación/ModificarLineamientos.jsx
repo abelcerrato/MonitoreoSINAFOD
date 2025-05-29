@@ -54,12 +54,14 @@ const LineamientosI = () => {
     presentoprotocolourl: null,
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
+    divulgacionresultadosurl: null,
     formacioninvest: "",
   });
   const [existingFiles, setExistingFiles] = useState({
     presentoprotocolourl: null,
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
+    divulgacionresultadosurl: null,
   });
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -273,6 +275,7 @@ const LineamientosI = () => {
       "presentoprotocolourl",
       "monitoreoyevaluacionurl",
       "aplicacionevaluacionurl",
+      "divulgacionresultadosurl",
     ];
 
     fileFields.forEach((field) => {
@@ -593,6 +596,10 @@ const LineamientosI = () => {
             {renderFileField(
               "aplicacionevaluacionurl",
               "Documento de Aplicación de Investigación"
+            )}
+            {renderFileField(
+              "divulgacionresultadosurl",
+              "Linemaientos para la Difución y Divulagación de Resultados"
             )}
           </Grid>
 
