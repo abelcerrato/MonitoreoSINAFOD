@@ -126,40 +126,36 @@ const ProjectDrawer = ({ open }) => {
     menuRef,
     onMouseEnter,
     onMouseLeave,
-  }) => {
-    const iconRef = useRef(null);
-
-    return (
-      <ListItemButton
-        onClick={onClick}
-        sx={getMenuItemStyles(path, isParent, parentActive)}
-        onMouseEnter={(e) => {
-          // Pasa ambas referencias
-          menuRef.current = iconRef.current; // Usamos la ref del icono
-          onMouseEnter(e);
+  }) => (
+    <ListItemButton
+      onClick={onClick}
+      sx={getMenuItemStyles(path, isParent, parentActive)}
+      ref={menuRef}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <ListItemIcon
+        sx={{
+          minWidth: 0,
+          mr: open ? 3 : "auto",
+          justifyContent: "center",
+          "& .MuiSvgIcon-root": {
+            fontSize: open ? "1.5rem" : "2rem",
+          },
         }}
-        onMouseLeave={onMouseLeave}
       >
-        <ListItemIcon
-          ref={iconRef} // Referencia específica al icono
-          sx={{
-            minWidth: 0,
-            mr: open ? 3 : "auto",
-            justifyContent: "center",
-            "& .MuiSvgIcon-root": {
-              fontSize: open ? "1.5rem" : "2rem",
-            },
-          }}
-        >
-          {icon}
-        </ListItemIcon>
-        {open && <ListItemText primary={text} />}
-        {open && isParent && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
-      </ListItemButton>
-    );
-  };
+        {icon}
+      </ListItemIcon>
+      {open && <ListItemText primary={text} />}
+      {open &&
+        isParent === "reporteria" &&
+        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
+      {open &&
+        isParent === "seguridad" &&
+        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
+    </ListItemButton>
+  );
 
-  
   const tienePermisosModulo = (idModulo) => {
     return permissions?.some((p) => p.idmodulo === idModulo && p.consultar);
   };
@@ -167,14 +163,6 @@ const ProjectDrawer = ({ open }) => {
   const tienePermiso = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.consultar === true;
-  };
-
-  const calculateMenuPosition = (menuRef) => {
-    if (!menuRef.current) return 0;
-
-    // Obtener la posición del elemento padre
-    const rect = menuRef.current.getBoundingClientRect();
-    return rect.top;
   };
 
   return (
@@ -337,7 +325,7 @@ const ProjectDrawer = ({ open }) => {
               }}
               PaperProps={{
                 sx: {
-                  marginTop: calculateMenuPosition(reporteriaAnchorRef),
+                  marginTop: 35,
                   ml: 10,
                   boxShadow: 3,
                   minWidth: 200,
@@ -467,7 +455,7 @@ const ProjectDrawer = ({ open }) => {
               }}
               PaperProps={{
                 sx: {
-                  marginTop: calculateMenuPosition(seguridadAnchorRef),
+                  marginTop: 43,
                   ml: 10,
                   boxShadow: 3,
                   minWidth: 200,
