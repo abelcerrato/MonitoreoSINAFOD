@@ -88,6 +88,7 @@ const LineamientosI = () => {
           presentoprotocolourl: data.presentoprotocolourl || null,
           monitoreoyevaluacionurl: data.monitoreoyevaluacionurl || null,
           aplicacionevaluacionurl: data.aplicacionevaluacionurl || null,
+          divulgacionresultadosurl: data.divulgacionresultadosurl || null,
         });
       } catch (error) {
         console.error("Error al obtener los datos", error);
@@ -554,7 +555,9 @@ const LineamientosI = () => {
 
           <Grid container spacing={5} mt={2}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Título del Proyecto</Typography>
+              <Typography variant="subtitle1">
+                Título de la Investigación
+              </Typography>
               <TextField
                 fullWidth
                 name="investigacion"

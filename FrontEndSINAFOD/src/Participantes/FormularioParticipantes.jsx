@@ -104,6 +104,10 @@ const FormularParticipantes = () => {
       ...prevState,
       identificacion: "",
       codigosace: "",
+      correo: "",
+      fechanacimiento: "",
+      edad: "",
+      telefono: "",
       nombre: "",
       idfuncion: "",
       genero: "",
@@ -144,7 +148,7 @@ const FormularParticipantes = () => {
   };
 
   const handleSave = async () => {
-    const requiredFields = [
+    const baseRequiredFields = [
       "identificacion",
       "nombre",
       "idfuncion",
@@ -153,16 +157,24 @@ const FormularParticipantes = () => {
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
-      /*   "idgradoacademicos" , */
+    ];
 
+    // Campos condicionales (no obligatorios para investigación)
+    const conditionalRequiredFields = [
       "nombreced",
       "codigosaceced",
-      /*  "idnivelesacademicos",
-      "idgradosacademicos" , */
       "zona",
       "idmunicipio",
       "iddepartamento",
       "tipoadministracion",
+    ];
+
+    // Construir lista de campos requeridos según el tipo
+    const requiredFields = [
+      ...baseRequiredFields,
+      ...(formData.formacioninvest !== "investigacion"
+        ? conditionalRequiredFields
+        : []),
     ];
     // Detectar campos vacíos
     let errors = {};

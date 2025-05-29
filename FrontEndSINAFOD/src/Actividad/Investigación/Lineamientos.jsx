@@ -74,14 +74,6 @@ const LineamientosI = () => {
     }));
   };
 
-  // Manejar cambios en campos de archivo
-  const [fileNames, setFileNames] = useState({
-    presentoprotocolourl: "",
-    monitoreoyevaluacionurl: "",
-    aplicacionevaluacionurl: "",
-    divulgacionresultadosurl: "",
-  });
-
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -137,12 +129,6 @@ const LineamientosI = () => {
       ...prev,
       [name]: file,
     }));
-
-    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
-    setFileNames((prev) => ({
-      ...prev,
-      [name]: file ? file.name : "",
-    }));
   };
 
   // Referencias para los inputs de archivo
@@ -158,11 +144,6 @@ const LineamientosI = () => {
       ...prev,
       [fieldName]: null,
       ...(fieldName === "presentoprotocolourl" && { estadoprotocolo: "" }),
-    }));
-
-    setFileNames((prev) => ({
-      ...prev,
-      [fieldName]: "",
     }));
 
     // Resetea el input file
@@ -303,7 +284,11 @@ const LineamientosI = () => {
 
     formDataToSend.append("creadopor", user.id);
     formDataToSend.append("modificadopor", user.id);
-    formDataToSend.append("formacioninvest", "Investigación");
+
+    formDataToSend.append(
+      "estadoprotocolo",
+      formData.presentoprotocolourl ? "Completa" : "Incompleta"
+    );
 
     // Contador de archivos subidos
     let uploadedFilesCount = 0;
@@ -442,7 +427,7 @@ const LineamientosI = () => {
 
             <Grid container spacing={5} mt={2}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">Título del Proyecto</Typography>
+                <Typography variant="subtitle1">Título de la Investigación</Typography>
                 <TextField
                   fullWidth
                   name="investigacion"

@@ -138,7 +138,9 @@ export default function TablaPacticantes({
   }, [isSaved, investCap]);
 
   const handleEdit = (id) => {
-    navigate(`/Modificar_Participante/${id}`, {state: {formacioninvest: formacioninvest}}); 
+    navigate(`/Modificar_Participante/${id}`, {
+      state: { formacioninvest: formacioninvest },
+    });
   };
 
   return (
@@ -172,15 +174,21 @@ export default function TablaPacticantes({
             <TableCell align="right">Departamento en el que Reside</TableCell>
             <TableCell align="right">Municipio en el que Reside</TableCell>
             <TableCell align="right">Aldea en la que Reside</TableCell>
-            <TableCell align="right">Código SACE del Centro</TableCell>
-            <TableCell align="right">Centro Educativo</TableCell>
-            <TableCell align="right">Nivel Académico que Atiende</TableCell>
-            <TableCell align="right">Grado que Atiende</TableCell>
-            <TableCell align="right">Tipo Administración</TableCell>
-            <TableCell align="right">Zona Centro Educativo</TableCell>
-            <TableCell align="right">Departamento Centro Educativo</TableCell>
-            <TableCell align="right">Municipio Centro Educativo</TableCell>
-            <TableCell align="right">Aldea Centro Educativo</TableCell>
+            {formacioninvest === "investigacion" && (
+              <>
+                <TableCell align="right">Código SACE del Centro</TableCell>
+                <TableCell align="right">Centro Educativo</TableCell>
+                <TableCell align="right">Nivel Académico que Atiende</TableCell>
+                <TableCell align="right">Grado que Atiende</TableCell>
+                <TableCell align="right">Tipo Administración</TableCell>
+                <TableCell align="right">Zona Centro Educativo</TableCell>
+                <TableCell align="right">
+                  Departamento Centro Educativo
+                </TableCell>
+                <TableCell align="right">Municipio Centro Educativo</TableCell>
+                <TableCell align="right">Aldea Centro Educativo</TableCell>
+              </>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>

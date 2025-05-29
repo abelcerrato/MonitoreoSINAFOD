@@ -126,36 +126,40 @@ const ProjectDrawer = ({ open }) => {
     menuRef,
     onMouseEnter,
     onMouseLeave,
-  }) => (
-    <ListItemButton
-      onClick={onClick}
-      sx={getMenuItemStyles(path, isParent, parentActive)}
-      ref={menuRef}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <ListItemIcon
-        sx={{
-          minWidth: 0,
-          mr: open ? 3 : "auto",
-          justifyContent: "center",
-          "& .MuiSvgIcon-root": {
-            fontSize: open ? "1.5rem" : "2rem",
-          },
-        }}
-      >
-        {icon}
-      </ListItemIcon>
-      {open && <ListItemText primary={text} />}
-      {open &&
-        isParent === "reporteria" &&
-        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
-      {open &&
-        isParent === "seguridad" &&
-        (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
-    </ListItemButton>
-  );
+  }) => {
+    const iconRef = useRef(null);
 
+    return (
+      <ListItemButton
+        onClick={onClick}
+        sx={getMenuItemStyles(path, isParent, parentActive)}
+        onMouseEnter={(e) => {
+          // Pasa ambas referencias
+          menuRef.current = iconRef.current; // Usamos la ref del icono
+          onMouseEnter(e);
+        }}
+        onMouseLeave={onMouseLeave}
+      >
+        <ListItemIcon
+          ref={iconRef} // Referencia específica al icono
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : "auto",
+            justifyContent: "center",
+            "& .MuiSvgIcon-root": {
+              fontSize: open ? "1.5rem" : "2rem",
+            },
+          }}
+        >
+          {icon}
+        </ListItemIcon>
+        {open && <ListItemText primary={text} />}
+        {open && isParent && (openRepoeteria ? <ExpandLess /> : <ExpandMore />)}
+      </ListItemButton>
+    );
+  };
+
+  
   const tienePermisosModulo = (idModulo) => {
     return permissions?.some((p) => p.idmodulo === idModulo && p.consultar);
   };
@@ -165,16 +169,24 @@ const ProjectDrawer = ({ open }) => {
     return permiso?.consultar === true;
   };
 
+  const calculateMenuPosition = (menuRef) => {
+    if (!menuRef.current) return 0;
+
+    // Obtener la posición del elemento padre
+    const rect = menuRef.current.getBoundingClientRect();
+    return rect.top;
+  };
+
   return (
     <Drawer
       variant="permanent"
       open={open}
       sx={{
-        width: open ? 225 : 75,
+        width: open ? 235 : 75,
         flexShrink: 0,
         whiteSpace: "nowrap",
         "& .MuiDrawer-paper": {
-          width: open ? 230 : 80,
+          width: open ? 265 : 80,
           overflowX: "hidden",
           alignItems: open ? "" : "center",
           transition: (theme) =>
@@ -325,7 +337,7 @@ const ProjectDrawer = ({ open }) => {
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 35,
+                  marginTop: calculateMenuPosition(reporteriaAnchorRef),
                   ml: 10,
                   boxShadow: 3,
                   minWidth: 200,
@@ -455,7 +467,7 @@ const ProjectDrawer = ({ open }) => {
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 43,
+                  marginTop: calculateMenuPosition(seguridadAnchorRef),
                   ml: 10,
                   boxShadow: 3,
                   minWidth: 200,

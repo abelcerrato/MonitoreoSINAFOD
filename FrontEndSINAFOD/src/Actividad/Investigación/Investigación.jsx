@@ -85,70 +85,6 @@ const Investigacion = () => {
         }));
       }
 
-      // Limpiar ciclos cuando se desmarca "Básica"
-      if (name === "basica" && !sanitizedValue) {
-        newData.primerciclo = false;
-        newData.segundociclo = false;
-        newData.tercerciclo = false;
-      }
-
-      // Si cambiamos a "Interna", limpiamos los campos de convenio
-      if (name === "tipoactividad" && sanitizedValue === "Interna") {
-        newData.institucionconvenio = "";
-        newData.existeconvenio = "";
-        setFieldErrors((prev) => ({
-          ...prev,
-          institucionconvenio: false,
-          existeconvenio: false,
-        }));
-      }
-
-      // Validación para el campo "presupuesto" (solo números)
-      if (name === "presupuesto") {
-        // Permitir solo números (incluyendo decimales si es necesario)
-        const isValidNumber = /^[0-9]*\.?[0-9]*$/.test(value);
-
-        if (!isValidNumber) {
-          // Si no es un número válido, no actualizamos el estado
-          return prevData;
-        }
-
-        // Si es un número válido, lo guardamos (puedes convertirlo a Number si lo necesitas)
-        newData[name] = value === "" ? "" : Number(value); // Opcional: Convertir a número
-      }
-
-      // Validación de fechas
-      if (name === "fechainicio" || name === "fechafinal") {
-        const isValidDate =
-          sanitizedValue && !isNaN(new Date(sanitizedValue).getTime());
-
-        if (isValidDate) {
-          newData[name] = new Date(sanitizedValue).toISOString().split("T")[0];
-        } else {
-          newData[name] = "";
-        }
-
-        const { fechainicio, fechafinal } = newData;
-
-        if (
-          fechainicio &&
-          fechafinal &&
-          new Date(fechainicio) > new Date(fechafinal)
-        ) {
-          setError(
-            "La fecha de inicio no puede ser posterior a la fecha de finalización."
-          );
-          setFieldErrors({ fechainicio: true, fechafinal: true });
-        } else {
-          setError("Este campo es obligatorio");
-          setFieldErrors((prevErrors) => ({
-            ...prevErrors,
-            fechainicio: !fechainicio,
-            fechafinal: !fechafinal,
-          }));
-        }
-      }
-
       // Validación de los campos de duración (año, mes, día)
       if (name === "año" || name === "mes" || name === "dia") {
         const inputValue = event.target.value;
@@ -169,7 +105,7 @@ const Investigacion = () => {
 
         const errorAño = isNaN(año) || año < 0;
         const errorMes = isNaN(mes) || mes < 0 || mes > 12;
-        const errorDia = isNaN(dia) || dia < 0;
+        const errorDia = isNaN(dia) || dia < 0 || dia > 31;
 
         setFieldErrors((prev) => ({
           ...prev,
@@ -198,84 +134,84 @@ const Investigacion = () => {
   };
 
   const handleSave = async () => {
-    // Validaciones previas (campos obligatorios, fechas, etc.)
     const requiredFields = ["investigacion", "tipoactividad", "socializaron"];
     let errors = {};
+
     requiredFields.forEach((field) => {
       if (!formData[field]) {
         errors[field] = true;
       }
     });
 
+    // Validación de duración
+    const año = Number(formData.año) || 0;
+    const mes = Number(formData.mes) || 0;
+    const dia = Number(formData.dia) || 0;
+
+    // Verificar que al menos uno sea mayor a 0
+    const atLeastOneFieldHasValue = año > 0 || mes > 0 || dia > 0;
+
+    // Validación de rangos
+    const errorAño = isNaN(año) || año < 0;
+    const errorMes = isNaN(mes) || mes < 0 || mes > 12;
+    const errorDia = isNaN(dia) || dia < 0 || dia > 31;
+
+    // Si no hay ningún valor o hay errores de rango
+    if (!atLeastOneFieldHasValue || errorAño || errorMes || errorDia) {
+      errors = {
+        ...errors,
+        año: !atLeastOneFieldHasValue || errorAño,
+        mes: !atLeastOneFieldHasValue || errorMes,
+        dia: !atLeastOneFieldHasValue || errorDia,
+      };
+    }
+
+    // Actualizar errores visuales
+    setFieldErrors(errors);
+
+    // Mostrar alerta si hay errores
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
+      const errorMessage = !atLeastOneFieldHasValue
+        ? "Debe ingresar al menos un valor en año, mes o día"
+        : "Revise los campos marcados en rojo";
+
       Swal.fire({
-        title: "Campos obligatorios",
-        text: "Llenar los campos en rojo",
+        title: "Error en los campos",
+        text: errorMessage,
         icon: "warning",
         timer: 6000,
       });
       return;
     }
-
-    // Validación de campos numéricos
-    const { año, mes, dia } = formData;
-    const errorAño = año === null || isNaN(año) || año < 0;
-    const errorMes = mes === null || isNaN(mes) || mes < 0 || mes > 12;
-    const errorDia = dia === null || isNaN(dia) || dia < 0;
-
-    if (errorAño || errorMes || errorDia) {
-      setFieldErrors({
-        año: errorAño,
-        mes: errorMes,
-        dia: errorDia,
-      });
-      Swal.fire({
-        title: "Error en duración",
-        text: "Revise los campos de año, mes o día",
-        icon: "error",
-        timer: 6000,
-      });
-      return;
-    }
-
-    // Validación de fechas
-    if (formData.fechainicio && formData.fechafinal) {
-      if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
-        Swal.fire({
-          title: "Advertencia!",
-          text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
-          icon: "warning",
-          timer: 6000,
-        });
-        return;
-      }
-    }
-
-    // Limpieza de datos
-    // Modifica esta parte para excluir el campo investigacion
-    const cleanedFormData = Object.fromEntries(
-      Object.entries(formData).map(([key, value]) => [
-        key,
-        value === "" && key !== "investigacion" ? null : value,
-      ])
-    );
+    // Limpieza de datos - asegurando que los campos vacíos se envíen como 0
+    const cleanedFormData = {
+      ...formData,
+      año: año, // Esto ya es 0 si estaba vacío
+      mes: mes, // Esto ya es 0 si estaba vacío
+      dia: dia, // Esto ya es 0 si estaba vacío
+      // Limpieza de otros campos
+      ...Object.fromEntries(
+        Object.entries(formData)
+          .filter(([key]) => !["año", "mes", "dia"].includes(key))
+          .map(([key, value]) => [
+            key,
+            value === "" && key !== "investigacion" ? null : value,
+          ])
+      ),
+    };
 
     try {
       let idToUse = investCapId;
       let response;
 
-      // Lógica modificada: Si no hay ID, hacer POST (crear nuevo)
       if (!idToUse) {
         response = await axios.post(
           `${process.env.REACT_APP_API_URL}/investigacion`,
           cleanedFormData,
           { headers: { "Content-Type": "application/json" } }
         );
-        idToUse = response.data.id; // Obtenemos el nuevo ID de la respuesta
-      }
-      // Si hay ID, hacer PUT (actualizar existente)
-      else {
+        idToUse = response.data.id;
+      } else {
         response = await axios.put(
           `${process.env.REACT_APP_API_URL}/investigacion/${idToUse}`,
           cleanedFormData,
