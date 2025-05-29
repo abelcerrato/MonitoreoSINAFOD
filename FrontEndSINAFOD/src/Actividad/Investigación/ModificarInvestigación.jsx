@@ -17,6 +17,7 @@ import {
   Tabs,
   FormHelperText,
   Checkbox,
+  InputAdornment,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
@@ -41,6 +42,7 @@ const Investigacion = () => {
     existeconvenio: null,
     institucionconvenio: "",
     presupuesto: "",
+    tipomoneda: "Lempira",
     duracion: "",
     funciondirigido: "",
     prebasica: false,
@@ -460,6 +462,26 @@ const Investigacion = () => {
                 name="presupuesto"
                 value={formData.presupuesto}
                 onChange={handleChange}
+                type="number"
+                inputProps={{ min: 0 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <TextField
+                        select
+                        name="tipomoneda"
+                        value={formData.tipomoneda}
+                        onChange={handleChange}
+                        variant="standard"
+                        SelectProps={{ disableUnderline: true }}
+                      >
+                        <MenuItem value="Lempira">HNL</MenuItem>
+                        <MenuItem value="Dolar">USD</MenuItem>
+                        <MenuItem value="Euro">EUR</MenuItem>
+                      </TextField>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>

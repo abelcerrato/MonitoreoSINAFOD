@@ -131,9 +131,6 @@ const FormularParticipantes = () => {
       noveno: false,
       decimo: false,
       onceavo: false,
-      btp3: false,
-      bch1: false,
-      bch2: false,
       doceavo: false,
       zona: "",
       idmunicipio: "",
@@ -485,6 +482,7 @@ const FormularParticipantes = () => {
             icon: "success",
             timer: 6000,
           });
+          console.log(response.data[0]);
         } else {
           // Si hay múltiples registros, mostrar modal de selección
           setDocentesEncontrados(response.data);
@@ -502,7 +500,7 @@ const FormularParticipantes = () => {
       console.error("Error al obtener los datos", error);
       Swal.fire({
         title: "Error",
-        text: "e un error al buscar los datos",
+        text: "Error al buscar los datos",
         icon: "error",
         timer: 6000,
       });
@@ -510,28 +508,58 @@ const FormularParticipantes = () => {
   };
 
   const llenarFormulario = (docente) => {
+    const fechaNacimiento = new Date(docente.fechanacimiento);
+    const fechaFormateada = fechaNacimiento.toISOString().split("T")[0];
     setFormData((prev) => ({
       ...prev,
+      /*Datos del participante */
       codigosace: docente.codigosace || "",
       identificacion: docente.identificacion || "",
       nombre: docente.nombre || "",
-      idfuncion: docente.idfuncion || "",
       genero: docente.genero || "",
+      fechanacimiento: fechaFormateada || "",
       añosdeservicio: docente.añosdeservicio || "",
-      codigodered: docente.codigodered || "",
-      deptoresidencia: docente.iddeptoresidencia || "",
-      municipioresidencia: docente.idmuniresidencia || "",
-      aldearesidencia: docente.idaldearesidencia || "",
-      idnivelacademicos: docente.ididnivelacademicos || "",
-      idgradoacademicos: docente.ididgradoacademicos || "",
-      nombreced: docente.nombreced || "",
-      idnivelesacademicos: docente.idnivelesacademicos || "",
-      idgradosacademicos: docente.idgradosacademicos || "",
       zona: docente.zona || "",
+      edad: docente.edad || "",
+      correo: docente.correo || "",
+      telefono: docente.telefono || "",
+      idnivelacademicos: docente.idnivelacademicos || "",
+      idgradoacademicos: docente.idgradoacademicos || "",
+      codigodered: docente.codigodered || "",
+      deptoresidencia: docente.deptoresidencia || "",
+      municipioresidencia: docente.municipioresidencia || "",
+      aldearesidencia: docente.aldearesidencia || "",
+      caserio: docente.caserio || "",
+      idfuncion: docente.idfuncion || "",
+
+      /*Datos del centro educativo */
+      prebasica: docente.prebasica || false,
+      basica: docente.basica || false,
+      media: docente.media || false,
+      primero: docente.primero || false,
+      segundo: docente.segundo || false,
+      tercero: docente.tercero || false,
+      cuarto: docente.cuarto || false,
+      quinto: docente.quinto || false,
+      sexto: docente.sexto || false,
+      septimo: docente.septimo || false,
+      octavo: docente.octavo || false,
+      noveno: docente.noveno || false,
+      decimo: docente.decimo || false,
+      onceavo: docente.onceavo || false,
+      doceavo: docente.doceavo || false,
+      cargo: docente.cargo || "",
+      nombreced: docente.nombreced || "",
+      codigosaceced: docente.codigosaceced || "",
+      tipoadministracion: docente.tipoadministracion || "Gubernamental",
+      tipocentro: docente.tipocentro || "",
+      jornada: docente.jornada || "",
+      modalidad: docente.modalidad || "",
       idmunicipio: docente.idmunicipio || "",
       iddepartamento: docente.iddepartamento || "",
       idaldea: docente.idaldea || "",
-      tipoadministracion: docente.tipoadministracion || "Gubernamental",
+      datoscorrectos: docente.datoscorrectos || false,
+      autorizadatos: docente.autorizadatos || false,
     }));
   };
 
@@ -691,12 +719,6 @@ const FormularParticipantes = () => {
                         value={formData.fechanacimiento}
                         onChange={handleChange}
                         type="date"
-                        InputLabelProps={{
-                          shrink: true, // Evita que la etiqueta se superponga
-                        }}
-                        inputProps={{
-                          placeholder: "YYYY-MM-DD", // Guía al usuario
-                        }}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
