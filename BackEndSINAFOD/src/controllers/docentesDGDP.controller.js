@@ -1,5 +1,6 @@
 import { getCicloAcademicoM } from "../models/Academico.models.js";
-import { getParticipanteCodSACEM, getParticipanteIdentificacionM, postCapParticipanteM } from "../models/CapParticipante.models.js";
+import { getParticipanteCodSACEM, getParticipanteDNIM, getParticipanteIdentificacionM, postParticipanteFormacionM, postParticipanteInvestigacionM, postParticipanteM } from "../models/Participante.models.js";
+import { getIdCentroEducativoSACEM, postCentroEducativoM, postCentroEducativoParticipanteM } from "../models/centroeducativo.models.js";
 import { getDocenteCodSACEM, getDocenteIdentificacionM, getDocentesIdM, getDocentesM, postDocentesM, putDocentesM } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 
@@ -147,11 +148,12 @@ export const getFiltroDocenteC = async (req, res) => {
 export const getFiltroDocenteC = async (req, res) => {
     const { filtro } = req.params;
     try {
+        // const docentes = await getDocenteIdentificacionM(filtro);
         const resultados = await Promise.all([
-            getParticipanteCodSACEM(filtro),
+            //getParticipanteCodSACEM(filtro),
             getParticipanteIdentificacionM(filtro),
             getDocenteIdentificacionM(filtro),
-            getDocenteCodSACEM(filtro)
+            // getDocenteCodSACEM(filtro)
         ]);
 
         // Buscar el primer resultado que no esté vacío o null
@@ -161,7 +163,12 @@ export const getFiltroDocenteC = async (req, res) => {
             return res.json(resultadoValido);
         }
 
-        return res.status(404).json({ mensaje: 'No se encontraron registros para el filtro proporcionado.' });
+        return res.status(202).json({
+            mensaje: 'No se encontraron registros para el filtro proporcionado.',
+        });
+
+
+
     } catch (error) {
         console.error('Error al obtener datos:', error);
         return res.status(500).json({ mensaje: 'Error interno del servidor' });
@@ -177,78 +184,326 @@ export const getFiltroDocenteC = async (req, res) => {
 
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
-    const { idinvestigacioncap } = req.params
-    const { codigosace, identificacion, nombre, correo, iddepartamento, idmunicipio, idaldea,
-        sexo, institucion, institucioncodsace, idnivelesacademicos, cicloacademico, zona,
-        funcion, centroeducativo, departamentoced, municipioced, creadopor,
-        idgradosacademicos, añosdeservicio, tipoadministracion, codigodered,
-        deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced } = req.body;
+    const { tipo, id } = req.params;
+
+    let idinvestigacion = null;
+    let idformacion = null;
+
+
+
+    if (tipo === 'investigacion') {
+        idinvestigacion = id;
+    } else if (tipo === 'formacion') {
+        idformacion = id;
+    } else {
+        return res.status(400).json({ error: "Tipo inválido. Debe ser 'investigacion' o 'formacion'." });
+    }
+
+    const {
+        //datos del participante o sea el docente
+        identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+        idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+        deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor,
+
+        //datos del cventro educativo
+        nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
+
+        //datos de la relacion de centro educativo con participante
+        cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo
+    } = req.body;
 
     console.log('respuesta del servidor: ', req.body);
 
 
-    const usuario = creadopor;
-
-
-
     let idciclosacademicos = null; // Por defecto lo dejamos en null
 
-    // Lógica para asignar el valor a idciclosacademicos según idgradosacademicos
-    if (idgradosacademicos >= 1 && idgradosacademicos <= 3) {
+    // Lógica para asignar el valor a idciclosacademicos según idgradoacademicos
+    if (idgradoacademicos >= 1 && idgradoacademicos <= 3) {
         idciclosacademicos = 1;
-    } else if (idgradosacademicos >= 4 && idgradosacademicos <= 6) {
+    } else if (idgradoacademicos >= 4 && idgradoacademicos <= 6) {
         idciclosacademicos = 2;
-    } else if (idgradosacademicos >= 7 && idgradosacademicos <= 9) {
+    } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
         idciclosacademicos = 3;
     }
 
-    try {
 
+    try {
         // Buscar por identificación de docente y por codigo sace
         const resultado1 = await getDocenteIdentificacionM(identificacion);
-        const resultado2 = await getDocenteCodSACEM(codigosace);
+        const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
+        const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
-        //verificar si encuentra algun registro
-        if (resultado1 == null && resultado2 == null) { //si no encuentra registros, pasa a insertar en docente y participante
+        const iddocente = resultado1;
+        const idparticipante = resultado3;
+        const idcentroeducativo = resultado4;
 
-            //insertar en docente
-            const docentes = await postDocentesM(codigosace, nombre, identificacion, correo, departamentoced, municipioced, aldeaced,
-                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona);
+        console.log('iddocente: ', iddocente);
+        console.log('idparticipante: ', idparticipante);
+        console.log('idcentroeducativo: ', idcentroeducativo);
 
-
-
-            //insertar en participante
-            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
-                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
-
-
-            return res.status(201).json({
-                message: "Docente agregado y capacitación del participante registrada.",
-                docentes,
-                participantes: CapParticipante
-            });
-
-        } else { //si encuentra registros, pasa a actualizar en docente y agregar participante 
-
-            //actualizar en docente
-            const docentes = await putDocentesM(codigosace, nombre, correo, departamentoced, municipioced, aldeaced,
-                sexo, centroeducativo, institucioncodsace, idnivelesacademicos, idciclosacademicos, zona, identificacion);
+        // Variables para la respuesta
+        let docentes = null;
+        let idPart = null;
+        let idcentro = null;
+        let ced2 = null;
+        let form = null;
+        let inv = null;
 
 
-            //insertar en participante
-            const CapParticipante = await postCapParticipanteM(idinvestigacioncap, identificacion, codigosace, nombre, funcion, centroeducativo, zona,
-                departamentoced, municipioced, usuario, idnivelesacademicos, idgradosacademicos,
-                idciclosacademicos, sexo, añosdeservicio, tipoadministracion, codigodered,
-                deptoresidencia, municipioresidencia, aldearesidencia, nivelacademicodocente, gradoacademicodocente, aldeaced)
 
-            return res.status(201).json({
-                message: "Docente actualizado y capacitación del participante registrada.",
-                docentes,
-                participantes: CapParticipante
-            });
+        // CASO 1: No existe docente, ni participante, ni centro educativo
+        if (!iddocente && !idparticipante && !idcentroeducativo) {
+            console.log('CASO 1: No existe docente, ni participante, ni centro educativo');
+
+            // Insertar docente
+            const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
+                genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
+            docentes = docente;
+            console.log('iddocente: ', docentes);
+
+            // Insertar participante
+            const participante = await postParticipanteM(
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor);
+
+            idPart = participante;
+            console.log('idPart: ', idPart);
+
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idPart) {
+                form = await postParticipanteFormacionM(idformacion, idPart);
+
+                // Insertar centro educativo
+                const centro = await postCentroEducativoM(
+                    nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
+                    iddepartamento, idmunicipio, idaldea, idPart
+                );
+                idcentro = centro;
+                console.log('idCentro: ', idcentro);
+
+
+                // Insertar relación con centro educativo
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentro, idPart, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idPart) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
+            }
+
+
+
         }
+        // CASO 2: Existe docente, pero no participante ni centro educativo
+        else if (!idparticipante && !idcentroeducativo && iddocente) {
+            console.log('CASO 2: Existe docente, pero no participante ni centro educativo');
+            const participante = await postParticipanteM(
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor);
+
+
+            idPart = participante;
+            console.log('idPart: ', idPart);
+
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idPart) {
+                form = await postParticipanteFormacionM(idformacion, idPart);
+
+                const centro = await postCentroEducativoM(
+                    nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
+                    iddepartamento, idmunicipio, idaldea, idPart
+                );
+                idcentro = centro;
+                console.log('idCentro: ', idcentro);
+
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentro, idPart, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idPart) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
+            }
+
+
+
+        }
+        // CASO 3: No existe docente, pero sí existe participante y centro educativo
+        else if (!iddocente && idparticipante && idcentroeducativo) {
+
+            console.log('CASO 3: No existe docente, pero sí existe participante y centro educativo');
+
+            const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
+                genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
+            docentes = docente;
+            console.log('iddocente: ', docentes);
+
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idparticipante) {
+                form = await postParticipanteFormacionM(idformacion, idparticipante);
+
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentroeducativo, idparticipante, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idparticipante) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idparticipante);
+            }
+
+        }
+
+        // CASO 4: Existe docente y participante, pero NO existe centro educativo
+        else if (!idcentroeducativo && iddocente && idparticipante) {
+            console.log('CASO 4: Existe docente y participante, pero NO existe centro educativo');
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idparticipante) {
+                form = await postParticipanteFormacionM(idformacion, idparticipante);
+
+                // Insertar centro educativo
+                const centro = await postCentroEducativoM(
+                    nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
+                    iddepartamento, idmunicipio, idaldea, idparticipante
+                );
+                idcentro = centro;
+                console.log('idCentro: ', idcentro);
+
+                // Insertar relación participante-centro educativo
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentro, idparticipante, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idparticipante) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idparticipante);
+            }
+
+
+        }
+        // CASO 5: Existe docente y centro educativo, pero NO existe participante
+        else if (!idparticipante && iddocente && idcentroeducativo) {
+
+            console.log('CASO 5: Existe docente y centro educativo, pero NO existe participante');
+            const participante = await postParticipanteM(
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor);
+
+            idPart = participante;
+            console.log('idPart: ', idPart);
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idPart) {
+                form = await postParticipanteFormacionM(idformacion, idPart);
+
+                // Insertar relación participante-centro educativo
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentro, idparticipante, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idPart) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
+            }
+
+
+
+        }
+        // CASO 6: Existe en centro educativo, pero NO existe participante ni en docente
+        else if (!iddocente && !idparticipante && idcentroeducativo) {
+
+            console.log('CASO 6: Existe en centro educativo, pero NO existe participante ni en docente');
+            const docente = await postDocentesM(codigosace, nombre, identificacion, correo, iddepartamento, idmunicipio, idaldea,
+                genero, nombreced, codigosaceced, idnivelacademicos, idciclosacademicos, zona);
+            docentes = docente;
+            console.log('iddocente: ', docentes);
+
+            const participante = await postParticipanteM(
+                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
+                deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor);
+
+            idPart = participante;
+            console.log('idPart: ', idPart);
+
+
+
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idPart) {
+                form = await postParticipanteFormacionM(idformacion, idPart);
+
+                // Insertar relación participante-centro educativo
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentro, idparticipante, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idPart) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
+            }
+
+
+
+        }
+        // CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario
+        else {
+
+            console.log('CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario');
+            // Inserciones condicionales según el tipo
+            if (tipo === 'formacion' && idformacion && idparticipante) {
+
+                form = await postParticipanteFormacionM(idformacion, idparticipante);
+                const relacionCed = await postCentroEducativoParticipanteM(
+                    idcentroeducativo, idparticipante, cargo, jornada, modalidad,
+                    prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto,
+                    septimo, octavo, noveno, decimo, onceavo, doceavo
+                );
+                ced2 = relacionCed;
+            }
+
+            if (tipo === 'investigacion' && idinvestigacion && idparticipante) {
+                inv = await postParticipanteInvestigacionM(idinvestigacion, idparticipante);
+            }
+
+        }
+
+        // Al final del try, ya todas las variables necesarias estarán definidas correctamente
+        return res.status(201).json({
+            message: "Proceso completado exitosamente.",
+            docentes,
+            idPart,
+            idcentro,
+            ced2,
+            form,
+            inv
+        });
 
     } catch (error) {
         console.error('Error al obtener datos:', error);

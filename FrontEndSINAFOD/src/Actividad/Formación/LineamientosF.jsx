@@ -44,9 +44,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const LineamientosI = () => {
+const LineamientosF = () => {
   const { user } = useUser();
-  const { id } = useParams();
   const [formData, setFormData] = useState({
     accionformacion: "",
     criteriosfactibilidadurl: null,
@@ -58,15 +57,8 @@ const LineamientosI = () => {
     accionformacion: false,
     criterioseticosurl: false
   });
-  const [fileNames, setFileNames] = useState({
-    criteriosfactibilidadurl: "",
-    requisitostecnicosurl: "",
-    criterioseticosurl: "",
-  });
+
   const navigate = useNavigate();
-  const handleRedirect = () => {
-    navigate("/dashboard");
-  };
 
   // Manejar cambios en campos de texto y selects
   const handleChange = (e) => {
@@ -83,10 +75,6 @@ const LineamientosI = () => {
       [fieldName]: null,
     }));
 
-    setFileNames(prev => ({
-      ...prev,
-      [fieldName]: ""
-    }));
   };
 
 
@@ -138,11 +126,7 @@ const LineamientosI = () => {
       [name]: file,
     }));
 
-    // Actualiza solo el nombre del archivo correspondiente (esto ya lo tenías)
-    setFileNames((prev) => ({
-      ...prev,
-      [name]: file ? file.name : "",
-    }));
+
   };
 
 
@@ -182,8 +166,8 @@ const LineamientosI = () => {
     // Agregar campos de texto
     formDataToSend.append("accionformacion", formData.accionformacion);
 
-    formDataToSend.append("creadopor", user);
-    formDataToSend.append("modificadopor", user);
+    formDataToSend.append("creadopor", user.id);
+    formDataToSend.append("modificadopor", user.id);
     formDataToSend.append("formacioninvest", "Formación");
 
     // Contador de archivos subidos
@@ -210,7 +194,6 @@ const LineamientosI = () => {
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: 'warning',
         showCancelButton: true,
-        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
         confirmButtonText: 'Sí, Registar',
@@ -225,7 +208,7 @@ const LineamientosI = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/lineamientos`,
+        `${process.env.REACT_APP_API_URL}/lineamientosformacion`,
         formDataToSend,
         {
           headers: {
@@ -246,17 +229,19 @@ const LineamientosI = () => {
   return (
     <>
       <Dashboard>
-        <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} size={10.7} sm={9}>
+        <Paper
+          maxWidth="lg"
+          sx={{ mt: 4, mb: 4, p: 4, overflowX: "auto" }}
+          elevation={3}
+        >
+          <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, md: 9 }}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Registro de Lineamientos para Formación
               </Typography>
             </Grid>
             <Grid
-              item
-              xs={12}
-              sm={3}
+              size={{ xs: 12, md: 3 }}
               sx={{ display: "flex", justifyContent: "flex-end" }}
             >
               <Button
@@ -265,7 +250,7 @@ const LineamientosI = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => handleRedirect()}
+                onClick={() => navigate("/Listado_De_Formaciones")}
               >
                 Cerrar
               </Button>
@@ -273,27 +258,34 @@ const LineamientosI = () => {
           </Grid>
 
           <Grid container spacing={5} mt={2}>
-            <Grid item xs={12} size={6} md={6}>
-              <Typography variant="subtitle1">   Nombre de la Formación</Typography>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography variant="subtitle1">
+                {" "}
+                Nombre de la Formación
+              </Typography>
               <TextField
                 fullWidth
                 name="accionformacion"
                 value={formData.accionformacion}
                 onChange={handleChange}
                 error={errors.accionformacion}
-                helperText={errors.accionformacion ? "El título del proyecto es requerido" : ""}
-                FormHelperTextProps={{ style: { color: 'red' } }}
+                helperText={
+                  errors.accionformacion
+                    ? "El título del proyecto es requerido"
+                    : ""
+                }
+                FormHelperTextProps={{ style: { color: "red" } }}
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: errors.accionformacion ? 'red' : '',
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: errors.accionformacion ? "red" : "",
                     },
                   },
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}></Grid>
-            <Grid item xs={12} size={6} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}></Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimientos de los Criterios de Factibilidad
               </Typography>
@@ -313,21 +305,23 @@ const LineamientosI = () => {
                 />
               </Button>
               {formData.criteriosfactibilidadurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.criteriosfactibilidadurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('criteriosfactibilidadurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("criteriosfactibilidadurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -335,7 +329,7 @@ const LineamientosI = () => {
               )}
             </Grid>
 
-            <Grid item xs={12} size={6} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimiento de los Requisitos Técnicos
               </Typography>
@@ -355,28 +349,30 @@ const LineamientosI = () => {
                 />
               </Button>
               {formData.requisitostecnicosurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.requisitostecnicosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('requisitostecnicosurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("requisitostecnicosurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </Box>
               )}
             </Grid>
-            <Grid item xs={12} size={6} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom>
                 Documento de Cumplimientos de los Criterios Éticos
               </Typography>
@@ -392,58 +388,60 @@ const LineamientosI = () => {
                   name="criterioseticosurl"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
-
                   ref={fileInputRefs.criterioseticosurl}
                 />
               </Button>
               {formData.criterioseticosurl && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  mt: 1,
-                  p: 1,
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: 1
-                }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mt: 1,
+                    p: 1,
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 1,
+                  }}
+                >
                   <span>{formData.criterioseticosurl.name}</span>
                   <IconButton
                     color="error"
                     size="small"
-                    sx={{ ml: 'auto' }}
-                    onClick={() => handleRemoveFile('criterioseticosurl')}
+                    sx={{ ml: "auto" }}
+                    onClick={() => handleRemoveFile("criterioseticosurl")}
                   >
                     <DeleteIcon />
                   </IconButton>
-
                 </Box>
               )}
             </Grid>
           </Grid>
-          <Box
-            sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
-          >
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.rojo }}
-              startIcon={<FastForwardOutlinedIcon />}
-              onClick={() => navigate("/Formación")}
-            >
-              Omitir
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: color.primary.azul, ml: 5 }}
-              startIcon={<SaveIcon />}
-              onClick={handleSubmit}
-            >
-              Guardar
-            </Button>
-          </Box>
+          <Grid container spacing={2} sx={{ mt: 5 }} justifyContent="flex-end">
+            <Grid item>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: color.primary.rojo }}
+                startIcon={<FastForwardOutlinedIcon />}
+                onClick={() => navigate("/Formación")}
+              >
+                Omitir
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: color.primary.azul }}
+                startIcon={<SaveIcon />}
+                onClick={handleSubmit}
+              >
+                Guardar
+              </Button>
+            </Grid>
+          </Grid>
         </Paper>
       </Dashboard>
     </>
   );
 };
 
-export default LineamientosI;
+export default LineamientosF;

@@ -90,7 +90,7 @@ export const postUserM = async (nombre, usuario,  correo, idrol, estado, creadop
                                                 (nombre, usuario,  correo, idrol, contraseña,
                                                 estado, creadopor, fechacreacion, fechamodificacion, cambiocontraseña) 
                                             VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, null, true) RETURNING *`,
-            [nombre, usuario,   correo, idrol, contraseñaCifrada,  estado, creadopor])
+            [nombre, usuario,  correo, idrol, contraseñaCifrada,  estado, creadopor])
 
         console.log(rows);
         return rows[0]

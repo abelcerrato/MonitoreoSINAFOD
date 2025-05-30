@@ -4,7 +4,6 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 
-
 let serviceAccount;
 let initializationError = null;
 
@@ -20,7 +19,7 @@ try {
     // For local development: use JSON file
     const __dirname = dirname(fileURLToPath(import.meta.url));
     serviceAccount = JSON.parse(
-      readFileSync(join(__dirname, '../monitoreosinafod-firebase-adminsdk-fbsvc-c2060cd83f.json'))
+      readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-c2060cd83f.json'))
     );
   }
 

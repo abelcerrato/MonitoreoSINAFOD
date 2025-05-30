@@ -3,29 +3,40 @@ import { useState, useEffect } from "react";
 import AppBarComponent from "./AppBar";
 import ProjectDrawer from "./Drawer";
 import React from "react";
-import TablaActividad from "../Actividad/TablaAcividad";
+import TablaFormacion from "../Actividad/Formación/TablaFormacion";
+import TablaInvestigacion from "../Actividad/Investigación/TablaInvestigación";
 import { useUser } from "../Components/UserContext";
 import { useLocation } from "react-router-dom";
-
+import CambiarContraModal from "../Login/CambiarContraModal";
 
 const Dashboard = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
-
+  const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const location = useLocation();
 
-  const showTablaActividad =
-    location.pathname === "/dashboard";
-
-
+  const showTablaFormacion = location.pathname === "/dashboard";
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
 
-
   const { user, updateUser } = useUser();
 
+  useEffect(() => {
+    // Verificar si necesita cambio de contraseña solo al cargar el dashboard
+    if (user?.changePasswordRequired) {
+      setOpenChangePasswordModal(true);
+    }
+  }, [user?.changePasswordRequired]); // Solo se ejecuta cuando cambia este valor
 
+  const handlePasswordChangeSuccess = () => {
+    // Actualizar el estado del usuario para eliminar el requerimiento
+    updateUser({ ...user, changePasswordRequired: false });
+    setOpenChangePasswordModal(false);
+
+    // Opcional: Guardar en localStorage/sessionStorage
+    sessionStorage.setItem("passwordChanged", "true");
+  };
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -54,10 +65,9 @@ const Dashboard = ({ children }) => {
           backgroundColor: "#f2f2f2",
         }}
       >
-
         {children}
-        {showTablaActividad && <TablaActividad />}
-
+        {/*         {showTablaFormacion && <TablaFormacion />}
+        {showTablaFormacion && <TablaInvestigacion />} */}
         <Typography
           variant="body2"
           color="text.secondary"
@@ -65,10 +75,17 @@ const Dashboard = ({ children }) => {
           sx={{ mt: 5, py: 2 }}
         >
           {"Copyright © "}
-          Propiedad intelectual del Consejo Nacional de Educación
+          Propiedad Intelectual del Estado de Honduras
         </Typography>
 
-
+        <CambiarContraModal
+          open={openChangePasswordModal}
+          onClose={() =>
+            !user?.changePasswordRequired && setOpenChangePasswordModal(false)
+          }
+          mandatory={user?.changePasswordRequired}
+          onSuccess={handlePasswordChangeSuccess}
+        />
       </Box>
     </Box>
   );
