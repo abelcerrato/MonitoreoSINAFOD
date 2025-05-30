@@ -602,7 +602,7 @@ const LineamientosI = () => {
             )}
             {renderFileField(
               "divulgacionresultadosurl",
-              "Linemaientos para la Difución y Divulagación de Resultados"
+              "Lineamientos para la Difusión y Divulgación de Resultados"
             )}
           </Grid>
 

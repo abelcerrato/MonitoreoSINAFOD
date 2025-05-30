@@ -427,7 +427,9 @@ const LineamientosI = () => {
 
             <Grid container spacing={5} mt={2}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">Título de la Investigación</Typography>
+                <Typography variant="subtitle1">
+                  Título de la Investigación
+                </Typography>
                 <TextField
                   fullWidth
                   name="investigacion"
@@ -635,7 +637,7 @@ const LineamientosI = () => {
 
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h6">
-                  Linemaientos para la Difución y Divulagación de Resultados
+                  Lineamientos para la Difusión y Divulgación de Resultados
                 </Typography>
                 <Button
                   component="label"

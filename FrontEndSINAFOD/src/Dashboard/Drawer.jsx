@@ -290,7 +290,7 @@ const ProjectDrawer = ({ open }) => {
                     />
                   )}
 
-                  {tienePermiso(4) && (
+                  {tienePermiso(3) && (
                     <MenuItem
                       path="/Reportería/Listado_Participantes"
                       icon={<TextSnippetOutlinedIcon />}
@@ -428,7 +428,7 @@ const ProjectDrawer = ({ open }) => {
                       onClick={() => navigate("/Seguridad/Usuarios")}
                     />
                   )}
-                  {tienePermiso(5) && (
+                  {tienePermiso(6) && (
                     <MenuItem
                       path="/Roles-y-Permisos"
                       icon={<HttpsOutlinedIcon />}
