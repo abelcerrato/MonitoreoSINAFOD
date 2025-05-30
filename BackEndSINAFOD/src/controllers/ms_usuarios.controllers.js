@@ -67,6 +67,7 @@ export const verificarUsuarioC = async (req, res) => {
 
         const user = await verificarUsuarioM(usuario);
 
+     
 
         if (!user) {
             console.log("Usuario o contraseña incorrectos");
@@ -202,6 +203,11 @@ export const loginC = async (req, res) => {
 
         if (!user) {
             return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
+        }
+
+        // Verificar si el usuario no tiene rol asignado
+        if (user.idrol === null) {
+            return res.status(401).json({ message: "El usuario no tiene un rol asignado" });
         }
 
         const contraseñaValida = await bcrypt.compare(contraseña, user.contraseña);
