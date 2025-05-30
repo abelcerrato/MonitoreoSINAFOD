@@ -1,4 +1,5 @@
 import { getPermisosIdRolM, getPermisosM, postRolyPermisosM, putPerfilPermisosM } from "../models/ms_permisos.models.js";
+import { getRolIdM } from "../models/ms_roles.models.js";
 
 export const getPermisosC = async (req, res) => {
     try {
@@ -14,14 +15,23 @@ export const getPermisosC = async (req, res) => {
 //permisos que tiene el rol
 export const getPermisosIdRolC = async (req, res) => {
     try {
-        const { id } = req.params
-        const rol = await getPermisosIdRolM(id);
+        const { id } = req.params;
 
+        // Obtener el nombre del rol (aunque no tenga permisos)
+        const rol = await getRolIdM(id);
         if (!rol) {
             return res.status(404).json({ message: "Rol no encontrado" });
         }
 
-        res.json(rol);
+        const permisos = await getPermisosIdRolM(id);
+
+        if (permisos.length === 0) {
+            console.log(`El rol '${rol.rol}' no tiene permisos asignados`);
+            return res.status(401).json({ message: `El usuario no tiene permisos asignados` });
+        }
+
+
+        res.json(permisos);
     } catch (error) {
         console.error('Error al obtener el rol:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
