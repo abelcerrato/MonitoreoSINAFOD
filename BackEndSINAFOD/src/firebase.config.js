@@ -4,18 +4,35 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 
-// Configuración para obtener la ruta correcta del archivo JSON
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const serviceAccount = JSON.parse(
-  readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-b4a84097bf.json'))
-);
+let serviceAccount;
+let initializationError = null;
 
-// Inicialización de Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: "monitoreosinafod.firebasestorage.app" // Reemplaza con tu bucket
-});
+try {
+  if (process.env.FIREBASE_CONFIG) {
+    // For production (Vercel): use environment variable
+    try {
+      serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+    } catch (error) {
+      throw new Error('Failed to parse FIREBASE_CONFIG environment variable. Make sure it contains valid JSON.');
+    }
+  } else {
+    // For local development: use JSON file
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    serviceAccount = JSON.parse(
+      readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-c2060cd83f.json'))
+    );
+  }
 
-// Exporta los servicios necesarios
-export const bucket = admin.storage().bucket();
+  // Initialize Firebase Admin
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+  });
+} catch (error) {
+  console.error('Firebase initialization error:', error.message);
+  initializationError = error;
+}
+
+// Export services with error handling
+export const bucket = initializationError ? null : admin.storage().bucket();
 export default admin;

@@ -7,7 +7,8 @@ export const getMunicipiosIdM = async (id) => {
             select d.nombre as departamento , m.id, m.nombre as municipio 
             from municipio m 
             inner join departamento d on m.iddepartamento = d.id 
-            WHERE d.id=$1`, [id])
+            WHERE d.id=$1
+            order by m.nombre asc`, [id])
 
         if (rows.length === 0) {
             return null

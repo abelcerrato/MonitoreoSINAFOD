@@ -30,14 +30,15 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
       }
 
       // Llama al endpoint sin token (si no es necesario)
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/logout/${user.id}`);
+      const response = await axios.put(
+        `${process.env.REACT_APP_API_URL}/cierreSesion/${user.id}`
+      );
       console.log("Respuesta del backend:", response.data); // Para depuración
 
       // Limpieza y redirección
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
       navigate("/", { replace: true });
-
     } catch (error) {
       console.error("Error completo:", {
         message: error.message,
@@ -77,13 +78,14 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
         <Grid container alignItems="center" justifyContent="flex-start">
           <div
             style={{
-              width: "240px",
+              width: "260px",
               height: "90px",
+
               background: "white",
               padding: 5,
               display: "flex",
               justifyContent: "center",
-              marginLeft: -40,
+              marginLeft: -33,
               cursor: "pointer",
             }}
             onClick={() => navigate("/dashboard")}
@@ -135,7 +137,7 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
         >
           <Grid item xs={12} sm={9}>
             <Typography variant="h6" noWrap sx={{ color: "white" }}>
-              {user}
+              {user.usuario}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -146,7 +148,6 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
             </Tooltip>
           </Grid>
         </Grid>
-
       </Toolbar>
     </AppBar>
   );

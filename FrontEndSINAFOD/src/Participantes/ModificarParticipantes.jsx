@@ -14,7 +14,9 @@ import {
   RadioGroup,
   FormControlLabel,
   Tab,
-  Tabs
+  Tabs,
+  Checkbox,
+  Autocomplete,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../Components/color";
@@ -22,70 +24,95 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Dashboard from "../Dashboard/dashboard";
 import { useUser } from "../Components/UserContext";
-import Swal from 'sweetalert2';
-
-
-
+import Swal from "sweetalert2";
 
 const ModificarParticipante = () => {
   const { user } = useUser();
-
   const { id } = useParams();
-
-
-  const [isSaved, setIsSaved] = useState(false);
+  const location = useLocation();
+  const { formacioninvest } = location.state || {};
   const navigate = useNavigate();
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [departamentosRE, setDepartamentosRE] = useState([]);
   const [municipiosRE, setMunicipiosRE] = useState([]);
-  const [NivelEducativo, setNivelEducativo] = useState([]);
-  const [gardo, setGrado] = useState([]);
   const [aldeas, setAldea] = useState([]);
   const [value, setValue] = React.useState("1");
-  const [NivelEducativoP, setNivelEducativoP] = useState([]);
+  const [funcion, setFuncion] = useState([]);
+  const [centroseducativos, setCentrosEducativos] = useState([]);
   const [aldeasP, setAldeaP] = useState([]);
+  const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [formData, setFormData] = useState({
-    idinvestigacioncap: "",
-
+    correo: "",
+    telefono: "",
+    edad: "",
+    fechanacimiento: "",
     identificacion: "",
     codigosace: "",
     nombre: "",
-    funcion: "",
-    sexo: "",
+    cargo: "",
+    genero: "",
     añosdeservicio: 0,
     codigodered: "",
     deptoresidencia: "",
     municipioresidencia: "",
-    aldearesidencia: "",
-    nivelacademicodocente: "",
-    gradoacademicodocente: null,
+    aldearesidencia: null,
+    idnivelacademicos: "",
+    idgradoacademicos: null,
+    idfuncion: "",
+    caserio: "",
+    tipocentro: "",
 
-    aldeaced: "",
-    centroeducativo: "",
-    idnivelesacademicos: "",
-    idgradosacademicos: null,
+    idcentroeducativo: "",
+    idcentropart: "",
+    
+    nombreced: "",
+    codigosaceced: "",
+    prebasica: false,
+    basica: false,
+    media: false,
+    primero: false,
+    segundo: false,
+    tercero: false,
+    cuarto: false,
+    quinto: false,
+    sexto: false,
+    septimo: false,
+    octavo: false,
+    noveno: false,
+    decimo: false,
+    onceavo: false,
+    doceavo: false,
+    modalidad: "",
+    datoscorrectos: false,
+    autorizadatos: false,
     zona: "",
-    municipioced: "",
-    departamentoced: "",
+    idmunicipio: "",
+    iddepartamento: "",
+    idaldea: null,
     tipoadministracion: "Gubernamental",
-    creadopor: user,
+    creadopor: user.id,
   });
-
 
   const handleChangeValues = (event, newValue) => {
     setValue(newValue);
   };
 
-
   useEffect(() => {
     const obtenerDetalles = async () => {
       try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/participante/${id}`
+        );
 
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/CapacitacionP/${id}`);
+        const datos = response.data[0];
 
-        setFormData(response.data[0]);
+        if (datos.fechanacimiento) {
+          const fecha = new Date(datos.fechanacimiento);
+          datos.fechanacimiento = fecha.toISOString().split("T")[0];
+        }
+        setFormData(datos);
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
@@ -94,18 +121,17 @@ const ModificarParticipante = () => {
     obtenerDetalles();
   }, [id]);
 
-
   const handleSave = async () => {
     try {
-      console.log("Datos que envio", formData);
+      console.log("Datos que envio parti", formData);
 
       const dataToSend = {
         ...formData,
 
-        modificadopor: user,
+        modificadopor: user.id,
       };
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/CapacitacionP/${id}`,
+        `${process.env.REACT_APP_API_URL}/participante/${id}`,
 
         dataToSend,
         {
@@ -115,72 +141,109 @@ const ModificarParticipante = () => {
         }
       );
 
-
-
       if (response.status === 200) {
         Swal.fire({
-          title: 'Guardado',
-          text: 'Datos guardados correctamente',
-          icon: 'success',
+          title: "Guardado",
+          text: "Datos guardados correctamente",
+          icon: "success",
           timer: 6000,
         });
-        setIsSaved(true);
-        handleRedirect();
 
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: 'Error!',
-        text: 'Error al guardar datos',
-        icon: 'error',
+        title: "Error!",
+        text: "Error al guardar datos",
+        icon: "error",
         timer: 6000,
       });
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? checked : value;
 
-    if (name === "añosdeservicio") {
-      // Solo permite números positivos en añosdeservicio
-      if (/^\d*$/.test(value)) {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prevData) => {
+      let updatedData = { ...prevData };
+      // Validación para años de servicio (solo números positivos)
+      if (name === "añosdeservicio") {
+        if (!/^\d*$/.test(value)) {
+          return prevData; // Si no es un número positivo, no actualiza el estado
+        }
       }
-    } else {
-      // Para otros campos, no aplicamos la restricción
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+
+      // Si es el campo de fecha, validamos el formato
+      if (name === "fechanacimiento") {
+        // Si el usuario borra el campo, lo limpiamos
+        if (!value) {
+          updatedData.fechanacimiento = "";
+          updatedData.edad = "";
+          return updatedData;
+        }
+
+        // Convertimos a Date para validar
+        const dateObj = new Date(value);
+
+        // Si la fecha es inválida, no actualizamos
+        if (isNaN(dateObj.getTime())) {
+          return prevData;
+        }
+
+        // Formateamos a YYYY-MM-DD (formato que acepta el input date)
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
+
+        updatedData.fechanacimiento = formattedDate;
+
+        // Calculamos la edad
+        const today = new Date();
+        let age = today.getFullYear() - year;
+        const monthDiff = today.getMonth() - dateObj.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < dateObj.getDate())
+        ) {
+          age--;
+        }
+
+        updatedData.edad = age.toString();
+      } else {
+        updatedData[name] = newValue;
+      }
+
+      return updatedData;
+    });
   };
 
-
-  // Obtener departamentos al montar el componente
+  // Obtener cargos que desempeña del centro educativo
   useEffect(() => {
-    const obtenerDepartamentos = async () => {
+    const obteneridfuncion = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamentos`);
-        setDepartamentos(response.data);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/cargodes`
+        );
+        setCargos(response.data);
       } catch (error) {
-        console.error("Error al obtener los departamentos", error);
+        console.error("Error al obtener los cargos que desempeña", error);
       }
     };
 
-    obtenerDepartamentos();
+    obteneridfuncion();
   }, []);
-
-
-
-  const handleRedirect = () => {
-    navigate(`/Modificar_Actividad/${formData.idinvestigacioncap}`);
-  };
-
-
 
   // Obtener departamentos del centro educativo
   useEffect(() => {
     const obtenerDepartamentos = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamentos`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/departamentos`
+        );
         setDepartamentos(response.data);
       } catch (error) {
         console.error("Error al obtener los departamentos", error);
@@ -192,12 +255,12 @@ const ModificarParticipante = () => {
 
   // Obtener municipios del centro educativo
   useEffect(() => {
-    if (!formData.departamentoced) return; // Si no hay departamento seleccionado, no hacer la petición
+    if (!formData.iddepartamento) return; // Si no hay departamento seleccionado, no hacer la petición
 
     const obtenerMunicipios = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/municipios/${formData.departamentoced}`
+          `${process.env.REACT_APP_API_URL}/municipios/${formData.iddepartamento}`
         );
         setMunicipios(response.data);
       } catch (error) {
@@ -206,16 +269,16 @@ const ModificarParticipante = () => {
     };
 
     obtenerMunicipios();
-  }, [formData.departamentoced]);
+  }, [formData.iddepartamento]);
 
   // Obtener aldea del centro educativo
   useEffect(() => {
-    if (!formData.municipioced) return; // Si no hay departamento seleccionado, no hacer la petición
+    if (!formData.idmunicipio) return; // Si no hay departamento seleccionado, no hacer la petición
 
     const obtenerMunicipios = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/aldeas/${formData.municipioced}`
+          `${process.env.REACT_APP_API_URL}/aldeas/${formData.idmunicipio}`
         );
         setAldea(response.data);
       } catch (error) {
@@ -224,43 +287,9 @@ const ModificarParticipante = () => {
     };
 
     obtenerMunicipios();
-  }, [formData.municipioced]);
+  }, [formData.idmunicipio]);
 
-  // Obtener NivelEducativo al que atiende
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`);
-        setNivelEducativo(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
-
-
-  // Obtener gardo al que atiende
-  useEffect(() => {
-    if (!formData.idnivelesacademicos) return;
-
-    const obtenergardo = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelesacademicos}`
-        );
-
-        setGrado(response.data);
-      } catch (error) {
-        console.error("Error al obtener los gardo", error);
-      }
-    };
-
-    obtenergardo();
-  }, [formData.idnivelesacademicos]);
-
-  // Obtener aldea del participante 
+  // Obtener aldea del participante
   useEffect(() => {
     if (!formData.municipioresidencia) return; // Si no hay departamento seleccionado, no hacer la petición
 
@@ -278,12 +307,13 @@ const ModificarParticipante = () => {
     obtenerMunicipios();
   }, [formData.municipioresidencia]);
 
-
   // Obtener departamentos del participante
   useEffect(() => {
     const obtenerDepartamentos = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/departamentos`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/departamentos`
+        );
         setDepartamentosRE(response.data);
       } catch (error) {
         console.error("Error al obtener los departamentos", error);
@@ -303,8 +333,6 @@ const ModificarParticipante = () => {
           `${process.env.REACT_APP_API_URL}/municipios/${formData.deptoresidencia}`
         );
         setMunicipiosRE(response.data);
-        console.log("muni", response.data);
-
       } catch (error) {
         console.error("Error al obtener los municipios", error);
       }
@@ -313,38 +341,14 @@ const ModificarParticipante = () => {
     obtenerMunicipios();
   }, [formData.deptoresidencia]);
 
-
-
-
-
-  {/* Nivel academico del participante */ }
-  // Obtener NivelEducativo al montar el componente
-  useEffect(() => {
-    const obtenerNivelEducativo = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`);
-        setNivelEducativoP(response.data);
-      } catch (error) {
-        console.error("Error al obtener los NivelEducativo", error);
-      }
-    };
-
-    obtenerNivelEducativo();
-  }, []);
-
-
   // Obtener gardo cuando cambia el departamento seleccionado
   useEffect(() => {
-    if (!formData.nivelacademicodocente) return;
-
+    if (!formData.idnivelacademicos) return;
     const obtenergardo = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.nivelacademicodocente}`
+          `${process.env.REACT_APP_API_URL}/gradoAcademicoNivel/${formData.idnivelacademicos}`
         );
-        console.log("gardo", response.data);
-
-
         setGradoP(response.data);
       } catch (error) {
         console.error("Error al obtener los gardo", error);
@@ -352,36 +356,79 @@ const ModificarParticipante = () => {
     };
 
     obtenergardo();
-  }, [formData.nivelacademicodocente]);
+  }, [formData.idnivelacademicos]);
+
+  // Obtener funcion que desempeña
+  useEffect(() => {
+    const obtenerfuncion = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/cargodes`
+        );
+        setFuncion(response.data);
+      } catch (error) {
+        console.error("Error al obtener los cargos que desempeña", error);
+      }
+    };
+
+    obtenerfuncion();
+  }, []);
+
+  // Obtener centreos educativos del participante
+  useEffect(() => {
+    const obtenerCentrosEducativos = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/centroeducativo`
+        );
+        setCentrosEducativos(response.data);
+      } catch (error) {
+        console.error("Error al obtener los departamentos", error);
+      }
+    };
+
+    obtenerCentrosEducativos();
+  }, []);
 
   return (
     <>
       <Dashboard>
-        <Paper sx={{ padding: 3, marginBottom: 3 }}>
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} size={8}>
-              <Typography variant="h3" sx={{ color: color.primary.azul }}>
+        <Paper
+          maxWidth="lg"
+          sx={{ mt: 4, mb: 4, p: 4, overflowX: "auto" }}
+          elevation={3}
+        >
+          <Grid container alignItems="center" spacing={2}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Typography variant="h4" sx={{ color: color.primary.azul }}>
                 Actualización de Participantes
               </Typography>
             </Grid>
-            <Grid item xs={12} size={4} sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Grid
+              size={{ xs: 12, md: 4 }}
+              sx={{ marginTop: 4, display: "flex", justifyContent: "flex-end" }}
+            >
               <Button
                 variant="outlined"
                 sx={{
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => handleRedirect()}
+                onClick={() => navigate("/dashboard")}
               >
                 Cerrar
               </Button>
             </Grid>
-
           </Grid>
 
           <TabContext value={value}>
-            <Tabs value={value} onChange={handleChangeValues} variant="scrollable" scrollButtons="auto">
+            <Tabs
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              value={value}
+              onChange={handleChangeValues}
+            >
               <Tab label="Datos Generales del Participante" value="1" />
               <Tab label="Datos del Centro Educativo" value="2" />
             </Tabs>
@@ -389,115 +436,223 @@ const ModificarParticipante = () => {
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Código SACE</Typography>
-                  <TextField fullWidth name="codigosace" value={formData.codigosace} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="codigosace"
+                    value={formData?.codigosace}
+                    onChange={handleChange}
+                  />
                 </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Nombre</Typography>
-                  <TextField fullWidth name="nombre" value={formData.nombre} onChange={handleChange} />
-                </Grid>
-
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Identidad</Typography>
-                  <TextField fullWidth name="identificacion" value={formData.identificacion} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="identificacion"
+                    value={formData?.identificacion}
+                    onChange={handleChange}
+                  />
                 </Grid>
-
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Nombre</Typography>
+                  <TextField
+                    fullWidth
+                    name="nombre"
+                    value={formData?.nombre}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl>
-                    <Typography variant="subtitle1">Sexo</Typography>
+                    <Typography variant="subtitle1">Genero</Typography>
                     <RadioGroup
                       row
-                      name="sexo"
-                      value={formData.sexo}
-                      onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
+                      name="genero"
+                      value={formData?.genero}
+                      onChange={(e) =>
+                        setFormData({ ...formData, genero: e.target.value })
+                      }
                     >
-                      <FormControlLabel value="Mujer" control={<Radio />} label="Mujer" />
-                      <FormControlLabel value="Hombre" control={<Radio />} label="Hombre" />
+                      <FormControlLabel
+                        value="Femenino"
+                        control={<Radio />}
+                        label="Mujer"
+                      />
+                      <FormControlLabel
+                        value="Masculino"
+                        control={<Radio />}
+                        label="Hombre"
+                      />
                     </RadioGroup>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Nivel Académico</Typography>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">
+                        Fecha de Nacimiento
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        name="fechanacimiento"
+                        value={formData.fechanacimiento}
+                        onChange={handleChange}
+                        type="date"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">Edad</Typography>
+                      <TextField
+                        fullWidth
+                        name="edad"
+                        value={formData?.edad || ""}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Correo Electrónico
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="correo"
+                    value={formData?.correo}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Teléfono</Typography>
+                  <TextField
+                    fullWidth
+                    name="telefono"
+                    value={formData?.telefono}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Nivel Educativo</Typography>
+
                   <FormControl fullWidth>
                     <Select
-                      name="nivelacademicodocente"
-                      value={formData.nivelacademicodocente || ""}
-                      onChange={handleChange}>
-                      {NivelEducativoP.length > 0 ? (
-                        NivelEducativoP.map((dep) =>
-                          <MenuItem key={dep.id} value={dep.id}>
-                            {dep.nombre}
-                          </MenuItem>)
-                      ) : (
-                        <MenuItem disabled>Cargando...</MenuItem>
-                      )}
+                      name="idnivelacademicos"
+                      value={formData?.idnivelacademicos || ""}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="3">Media</MenuItem>
+                      <MenuItem value="4">Superior</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
-
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Grado Académico</Typography>
                   <FormControl fullWidth>
                     <Select
-                      name="gradoacademicodocente"
-                      value={formData.gradoacademicodocente || ""}
+                      name="idgradoacademicos"
+                      value={formData?.idgradoacademicos || ""}
                       onChange={handleChange}
                       disabled={!gardoP.length}
                     >
-                      <MenuItem value="" disabled>Seleccione un grado académico</MenuItem>
+                      <MenuItem value="" disabled>
+                        Seleccione un grado académico
+                      </MenuItem>
                       {gardoP.map((mun) => (
-                        <MenuItem key={mun.id} value={mun.id}>{mun.grado}</MenuItem>
+                        <MenuItem key={mun.id} value={mun.id}>
+                          {mun.grado}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </Grid>
-
-                <Grid item xs={12} size={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Años de Servicio</Typography>
-                  <TextField fullWidth name="añosdeservicio" value={formData.añosdeservicio || ""} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    name="añosdeservicio"
+                    value={formData?.añosdeservicio || ""}
+                    onChange={handleChange}
+                  />
                 </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Código de Red al que Pertenece</Typography>
-                  <TextField fullWidth name="codigodered" value={formData.codigodered || ""} onChange={handleChange} />
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Código de Red al que Pertenece
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="codigodered"
+                    value={formData?.codigodered || ""}
+                    onChange={handleChange}
+                  />
                 </Grid>
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Función</Typography>
-                  <TextField fullWidth name="funcion" value={formData.funcion} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Departamento de Residencia</Typography>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Cargo que Desempeña
+                  </Typography>
                   <FormControl fullWidth>
                     <Select
-                      name="deptoresidencia"
-                      value={formData.deptoresidencia}
+                      name="idfuncion"
+                      value={formData?.idfuncion}
                       onChange={handleChange}
                     >
-                      {departamentosRE.length > 0 ? (
-                        departamentosRE.map((dep) =>
+                      <MenuItem value="" disabled>
+                        Seleccione un cargo
+                      </MenuItem>
+                      {funcion.length > 0 ? (
+                        funcion.map((dep) => (
                           <MenuItem key={dep.id} value={dep.id}>
-                            {dep.nombre}
-                          </MenuItem>)
+                            {dep.cargo}
+                          </MenuItem>
+                        ))
                       ) : (
                         <MenuItem disabled>Cargando...</MenuItem>
                       )}
                     </Select>
                   </FormControl>
                 </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Municipio de Residencia</Typography>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Departamento de Residencia
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="deptoresidencia"
+                      value={formData?.deptoresidencia}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione un departamento
+                      </MenuItem>
+                      {departamentosRE.length > 0 ? (
+                        departamentosRE.map((dep) => (
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.nombre}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Municipio de Residencia
+                  </Typography>
                   <FormControl fullWidth>
                     <Select
                       id="municipioresidencia"
                       name="municipioresidencia"
-                      value={formData.municipioresidencia || ""}
+                      value={formData?.municipioresidencia || ""}
                       onChange={handleChange}
                       disabled={!municipiosRE.length}
                     >
-                      <MenuItem value="">Seleccione un municipio</MenuItem>
+                      <MenuItem value="" disabled>
+                        Seleccione un municipio
+                      </MenuItem>
                       {municipiosRE.map((municipio) => (
                         <MenuItem key={municipio.id} value={municipio.id}>
                           {municipio.municipio}
@@ -506,166 +661,526 @@ const ModificarParticipante = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Aldea de Residencia</Typography>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Aldea de Residencia
+                  </Typography>
                   <FormControl fullWidth>
                     <Select
                       name="aldearesidencia"
-                      value={formData.aldearesidencia}
+                      value={formData?.aldearesidencia || ""}
                       onChange={handleChange}
-                      disabled={!aldeasP.length}>
+                      disabled={!aldeasP.length}
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione una aldea
+                      </MenuItem>
                       {aldeasP.length > 0 ? (
-                        aldeasP.map((ald) =>
+                        aldeasP.map((ald) => (
                           <MenuItem key={ald.id} value={ald.id}>
                             {ald.aldea}
-                          </MenuItem>)
+                          </MenuItem>
+                        ))
                       ) : (
                         <MenuItem disabled>Seleccione una aldea</MenuItem>
                       )}
                     </Select>
                   </FormControl>
                 </Grid>
-              </Grid>
-            </TabPanel>
-
-            {/* Tab 2: Datos del Centro Educativo */}
-            <TabPanel value="2">
-              <Grid container spacing={2}>
-
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Nivel Académico que Atiende</Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      name="idnivelesacademicos"
-                      value={formData.idnivelesacademicos || ""}
-                      onChange={handleChange}>
-                      <MenuItem value="" disabled>Seleccione un nivel académico</MenuItem>
-                      {NivelEducativo.length > 0 ? (
-                        NivelEducativo.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
-                      ) : (
-                        <MenuItem disabled>Cargando...</MenuItem>
-                      )}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Grado Educativo que Atiende</Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      name="idgradosacademicos"
-                      value={formData.idgradosacademicos || ""}
-                      onChange={handleChange}
-                      disabled={!gardo.length}
-                    >
-                      <MenuItem value="" disabled>Seleccione un grado académico</MenuItem>
-                      {gardo.map((mun) => (
-                        <MenuItem key={mun.id} value={mun.id}>{mun.grado}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Centro Educativo</Typography>
-                  <TextField fullWidth name="centroeducativo" value={formData.centroeducativo} onChange={handleChange} />
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <FormControl>
-                    <Typography variant="subtitle1">Tipo de Administración</Typography>
-                    <RadioGroup
-                      row
-                      name="tipoadministracion"
-                      value={formData.tipoadministracion}
-                      onChange={(e) => setFormData({ ...formData, tipoadministracion: e.target.value })}
-                    >
-                      <FormControlLabel value="Gubernamental" control={<Radio />} label="Gubernamental" />
-                      <FormControlLabel value="No Gubernamental" control={<Radio />} label="No Gubernamental" />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Zona Centro Educativo</Typography>
-                  <FormControl fullWidth>
-                    <Select name="zona" value={formData.zona} onChange={handleChange}>
-                      <MenuItem value="Rural">Rural</MenuItem>
-                      <MenuItem value="Urbana">Urbana</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Departamento Centro Educativo</Typography>
-                  <FormControl fullWidth>
-                    <Select name="departamentoced" value={formData.departamentoced || ""} onChange={handleChange}>
-                      {departamentos.length > 0 ? (
-                        departamentos.map((dep) => <MenuItem key={dep.id} value={dep.id}>{dep.nombre}</MenuItem>)
-                      ) : (
-                        <MenuItem disabled>Cargando...</MenuItem>
-                      )}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Municipio Centro Educativo</Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      id="municipioced"
-                      name="municipioced"
-                      value={formData.municipioced || ""}
-                      onChange={handleChange}
-                      disabled={!municipios.length}
-                    >
-                      <MenuItem value="">Seleccione un municipio</MenuItem>
-                      {municipios.map((municipio) => (
-                        <MenuItem key={municipio.id} value={municipio.id}>
-                          {municipio.municipio}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} size={6}>
-                  <Typography variant="subtitle1">Aldea Centro Educativo</Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      name="aldeaced"
-                      value={formData.aldeaced}
-                      onChange={handleChange}
-                      disabled={!aldeas.length}>
-                      {aldeas.length > 0 ? (
-                        aldeas.map((ald) =>
-                          <MenuItem key={ald.id} value={ald.id}>
-                            {ald.aldea}
-                          </MenuItem>)
-                      ) : (
-                        <MenuItem disabled>Seleccione una aldea</MenuItem>
-                      )}
-                    </Select>
-                  </FormControl>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Caserio</Typography>
+                  <TextField
+                    fullWidth
+                    name="caserio"
+                    value={formData?.caserio}
+                    onChange={handleChange}
+                  />
                 </Grid>
               </Grid>
-              <Box sx={{ marginTop: 5, display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: color.primary.azul }}
-                  startIcon={<SaveIcon />}
-                  onClick={handleSave}
+              {formacioninvest === "investigacion" && (
+                <Box
+                  sx={{
+                    marginTop: 5,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
                 >
-                  Guardar
-                </Button>
-
-              </Box>
+                  <Button
+                    variant="contained"
+                    sx={{ backgroundColor: color.primary.azul }}
+                    startIcon={<SaveIcon />}
+                    onClick={handleSave}
+                  >
+                    Guardar
+                  </Button>
+                </Box>
+              )}
             </TabPanel>
+            {/* Tab 2: Datos del Centro Educativo */}
+
+            {formacioninvest !== "investigacion" && (
+              <TabPanel value="2">
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Nivel Educativo</Typography>
+
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData?.prebasica}
+                              onChange={handleChange}
+                              name="prebasica"
+                            />
+                          }
+                          label="Prebásica"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData?.basica}
+                              onChange={handleChange}
+                              name="basica"
+                            />
+                          }
+                          label="Básica"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData?.media}
+                              onChange={handleChange}
+                              name="media"
+                            />
+                          }
+                          label="Media"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  {formData.basica === true && (
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">
+                        Grados Académicos (Básica)
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.primero}
+                                onChange={handleChange}
+                                name="primero"
+                              />
+                            }
+                            label="Primer"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.segundo}
+                                onChange={handleChange}
+                                name="segundo"
+                              />
+                            }
+                            label="Segundo"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.tercero}
+                                onChange={handleChange}
+                                name="tercero"
+                              />
+                            }
+                            label="Tercer"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.cuarto}
+                                onChange={handleChange}
+                                name="cuarto"
+                              />
+                            }
+                            label="Cuarto"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.quinto}
+                                onChange={handleChange}
+                                name="quinto"
+                              />
+                            }
+                            label="Quinto"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.sexto}
+                                onChange={handleChange}
+                                name="sexto"
+                              />
+                            }
+                            label="Sexto"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.septimo}
+                                onChange={handleChange}
+                                name="septimo"
+                              />
+                            }
+                            label="Séptimo"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.octavo}
+                                onChange={handleChange}
+                                name="octavo"
+                              />
+                            }
+                            label="Octavo"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.noveno}
+                                onChange={handleChange}
+                                name="noveno"
+                              />
+                            }
+                            label="Noveno"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  )}
+                  {formData.media === true && (
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Typography variant="subtitle1">
+                        Grados Académicos (Media)
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.decimo}
+                                onChange={handleChange}
+                                name="decimo"
+                              />
+                            }
+                            label="Décimo"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.onceavo}
+                                onChange={handleChange}
+                                name="onceavo"
+                              />
+                            }
+                            label="Undécimo"
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={formData?.doceavo}
+                                onChange={handleChange}
+                                name="doceavo"
+                              />
+                            }
+                            label="Duodécimo"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  )}
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Cargo que Desempeña en el Centro Educativo*
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="cargo"
+                        value={formData?.cargo}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione un cargo
+                        </MenuItem>
+                        {cargos.length > 0 ? (
+                          cargos.map((dep) => (
+                            <MenuItem key={dep.id} value={dep.id}>
+                              {dep.cargo}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Cargando...</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        freeSolo
+                        options={centroseducativos.map((cen) => cen.nombreced)}
+                        value={formData?.nombreced || ""}
+                        onInputChange={(event, newInputValue) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            nombreced: newInputValue,
+                          }));
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Código SACE del Centro Educativo
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      name="codigosaceced"
+                      value={formData?.codigosaceced}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Tipo de Administración
+                      </Typography>
+                      <RadioGroup
+                        row
+                        name="tipoadministracion"
+                        value={formData?.tipoadministracion}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tipoadministracion: e.target.value,
+                          })
+                        }
+                      >
+                        <FormControlLabel
+                          value="Gubernamental"
+                          control={<Radio />}
+                          label="Gubernamental"
+                        />
+                        <FormControlLabel
+                          value="No Gubernamental"
+                          control={<Radio />}
+                          label="No Gubernamental"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Tipo de Centro Educativo*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="tipocentro"
+                        value={formData?.tipocentro || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Unidocente">Unidocente</MenuItem>
+                        <MenuItem value="Bidocente">Bidocente</MenuItem>
+                        <MenuItem value="Multidocente">Multidocente</MenuItem>
+                        <MenuItem value="No es centro educativo">
+                          No es centro educativo
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Jornada que Atiende*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="jornada"
+                        value={formData?.jornada || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Matutina">Matutina</MenuItem>
+                        <MenuItem value="Vespertina">Vespertina</MenuItem>
+                        <MenuItem value="Nocturna">Nocturna</MenuItem>
+                        <MenuItem value="Mixta">Mixta</MenuItem>
+                        <MenuItem value="Ninguna">Ninguna</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Modalidad que Atiende*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="modalidad"
+                        value={formData?.modalidad || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Virtual">Virtual</MenuItem>
+                        <MenuItem value="Presencial">Presencial</MenuItem>
+                        <MenuItem value="Bimodal">Bimodal</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Zona Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="zona"
+                        value={formData?.zona}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Rural">Rural</MenuItem>
+                        <MenuItem value="Urbana">Urbana</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Departamento Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="iddepartamento"
+                        value={formData?.iddepartamento || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione un departamento
+                        </MenuItem>
+                        {departamentos.length > 0 ? (
+                          departamentos.map((dep) => (
+                            <MenuItem key={dep.id} value={dep.id}>
+                              {dep.nombre}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Cargando...</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Municipio Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        id="idmunicipio"
+                        name="idmunicipio"
+                        value={formData?.idmunicipio || ""}
+                        onChange={handleChange}
+                        disabled={!municipios.length}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione un municipio
+                        </MenuItem>
+                        {municipios.map((municipio) => (
+                          <MenuItem key={municipio.id} value={municipio.id}>
+                            {municipio.municipio}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Aldea Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="idaldea"
+                        value={formData?.idaldea || ""}
+                        onChange={handleChange}
+                        disabled={!aldeas.length}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione una aldea
+                        </MenuItem>
+                        {aldeas.length > 0 ? (
+                          aldeas.map((ald) => (
+                            <MenuItem key={ald.id} value={ald.id}>
+                              {ald.aldea}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Seleccione una aldea</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+
+                <Box
+                  sx={{
+                    marginTop: 5,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    sx={{ backgroundColor: color.primary.azul }}
+                    startIcon={<SaveIcon />}
+                    onClick={handleSave}
+                  >
+                    Guardar
+                  </Button>
+                </Box>
+              </TabPanel>
+            )}
           </TabContext>
-
         </Paper>
-
       </Dashboard>
     </>
   );

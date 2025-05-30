@@ -17,7 +17,7 @@ export const getNivelesAcademicosC = async (req, res) => {
 //Trae el id del nivel academico mediante el nombre
 export const getNivelAcademicoNombreC = async (req, res) => {
     try {
-        const {NivelAcademico} = req.params
+        const { NivelAcademico } = req.params
         const NivelAcademicos = await getNivelAcademicoM(NivelAcademico);
         res.json(NivelAcademicos)
     } catch (error) {
@@ -37,7 +37,7 @@ export const getCiclosAcademicosC = async (req, res) => {
         const Ciclos = await getCiclosAcademicosM();
         res.json(Ciclos)
     } catch (error) {
-        console.error('Error al obtener registros de Ciclo Académico:', error);
+        console.error('Error al obtener registros de Ciclo Educativo:', error);
         res.status(500).json({ error: 'Error interno del servidor', message: error.message });
     }
 }
@@ -46,11 +46,11 @@ export const getCiclosAcademicosC = async (req, res) => {
 //Trae el id del ciclo academico mediante el nombre
 export const getCicloAcademicoNombreC = async (req, res) => {
     try {
-        const {CicloAcademico} = req.params
+        const { CicloAcademico } = req.params
         const Ciclos = await getCicloAcademicoM(CicloAcademico);
         res.json(Ciclos)
     } catch (error) {
-        console.error('Error al obtener registros de Ciclo Académico:', error);
+        console.error('Error al obtener registros de Ciclo Educativo:', error);
         res.status(500).json({ error: 'Error interno del servidor', message: error.message });
     }
 }
@@ -59,12 +59,12 @@ export const getCicloAcademicoNombreC = async (req, res) => {
 //Trae el ciclo academico mediante el id del nivel academico
 export const getCicloAcademicoIdNivelC = async (req, res) => {
     try {
-        
-        const {IdNivel} = req.params
+
+        const { IdNivel } = req.params
         const Ciclos = await getCicloAcademicoIdNivelM(IdNivel);
         res.json(Ciclos)
     } catch (error) {
-        console.error('Error al obtener registros de Ciclo Académico:', error);
+        console.error('Error al obtener registros de Ciclo Educativo:', error);
         res.status(500).json({ error: 'Error interno del servidor', message: error.message });
     }
 }
@@ -88,7 +88,7 @@ export const getGradosAcademicosC = async (req, res) => {
 //Trae el id grado academico mediante el nombre
 export const getGradoAcademicoC = async (req, res) => {
     try {
-        const {GradoAcademico} = req.params
+        const { GradoAcademico } = req.params
         const Grados = await getGradoAcademicoM(GradoAcademico);
         res.json(Grados)
     } catch (error) {
@@ -102,7 +102,7 @@ export const getGradoAcademicoC = async (req, res) => {
 //Trae el grado academico mediante el id del ciclo academico
 export const getGradoAcademicoIdCicloC = async (req, res) => {
     try {
-        const {Ciclo} = req.params
+        const { Ciclo } = req.params
         const Grados = await getGradoAcademicoIdCicloM(Ciclo);
         res.json(Grados)
     } catch (error) {
@@ -115,8 +115,8 @@ export const getGradoAcademicoIdCicloC = async (req, res) => {
 //Trae el grado academico mediante el id del nivel academico
 export const getGradoAcademicoIdNivelC = async (req, res) => {
     try {
-        
-        const {IdNivel} = req.params
+
+        const { IdNivel } = req.params
         const Ciclos = await getGradoAcademicoIdNivelM(IdNivel);
         res.json(Ciclos)
     } catch (error) {
