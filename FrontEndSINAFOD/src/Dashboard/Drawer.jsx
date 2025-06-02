@@ -53,13 +53,13 @@ const ProjectDrawer = ({ open }) => {
   const [seguridadMenuOpen, setSeguridadMenuOpen] = useState(false);
 
   const handelReporteriaMenuOpen = (event) => {
-    if (!open) {
+    if (!open && reporteriaAnchorRef.current) {
       setReporteriaMenuOpen(true);
     }
   };
 
   const handleSeguridadMenuOpen = (event) => {
-    if (!open) {
+    if (!open && seguridadAnchorRef.current) {
       setSeguridadMenuOpen(true);
     }
   };
@@ -289,8 +289,24 @@ const ProjectDrawer = ({ open }) => {
                       }
                     />
                   )}
+                  {tienePermiso(4) && (
+                    <MenuItem
+                      path="/Reportería/Listado_De_Investigaciones"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de
+                          <br />
+                          Investigaciones
+                        </>
+                      }
+                      onClick={() =>
+                        navigate("/Reportería/Listado_De_Investigaciones")
+                      }
+                    />
+                  )}
 
-                  {tienePermiso(3) && (
+                  {tienePermiso(4) && (
                     <MenuItem
                       path="/Reportería/Listado_Participantes"
                       icon={<TextSnippetOutlinedIcon />}
@@ -312,21 +328,20 @@ const ProjectDrawer = ({ open }) => {
 
             {/* Menú flotante de Reportería */}
             <Menu
-              anchorEl={reporteriaAnchorRef.current}
+              anchorEl={() => reporteriaAnchorRef.current}
               open={reporteriaMenuOpen && !open}
               onClose={handleMenuClose}
               anchorOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "right",
               }}
               transformOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "left",
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 35,
-                  ml: 10,
+                  ml: 3,
                   boxShadow: 3,
                   minWidth: 200,
                 },
@@ -363,7 +378,32 @@ const ProjectDrawer = ({ open }) => {
                   />
                 </MuiMenuItem>
               )}
-
+              {tienePermiso(7) && (
+                <MuiMenuItem
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_De_Investigaciones")
+                  }
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={
+                        isActive("/Reportería/Listado_De_Investigaciones")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Investigaciones"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_De_Investigaciones")
+                        ? color.primary.azul
+                        : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
               {tienePermiso(3) && (
                 <MuiMenuItem
                   onClick={() =>
@@ -428,7 +468,7 @@ const ProjectDrawer = ({ open }) => {
                       onClick={() => navigate("/Seguridad/Usuarios")}
                     />
                   )}
-                  {tienePermiso(6) && (
+                  {tienePermiso(5) && (
                     <MenuItem
                       path="/Roles-y-Permisos"
                       icon={<HttpsOutlinedIcon />}
@@ -442,21 +482,20 @@ const ProjectDrawer = ({ open }) => {
 
             {/* Menú flotante de Seguridad */}
             <Menu
-              anchorEl={seguridadAnchorRef.current}
+              anchorEl={() => seguridadAnchorRef.current}
               open={seguridadMenuOpen && !open}
               onClose={handleMenuCloseSegu}
               anchorOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "right",
               }}
               transformOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "left",
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 43,
-                  ml: 10,
+                  ml: 3,
                   boxShadow: 3,
                   minWidth: 200,
                 },
