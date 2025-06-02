@@ -40,10 +40,19 @@ const Formacion = () => {
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
+
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
+    institucionresponsable: "",
+    responsablefirmas: "",
+    ambitoformacion: "",
+    tipoformacion: "",
+
+    modalidad: "",
+    plataforma: "",
     duracion: "",
+    estado: "",
     funciondirigido: "",
     prebasica: false,
     basica: false,
@@ -51,8 +60,14 @@ const Formacion = () => {
     primerciclo: false,
     segundociclo: false,
     tercerciclo: false,
+
     fechainicio: "",
     fechafinal: "",
+
+    participantesprog: "",
+    espaciofisico: "",
+    direccion: "",
+    zona: "",
     socializaron: "",
     observacion: "",
 
@@ -487,7 +502,7 @@ const Formacion = () => {
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Ambito de Formación</Typography>
+              <Typography variant="subtitle1">Ámbito de Formación</Typography>
               <TextField
                 fullWidth
                 name="ambitoformacion"
@@ -539,7 +554,7 @@ const Formacion = () => {
               formData.modalidad === "Bimodal") && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Plataforma en la que se Relizara la Actividad
+                  Plataforma en la que se Realizará la Actividad
                 </Typography>
                 <TextField
                   fullWidth

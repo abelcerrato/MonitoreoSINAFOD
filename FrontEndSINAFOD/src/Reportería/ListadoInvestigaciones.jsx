@@ -62,7 +62,7 @@ const ListadoActividad = () => {
   useEffect(() => {
     // Obtener los datos de los participantes después de guardar
     axios
-      .get(`${process.env.REACT_APP_API_URL}/formacion`)
+      .get(`${process.env.REACT_APP_API_URL}/investigacion`)
       .then((response) => {
         setRows(response.data);
         setFilteredRows(response.data);
@@ -139,7 +139,7 @@ const ListadoActividad = () => {
   const exportExcel = async () => {
     try {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Acciones Formativas");
+      const worksheet = workbook.addWorksheet("Investigaciones");
       // Convertir imágenes a base64 (si es necesario)
       const image1Base64 = await toBase64(LogoCONED);
       const image2Base64 = await toBase64(LogoDGDP);
@@ -161,7 +161,7 @@ const ListadoActividad = () => {
       // Definir el título
       worksheet.mergeCells("A8:F8");
       const title = worksheet.getCell("A8");
-      title.value = "Listado de Acciones Formativas";
+      title.value = "Listado de Investigaciones";
       title.font = { size: 16, bold: true };
       title.alignment = { horizontal: "center", vertical: "middle" };
 
@@ -178,27 +178,18 @@ const ListadoActividad = () => {
       // Definir encabezados de la tabla
       const headers = [
         "ID",
-        "Nombre de la Acción o Formación",
-        "Estado",
-        "¿La Formación Es Interna o Externa?",
+        "Título de la Investigación",
+        "¿La Investigación Es Interna o Externa?",
         "Nombre de la Institución Asociada",
         "Se Tiene Convenio la Institución Asociada",
-        "Institución Responsable",
-        "Responsable de Firmas",
-        "Ámbito de Formación",
-        "Tipo de Formación",
-        "Modalidad",
-        "Plataforma en la que se Realizará la Actividad",
+        "Presupuesto",
+        "tipomoneda",
         "Duración",
-        "Cargo a la que va dirigido",
+        "Población Objetivo",
         "Nicel Educativo",
-        "Ciclo Académico",
         "Fecha Inicio",
         "Fecha de Finalización",
-        "Cantidad de Participantes Programados",
-        "Espacio Físico",
-        "Dirección",
-        "Zona",
+        "Ubicación",
         "¿Se realizó convocatoria?",
         "Observación",
       ];
@@ -222,33 +213,27 @@ const ListadoActividad = () => {
       filteredRows.forEach((item) => {
         worksheet.addRow([
           item.id,
-          item.formacion,
-          item.estado ?? "-",
+          item.investigacion,
           item.tipoactividad ?? "-",
           item.institucionconvenio ?? "-",
           item.existeconvenio ?? "-",
-          item.institucionresponsable ?? "-",
-          item.responsablefirmas ?? "-",
-          item.ambitoformacion ?? "-",
-          item.tipoformacion,
-          item.modalidad ?? "-",
-          item.plataforma ?? "-",
+          item.presupuesto ?? "-",
+          item.tipomoneda ?? "-",
           item.duracion
-            ? `${item.duracion?.hours ?? 0}h ${item.duracion?.minutes ?? 0}m`
-            : "0h 0m",
-          item.funciondirigido,
+            ? `${item.duracion?.days ?? 0} Días ${
+                item.duracion?.mons ?? 0
+              } Meses ${item.duracion?.years ?? 0} Años`
+            : "0 Días 0 Meses 0Años",
+          item.funciondirigido ?? "-",
           item.nivelacademico ?? "-",
-          item.cicloacademico ?? "-",
           item.fechainicio
             ? new Date(item.fechainicio).toLocaleDateString("es-ES")
             : "-",
           item.fechafinal
             ? new Date(item.fechafinal).toLocaleDateString("es-ES")
             : "-",
-          item.participantesprog ?? "-",
-          item.espaciofisico ?? "-",
           item.direccion ?? "-",
-          item.zona ?? "-",
+
           item.socializaron,
           item.observacion ?? "-",
         ]);
@@ -284,14 +269,13 @@ const ListadoActividad = () => {
       align: "center",
     },
     {
-      field: "formacion",
-      headerName: "Nombre de la Acción Formativa",
+      field: "investigacion",
+      headerName: "Título de la Investigación",
       width: 200,
     },
-    { field: "estado", headerName: "Estado", width: 150 },
     {
       field: "tipoactividad",
-      headerName: "¿La Formación Es Interna o Externa?",
+      headerName: "¿La Investigación Es Interna o Externa?",
       width: 200,
     },
     {
@@ -305,42 +289,35 @@ const ListadoActividad = () => {
       width: 200,
     },
     {
-      field: "institucionresponsable",
-      headerName: "Institución Responsable",
+      field: "presupuesto",
+      headerName: "Presupuesto",
       width: 200,
     },
     {
-      field: "responsablefirmas",
-      headerName: "Responsable de Firmas",
+      field: "tipomoneda",
+      headerName: "Tipo Moneda del Presupuesto",
       width: 200,
-    },
-    { field: "ambitoformacion", headerName: "Ámbito de Formación", width: 180 },
-
-    { field: "tipoformacion", headerName: "Tipo de Formación", width: 180 },
-    { field: "modalidad", headerName: "Modalidad", width: 180 },
-    {
-      field: "plataforma",
-      headerName: " Plataforma en la que se Realizará la Actividad",
-      width: 180,
     },
     {
       field: "duracion",
       headerName: "Duración",
       width: 200,
-      renderCell: (params) => {
-        const duracion = params.row.duracion;
+      renderCell: ({ row }) => {
+        const { duracion } = row || {};
+        const days = duracion?.days ?? 0;
+        const mons = duracion?.mons ?? 0;
+        const years = duracion?.years ?? 0;
 
-        return `${duracion.hours ?? 0}h ${duracion.minutes ?? 0}m`;
+        return `${days} Días ${mons} Meses ${years} Años`;
       },
     },
     {
       field: "funciondirigido",
-      headerName: "  Cargo a la que va dirigido",
+      headerName: "Población Objetivo",
       width: 180,
     },
 
     { field: "nivelacademico", headerName: "Nivel Educativo", width: 180 },
-    { field: "cicloacademico", headerName: "Ciclo Académico", width: 150 },
     {
       field: "fechainicio",
       headerName: "Fecha Inicio",
@@ -362,14 +339,10 @@ const ListadoActividad = () => {
       },
     },
     {
-      field: "participantesprog",
-      headerName: "Cantidad de Participantes Programados",
+      field: "direccion",
+      headerName: "Ubicación",
       width: 290,
     },
-    { field: "espaciofisico", headerName: "Espacio Físico", width: 180 },
-
-    { field: "direccion", headerName: "Dirección", width: 200 },
-    { field: "zona", headerName: "Zona", width: 150 },
     {
       field: "socializaron",
       headerName: "¿Se realizó convocatoria?",
@@ -382,7 +355,7 @@ const ListadoActividad = () => {
     <Dashboard>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
         <Typography variant="h3" sx={{ color: color.primary.azul, mb: 5 }}>
-          Listado de Acciones Formativas
+          Listado de Investigaciones
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
@@ -395,10 +368,10 @@ const ListadoActividad = () => {
               >
                 <MenuItem value="">Seleccionar columna</MenuItem>
                 <MenuItem value="formacion">
-                  Nombre de la Acción Formativa
+                  Título de la Investigación
                 </MenuItem>
                 <MenuItem value="tipoactividad">
-                  ¿La Formación Es Interna o Externa?
+                  ¿La Investigación Es Interna o Externa?
                 </MenuItem>
                 <MenuItem value="institucionconvenio">
                   Nombre de la Institución Asociada
@@ -406,31 +379,13 @@ const ListadoActividad = () => {
                 <MenuItem value="existeconvenio">
                   Se Tiene Convenio la Institución Asociada
                 </MenuItem>
-                <MenuItem value="institucionresponsable">
-                  Institución Responsable
-                </MenuItem>
-                <MenuItem value="responsablefirmas">
-                  Responsable de Firmas
-                </MenuItem>
-                <MenuItem value="ambitoformacion">Ámbito de Formación</MenuItem>
-                <MenuItem value="tipoformacion">Tipo de Formación</MenuItem>
-                <MenuItem value="modalidad">Modalidad</MenuItem>
-                <MenuItem value="plataforma">
-                  Plataforma en la que se Realizará la Actividad
-                </MenuItem>
+                <MenuItem value="presupuesto">Presupuesto</MenuItem>
+                <MenuItem value="tipomoneda">Tipo Moneda</MenuItem>
                 <MenuItem value="duracion">Duración</MenuItem>
-                <MenuItem value="funciondirigido">
-                  Cargo a la que va dirigido
-                </MenuItem>
+                <MenuItem value="funciondirigido">Población Objetivo</MenuItem>
                 <MenuItem value="nivelacademico">Nivel Educativo</MenuItem>
                 <MenuItem value="cicloacademico">Ciclo Educativo</MenuItem>
-                <MenuItem value="estado">Estado</MenuItem>
                 <MenuItem value="fecha">Fecha</MenuItem>
-                <MenuItem value="participantesprog">
-                  Cantidad de Participantes Programados
-                </MenuItem>
-                <MenuItem value="espaciofisico">Espacio Físico</MenuItem>
-                <MenuItem value="direccion">Dirección</MenuItem>
                 <MenuItem value="zona">Zona</MenuItem>
                 <MenuItem value="socializaron">
                   ¿Se realizó convocatoria?
@@ -439,38 +394,19 @@ const ListadoActividad = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} size={4}>
-            {filterColumn === "tipoformacion" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="Taller">Taller</MenuItem>
-                  <MenuItem value="Seminario">Seminario</MenuItem>
-                  <MenuItem value="Curso">Curso</MenuItem>
-                  <MenuItem value="Diplomado">Diplomado</MenuItem>
-                </Select>
-              </FormControl>
-            ) : filterColumn === "modalidad" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="Online">Online</MenuItem>
-                  <MenuItem value="Presencial">Presencial</MenuItem>
-                  <MenuItem value="Híbrido">Híbrido</MenuItem>
-                </Select>
-              </FormControl>
-            ) : filterColumn === "tipoactividad" ? (
+            {filterColumn === "tipoactividad" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="Interna">Interna</MenuItem>
                   <MenuItem value="Externa">Externa</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "estado" ? (
+            ) : filterColumn === "tipomoneda" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="Planificada">Planificada</MenuItem>
-                  <MenuItem value="En Curso">En Curso</MenuItem>
-                  <MenuItem value="Suspendida">Suspendida</MenuItem>
-                  <MenuItem value="Completada">Completada</MenuItem>
-                  <MenuItem value="Cancelada">Cancelada</MenuItem>
+                  <MenuItem value="Lempira">Lempiras</MenuItem>
+                  <MenuItem value="Dolar">Dolar</MenuItem>
+                  <MenuItem value="Euro">Euro</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "nivelacademico" ? (
@@ -493,14 +429,6 @@ const ListadoActividad = () => {
                       {cil.nombre}
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-            ) : filterColumn === "zona" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar zona</MenuItem>
-                  <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbana</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "fecha" ? (
