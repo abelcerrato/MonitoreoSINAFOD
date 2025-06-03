@@ -52,7 +52,6 @@ const ListadoParticipantes = () => {
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [niveles, setNiveles] = useState([]);
-  const [ciclos, setCiclos] = useState([]);
   const [grados, setGrados] = useState([]);
 
   useEffect(() => {
@@ -76,9 +75,6 @@ const ListadoParticipantes = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`)
       .then((response) => setNiveles(response.data));
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/ciclosAcademicos`)
-      .then((response) => setCiclos(response.data));
     axios
       .get(`${process.env.REACT_APP_API_URL}/gradosAcademicos`)
       .then((response) => setGrados(response.data));
@@ -141,16 +137,36 @@ const ListadoParticipantes = () => {
       title2.font = { size: 10, italic: true };
       title2.alignment = { horizontal: "left", vertical: "middle" };
 
+      const colorPrimarioAzul = color.primary.azul;
+
+      worksheet.mergeCells("A11:F11");
+      const DatosP = worksheet.getCell("A11");
+      DatosP.value = "Datos Generales del Participante";
+
+      // Aplicar los estilos directamente a la celda fusionada
+      DatosP.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" }, // Blanco (nota el formato de 8 caracteres)
+      };
+      DatosP.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: color.primary.azul.replace("#", "FF") }, // FF para opacidad completa
+      };
+      DatosP.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+      };
       // Espacio en blanco entre regionales
       worksheet.addRow([]);
       // Definir encabezados de la tabla
       const headers = [
         "ID",
-  
+
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Sexo",
+        "Genero",
         "Nivel Académico del Participante",
         "Grado Académico del Participante",
         "Años de Servicio",
@@ -170,7 +186,6 @@ const ListadoParticipantes = () => {
         "Aldea Centro Educativo",
       ];
 
-      const colorPrimarioAzul = color.primary.azul;
       // Agregar encabezados a la primera fila
       const headerRow = worksheet.addRow(headers);
       headerRow.font = { bold: true, color: { argb: "FFFFFF" } }; // Texto en blanco
@@ -189,7 +204,7 @@ const ListadoParticipantes = () => {
       filteredRows.forEach((item) => {
         worksheet.addRow([
           item.id,
-        
+
           item.codigosace ?? "-",
           item.nombre,
           item.identificacion,
@@ -235,11 +250,14 @@ const ListadoParticipantes = () => {
   };
 
   const columns = [
-  
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Sexo", width: 180 },
+    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
+    { field: "edad", headerName: "Edad", width: 180 },
+    { field: "correo", headerName: "Correo Electrónico", width: 180 },
+    { field: "telefono", headerName: "Teléfono", width: 180 },
     {
       field: "nivelacademico",
       headerName: "Nivel Académico del Participante",
@@ -250,6 +268,7 @@ const ListadoParticipantes = () => {
       headerName: "Grado Académico del Participante",
       width: 230,
     },
+    { field: "añosdeservicio", headerName: "Cargo que Desempeña", width: 180 },
     { field: "añosdeservicio", headerName: "Años de Servicio", width: 180 },
     {
       field: "codigodered",
@@ -319,11 +338,11 @@ const ListadoParticipantes = () => {
             <FormControl fullWidth>
               <Select onChange={(e) => setFilterColumn(e.target.value)}>
                 <MenuItem value="">Seleccionar columna</MenuItem>
-              
+
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Sexo</MenuItem>
+                <MenuItem value="genero">Genero</MenuItem>
                 <MenuItem value="nivelacademico">
                   Nivel Académico del Participante
                 </MenuItem>
@@ -360,9 +379,7 @@ const ListadoParticipantes = () => {
                 <MenuItem value="municipioced">
                   Municipio Centro Educativo
                 </MenuItem>
-                <MenuItem value="aldeaced">
-                  Aldea Centro Educativo
-                </MenuItem>
+                <MenuItem value="aldeaced">Aldea Centro Educativo</MenuItem>
               </Select>
             </FormControl>
           </Grid>

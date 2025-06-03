@@ -39,15 +39,15 @@ export const getParticipanteM = async () => {
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id
-                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
                 left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
-                inner join gradosacademicos g on p.idgradoacademicos = g.id  
-                inner join cargodesempeña c on p.idfuncion = c.id
-                inner join participantescentroeducativo pced on p.id = pced.idparticipante 
-                inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
-                inner join cargodesempeña c2 on pced.cargo = c2.id
-                inner join departamento dced on ced.iddepartamento = dced.id 
-                inner join municipio mced on ced.idmunicipio = mced.id
+                left join gradosacademicos g on p.idgradoacademicos = g.id  
+                left join cargodesempeña c on p.idfuncion = c.id
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
         `);
     //console.log(rows);
