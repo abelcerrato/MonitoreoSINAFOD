@@ -9,7 +9,7 @@ export const getParticipanteM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
