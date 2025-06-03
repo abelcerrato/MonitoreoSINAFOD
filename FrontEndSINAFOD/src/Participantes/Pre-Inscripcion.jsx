@@ -96,7 +96,7 @@ const PreInscripcion = () => {
     idmunicipio: "",
     iddepartamento: "",
     idaldea: null,
-    tipoadministracion: "Gubernamental",
+    tipoadministracion: "",
     creadopor: null,
   });
 
@@ -439,8 +439,19 @@ const PreInscripcion = () => {
   };
 
   const llenarFormulario = (docente) => {
-    const fechaNacimiento = new Date(docente.fechanacimiento);
-    const fechaFormateada = fechaNacimiento.toISOString().split("T")[0];
+    let fechaFormateada = "";
+    if (docente.fechanacimiento) {
+      try {
+        const fechaNacimiento = new Date(docente.fechanacimiento);
+        if (!isNaN(fechaNacimiento.getTime())) {
+          // Verifica si la fecha es válida
+          fechaFormateada = fechaNacimiento.toISOString().split("T")[0];
+        }
+      } catch (e) {
+        console.error("Error al formatear fecha:", e);
+      }
+    }
+  
     setFormData((prev) => ({
       ...prev,
       /*Datos del participante */
@@ -1370,7 +1381,6 @@ const PreInscripcion = () => {
                 >
                   Datos del Centro Educativo Que Representa
                 </Typography>
-                
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">Nivel Educativo*</Typography>
@@ -1631,7 +1641,10 @@ const PreInscripcion = () => {
                   <Autocomplete
                     freeSolo
                     disabled={camposBloqueados.nombreced}
-                    options={centroseducativos.map((cen) => cen.nombreced)}
+                    options={centroseducativos}
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.nombreced
+                    }
                     value={formData.nombreced || ""}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
@@ -1639,7 +1652,18 @@ const PreInscripcion = () => {
                         nombreced: newInputValue,
                       }));
                     }}
-                    renderInput={(params) => <TextField {...params} />}
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <div>
+                          <strong>{option.nombreced}</strong>
+                          <div style={{ fontSize: "0.8rem" }}>
+                            {option.departamentoced} - {option.municipioced} |{" "}
+                            {option.nivelacademico}
+                          </div>
+                        </div>
+                      </li>
+                    )}
+                    renderInput={(params) => <TextField {...params} label="" />}
                   />
                 </FormControl>
               </Grid>

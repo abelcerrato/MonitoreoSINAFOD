@@ -119,7 +119,7 @@ const ListadoParticipantes = () => {
       });
 
       // Insertar las imágenes en el archivo Excel
-      worksheet.addImage(image1, "A1:B7");
+      worksheet.addImage(image1, "A1:A7");
       worksheet.addImage(image2, "E1:F5");
 
       // Definir el título
@@ -127,7 +127,6 @@ const ListadoParticipantes = () => {
       const title = worksheet.getCell("A8");
       title.value = "Listado de los Participantes";
       title.font = { size: 16, bold: true };
-      title.alignment = { horizontal: "center", vertical: "middle" };
 
       // Agregar fecha y hora
       const fechaHoraActual = dayjs().format("DD/MM/YYYY  hh:mm A");
@@ -139,12 +138,13 @@ const ListadoParticipantes = () => {
 
       const colorPrimarioAzul = color.primary.azul;
 
-      worksheet.mergeCells("A11:F11");
-      const DatosP = worksheet.getCell("A11");
+      worksheet.mergeCells("B11:R11");
+      const DatosP = worksheet.getCell("B11");
       DatosP.value = "Datos Generales del Participante";
 
       // Aplicar los estilos directamente a la celda fusionada
       DatosP.font = {
+        size: 16,
         bold: true,
         color: { argb: "FFFFFFFF" }, // Blanco (nota el formato de 8 caracteres)
       };
@@ -157,29 +157,58 @@ const ListadoParticipantes = () => {
         horizontal: "center",
         vertical: "middle",
       };
+
+      worksheet.mergeCells("S11:AE11");
+      const DacosCentro = worksheet.getCell("S11");
+      DacosCentro.value =
+        "Datos del Centro Educativo al que representa el Participante";
+      DacosCentro.font = { size: 16, bold: true };
+      // Aplicar los estilos directamente a la celda fusionada
+      DacosCentro.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" }, // Blanco (nota el formato de 8 caracteres)
+      };
+      DacosCentro.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: color.primary.azul.replace("#", "FF") }, // FF para opacidad completa
+      };
+      DacosCentro.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+      };
       // Espacio en blanco entre regionales
       worksheet.addRow([]);
       // Definir encabezados de la tabla
       const headers = [
-        "ID",
-
+        "Nombre de la Acción Formativa o Investigación",
         "Código SACE",
         "Nombre",
         "Identificación",
         "Genero",
+        "Fecha de Nacimiento",
+        "Edad",
+        "Correo Electrónico",
+        "Teléfono",
         "Nivel Académico del Participante",
         "Grado Académico del Participante",
+        "Cargo que Desempeña",
         "Años de Servicio",
         "Código de Red",
-        "Función",
         "Departamento en el que Reside",
         "Municipio en el que Reside",
         "Aldea en la que Reside",
-        "Centro Educativo",
-        "Nivel Académico que Atiende",
+        "Caserio",
 
+        "Centro Educativo",
+        "Código SACE del Centro Educativo",
+        "Nivel Académico que Atiende",
         "Grado que Atiende",
+        "Cargo que Desempeña en el Centro Educativo",
         "Tipo Administración",
+        "Tipo de Centro Educativo",
+        "Jornada que Atiende",
+        "Modalidad que Atiende",
         "Zona Centro Educativo",
         "Departamento Centro Educativo",
         "Municipio Centro Educativo",
@@ -203,24 +232,34 @@ const ListadoParticipantes = () => {
       // Agregar los datos como filas en la tabla
       filteredRows.forEach((item) => {
         worksheet.addRow([
-          item.id,
-
+          item.formacion || item.investigacion,
           item.codigosace ?? "-",
           item.nombre,
           item.identificacion,
           item.genero,
+          item.fechanacimiento,
+          item.edad,
+          item.correo,
+          item.telefono,
           item.nivelacademico ?? "-",
           item.gradoacademico ?? "-",
+          item.cargopart,
           item.añosdeservicio,
           item.codigodered,
-          item.cargoced,
           item.departamento,
           item.municipio,
-          item.aldea ?? "-",
+          item.aldea,
+          item.caserio,
+
           item.nombreced,
+          item.codigosaceced,
           item.nivelacademico_ced ?? "-",
           item.gradoacademico_ced ?? "-",
+          item.cargoced,
           item.tipoadministracion,
+          item.tipocentro,
+          item.jornada,
+          item.modalidad,
           item.zona,
           item.departamentoced ?? "-",
           item.municipioced ?? "-",
@@ -230,8 +269,7 @@ const ListadoParticipantes = () => {
 
       // Ajustar ancho de columnas
       worksheet.columns.forEach((column, index) => {
-        column.width = index === 0 ? 5 : 15; // Si es la primera columna (index 0), ancho 5, el resto 20
-        column.alignment = { wrapText: true, vertical: "middle" };
+        column.width = index === 0 ? 25 : 15;
       });
 
       // Generar y descargar el archivo
@@ -250,6 +288,21 @@ const ListadoParticipantes = () => {
   };
 
   const columns = [
+    {
+      field: "accion_formativa_investigacion",
+      headerName: "Nombre de la Acción Formativa o Investigación",
+      width: 180,
+    },
+    {
+      field: "investigacion",
+      headerName: "Nombre de la Acción Formativa o Investigación",
+      width: 180,
+    },
+    {
+      field: "formacion",
+      headerName: "Nombre de la Acción Formativa o Investigación",
+      width: 180,
+    },
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
@@ -268,14 +321,13 @@ const ListadoParticipantes = () => {
       headerName: "Grado Académico del Participante",
       width: 230,
     },
-    { field: "añosdeservicio", headerName: "Cargo que Desempeña", width: 180 },
+    { field: "cargopart", headerName: "Cargo que Desempeña", width: 180 },
     { field: "añosdeservicio", headerName: "Años de Servicio", width: 180 },
     {
       field: "codigodered",
       headerName: "Código de Red que Pertenece",
       width: 230,
     },
-    { field: "cargoced", headerName: "Función", width: 180 },
     {
       field: "departamento",
       headerName: "Departamento en el que Reside",
@@ -291,7 +343,18 @@ const ListadoParticipantes = () => {
       headerName: "Aldea en la que Reside",
       width: 180,
     },
+    {
+      field: "caserio",
+      headerName: "Caserio",
+      width: 180,
+    },
+
     { field: "nombreced", headerName: "Centro Educativo", width: 180 },
+    {
+      field: "codigosaceced",
+      headerName: "Código SACE del Centro Educativo",
+      width: 180,
+    },
     {
       field: "nivelacademico_ced",
       headerName: "Nivel Académico que Atiende",
@@ -304,8 +367,28 @@ const ListadoParticipantes = () => {
       width: 230,
     },
     {
+      field: "cargoced",
+      headerName: "Cargo que Desempeña en el Centro Educativo",
+      width: 180,
+    },
+    {
       field: "tipoadministracion",
       headerName: "Tipo Administración",
+      width: 180,
+    },
+    {
+      field: "tipocentro",
+      headerName: "Tipo de Centro Educativo",
+      width: 180,
+    },
+    {
+      field: "jornada",
+      headerName: "Jornada que Atiende",
+      width: 180,
+    },
+    {
+      field: "modalidad",
+      headerName: "Modalidad que Atiende",
       width: 180,
     },
     { field: "zona", headerName: "Zona Centro Educativo", width: 180 },

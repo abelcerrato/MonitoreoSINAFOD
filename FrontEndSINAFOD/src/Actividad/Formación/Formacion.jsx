@@ -100,7 +100,7 @@ const Formacion = () => {
 
       // Limpiar campos según cambio de modalidad
       if (name === "modalidad") {
-        if (sanitizedValue === "Virtual") {
+        if (sanitizedValue === "Online") {
           // Limpiar campos de modalidad presencial
           newData.espaciofisico = "";
           newData.direccion = "";
@@ -116,8 +116,8 @@ const Formacion = () => {
             ...prev,
             plataforma: false,
           }));
-        } else if (sanitizedValue === "Bimodal") {
-          // No limpiar nada para bimodal ya que necesita ambos
+        } else if (sanitizedValue === "Híbrido") {
+          // No limpiar nada para Híbrido ya que necesita ambos
         } else {
           // Limpiar todos los campos relacionados
           newData.plataforma = "";
@@ -541,17 +541,17 @@ const Formacion = () => {
                   value={formData.modalidad || ""}
                   onChange={handleChange}
                 >
-                  <MenuItem value="Virtual">Virtual</MenuItem>
+                  <MenuItem value="Online">Online</MenuItem>
                   <MenuItem value="Presencial">Presencial</MenuItem>
-                  <MenuItem value="Bimodal">Bimodal</MenuItem>
+                  <MenuItem value="Híbrido">Híbrido</MenuItem>
                 </Select>
                 {fieldErrors.modalidad && (
                   <FormHelperText>Este campo es obligatorio</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            {(formData.modalidad === "Virtual" ||
-              formData.modalidad === "Bimodal") && (
+            {(formData.modalidad === "Online" ||
+              formData.modalidad === "Híbrido") && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
                   Plataforma en la que se Realizará la Actividad
@@ -867,7 +867,7 @@ const Formacion = () => {
               />
             </Grid>
             {(formData.modalidad === "Presencial" ||
-              formData.modalidad === "Bimodal") && (
+              formData.modalidad === "Híbrido") && (
               <>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Espacio Físico</Typography>

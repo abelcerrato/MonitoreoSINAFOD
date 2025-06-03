@@ -133,7 +133,7 @@ const ModificarFormacion = () => {
 
       // Limpiar campos según cambio de modalidad
       if (name === "modalidad") {
-        if (sanitizedValue === "Virtual") {
+        if (sanitizedValue === "Online") {
           // Limpiar campos de modalidad presencial
           newData.espaciofisico = "";
           newData.direccion = "";
@@ -149,8 +149,8 @@ const ModificarFormacion = () => {
             ...prev,
             plataforma: false,
           }));
-        } else if (sanitizedValue === "Bimodal") {
-          // No limpiar nada para bimodal ya que necesita ambos
+        } else if (sanitizedValue === "Híbrido") {
+          // No limpiar nada para Híbrido ya que necesita ambos
         } else {
           // Limpiar todos los campos relacionados
           newData.plataforma = "";
@@ -804,7 +804,7 @@ const ModificarFormacion = () => {
                 </Grid>
               </Grid>
             )}
-           
+
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField
