@@ -337,7 +337,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     }
 
     try {
-       // const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
+        const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
         const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
         const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
