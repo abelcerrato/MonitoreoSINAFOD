@@ -12,9 +12,7 @@ import CambiarContraModal from "../Login/CambiarContraModal";
 const Dashboard = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
-  const location = useLocation();
 
-  const showTablaFormacion = location.pathname === "/dashboard";
 
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -66,8 +64,7 @@ const Dashboard = ({ children }) => {
         }}
       >
         {children}
-        {/*         {showTablaFormacion && <TablaFormacion />}
-        {showTablaFormacion && <TablaInvestigacion />} */}
+      
         <Typography
           variant="body2"
           color="text.secondary"

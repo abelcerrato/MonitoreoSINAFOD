@@ -1,47 +1,52 @@
+import "./App.css";
+import { useUser } from "./Components/UserContext";
+import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Outlet,
+  Navigate,
+} from "react-router-dom";
+import SignIn from "./Login/Sign-in";
+import Dashboard from "./Dashboard/dashboard";
 
-import './App.css';
-import { useUser } from './Components/UserContext';
-import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Outlet, Navigate } from 'react-router-dom';
-import SignIn from './Login/Sign-in';
-import Dashboard from './Dashboard/dashboard';
+import LineamientosI from "./Actividad/Investigación/Lineamientos";
+import LineamientosM from "./Actividad/Investigación/ModificarLineamientos";
+import Investigación from "./Actividad/Investigación/Investigación";
+import ActualizarInvestigación from "./Actividad/Investigación/ModificarInvestigación";
 
-import LineamientosI from './Actividad/Investigación/Lineamientos';
-import LineamientosM from './Actividad/Investigación/ModificarLineamientos';
-import Investigación from './Actividad/Investigación/Investigación';
-import ActualizarInvestigación from './Actividad/Investigación/ModificarInvestigación';
+import LineamientosF from "./Actividad/Formación/LineamientosF";
+import LineamientosFormacionM from "./Actividad/Formación/ModificarLineamientosF";
+import Formacion from "./Actividad/Formación/Formacion";
+import ActualizarFormacion from "./Actividad/Formación/ModificarFormación";
 
+import Participantes from "./Participantes/FormularioParticipantes";
+import FormularioExterno from "./Participantes/FormularioExterno";
+import ModificarParticipante from "./Participantes/ModificarParticipantes";
 
-import LineamientosF from './Actividad/Formación/LineamientosF';
-import LineamientosFormacionM from './Actividad/Formación/ModificarLineamientosF';
-import Formacion from './Actividad/Formación/Formacion';
-import ActualizarFormacion from './Actividad/Formación/ModificarFormación';
+import ListadoInvestigación from "./Reportería/ListadoInvestigaciones";
+import ListadoParticipantes from "./Reportería/ListadoParticipantes";
+import ListadoActividad from "./Reportería/ListadoCapacitaciones";
 
+import Usuarios from "./Seguridad/Usuarios/TablaUsuarios";
+import RegistroUsuario from "./Seguridad/Usuarios/Usuarios";
+import ModificarUsuario from "./Seguridad/Usuarios/ModificarUsuario";
 
-import Participantes from './Participantes/FormularioParticipantes';
-import FormularioExterno from './Participantes/FormularioExterno';
-import ModificarParticipante from './Participantes/ModificarParticipantes';
-import ListadoParticipantes from './Reportería/ListadoParticipantes';
-import ListadoActividad from './Reportería/ListadoCapacitaciones';
+import Permisos from "./Seguridad/Permisos/TablaPermisos";
+import RegistroRol from "./Seguridad/Permisos/RolyPermisos";
+import ModificarRol from "./Seguridad/Permisos/ModificarRolyPermisos";
 
-import Usuarios from './Seguridad/Usuarios/TablaUsuarios';
-import RegistroUsuario from './Seguridad/Usuarios/Usuarios';
-import ModificarUsuario from './Seguridad/Usuarios/ModificarUsuario';
+import { UserProvider } from "./Components/UserContext";
+import axios from "axios";
+import Swal from "sweetalert2";
 
-import Permisos from './Seguridad/Permisos/TablaPermisos';
-import RegistroRol from './Seguridad/Permisos/RolyPermisos';
-import ModificarRol from './Seguridad/Permisos/ModificarRolyPermisos';
+import TablaFormacion from "./Actividad/Formación/TablaFormacion";
+import TablaInvestigacion from "./Actividad/Investigación/TablaInvestigación";
 
-import { UserProvider } from './Components/UserContext';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-
-import TablaFormacion from './Actividad/Formación/TablaFormacion';
-import TablaInvestigacion from './Actividad/Investigación/TablaInvestigación';
-
-
-import { PERMISSIONS } from './Components/permissions';
-import PreInscripcion from './Participantes/Pre-Inscripcion';
+import { PERMISSIONS } from "./Components/permissions";
+import PreInscripcion from "./Participantes/Pre-Inscripcion";
 
 const ProtectedRoute = () => {
   const navigate = useNavigate();
@@ -72,11 +77,14 @@ const ProtectedRoute = () => {
       if (!token) return;
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/verify-token`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/verify-token`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.data.valid) {
           logoutAndRedirect();
@@ -110,21 +118,20 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
-
 const PermissionValidator = ({ children, requiredPermission }) => {
   const { permissions } = useUser();
 
-  const hasPermission = (idobjeto, action = 'consultar') => {
-    const permiso = permissions?.find(p => p.idobjeto === idobjeto);
+  const hasPermission = (idobjeto, action = "consultar") => {
+    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.[action] === true;
   };
 
   if (!hasPermission(requiredPermission)) {
     Swal.fire({
-      icon: 'error',
-      title: 'Acceso denegado',
-      text: 'No tienes permisos para acceder a esta sección',
-      timer: 3000
+      icon: "error",
+      title: "Acceso denegado",
+      text: "No tienes permisos para acceder a esta sección",
+      timer: 3000,
     });
     return <Navigate to="/dashboard" replace />;
   }
@@ -133,10 +140,6 @@ const PermissionValidator = ({ children, requiredPermission }) => {
 };
 
 function App() {
-
-
-
-
   return (
     <UserProvider>
       <BrowserRouter>
@@ -144,17 +147,13 @@ function App() {
           <Route path="/" element={<SignIn />} />
 
           <Route
-          path="/Formulario-De-Participante/:id"
-            element={
-              <FormularioExterno />
-            }
+            path="/Formulario-De-Participante/:id"
+            element={<FormularioExterno />}
           />
 
           <Route
             path="/Formulario-De-Inscripción"
-            element={
-              <PreInscripcion />
-            }
+            element={<PreInscripcion />}
           />
 
           {/* Rutas protegidas */}
@@ -165,7 +164,9 @@ function App() {
             <Route
               path="/Listado_De_Investigaciones"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <TablaInvestigacion />
                 </PermissionValidator>
               }
@@ -173,7 +174,9 @@ function App() {
             <Route
               path="/Lineamientos_De_Investigación"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <LineamientosI />
                 </PermissionValidator>
               }
@@ -181,7 +184,9 @@ function App() {
             <Route
               path="/Actualizar_Lineamientos_De_Investigación/:id"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <LineamientosM />
                 </PermissionValidator>
               }
@@ -189,7 +194,9 @@ function App() {
             <Route
               path="/Investigación"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <Investigación />
                 </PermissionValidator>
               }
@@ -197,7 +204,9 @@ function App() {
             <Route
               path="/Actualizar_Investigación/:id"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <ActualizarInvestigación />
                 </PermissionValidator>
               }
@@ -207,7 +216,9 @@ function App() {
             <Route
               path="/Listado_De_Formaciones"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.INVESTIGACION}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.INVESTIGACION}
+                >
                   <TablaFormacion />
                 </PermissionValidator>
               }
@@ -249,7 +260,9 @@ function App() {
             <Route
               path="/Participantes"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.PARTICIPANTES}
+                >
                   <Participantes />
                 </PermissionValidator>
               }
@@ -257,7 +270,9 @@ function App() {
             <Route
               path="/Modificar_Participante/:id"
               element={
-                <PermissionValidator requiredPermission={PERMISSIONS.PARTICIPANTES}>
+                <PermissionValidator
+                  requiredPermission={PERMISSIONS.PARTICIPANTES}
+                >
                   <ModificarParticipante />
                 </PermissionValidator>
               }
@@ -277,6 +292,15 @@ function App() {
               element={
                 <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
                   <ListadoActividad />
+                </PermissionValidator>
+              }
+            />
+
+            <Route
+              path="/Reportería/Listado_De_Investigaciones"
+              element={
+                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
+                  <ListadoInvestigación />
                 </PermissionValidator>
               }
             />
@@ -331,13 +355,9 @@ function App() {
               }
             />
           </Route>
-
-
         </Routes>
       </BrowserRouter>
-
     </UserProvider>
-
   );
 }
 

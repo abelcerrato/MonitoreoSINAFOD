@@ -8,7 +8,7 @@ export const getInvestigacionM = async () => {
   try {
     const { rows } = await pool.query(`
         SELECT  
-            i.id, i.investigacion, i.tipoactividad, i.existeconvenio, i.institucionconvenio, i.presupuesto, i.duracion, 
+            i.id, i.investigacion, i.tipoactividad, i.existeconvenio, i.institucionconvenio, i.presupuesto, i.duracion, i.tipomoneda,
             i.funciondirigido, i.prebasica, i.basica, i.media, i.fechainicio, i.fechafinal, i.direccion, i.socializaron,
             i.observacion, i.presentoprotocolo, i.presentoprotocolourl, i.estadoprotocolo, i.monitoreoyevaluacion, 
             i.monitoreoyevaluacionurl, i.aplicacionevaluacion, i.aplicacionevaluacionurl, i.divulgacionresultados, 
@@ -25,7 +25,18 @@ export const getInvestigacionM = async () => {
                     or (i.divulgacionresultados=true)
                 THEN 'Lineamientos Incompletos'
                 ELSE 'No Lleno Lineamientos'
-        END AS estado_lineamientos
+        END AS estado_lineamientos,
+      CASE 
+          WHEN i.existeconvenio IS FALSE THEN 'No'
+          WHEN i.existeconvenio THEN 'Sí'
+          ELSE ''
+        END AS existeconvenio,
+
+        CASE 
+          WHEN i.socializaron IS FALSE THEN 'No'
+          WHEN i.socializaron THEN 'Sí'
+          ELSE ''
+        END AS socializaron
 		FROM investigacion AS i
 		ORDER BY i.id DESC;
         `);
