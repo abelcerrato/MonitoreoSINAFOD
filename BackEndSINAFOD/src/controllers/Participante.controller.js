@@ -302,6 +302,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         iddepartamento,
         idmunicipio,
         idaldea,
+        idnivelacademicocentro,
 
         cargo,
         jornada,
@@ -336,11 +337,11 @@ export const postParticipantesIFCedC = async (req, res) => {
     }
 
     try {
-        const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
+       // const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
         const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
         const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
-        const iddocente = resultado1;
+        const iddocente = null;
         const idparticipante = resultado3;
         const idcentroeducativo = resultado4;
 
@@ -424,7 +425,7 @@ export const postParticipantesIFCedC = async (req, res) => {
                 iddepartamento,
                 idmunicipio,
                 idaldea,
-                idPart
+                idnivelacademicocentro
             );
             response.ced = centro;
 
@@ -507,7 +508,7 @@ export const postParticipantesIFCedC = async (req, res) => {
                 iddepartamento,
                 idmunicipio,
                 idaldea,
-                idPart
+                idnivelacademicocentro
             );
             response.ced = centro;
 
@@ -614,7 +615,7 @@ export const postParticipantesIFCedC = async (req, res) => {
                 iddepartamento,
                 idmunicipio,
                 idaldea,
-                idparticipante
+                idnivelacademicocentro
             );
             response.ced = centro;
 

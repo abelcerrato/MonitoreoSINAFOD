@@ -54,11 +54,11 @@ export const getCentroEducativoPartC = async (req, res) => {
 
 
 export const postCentroEducativoC = async (req, res) => {
-    const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea } = req.body
+    const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico } = req.body
     console.log('Centro educativo a insertar:', req.body);
     try {
         const CentroEducativo = await postCentroEducativoM(
-            nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea)
+            nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico)
 
         res.json({ message: "Centro Educativo  agregado exitosamente", user: CentroEducativo });
     } catch (error) {
@@ -72,11 +72,11 @@ export const postCentroEducativoC = async (req, res) => {
 
 export const putCentroEducativoC = async (req, res) => {
     const { id } = req.params;
-    const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea } = req.body
+    const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico } = req.body
     console.log('Centro educativo a actualizar:', req.body);
     try {
         const CentroEducativo = await putCentroEducativoM(
-            nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, id)
+            nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico, id)
 
         res.json({ message: "Centro Educativo actualizado exitosamente ", user: CentroEducativo });
     } catch (error) {

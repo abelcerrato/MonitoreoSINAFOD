@@ -206,7 +206,7 @@ export const getFiltroDocentesC = async (req, res) => {
         deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, creadopor,
 
         //datos del cventro educativo
-        nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
+        nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademicocentro,
 
         //datos de la relacion de centro educativo con participante
         cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo
@@ -278,7 +278,7 @@ export const getFiltroDocentesC = async (req, res) => {
                 // Insertar centro educativo
                 const centro = await postCentroEducativoM(
                     nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
-                    iddepartamento, idmunicipio, idaldea, idPart
+                    iddepartamento, idmunicipio, idaldea, idnivelacademicocentro
                 );
                 idcentro = centro;
                 console.log('idCentro: ', idcentro);
@@ -320,7 +320,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
                 const centro = await postCentroEducativoM(
                     nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
-                    iddepartamento, idmunicipio, idaldea, idPart
+                    iddepartamento, idmunicipio, idaldea, idnivelacademicocentro
                 );
                 idcentro = centro;
                 console.log('idCentro: ', idcentro);
@@ -381,7 +381,7 @@ export const getFiltroDocentesC = async (req, res) => {
                 // Insertar centro educativo
                 const centro = await postCentroEducativoM(
                     nombreced, codigosaceced, tipoadministracion, tipocentro, zona,
-                    iddepartamento, idmunicipio, idaldea, idparticipante
+                    iddepartamento, idmunicipio, idaldea, idnivelacademicocentro
                 );
                 idcentro = centro;
                 console.log('idCentro: ', idcentro);
