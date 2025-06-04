@@ -180,13 +180,88 @@ export const getParticipanteIdM = async (id) => {
         `,
       [id]
     );
-    console.log(rows);
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
+
+
+//datos del participante y la investigación
+export const getParticipanteInvestigacionM = async () => {
+  try {
+    const { rows } = await pool.query(
+      `
+              SELECT 
+                -------------------DATOS DEL PARTICIPANTE------------------------
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
+                p.añosdeservicio, p.codigodered, 
+                p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                -------------------DATOS DE LA INVESTIGACION------------------
+                pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
+                i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
+                i.prebasica, i.basica, i.media,
+                    CONCAT_WS(', ',
+                        CASE when i.prebasica THEN 'Prebásica' END,
+                        CASE WHEN i.basica THEN 'Básica' END,
+                        CASE WHEN i.media THEN 'Media' END
+                    ) AS nivelacademico_invest,
+                i.fechainicio, i.fechafinal, i.direccion, i.socializaron, i.observacion, 
+                i.presentoprotocolo, i.presentoprotocolourl, i.estadoprotocolo, i.monitoreoyevaluacion, i.monitoreoyevaluacionurl, i.aplicacionevaluacion, i.aplicacionevaluacionurl, i.divulgacionresultados, i.divulgacionresultadosurl,
+                
+                -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
+                pced.idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
+                pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
+                    CONCAT_WS(', ',
+                        CASE WHEN pced.prebasica THEN 'Prebásica' END,
+                        CASE WHEN pced.basica THEN 'Básica' END,
+                        CASE WHEN pced.media THEN 'Media' END
+                    ) AS nivelacademico_ced,
+                    CONCAT_WS(', ',
+                        CASE WHEN pced.primero THEN 'Primero' END,
+                        CASE WHEN pced.segundo THEN 'Segundo' END,
+                        CASE WHEN pced.tercero THEN 'Tercero' END,
+                        CASE WHEN pced.cuarto THEN 'Cuarto' END,
+                        CASE WHEN pced.quinto THEN 'Quinto' END,
+                        CASE WHEN pced.sexto THEN 'Sexto' END,
+                        CASE WHEN pced.septimo THEN 'Séptimo' END,
+                        CASE WHEN pced.octavo THEN 'Octavo' END,
+                        CASE WHEN pced.noveno THEN 'Noveno' END,
+                        CASE WHEN pced.decimo THEN 'Decimo' END,
+                        CASE WHEN pced.onceavo THEN 'Onceavo' END,
+                        CASE WHEN pced.doceavo THEN 'Doceavo' END
+                    ) AS gradoacademico_ced,
+                ced.iddepartamento, dced.nombre as departamentoced, ced.idmunicipio, mced.nombre as municipioced, ced.idaldea, aced.nombre as aldeaced
+                FROM participantes as p
+                left join departamento dres on p.deptoresidencia = dres.id 
+                left join municipio mres on p.municipioresidencia = mres.id 
+                left join aldeas ares on p.aldearesidencia = ares.id 
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
+                left join gradosacademicos g on p.idgradoacademicos = g.id 
+                left join cargodesempeña c on p.idfuncion = c.id
+                left join participantesinvestigacion pi on p.id= pi.idparticipante 
+                left join investigacion i on pi.idinvestigacion =i.id 
+                
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
+                left join aldeas aced on ced.idaldea = aced.id;
+        `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+//datos del participante y por id de la investigación
 export const getParticipanteIdInvestM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -257,13 +332,94 @@ export const getParticipanteIdInvestM = async (id) => {
         `,
       [id]
     );
-    //console.log(rows);
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
+
+
+//datos del participante y la formación
+export const getParticipanteFormacionM = async () => {
+  try {
+    const { rows } = await pool.query(
+      `
+             SELECT 
+                -------------------DATOS DEL PARTICIPANTE------------------------
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
+                p.añosdeservicio, p.codigodered, 
+                p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                
+                -------------------DATOS DE LA FORMACION------------------
+                pf.idformacion, f.formacion, f.tipoactividad, f.existeconvenio, f.institucionconvenio, f.responsablefirmas, f.ambitoformacion, f.tipoformacion, f.modalidad, f.plataforma, f.duracion, f.estado, f.funciondirigido,
+                f.prebasica, f.basica, f.media, 
+                    CONCAT_WS(', ',
+                        CASE when f.prebasica THEN 'Prebásica' END,
+                        CASE WHEN f.basica THEN 'Básica' END,
+                        CASE WHEN f.media THEN 'Media' END
+                    ) AS nivelacademico_form,
+                f.primerciclo, f.segundociclo, f.tercerciclo, 
+                    CONCAT_WS(', ',
+                        CASE when f.primerciclo THEN 'Primer Ciclo' END,
+                        CASE WHEN f.segundociclo THEN 'Segundo Ciclo' END,
+                        CASE WHEN f.tercerciclo THEN 'Tercer Ciclo' END
+                    ) AS cicloacademico_form,
+                f.fechainicio, f.fechafinal, f.participantesprog, f.espaciofisico, f.direccion, f.zona, f.socializaron, f.observacion,
+                f.criteriosfactibilidad, f.criteriosfactibilidadurl, f.requisitostecnicos, f.requisitostecnicosurl, f.criterioseticos, f.criterioseticosurl,
+                -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
+                pced.idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
+                pced.prebasica, pced.basica, pced.media, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
+                    CONCAT_WS(', ',
+                        CASE WHEN pced.prebasica THEN 'Prebásica' END,
+                        CASE WHEN pced.basica THEN 'Básica' END,
+                        CASE WHEN pced.media THEN 'Media' END
+                    ) AS nivelacademico_ced,
+                    CONCAT_WS(', ',
+                        CASE WHEN pced.primero THEN 'Primero' END,
+                        CASE WHEN pced.segundo THEN 'Segundo' END,
+                        CASE WHEN pced.tercero THEN 'Tercero' END,
+                        CASE WHEN pced.cuarto THEN 'Cuarto' END,
+                        CASE WHEN pced.quinto THEN 'Quinto' END,
+                        CASE WHEN pced.sexto THEN 'Sexto' END,
+                        CASE WHEN pced.septimo THEN 'Séptimo' END,
+                        CASE WHEN pced.octavo THEN 'Octavo' END,
+                        CASE WHEN pced.noveno THEN 'Noveno' END,
+                        CASE WHEN pced.decimo THEN 'Decimo' END,
+                        CASE WHEN pced.onceavo THEN 'Onceavo' END,
+                        CASE WHEN pced.doceavo THEN 'Doceavo' END
+                    ) AS gradoacademico_ced,
+                ced.iddepartamento, dced.nombre as departamentoced, ced.idmunicipio, mced.nombre as municipioced, ced.idaldea, aced.nombre as aldeaced
+                FROM participantes as p
+                left join departamento dres on p.deptoresidencia = dres.id 
+                left join municipio mres on p.municipioresidencia = mres.id 
+                left join aldeas ares on p.aldearesidencia = ares.id
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
+                left join gradosacademicos g on p.idgradoacademicos = g.id  
+                left join cargodesempeña c on p.idfuncion = c.id
+                
+                left join participantesformacion pf on p.id = pf.idparticipante 
+                left join formacion f on pf.idformacion = f.id 
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
+                left join aldeas aced on ced.idaldea = aced.id 
+
+        `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+//datos del participante por id de la formación
 export const getParticipanteIdFormacionM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -337,7 +493,6 @@ export const getParticipanteIdFormacionM = async (id) => {
         `,
       [id]
     );
-    //console.log(rows);
     return rows;
   } catch (error) {
     throw error;

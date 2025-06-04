@@ -1,10 +1,12 @@
 import { Router } from "express";
 import {
   getParticipanteC,
+  getParticipanteFormacionC,
   getParticipanteIdC,
   getParticipanteIdFormacionC,
   getParticipanteIdFormInvestC,
   getParticipanteIdInvestC,
+  getParticipanteInvestigacionC,
   postParticipantesIFCedC,
   putParticipanteC,
 } from "../controllers/Participante.controller.js";
@@ -13,7 +15,9 @@ const router = Router();
 
 router.get("/participante", getParticipanteC);
 router.get("/participante/:id", getParticipanteIdC);
+router.get("/participanteInvest", getParticipanteInvestigacionC);//
 router.get("/participanteInvest/:id", getParticipanteIdInvestC);
+router.get("/participanteFormacion", getParticipanteFormacionC);//
 router.get("/participanteFormacion/:id", getParticipanteIdFormacionC);
 router.post("/participante/:tipo/:id", getFiltroDocentesC);
 router.put("/participante/:id", putParticipanteC);

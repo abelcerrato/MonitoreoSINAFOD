@@ -22,6 +22,8 @@ import {
     postParticipanteFormacionM,
     getParticipanteDNIM,
     postParticipanteInvestigacionM,
+    getParticipanteFormacionM,
+    getParticipanteInvestigacionM,
 } from "../models/Participante.models.js";
 
 export const getParticipanteC = async (req, res) => {
@@ -75,6 +77,23 @@ export const getParticipanteIdInvestC = async (req, res) => {
     }
 };
 
+//Trae los participantes por formacion
+export const getParticipanteFormacionC = async (req, res) => {
+    try {
+        const Participante = await getParticipanteFormacionM();
+        res.json(Participante);
+    } catch (error) {
+        console.error(
+            "Error al obtener registros de los participantes y su formación:",
+            error
+        );
+        res
+            .status(500)
+            .json({ error: "Error interno del servidor", message: error.message });
+    }
+};
+
+
 //Trae los participantes por el id de la Formacion
 export const getParticipanteIdFormacionC = async (req, res) => {
     try {
@@ -89,6 +108,23 @@ export const getParticipanteIdFormacionC = async (req, res) => {
     } catch (error) {
         console.error("Error al obtener el registro:", error);
         res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+
+//Trae los participantes por formacion
+export const getParticipanteInvestigacionC = async (req, res) => {
+    try {
+        const Participante = await getParticipanteInvestigacionM();
+        res.json(Participante);
+    } catch (error) {
+        console.error(
+            "Error al obtener registros de los participantes y su investigación:",
+            error
+        );
+        res
+            .status(500)
+            .json({ error: "Error interno del servidor", message: error.message });
     }
 };
 
