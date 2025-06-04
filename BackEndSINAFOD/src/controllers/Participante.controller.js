@@ -490,14 +490,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            // Insertar investigaciones
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const inv of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(inv, idPart);
-                    response.investigacion.push(r);
-                }
-            }
+           
         }
         // CASO 2: Existe docente, pero no participante ni centro educativo
         else if (iddocente && !idparticipante && !idcentroeducativo) {
@@ -572,13 +565,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const inv of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(inv, idPart);
-                    response.investigacion.push(r);
-                }
-            }
+            
         }
         // CASO 3: No existe docente, pero sí existe participante y centro educativo
         else if (!iddocente && idparticipante && idcentroeducativo) {
@@ -599,13 +586,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.docentes = docente;
 
-            if (Array.isArray(idformacion)) {
-                response.formacion = [];
-                for (const form of idformacion) {
-                    const r = await postParticipanteFormacionM(form, idparticipante);
-                    response.formacion.push(r);
-                }
-            }
+            
 
             const relacionCed = await postCentroEducativoParticipanteM(
                 idcentroeducativo,
@@ -631,13 +612,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const inv of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(inv, idparticipante);
-                    response.investigacion.push(r);
-                }
-            }
+            
         }
         // CASO 4: Existe docente y participante, pero NO existe centro educativo
         else if (iddocente && idparticipante && !idcentroeducativo) {
@@ -689,14 +664,7 @@ export const postParticipantesIFCedC = async (req, res) => {
                 }
             }
 
-            // Insertar investigacion si viene
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const inv of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(inv, idparticipante);
-                    response.investigacion.push(r);
-                }
-            }
+           
         }
         // CASO 5: Existe docente y centro educativo, pero NO existe participante
         else if (iddocente && !idparticipante && idcentroeducativo) {
@@ -757,16 +725,7 @@ export const postParticipantesIFCedC = async (req, res) => {
                 doceavo
             );
 
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const investigacion of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(
-                        investigacion,
-                        response.participantes
-                    );
-                    response.investigacion.push(r);
-                }
-            }
+           
         }
         // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
         else {
@@ -802,13 +761,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            if (Array.isArray(idinvestigacion)) {
-                response.investigacion = [];
-                for (const inv of idinvestigacion) {
-                    const r = await postParticipanteInvestigacionM(inv, idparticipante);
-                    response.investigacion.push(r);
-                }
-            }
+           
         }
 
         return res.status(201).json({
