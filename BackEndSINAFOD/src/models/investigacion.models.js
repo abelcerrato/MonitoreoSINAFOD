@@ -92,7 +92,7 @@ export const postInvestigacionM = async (
       `
             INSERT INTO investigacion (investigacion, tipoactividad, existeconvenio, institucionconvenio,
                                         presupuesto, duracion, funciondirigido, prebasica, basica, media, 
-                                        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor,fechacreacion) 
+                                        fechainicio, fechafinal, direccion, socializaron, observacion, creadopor, fechacreacion, tipomoneda) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,  CURRENT_TIMESTAMP, $17) 
             RETURNING id`,
       [
@@ -112,7 +112,7 @@ export const postInvestigacionM = async (
         socializaron,
         observacion,
         creadopor,
-        tipomoneda,
+        tipomoneda
       ]
     );
     console.log("Id investigacion: " + rows[0].id);
