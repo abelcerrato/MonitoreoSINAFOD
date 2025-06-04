@@ -345,7 +345,7 @@ const Investigacion = () => {
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Typography variant="h4" sx={{ color: color.primary.azul }}>
+          <Typography variant="h4"  sx={{ fontWeight: "bold", color: color.primary.azul }}>
             Actualizar Datos sobre la Investigación
           </Typography>
 

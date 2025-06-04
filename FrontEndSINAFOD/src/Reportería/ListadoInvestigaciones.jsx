@@ -354,7 +354,10 @@ const ListadoActividad = () => {
   return (
     <Dashboard>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
-        <Typography variant="h3" sx={{ color: color.primary.azul, mb: 5 }}>
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: "bold", color: color.primary.azul, mb: 5 }}
+        >
           Listado de Investigaciones
         </Typography>
 

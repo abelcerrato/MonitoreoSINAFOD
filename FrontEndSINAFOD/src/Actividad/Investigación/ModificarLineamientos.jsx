@@ -266,7 +266,7 @@ const LineamientosI = () => {
       formData.presentoprotocolourl || existingFiles.presentoprotocolourl;
     formDataToSend.append(
       "estadoprotocolo",
-      hasProtocoloFile ? "Completa" : "Incompleta"
+      hasProtocoloFile ? "Completo" : "Incompleto"
     );
 
     // Contador de archivos subidos
@@ -541,6 +541,7 @@ const LineamientosI = () => {
           <Typography
             variant="h4"
             sx={{
+              fontWeight: "bold",
               color: color.primary.azul,
               fontSize: {
                 xs: "1.5rem",
@@ -580,6 +581,7 @@ const LineamientosI = () => {
           <Typography
             variant="h4"
             sx={{
+              fontWeight: "bold",
               color: color.primary.azul,
               fontSize: {
                 xs: "1.5rem",

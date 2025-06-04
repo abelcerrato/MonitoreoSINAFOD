@@ -66,11 +66,13 @@ export const getIdCentroEducativoIdDeptoM = async (iddepto, idmuni) => {
             left join aldeas a on ced.idaldea = a.id 
             inner join nivelesacademicos na on ced.idnivelacademico=na.id
             where ced.iddepartamento=$1 and ced.idmunicipio=$2
+
             order by ced.nombreced asc
         `,
       [iddepto, idmuni]
     );
-
+    /*          WHERE (ced.iddepartamento = $1 OR $1 IS NULL)
+              AND (ced.idmunicipio = $2 OR $2 IS NULL) */
     return rows;
   } catch (error) {
     throw error;

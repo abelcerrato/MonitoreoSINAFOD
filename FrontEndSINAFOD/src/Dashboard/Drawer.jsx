@@ -42,6 +42,7 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
+  console.log(permissions);
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
@@ -398,6 +399,32 @@ const ProjectDrawer = ({ open }) => {
                     primary="Listado de Investigaciones"
                     primaryTypographyProps={{
                       color: isActive("/Reportería/Listado_De_Investigaciones")
+                        ? color.primary.azul
+                        : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
+              {tienePermiso(8) && (
+                <MuiMenuItem
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_Investigadores")
+                  }
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={
+                        isActive("/Reportería/Listado_Investigadores")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Investigadores"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_Investigadores")
                         ? color.primary.azul
                         : "inherit",
                     }}

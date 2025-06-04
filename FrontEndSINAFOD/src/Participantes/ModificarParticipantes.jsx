@@ -66,7 +66,7 @@ const ModificarParticipante = () => {
 
     idcentroeducativo: "",
     idcentropart: "",
-    
+
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
@@ -100,26 +100,42 @@ const ModificarParticipante = () => {
   };
 
   useEffect(() => {
-    const obtenerDetalles = async () => {
+    const obtenerDetallesYCentros = async () => {
       try {
-        const response = await axios.get(
+        // 1. Obtener datos del participante
+        const responseParticipante = await axios.get(
           `${process.env.REACT_APP_API_URL}/participante/${id}`
         );
 
-        const datos = response.data[0];
+        const datosParticipante = responseParticipante.data[0];
+        console.log(responseParticipante.data);
 
-        if (datos.fechanacimiento) {
-          const fecha = new Date(datos.fechanacimiento);
-          datos.fechanacimiento = fecha.toISOString().split("T")[0];
+        if (datosParticipante.fechanacimiento) {
+          const fecha = new Date(datosParticipante.fechanacimiento);
+          datosParticipante.fechanacimiento = fecha.toISOString().split("T")[0];
         }
-        setFormData(datos);
+
+        setFormData(datosParticipante); // Si aún necesitas formData para otros campos
+
+        // 2. Extraer iddepartamento e idmunicipio y usarlos directamente
+        const { iddepartamento, idmunicipio } = datosParticipante;
+
+        if (iddepartamento && idmunicipio) {
+          // 3. Obtener centros educativos usando los datos del participante
+          const responseCentros = await axios.get(
+            `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${iddepartamento}/${idmunicipio}`
+          );
+
+          setCentrosEducativos(responseCentros.data);
+          console.log(responseCentros.data);
+        }
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
     };
 
-    obtenerDetalles();
-  }, [id]);
+    obtenerDetallesYCentros();
+  }, [id]); // Dependencia solo en `id`, no en formData
 
   const handleSave = async () => {
     try {
@@ -374,22 +390,6 @@ const ModificarParticipante = () => {
     obtenerfuncion();
   }, []);
 
-  // Obtener centreos educativos del participante
-  useEffect(() => {
-    const obtenerCentrosEducativos = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/centroeducativo`
-        );
-        setCentrosEducativos(response.data);
-      } catch (error) {
-        console.error("Error al obtener los departamentos", error);
-      }
-    };
-
-    obtenerCentrosEducativos();
-  }, []);
-
   return (
     <>
       <Dashboard>
@@ -400,8 +400,13 @@ const ModificarParticipante = () => {
         >
           <Grid container alignItems="center" spacing={2}>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Actualización de Participantes
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: "bold", color: color.primary.azul }}
+              >
+                {formacioninvest === "investigacion"
+                  ? "Actualizar de Investigadores"
+                  : "Actualizar de Participantes"}
               </Typography>
             </Grid>
             <Grid
@@ -430,7 +435,9 @@ const ModificarParticipante = () => {
               onChange={handleChangeValues}
             >
               <Tab label="Datos Generales del Participante" value="1" />
+              {formacioninvest !== "investigacion" && (
               <Tab label="Datos del Centro Educativo" value="2" />
+              )}
             </Tabs>
 
             {/* Tab 1: Datos Generales del Participante */}
@@ -722,6 +729,229 @@ const ModificarParticipante = () => {
               <TabPanel value="2">
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Departamento Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="iddepartamento"
+                        value={formData?.iddepartamento || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione un departamento
+                        </MenuItem>
+                        {departamentos.length > 0 ? (
+                          departamentos.map((dep) => (
+                            <MenuItem key={dep.id} value={dep.id}>
+                              {dep.nombre}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Cargando...</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Municipio Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        id="idmunicipio"
+                        name="idmunicipio"
+                        value={formData?.idmunicipio || ""}
+                        onChange={handleChange}
+                        disabled={!municipios.length}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione un municipio
+                        </MenuItem>
+                        {municipios.map((municipio) => (
+                          <MenuItem key={municipio.id} value={municipio.id}>
+                            {municipio.municipio}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Aldea Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="idaldea"
+                        value={formData?.idaldea || ""}
+                        onChange={handleChange}
+                        disabled={!aldeas.length}
+                      >
+                        <MenuItem value="" disabled>
+                          Seleccione una aldea
+                        </MenuItem>
+                        {aldeas.length > 0 ? (
+                          aldeas.map((ald) => (
+                            <MenuItem key={ald.id} value={ald.id}>
+                              {ald.aldea}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Seleccione una aldea</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        freeSolo
+                        options={centroseducativos}
+                        getOptionLabel={(option) =>
+                          typeof option === "string" ? option : option.nombreced
+                        }
+                        value={formData.nombreced || ""}
+                        onInputChange={(event, newInputValue) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            nombreced: newInputValue,
+                          }));
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props}>
+                            <div>
+                              <strong>{option.nombreced}</strong>
+                              <div style={{ fontSize: "0.8rem" }}>
+                                {option.departamentoced} - {option.municipioced}{" "}
+                                | {option.nivelacademico}
+                              </div>
+                            </div>
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField {...params} label="" />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Código SACE del Centro Educativo
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      name="codigosaceced"
+                      value={formData?.codigosaceced}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Tipo de Administración
+                      </Typography>
+                      <RadioGroup
+                        row
+                        name="tipoadministracion"
+                        value={formData?.tipoadministracion}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tipoadministracion: e.target.value,
+                          })
+                        }
+                      >
+                        <FormControlLabel
+                          value="Gubernamental"
+                          control={<Radio />}
+                          label="Gubernamental"
+                        />
+                        <FormControlLabel
+                          value="No Gubernamental"
+                          control={<Radio />}
+                          label="No Gubernamental"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Tipo de Centro Educativo*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="tipocentro"
+                        value={formData?.tipocentro || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Unidocente">Unidocente</MenuItem>
+                        <MenuItem value="Bidocente">Bidocente</MenuItem>
+                        <MenuItem value="Multidocente">Multidocente</MenuItem>
+                        <MenuItem value="No es centro educativo">
+                          No es centro educativo
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Jornada que Atiende*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="jornada"
+                        value={formData?.jornada || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Matutina">Matutina</MenuItem>
+                        <MenuItem value="Vespertina">Vespertina</MenuItem>
+                        <MenuItem value="Nocturna">Nocturna</MenuItem>
+                        <MenuItem value="Mixta">Mixta</MenuItem>
+                        <MenuItem value="Ninguna">Ninguna</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <FormControl fullWidth>
+                      <Typography variant="subtitle1">
+                        Modalidad que Atiende*
+                      </Typography>
+                      <Select
+                        fullWidth
+                        name="modalidad"
+                        value={formData?.modalidad || ""}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Virtual">Virtual</MenuItem>
+                        <MenuItem value="Presencial">Presencial</MenuItem>
+                        <MenuItem value="Bimodal">Bimodal</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Zona Centro Educativo
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="zona"
+                        value={formData?.zona}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Rural">Rural</MenuItem>
+                        <MenuItem value="Urbana">Urbana</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">Nivel Educativo</Typography>
 
                     <Grid container spacing={2}>
@@ -948,213 +1178,6 @@ const ModificarParticipante = () => {
                           ))
                         ) : (
                           <MenuItem disabled>Cargando...</MenuItem>
-                        )}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Centro Educativo
-                    </Typography>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        freeSolo
-                        options={centroseducativos.map((cen) => cen.nombreced)}
-                        value={formData?.nombreced || ""}
-                        onInputChange={(event, newInputValue) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            nombreced: newInputValue,
-                          }));
-                        }}
-                        renderInput={(params) => <TextField {...params} />}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Código SACE del Centro Educativo
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      name="codigosaceced"
-                      value={formData?.codigosaceced}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <FormControl fullWidth>
-                      <Typography variant="subtitle1">
-                        Tipo de Administración
-                      </Typography>
-                      <RadioGroup
-                        row
-                        name="tipoadministracion"
-                        value={formData?.tipoadministracion}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            tipoadministracion: e.target.value,
-                          })
-                        }
-                      >
-                        <FormControlLabel
-                          value="Gubernamental"
-                          control={<Radio />}
-                          label="Gubernamental"
-                        />
-                        <FormControlLabel
-                          value="No Gubernamental"
-                          control={<Radio />}
-                          label="No Gubernamental"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <FormControl fullWidth>
-                      <Typography variant="subtitle1">
-                        Tipo de Centro Educativo*
-                      </Typography>
-                      <Select
-                        fullWidth
-                        name="tipocentro"
-                        value={formData?.tipocentro || ""}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="Unidocente">Unidocente</MenuItem>
-                        <MenuItem value="Bidocente">Bidocente</MenuItem>
-                        <MenuItem value="Multidocente">Multidocente</MenuItem>
-                        <MenuItem value="No es centro educativo">
-                          No es centro educativo
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <FormControl fullWidth>
-                      <Typography variant="subtitle1">
-                        Jornada que Atiende*
-                      </Typography>
-                      <Select
-                        fullWidth
-                        name="jornada"
-                        value={formData?.jornada || ""}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="Matutina">Matutina</MenuItem>
-                        <MenuItem value="Vespertina">Vespertina</MenuItem>
-                        <MenuItem value="Nocturna">Nocturna</MenuItem>
-                        <MenuItem value="Mixta">Mixta</MenuItem>
-                        <MenuItem value="Ninguna">Ninguna</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <FormControl fullWidth>
-                      <Typography variant="subtitle1">
-                        Modalidad que Atiende*
-                      </Typography>
-                      <Select
-                        fullWidth
-                        name="modalidad"
-                        value={formData?.modalidad || ""}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="Virtual">Virtual</MenuItem>
-                        <MenuItem value="Presencial">Presencial</MenuItem>
-                        <MenuItem value="Bimodal">Bimodal</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Zona Centro Educativo
-                    </Typography>
-                    <FormControl fullWidth>
-                      <Select
-                        name="zona"
-                        value={formData?.zona}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="Rural">Rural</MenuItem>
-                        <MenuItem value="Urbana">Urbana</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Departamento Centro Educativo
-                    </Typography>
-                    <FormControl fullWidth>
-                      <Select
-                        name="iddepartamento"
-                        value={formData?.iddepartamento || ""}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="" disabled>
-                          Seleccione un departamento
-                        </MenuItem>
-                        {departamentos.length > 0 ? (
-                          departamentos.map((dep) => (
-                            <MenuItem key={dep.id} value={dep.id}>
-                              {dep.nombre}
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <MenuItem disabled>Cargando...</MenuItem>
-                        )}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Municipio Centro Educativo
-                    </Typography>
-                    <FormControl fullWidth>
-                      <Select
-                        id="idmunicipio"
-                        name="idmunicipio"
-                        value={formData?.idmunicipio || ""}
-                        onChange={handleChange}
-                        disabled={!municipios.length}
-                      >
-                        <MenuItem value="" disabled>
-                          Seleccione un municipio
-                        </MenuItem>
-                        {municipios.map((municipio) => (
-                          <MenuItem key={municipio.id} value={municipio.id}>
-                            {municipio.municipio}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">
-                      Aldea Centro Educativo
-                    </Typography>
-                    <FormControl fullWidth>
-                      <Select
-                        name="idaldea"
-                        value={formData?.idaldea || ""}
-                        onChange={handleChange}
-                        disabled={!aldeas.length}
-                      >
-                        <MenuItem value="" disabled>
-                          Seleccione una aldea
-                        </MenuItem>
-                        {aldeas.length > 0 ? (
-                          aldeas.map((ald) => (
-                            <MenuItem key={ald.id} value={ald.id}>
-                              {ald.aldea}
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <MenuItem disabled>Seleccione una aldea</MenuItem>
                         )}
                       </Select>
                     </FormControl>

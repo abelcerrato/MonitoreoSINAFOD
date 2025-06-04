@@ -165,34 +165,34 @@ export const getParticipanteIdM = async (id) => {
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id
-                inner join nivelesacademicos n on p.idnivelacademicos = n.id 
+                left join nivelesacademicos n on p.idnivelacademicos = n.id 
                 left join ciclosacademicos ciclo on p.idcicloacademicos = ciclo.id 
-                inner join gradosacademicos g on p.idgradoacademicos = g.id  
-                inner join cargodesempeña c on p.idfuncion = c.id
-                inner join participantescentroeducativo pced on p.id = pced.idparticipante 
-                inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
-                inner join cargodesempeña c2 on pced.cargo = c2.id
-                inner join departamento dced on ced.iddepartamento = dced.id 
-                inner join municipio mced on ced.idmunicipio = mced.id
+                left join gradosacademicos g on p.idgradoacademicos = g.id  
+                left join cargodesempeña c on p.idfuncion = c.id
+                left join participantescentroeducativo pced on p.id = pced.idparticipante 
+                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                left join cargodesempeña c2 on pced.cargo = c2.id
+                left join departamento dced on ced.iddepartamento = dced.id 
+                left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
             WHERE p.id=$1
             order by p.id desc
         `,
       [id]
     );
+    console.log(rows);
+
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
-
-
 //datos del participante y la investigación
 export const getParticipanteInvestigacionM = async () => {
   try {
     const { rows } = await pool.query(
-          ` SELECT 
+      ` SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre,  TO_CHAR(p.fechanacimiento, 'DD/MM/YYYY') as fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
@@ -222,14 +222,13 @@ export const getParticipanteInvestigacionM = async () => {
                 left join cargodesempeña c on p.idfuncion = c.id
                 inner join participantesinvestigacion pi on p.id= pi.idparticipante 
                 left join investigacion i on pi.idinvestigacion =i.id
-            `);
+            `
+    );
     return rows;
   } catch (error) {
     throw error;
   }
 };
-
-
 
 //datos del participante y por id de la investigación
 export const getParticipanteIdInvestM = async (id) => {
@@ -308,8 +307,6 @@ export const getParticipanteIdInvestM = async (id) => {
   }
 };
 
-
-
 //datos del participante y la formación
 export const getParticipanteFormacionM = async () => {
   try {
@@ -380,14 +377,13 @@ export const getParticipanteFormacionM = async () => {
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
 
-        `);
+        `
+    );
     return rows;
   } catch (error) {
     throw error;
   }
 };
-
-
 
 //datos del participante por id de la formación
 export const getParticipanteIdFormacionM = async (id) => {

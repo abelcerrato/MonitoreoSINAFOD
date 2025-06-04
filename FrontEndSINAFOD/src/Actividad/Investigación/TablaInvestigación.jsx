@@ -119,8 +119,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [qrUrl, setQrUrl] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
 
   const handleOpen = (id) => {
     setSelectedId(id);
@@ -146,50 +144,64 @@ export default function TablaActividad(isSaved, setIsSaved) {
       selectedRow &&
       selectedRow.estado_lineamientos === "No Lleno Lineamientos"
     ) {
-      await Swal.fire({
+      const result = await Swal.fire({
         title: "¡Advertencia!",
         html: `Esta <b>investigación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
-        confirmButtonText: "Ok",
+        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
       });
+
+      if (!result.isConfirmed) {
+        return false; 
+      }
     } else if (
       selectedRow &&
       selectedRow.estado_lineamientos === "Lineamientos Incompletos"
     ) {
-      await Swal.fire({
+      const result = await Swal.fire({
         title: "¡Advertencia!",
         html: `Esta <b>investigación</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
-        confirmButtonText: "Ok",
+        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
       });
+      if (!result.isConfirmed) {
+        return false; 
+      }
     }
+
+    return true; // Indica que se puede continuar
   };
 
   const handleinvestigacion = async (id) => {
-    await checkLineamientos(id);
-    navigate(`/Actualizar_Investigación/${id}`);
+    const puedeContinuar = await checkLineamientos(id);
+    if (puedeContinuar) {
+      navigate(`/Actualizar_Investigación/${id}`);
+    }
   };
 
   const handleLineamientosinvestigacion = async (id) => {
-    await checkLineamientos(id);
-    navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
+    const puedeContinuar = await checkLineamientos(id);
+    if (puedeContinuar) {
+      navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
+    }
   };
-
-
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
   const tienePermiso = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.actualizar === true;
   };
 
   const columns = [
-    ...(tienePermiso(5)
+    ...(tienePermiso(1)
       ? [
           {
             field: "actions",
@@ -214,14 +226,14 @@ export default function TablaActividad(isSaved, setIsSaved) {
                     <ChecklistIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Ver Detalles">
+                {/* <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
                     color="info"
                   >
                     <RemoveRedEyeIcon />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
               </>
             ),
           },
@@ -301,22 +313,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
           handleClose={() => setOpen(false)}
           id={selectedId}
         />
-        <Dialog
-          open={openModal}
-          onClose={handleCloseModal}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>Escanea este QR</DialogTitle>
-          <DialogContent style={{ textAlign: "center" }}>
-            {qrUrl && (
-              <>
-                <QRCodeCanvas value={qrUrl} size={200} />
-                <p style={{ marginTop: "10px" }}>{qrUrl}</p>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
       </Paper>
     </Dashboard>
   );

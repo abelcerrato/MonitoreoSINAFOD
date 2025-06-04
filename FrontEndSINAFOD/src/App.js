@@ -27,6 +27,7 @@ import FormularioExterno from "./Participantes/FormularioExterno";
 import ModificarParticipante from "./Participantes/ModificarParticipantes";
 
 import ListadoInvestigación from "./Reportería/ListadoInvestigaciones";
+import ListadoInvestigadores from "./Reportería/ListadoInvestigadores";
 import ListadoParticipantes from "./Reportería/ListadoParticipantes";
 import ListadoActividad from "./Reportería/ListadoCapacitaciones";
 
@@ -159,200 +160,83 @@ function App() {
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-
             {/* Investigación */}
             <Route
               path="/Listado_De_Investigaciones"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <TablaInvestigacion />
-                </PermissionValidator>
-              }
+              element={<TablaInvestigacion />}
             />
             <Route
               path="/Lineamientos_De_Investigación"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <LineamientosI />
-                </PermissionValidator>
-              }
+              element={<LineamientosI />}
             />
             <Route
               path="/Actualizar_Lineamientos_De_Investigación/:id"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <LineamientosM />
-                </PermissionValidator>
-              }
+              element={<LineamientosM />}
             />
-            <Route
-              path="/Investigación"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <Investigación />
-                </PermissionValidator>
-              }
-            />
+            <Route path="/Investigación" element={<Investigación />} />
             <Route
               path="/Actualizar_Investigación/:id"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <ActualizarInvestigación />
-                </PermissionValidator>
-              }
+              element={<ActualizarInvestigación />}
             />
-
             {/* Formación */}
             <Route
               path="/Listado_De_Formaciones"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.INVESTIGACION}
-                >
-                  <TablaFormacion />
-                </PermissionValidator>
-              }
+              element={<TablaFormacion />}
             />
             <Route
               path="/Lineamientos_De_Formación"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
-                  <LineamientosF />
-                </PermissionValidator>
-              }
+              element={<LineamientosF />}
             />
             <Route
               path="/Actualizar_Lineamientos_De_Formación/:id"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
-                  <LineamientosFormacionM />
-                </PermissionValidator>
-              }
+              element={<LineamientosFormacionM />}
             />
-            <Route
-              path="/Formación"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
-                  <Formacion />
-                </PermissionValidator>
-              }
-            />
+            <Route path="/Formación" element={<Formacion />} />
             <Route
               path="/Actualizar_Formación/:id"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.FORMACION}>
-                  <ActualizarFormacion />
-                </PermissionValidator>
-              }
+              element={<ActualizarFormacion />}
             />
-
             {/* Participantes */}
-            <Route
-              path="/Participantes"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.PARTICIPANTES}
-                >
-                  <Participantes />
-                </PermissionValidator>
-              }
-            />
+            <Route path="/Participantes" element={<Participantes />} />
             <Route
               path="/Modificar_Participante/:id"
-              element={
-                <PermissionValidator
-                  requiredPermission={PERMISSIONS.PARTICIPANTES}
-                >
-                  <ModificarParticipante />
-                </PermissionValidator>
-              }
+              element={<ModificarParticipante />}
             />
-
             {/* Reportería */}
             <Route
               path="/Reportería/Listado_Participantes"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
-                  <ListadoParticipantes />
-                </PermissionValidator>
-              }
+              element={<ListadoParticipantes />}
+            />
+            <Route
+              path="/Reportería/Listado_Investigadores"
+              element={<ListadoInvestigadores />}
             />
             <Route
               path="/Reportería/Listado_De_Acciones_Formativas"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
-                  <ListadoActividad />
-                </PermissionValidator>
-              }
+              element={<ListadoActividad />}
             />
-
             <Route
               path="/Reportería/Listado_De_Investigaciones"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.REPORTES}>
-                  <ListadoInvestigación />
-                </PermissionValidator>
-              }
+              element={<ListadoInvestigación />}
             />
-
             {/* Seguridad */}
-            <Route
-              path="/Seguridad/Usuarios"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
-                  <Usuarios />
-                </PermissionValidator>
-              }
-            />
+            <Route path="/Seguridad/Usuarios" element={<Usuarios />} />
             <Route
               path="/Seguridad/Registrar_Usuario"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
-                  <RegistroUsuario />
-                </PermissionValidator>
-              }
+              element={<RegistroUsuario />}
             />
             <Route
               path="/Seguridad/Actualizar_Usuario/:id"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.USUARIOS}>
-                  <ModificarUsuario />
-                </PermissionValidator>
-              }
+              element={<ModificarUsuario />}
             />
-            <Route
-              path="/Seguridad/Roles-y-Permisos"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
-                  <Permisos />
-                </PermissionValidator>
-              }
-            />
+            <Route path="/Seguridad/Roles-y-Permisos" element={<Permisos />} />
             <Route
               path="/Seguridad/Registrar_Rol-y-Permisos"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
-                  <RegistroRol />
-                </PermissionValidator>
-              }
+              element={<RegistroRol />}
             />
             <Route
               path="/Seguridad/Actualizar_Rol-y-Permisos/:id"
-              element={
-                <PermissionValidator requiredPermission={PERMISSIONS.ROLES}>
-                  <ModificarRol />
-                </PermissionValidator>
-              }
+              element={<ModificarRol />}
             />
           </Route>
         </Routes>
