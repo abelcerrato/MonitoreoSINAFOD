@@ -135,7 +135,7 @@ export const getParticipanteIdM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion,  c.cargo as cargopart,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
@@ -198,7 +198,7 @@ export const getParticipanteInvestigacionM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -241,7 +241,7 @@ export const getParticipanteIdInvestM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -318,7 +318,7 @@ export const getParticipanteFormacionM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
                 
                 -------------------DATOS DE LA FORMACION------------------
                 pf.idformacion, f.formacion, f.tipoactividad, f.existeconvenio, f.institucionconvenio, f.responsablefirmas, f.ambitoformacion, f.tipoformacion, f.modalidad, f.plataforma, f.duracion, f.estado, f.funciondirigido,
@@ -396,7 +396,7 @@ export const getParticipanteIdFormacionM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
                 
                 -------------------DATOS DE LA FORMACION------------------
                 pf.idformacion, f.formacion, f.tipoactividad, f.existeconvenio, f.institucionconvenio, f.responsablefirmas, f.ambitoformacion, f.tipoformacion, f.modalidad, f.plataforma, f.duracion, f.estado, f.funciondirigido,
