@@ -36,3 +36,17 @@ export const getMunicipioxIdDepto = async (municipioced) => {
     }
 }
 
+
+export const getMunicipiosM = async () => {
+    try {
+        const { rows } = await pool.query(`
+            select m.id, m.nombre as municipio 
+            from municipio m 
+            order by m.nombre asc`)
+
+        return rows
+    } catch (error) {
+
+        throw error;
+    }
+}
