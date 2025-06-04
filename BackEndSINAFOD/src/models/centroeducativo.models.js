@@ -49,6 +49,38 @@ export const getIdCentroEducativoM = async (id) => {
   }
 };
 
+
+//get de centros educativos por id del departamento
+export const getIdCentroEducativoIdDeptoM = async (id) => {
+  try {
+    const { rows } = await pool.query(
+      `
+            SELECT 
+                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico, ced.zona, 
+                ced.iddepartamento, d.nombre as departamentoced,
+                ced.idmunicipio, m.nombre  as municipioced,
+                ced.idaldea, a.nombre as aldeaced
+            FROM centroeducativo as ced
+            inner join departamento d on ced.iddepartamento = d.id
+            inner join municipio m on ced.idmunicipio = m.id 
+            left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
+            where ced.iddepartamento=$1
+            order by ced.nombreced asc
+        `,
+      [id]
+    );
+
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
+
 //get de centros educativos por id del registro del centro educativo
 export const getIdCentroEducativoSACEM = async (codigosace) => {
   try {

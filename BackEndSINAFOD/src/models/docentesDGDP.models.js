@@ -145,7 +145,7 @@ export const putDocentesM = async (
 
 //para buscar por identificacion en tabla de docentesdgdp
 export const getDocenteIdentificacionM = async (filtro) => {
-  console.log(filtro);
+  //console.log(filtro);
 
   try {
     const { rows } = await pool.query(
@@ -168,7 +168,7 @@ export const getDocenteIdentificacionM = async (filtro) => {
             `,
       [filtro]
     );
-    console.log(rows);
+   // console.log(rows);
     if (rows.length === 0) {
       return null;
     }

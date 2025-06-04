@@ -1,4 +1,4 @@
-import { getCentroEducativoParticipanteM, getCentroEducativoM, getIdCentroEducativoM, postCentroEducativoM, putCentroEducativoM } from "../models/centroeducativo.models.js";
+import { getCentroEducativoParticipanteM, getCentroEducativoM, getIdCentroEducativoM, postCentroEducativoM, putCentroEducativoM, getIdCentroEducativoIdDeptoM } from "../models/centroeducativo.models.js";
 
 
 export const getCentroEducativoC = async (req, res) => {
@@ -29,6 +29,26 @@ export const getIdCentroEducativoC = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+
+
+//Trae los centros educativos por el id del departamento
+export const getIdCentroEducativoIdDeptoC = async (req, res) => {
+    try {
+        const { id } = req.params
+        const CentroEducativo = await getIdCentroEducativoIdDeptoM(id);
+
+        if (!CentroEducativo) {
+            return res.status(404).json({ message: "Registro no encontrado" });
+        }
+
+        res.json(CentroEducativo)
+
+    } catch (error) {
+        console.error('Error al obtener el registro:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
 
 
 
