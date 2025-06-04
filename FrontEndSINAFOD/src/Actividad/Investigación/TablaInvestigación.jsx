@@ -157,7 +157,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
       });
 
       if (!result.isConfirmed) {
-        return false; 
+        return false;
       }
     } else if (
       selectedRow &&
@@ -175,7 +175,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
         reverseButtons: true,
       });
       if (!result.isConfirmed) {
-        return false; 
+        return false;
       }
     }
 
@@ -239,7 +239,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
           },
         ]
       : []),
-    { field: "id", headerName: "ID", width: 50 },
+    { field: "id", headerName: "ID", width: 90 },
     {
       field: "investigacion",
       headerName: "Nombre de la Investigación",

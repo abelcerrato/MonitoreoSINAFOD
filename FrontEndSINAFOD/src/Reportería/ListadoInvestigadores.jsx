@@ -51,8 +51,8 @@ const ListadoInvestigadores = () => {
   const [filterValue, setFilterValue] = useState("");
   const [departamentos, setDepartamentos] = useState([]);
   const [municipios, setMunicipios] = useState([]);
-  const [niveles, setNiveles] = useState([]);
-  const [grados, setGrados] = useState([]);
+
+  const [funcion, setFuncion] = useState([]);
 
   useEffect(() => {
     // Obtener los datos de los participantes después de guardar
@@ -73,20 +73,9 @@ const ListadoInvestigadores = () => {
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
       .then((response) => setDepartamentos(response.data));
     axios
-      .get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`)
-      .then((response) => setNiveles(response.data));
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/gradosAcademicos`)
-      .then((response) => setGrados(response.data));
+      .get(`${process.env.REACT_APP_API_URL}/cargodes`)
+      .then((response) => setFuncion(response.data));
   }, []);
-
-  useEffect(() => {
-    if (filterColumn === "municipioced" && filterValue) {
-      axios
-        .get(`${process.env.REACT_APP_API_URL}/municipios/${filterValue}`)
-        .then((response) => setMunicipios(response.data));
-    }
-  }, [filterColumn, filterValue]);
 
   useEffect(() => {
     if (!filterColumn || !filterValue) {
@@ -302,19 +291,12 @@ const ListadoInvestigadores = () => {
                 <MenuItem value="gradoacademico">
                   Grado Académico del Participante
                 </MenuItem>
-                <MenuItem value="gradoacademico">Cargo que Desempeña</MenuItem>
+                <MenuItem value="cargopart">Cargo que Desempeña</MenuItem>
                 <MenuItem value="añosdeservicio">Años de Servicio</MenuItem>
                 <MenuItem value="departamento">
                   Departamento en el que Reside
                 </MenuItem>
-                <MenuItem value="municipio">
-                  Municipio en el que Reside
-                </MenuItem>
-                <MenuItem value="aldea">Aldea en el que Reside</MenuItem>
-                <MenuItem value="nombreced">Centro Educativo</MenuItem>
-                <MenuItem value="nivelacademico">
-                  Nivel Educativo que Atiende
-                </MenuItem>
+                <MenuItem value="caserio">Caserio</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -323,19 +305,11 @@ const ListadoInvestigadores = () => {
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Hombre">Hombre</MenuItem>
-                  <MenuItem value="Femenino">Mujer</MenuItem>
+                  <MenuItem value="Masculino">Masculino</MenuItem>
+                  <MenuItem value="Femenino">Femenino</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "zona" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar zona</MenuItem>
-                  <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbana</MenuItem>
-                </Select>
-              </FormControl>
-            ) : ["departamento", "departamentoced"].includes(filterColumn) ? (
+            ) : filterColumn === "departamento" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar departamento</MenuItem>
@@ -346,47 +320,39 @@ const ListadoInvestigadores = () => {
                   ))}
                 </Select>
               </FormControl>
-            ) : ["municipio", "municipioced"].includes(filterColumn) ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar municipio</MenuItem>
-                  {municipios.map((mun) => (
-                    <MenuItem key={mun.id} value={mun.id}>
-                      {mun.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ) : filterColumn === "idnivelesacademicos" ? (
+            ) : filterColumn === "nivelacademico" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar nivel</MenuItem>
-                  {niveles.map((niv) => (
-                    <MenuItem key={niv.id} value={niv.id}>
-                      {niv.nombre}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Media">Media</MenuItem>
+                  <MenuItem value="Superior">Superior</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "idgradosacademicos" ? (
+            ) : filterColumn === "gradoacademico" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar grado</MenuItem>
-                  {grados.map((gra) => (
-                    <MenuItem key={gra.id} value={gra.id}>
-                      {gra.gradoacademico}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Técnico">Técnico</MenuItem>
+                  <MenuItem value="Licenciatura">Licenciatura</MenuItem>
+                  <MenuItem value="Maestría">Maestría</MenuItem>
+                  <MenuItem value="Doctorado">Doctorado</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "tipoadministracion" ? (
+            ) : filterColumn === "cargopart" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">
-                    Seleccionar Tipo de Administración
+                  <MenuItem value="" disabled>
+                    Seleccione un cargo
                   </MenuItem>
-                  <MenuItem value="Gubernamental">Gubernamental</MenuItem>
-                  <MenuItem value="No Gubernamental">No Gubernamental</MenuItem>
+                  {funcion.length > 0 ? (
+                    funcion.map((dep) => (
+                      <MenuItem key={dep.cargo} value={dep.cargo}>
+                        {dep.cargo}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>Cargando...</MenuItem>
+                  )}
                 </Select>
               </FormControl>
             ) : (
