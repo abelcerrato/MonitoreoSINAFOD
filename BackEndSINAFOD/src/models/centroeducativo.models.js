@@ -51,7 +51,7 @@ export const getIdCentroEducativoM = async (id) => {
 
 
 //get de centros educativos por id del departamento
-export const getIdCentroEducativoIdDeptoM = async (id) => {
+export const getIdCentroEducativoIdDeptoM = async (iddepto, idmuni) => {
   try {
     const { rows } = await pool.query(
       `
@@ -65,10 +65,10 @@ export const getIdCentroEducativoIdDeptoM = async (id) => {
             inner join municipio m on ced.idmunicipio = m.id 
             left join aldeas a on ced.idaldea = a.id 
             inner join nivelesacademicos na on ced.idnivelacademico=na.id
-            where ced.iddepartamento=$1
+            where ced.iddepartamento=$1 and ced.idmunicipio=$2
             order by ced.nombreced asc
         `,
-      [id]
+      [iddepto, idmuni]
     );
 
     return rows;

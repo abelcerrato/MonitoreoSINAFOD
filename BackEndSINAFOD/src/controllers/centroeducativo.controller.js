@@ -34,8 +34,8 @@ export const getIdCentroEducativoC = async (req, res) => {
 //Trae los centros educativos por el id del departamento
 export const getIdCentroEducativoIdDeptoC = async (req, res) => {
     try {
-        const { id } = req.params
-        const CentroEducativo = await getIdCentroEducativoIdDeptoM(id);
+        const { iddepto, idmuni } = req.params
+        const CentroEducativo = await getIdCentroEducativoIdDeptoM(iddepto, idmuni);
 
         if (!CentroEducativo) {
             return res.status(404).json({ message: "Registro no encontrado" });

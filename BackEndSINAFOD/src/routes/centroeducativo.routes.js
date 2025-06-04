@@ -10,6 +10,6 @@ router.post('/centroeducativo', postCentroEducativoC)
 router.put('/centroeducativo/:id', putCentroEducativoC)
 
 
-router.get('/centroeducativoiddepto/:id', getIdCentroEducativoIdDeptoC)
+router.get('/centroeducativoiddepto/:iddepto:idmuni', getIdCentroEducativoIdDeptoC)
 
 export default router;
