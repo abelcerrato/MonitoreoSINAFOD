@@ -270,7 +270,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
   };
 
   const columns = [
-    ...(tienePermiso(5)
+    ...(tienePermiso(2)
       ? [
           {
             field: "actions",
@@ -304,14 +304,14 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Ver Detalles">
+                {/* <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
                     color="info"
                   >
                     <RemoveRedEyeIcon />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
               </>
             ),
           },
