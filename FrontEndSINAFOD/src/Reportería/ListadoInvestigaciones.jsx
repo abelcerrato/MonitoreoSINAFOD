@@ -55,10 +55,12 @@ const ListadoActividad = () => {
   const [filterColumn, setFilterColumn] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [niveles, setNiveles] = useState([]);
-  const [ciclos, setCiclos] = useState([]);
+
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFinal, setFechaFinal] = useState("");
-
+  const [filterAnios, setFilterAnios] = useState("");
+  const [filterMeses, setFilterMeses] = useState("");
+  const [filterDias, setFilterDias] = useState("");
   useEffect(() => {
     // Obtener los datos de los participantes después de guardar
     axios
@@ -77,16 +79,22 @@ const ListadoActividad = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`)
       .then((response) => setNiveles(response.data));
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/ciclosAcademicos`)
-      .then((response) => setCiclos(response.data));
   }, []);
 
   useEffect(() => {
-    if (!filterColumn || (!filterValue && !fechaInicio && !fechaFinal)) {
+    if (
+      !filterColumn ||
+      (!filterValue &&
+        !fechaInicio &&
+        !fechaFinal &&
+        !filterAnios &&
+        !filterMeses &&
+        !filterDias)
+    ) {
       setFilteredRows(rows);
     } else {
       const filtered = rows.filter((row) => {
+        // Filtrado por fecha
         if (filterColumn === "fecha") {
           const fechaInicioRow = row.fechainicio
             ? new Date(row.fechainicio).toISOString().split("T")[0]
@@ -110,31 +118,48 @@ const ListadoActividad = () => {
           const fechaInicioRowDate = new Date(fechaInicioRow);
           const fechaFinalRowDate = new Date(fechaFinalRow);
 
-          const isInRange =
+          return (
             fechaInicioRowDate >= fechaInicioInput &&
-            fechaFinalRowDate <= fechaFinalInput;
-
-          return isInRange;
-        } else {
-          console.log(
-            " Filtrando por:",
-            filterColumn,
-            "con valor:",
-            filterValue
+            fechaFinalRowDate <= fechaFinalInput
           );
-          console.log(" Valor en la fila:", row[filterColumn]);
+        }
+        // Filtrado por duración
+        else if (filterColumn === "duracion") {
+          const duracionObj = row.duracion || {};
+          const dias = parseInt(duracionObj.days) || 0;
+          const meses = parseInt(duracionObj.mons) || 0;
+          const anios = parseInt(duracionObj.years) || 0;
 
-          return row[filterColumn]
-            ?.toString()
+          const matchAnios = !filterAnios || anios === parseInt(filterAnios);
+          const matchMeses = !filterMeses || meses === parseInt(filterMeses);
+          const matchDias = !filterDias || dias === parseInt(filterDias);
+
+          return matchAnios && matchMeses && matchDias;
+        }
+        // Filtrado por otros campos
+        else {
+          const rowValue = row[filterColumn];
+          if (rowValue === undefined || rowValue === null) return false;
+
+          return rowValue
+            .toString()
             .toLowerCase()
             .includes(filterValue.toString().toLowerCase());
         }
       });
 
-      console.log(" Filas filtradas:", filtered);
       setFilteredRows(filtered);
     }
-  }, [filterColumn, filterValue, fechaInicio, fechaFinal, rows]);
+  }, [
+    filterColumn,
+    filterValue,
+    fechaInicio,
+    fechaFinal,
+    filterAnios,
+    filterMeses,
+    filterDias,
+    rows,
+  ]);
 
   const exportExcel = async () => {
     try {
@@ -271,7 +296,7 @@ const ListadoActividad = () => {
     {
       field: "investigacion",
       headerName: "Título de la Investigación",
-      width: 200,
+      width: 300,
     },
     {
       field: "tipoactividad",
@@ -303,12 +328,11 @@ const ListadoActividad = () => {
       headerName: "Duración",
       width: 200,
       renderCell: ({ row }) => {
-        const { duracion } = row || {};
-        const days = duracion?.days ?? 0;
-        const mons = duracion?.mons ?? 0;
-        const years = duracion?.years ?? 0;
-
-        return `${days} Días ${mons} Meses ${years} Años`;
+        const duracion = row.duracion || {};
+        const days = duracion.days || 0;
+        const mons = duracion.mons || 0;
+        const years = duracion.years || 0;
+        return `${years} Años ${mons} Meses ${days} Días `;
       },
     },
     {
@@ -317,7 +341,11 @@ const ListadoActividad = () => {
       width: 180,
     },
 
-    { field: "nivelacademico", headerName: "Nivel Educativo", width: 180 },
+    {
+      field: "nivelacademico_invest",
+      headerName: "Nivel Educativo",
+      width: 180,
+    },
     {
       field: "fechainicio",
       headerName: "Fecha Inicio",
@@ -362,7 +390,7 @@ const ListadoActividad = () => {
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 3, md: 3 }}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Columna</InputLabel>
               <Select
@@ -370,7 +398,7 @@ const ListadoActividad = () => {
                 onChange={(e) => setFilterColumn(e.target.value)}
               >
                 <MenuItem value="">Seleccionar columna</MenuItem>
-                <MenuItem value="formacion">
+                <MenuItem value="investigacion">
                   Título de la Investigación
                 </MenuItem>
                 <MenuItem value="tipoactividad">
@@ -386,17 +414,18 @@ const ListadoActividad = () => {
                 <MenuItem value="tipomoneda">Tipo Moneda</MenuItem>
                 <MenuItem value="duracion">Duración</MenuItem>
                 <MenuItem value="funciondirigido">Población Objetivo</MenuItem>
-                <MenuItem value="nivelacademico">Nivel Educativo</MenuItem>
-                <MenuItem value="cicloacademico">Ciclo Educativo</MenuItem>
+                <MenuItem value="nivelacademico_invest">
+                  Nivel Educativo
+                </MenuItem>
                 <MenuItem value="fecha">Fecha</MenuItem>
-                <MenuItem value="zona">Zona</MenuItem>
+
                 <MenuItem value="socializaron">
                   ¿Se realizó convocatoria?
                 </MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 6, md: 6 }}>
             {filterColumn === "tipoactividad" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
@@ -412,7 +441,7 @@ const ListadoActividad = () => {
                   <MenuItem value="Euro">Euro</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "nivelacademico" ? (
+            ) : filterColumn === "nivelacademico_invest" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar un nivel</MenuItem>
@@ -423,20 +452,9 @@ const ListadoActividad = () => {
                   ))}
                 </Select>
               </FormControl>
-            ) : filterColumn === "cicloacademico" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar un ciclo</MenuItem>
-                  {ciclos.map((cil) => (
-                    <MenuItem key={cil.id} value={cil.nombre}>
-                      {cil.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
             ) : filterColumn === "fecha" ? (
               <Grid container spacing={4}>
-                <Grid item xs={12} size={5}>
+                <Grid size={{ xs: 6, md: 6 }}>
                   <FormControl fullWidth>
                     <TextField
                       type="date"
@@ -446,7 +464,7 @@ const ListadoActividad = () => {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} size={5}>
+                <Grid size={{ xs: 6, md: 6 }}>
                   <FormControl fullWidth>
                     <TextField
                       type="date"
@@ -457,15 +475,51 @@ const ListadoActividad = () => {
                   </FormControl>
                 </Grid>
               </Grid>
+            ) : filterColumn === "duracion" ? (
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, md: 6 }}>
+                  <TextField
+                    type="number"
+                    label="Años"
+                    placeholder="Años"
+                    onChange={(e) => setFilterAnios(e.target.value)}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, md: 6 }}>
+                  <TextField
+                    type="number"
+                    label="Meses"
+                    placeholder="Meses"
+                    onChange={(e) => setFilterMeses(e.target.value)}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, md: 6 }}>
+                  <TextField
+                    type="number"
+                    label="Días"
+                    placeholder="Días"
+                    onChange={(e) => setFilterDias(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+            ) : filterColumn === "socializaron" ? (
+              <FormControl fullWidth>
+                <Select onChange={(e) => setFilterValue(e.target.value)}>
+                  <MenuItem value="Sí">Sí</MenuItem>
+                  <MenuItem value="No">No</MenuItem>
+                </Select>
+              </FormControl>
             ) : (
-              <TextField
-                type="text"
-                placeholder="Ingresar valor"
-                onChange={(e) => setFilterValue(e.target.value)}
-              />
+              <FormControl fullWidth>
+                <TextField
+                  type="text"
+                  placeholder="Ingresar valor"
+                  onChange={(e) => setFilterValue(e.target.value)}
+                />
+              </FormControl>
             )}
           </Grid>
-          <Grid item xs={12} size={4} container justifyContent="flex-end">
+          <Grid size={{ xs: 3, md: 3 }} container justifyContent="flex-end">
             <Tooltip title="Exportar Excel">
               <IconButton
                 onClick={() => exportExcel(rows)}

@@ -389,7 +389,7 @@ const ListadoActividad = () => {
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
-          <Grid item xs={12} size={4}>
+          <Grid item size={{ xs: 6, md: 6 }}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Columna</InputLabel>
               <Select
@@ -441,7 +441,7 @@ const ListadoActividad = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} size={4}>
+          <Grid item size={{ xs: 6, md: 6 }}>
             {filterColumn === "tipoformacion" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
@@ -537,7 +537,12 @@ const ListadoActividad = () => {
               />
             )}
           </Grid>
-          <Grid item xs={12} size={4} container justifyContent="flex-end">
+          <Grid
+            item
+            size={{ xs: 6, md: 6 }}
+            container
+            justifyContent="flex-end"
+          >
             <Tooltip title="Exportar Excel">
               <IconButton
                 onClick={() => exportExcel(rows)}

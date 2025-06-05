@@ -161,7 +161,7 @@ export default function TablaPacticantes({
 
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
-            <TableCell align="right">Sexo</TableCell>
+            <TableCell align="right">Genero</TableCell>
             <TableCell align="right">
               Nivel Académico del Participante
             </TableCell>
@@ -174,7 +174,7 @@ export default function TablaPacticantes({
             <TableCell align="right">Departamento en el que Reside</TableCell>
             <TableCell align="right">Municipio en el que Reside</TableCell>
             <TableCell align="right">Aldea en la que Reside</TableCell>
-            {formacioninvest === "investigacion" && (
+            {formacioninvest === "formacion" && (
               <>
                 <TableCell align="right">Código SACE del Centro</TableCell>
                 <TableCell align="right">Centro Educativo</TableCell>
@@ -212,19 +212,24 @@ export default function TablaPacticantes({
               <TableCell align="right">{row.gradoacademico}</TableCell>
               <TableCell align="right">{row.añosdeservicio}</TableCell>
               <TableCell align="right">{row.codigodered}</TableCell>
-              <TableCell align="right">{row.cargo}</TableCell>
+              <TableCell align="right">{row.cargopart}</TableCell>
               <TableCell align="right">{row.departamento}</TableCell>
               <TableCell align="right">{row.municipio}</TableCell>
               <TableCell align="right">{row.aldea}</TableCell>
-              <TableCell align="right">{row.codigosace}</TableCell>
-              <TableCell align="right">{row.nombreced}</TableCell>
-              <TableCell align="right">{row.nivelacademico_ced}</TableCell>
-              <TableCell align="right">{row.gradoacademico_ced}</TableCell>
-              <TableCell align="right">{row.tipoadministracion}</TableCell>
-              <TableCell align="right">{row.zona}</TableCell>
-              <TableCell align="right">{row.departamentoced}</TableCell>
-              <TableCell align="right">{row.municipioced}</TableCell>
-              <TableCell align="right">{row.aldeaced}</TableCell>
+
+              {formacioninvest === "formacion" && (
+                <>
+                  <TableCell align="right">{row.codigosace}</TableCell>
+                  <TableCell align="right">{row.nombreced}</TableCell>
+                  <TableCell align="right">{row.nivelacademico_ced}</TableCell>
+                  <TableCell align="right">{row.gradoacademico_ced}</TableCell>
+                  <TableCell align="right">{row.tipoadministracion}</TableCell>
+                  <TableCell align="right">{row.zona}</TableCell>
+                  <TableCell align="right">{row.departamentoced}</TableCell>
+                  <TableCell align="right">{row.municipioced}</TableCell>
+                  <TableCell align="right">{row.aldeaced}</TableCell>
+                </>
+              )}
             </TableRow>
           ))}
           {emptyRows > 0 && (

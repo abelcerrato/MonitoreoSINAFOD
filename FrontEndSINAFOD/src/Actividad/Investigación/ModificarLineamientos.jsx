@@ -551,7 +551,7 @@ const LineamientosI = () => {
               },
             }}
           >
-            Registro de Lineamientos para Investigación
+            Actualizar de Lineamientos para Investigación
           </Typography>
 
           <Grid container spacing={5} mt={2}>

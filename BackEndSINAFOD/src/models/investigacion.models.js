@@ -13,6 +13,11 @@ export const getInvestigacionM = async () => {
             i.observacion, i.presentoprotocolo, i.presentoprotocolourl, i.estadoprotocolo, i.monitoreoyevaluacion, 
             i.monitoreoyevaluacionurl, i.aplicacionevaluacion, i.aplicacionevaluacionurl, i.divulgacionresultados, 
             i.divulgacionresultadosurl, 
+             CONCAT_WS(', ',
+                        CASE when i.prebasica THEN 'Prebásica' END,
+                        CASE WHEN i.basica THEN 'Básica' END,
+                        CASE WHEN i.media THEN 'Media' END
+                    ) AS nivelacademico_invest,
         CASE 
                 WHEN i.presentoprotocolo = TRUE AND i.monitoreoyevaluacion = TRUE AND i.aplicacionevaluacion = TRUE AND I.divulgacionresultados=true  THEN 'Lineamientos Completos'
                 WHEN (i.presentoprotocolo = TRUE AND i.monitoreoyevaluacion = TRUE)
@@ -112,7 +117,7 @@ export const postInvestigacionM = async (
         socializaron,
         observacion,
         creadopor,
-        tipomoneda
+        tipomoneda,
       ]
     );
     console.log("Id investigacion: " + rows[0].id);
