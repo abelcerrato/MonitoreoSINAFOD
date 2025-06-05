@@ -94,7 +94,7 @@ const EditRole = () => {
           };
 
           setFormData(roleData);
-          console.log("Datos transformados:", roleData);
+         // console.log("Datos transformados:", roleData);
         }
       } catch (error) {
         console.error("Error al obtener datos", error);

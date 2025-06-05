@@ -195,13 +195,20 @@ export default function TablaActividad(isSaved, setIsSaved) {
       navigate(`/Actualizar_Lineamientos_De_Investigación/${id}`);
     }
   };
-  const tienePermiso = (idobjeto) => {
+
+  const tienePermisoActualizar = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.actualizar === true;
   };
 
+  const tienePermisoInsertar = (idobjeto) => {
+    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
+    return permiso?.insertar === true;
+  };
+
+
   const columns = [
-    ...(tienePermiso(1)
+    ...(tienePermisoActualizar(1)
       ? [
           {
             field: "actions",
@@ -284,20 +291,22 @@ export default function TablaActividad(isSaved, setIsSaved) {
           >
             Investigaciones
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/Lineamientos_De_Investigación")}
-            sx={{
-              color: color.primary.contrastText,
-              backgroundColor: color.primary.azul,
-              "&:hover": {
-                backgroundColor: color.dark,
-              },
-            }}
-          >
-            Nuevo
-          </Button>
+          {tienePermisoInsertar(1) && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/Lineamientos_De_Investigación")}
+              sx={{
+                color: color.primary.contrastText,
+                backgroundColor: color.primary.azul,
+                "&:hover": {
+                  backgroundColor: color.dark,
+                },
+              }}
+            >
+              Nuevo
+            </Button>
+          )}
         </Box>
         <DataGrid
           rows={rows}

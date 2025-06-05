@@ -269,6 +269,11 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     return permiso?.actualizar === true;
   };
 
+  const tienePermisoInsertar = (idobjeto) => {
+    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
+    return permiso?.insertar === true;
+  };
+
   const columns = [
     ...(tienePermiso(2)
       ? [
@@ -363,20 +368,22 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
           >
             Formaciones
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/Lineamientos_De_Formación")}
-            sx={{
-              color: color.primary.contrastText,
-              backgroundColor: color.primary.azul,
-              "&:hover": {
-                backgroundColor: color.dark,
-              },
-            }}
-          >
-            Nuevo
-          </Button>
+          {tienePermisoInsertar(2) && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/Lineamientos_De_Formación")}
+              sx={{
+                color: color.primary.contrastText,
+                backgroundColor: color.primary.azul,
+                "&:hover": {
+                  backgroundColor: color.dark,
+                },
+              }}
+            >
+              Nuevo
+            </Button>
+          )}
         </Box>
         <DataGrid
           rows={rows}

@@ -42,7 +42,7 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
-  console.log(permissions);
+  
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
@@ -290,7 +290,23 @@ const ProjectDrawer = ({ open }) => {
                       }
                     />
                   )}
-                  {tienePermiso(4) && (
+                  {tienePermiso(3) && (
+                    <MenuItem
+                      path="/Reportería/Listado_Participantes"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de
+                          <br />
+                          Participantes
+                        </>
+                      }
+                      onClick={() =>
+                        navigate("/Reportería/Listado_Participantes")
+                      }
+                    />
+                  )}
+                  {tienePermiso(7) && (
                     <MenuItem
                       path="/Reportería/Listado_De_Investigaciones"
                       icon={<TextSnippetOutlinedIcon />}
@@ -307,19 +323,19 @@ const ProjectDrawer = ({ open }) => {
                     />
                   )}
 
-                  {tienePermiso(4) && (
+                  {tienePermiso(8) && (
                     <MenuItem
-                      path="/Reportería/Listado_Participantes"
+                      path="/Reportería/Listado_Investigadores"
                       icon={<TextSnippetOutlinedIcon />}
                       text={
                         <>
                           Listado de
                           <br />
-                          Participantes
+                          Investigadores
                         </>
                       }
                       onClick={() =>
-                        navigate("/Reportería/Listado_Participantes")
+                        navigate("/Reportería/Listado_Investigadores")
                       }
                     />
                   )}
@@ -379,6 +395,32 @@ const ProjectDrawer = ({ open }) => {
                   />
                 </MuiMenuItem>
               )}
+              {tienePermiso(3) && (
+                <MuiMenuItem
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_Participantes")
+                  }
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={
+                        isActive("/Reportería/Listado_Participantes")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Participantes"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_Participantes")
+                        ? color.primary.azul
+                        : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
               {tienePermiso(7) && (
                 <MuiMenuItem
                   onClick={() =>
@@ -425,32 +467,6 @@ const ProjectDrawer = ({ open }) => {
                     primary="Listado de Investigadores"
                     primaryTypographyProps={{
                       color: isActive("/Reportería/Listado_Investigadores")
-                        ? color.primary.azul
-                        : "inherit",
-                    }}
-                  />
-                </MuiMenuItem>
-              )}
-              {tienePermiso(3) && (
-                <MuiMenuItem
-                  onClick={() =>
-                    handleItemClick("/Reportería/Listado_Participantes")
-                  }
-                >
-                  <ListItemIcon>
-                    <TextSnippetOutlinedIcon
-                      fontSize="small"
-                      color={
-                        isActive("/Reportería/Listado_Participantes")
-                          ? color.primary.azul
-                          : "inherit"
-                      }
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Listado de Participantes"
-                    primaryTypographyProps={{
-                      color: isActive("/Reportería/Listado_Participantes")
                         ? color.primary.azul
                         : "inherit",
                     }}

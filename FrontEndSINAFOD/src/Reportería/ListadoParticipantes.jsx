@@ -57,7 +57,7 @@ const ListadoParticipantes = () => {
   useEffect(() => {
     // Obtener los datos de los participantes después de guardar
     axios
-      .get(`${process.env.REACT_APP_API_URL}/participante`)
+      .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
         setRows(response.data);
         setFilteredRows(response.data);
@@ -288,7 +288,6 @@ const ListadoParticipantes = () => {
   };
 
   const columns = [
-
     {
       field: "formacion",
       headerName: "Nombre de la Acción Formativa ",
