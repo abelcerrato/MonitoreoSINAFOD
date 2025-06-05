@@ -370,8 +370,8 @@ export const getParticipanteFormacionM = async () => {
                 
                 left join participantesformacion pf on p.id = pf.idparticipante 
                 left join formacion f on pf.idformacion = f.id 
-                left join participantescentroeducativo pced on p.id = pced.idparticipante 
-                left join centroeducativo ced on pced.idcentroeducativo = ced.id 
+                inner join participantescentroeducativo pced on p.id = pced.idparticipante 
+                inner join centroeducativo ced on pced.idcentroeducativo = ced.id 
                 left join cargodesempeña c2 on pced.cargo = c2.id
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
