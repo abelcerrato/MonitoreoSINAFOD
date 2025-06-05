@@ -11,15 +11,8 @@ import dayjs from "dayjs";
 import { useTheme } from "@mui/material/styles";
 import {
   IconButton,
-  Box,
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableFooter,
-  TablePagination,
+  Checkbox,
+  FormControlLabel,
   Paper,
   Tooltip,
   Typography,
@@ -30,6 +23,7 @@ import {
   Grid,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { Margin } from "@mui/icons-material";
 
 const toBase64 = async (url) => {
   const response = await fetch(url);
@@ -50,7 +44,6 @@ const ListadoInvestigadores = () => {
   const [filterColumn, setFilterColumn] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [departamentos, setDepartamentos] = useState([]);
-  const [municipios, setMunicipios] = useState([]);
 
   const [funcion, setFuncion] = useState([]);
 
@@ -77,17 +70,23 @@ const ListadoInvestigadores = () => {
       .then((response) => setFuncion(response.data));
   }, []);
 
+  const [exactMatch, setExactMatch] = useState(false);
+
   useEffect(() => {
     if (!filterColumn || !filterValue) {
       setFilteredRows(rows);
     } else {
       setFilteredRows(
-        rows.filter(
-          (row) => row[filterColumn]?.toString() === filterValue.toString()
-        )
+        rows.filter((row) => {
+          const rowValue = row[filterColumn]?.toString().toLowerCase();
+          const searchValue = filterValue.toString().toLowerCase();
+          return exactMatch
+            ? rowValue === searchValue
+            : rowValue?.includes(searchValue);
+        })
       );
     }
-  }, [filterColumn, filterValue, rows]);
+  }, [filterColumn, filterValue, exactMatch, rows]);
 
   const exportExcel = async () => {
     try {
@@ -273,11 +272,13 @@ const ListadoInvestigadores = () => {
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 3, md: 3 }}>
             <FormControl fullWidth>
               <Select onChange={(e) => setFilterColumn(e.target.value)}>
                 <MenuItem value="">Seleccionar columna</MenuItem>
-
+                <MenuItem value="investigacion">
+                  Nombre de la Investigación
+                </MenuItem>
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
@@ -300,7 +301,7 @@ const ListadoInvestigadores = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 6, md: 6 }}>
             {filterColumn === "genero" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
@@ -356,14 +357,35 @@ const ListadoInvestigadores = () => {
                 </Select>
               </FormControl>
             ) : (
-              <TextField
-                type="text"
-                placeholder="Ingresar valor"
-                onChange={(e) => setFilterValue(e.target.value)}
-              />
+              <Grid
+          
+                display="flex"
+                alignItems="center"
+              >
+                <Grid  mr={4} size={{ xs: 5, md: 5 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      placeholder="Ingresar valor"
+                      onChange={(e) => setFilterValue(e.target.value)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 2, md: 2 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={exactMatch}
+                        onChange={() => setExactMatch(!exactMatch)}
+                      />
+                    }
+                    label="Coincidencia exacta"
+                  />
+                </Grid>
+              </Grid>
             )}
           </Grid>
-          <Grid item xs={12} size={4} container justifyContent="flex-end">
+          <Grid size={{ xs: 3, md: 3 }} container justifyContent="flex-end">
             <Tooltip title="Exportar Excel">
               <IconButton
                 onClick={() => exportExcel(rows)}

@@ -398,7 +398,7 @@ const ListadoActividad = () => {
                 onChange={(e) => setFilterColumn(e.target.value)}
               >
                 <MenuItem value="">Seleccionar columna</MenuItem>
-                <MenuItem value="formacion">
+                <MenuItem value="investigacion">
                   Título de la Investigación
                 </MenuItem>
                 <MenuItem value="tipoactividad">
@@ -511,11 +511,11 @@ const ListadoActividad = () => {
               </FormControl>
             ) : (
               <FormControl fullWidth>
-              <TextField
-                type="text"
-                placeholder="Ingresar valor"
-                onChange={(e) => setFilterValue(e.target.value)}
-              />
+                <TextField
+                  type="text"
+                  placeholder="Ingresar valor"
+                  onChange={(e) => setFilterValue(e.target.value)}
+                />
               </FormControl>
             )}
           </Grid>
