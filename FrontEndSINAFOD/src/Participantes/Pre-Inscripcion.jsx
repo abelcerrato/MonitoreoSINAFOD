@@ -1077,7 +1077,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl error={fieldErrors.genero}>
-                  <Typography variant="subtitle1">Genero*</Typography>
+                  <Typography variant="subtitle1">Género*</Typography>
                   <RadioGroup
                     row
                     name="genero"
@@ -1385,7 +1385,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Departamento Centro Educativo*
+                  Departamento del Centro Educativo*
                 </Typography>
                 <FormControl fullWidth error={fieldErrors.iddepartamento}>
                   <Select
@@ -1414,7 +1414,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Municipio Centro Educativo*
+                  Municipio del Centro Educativo*
                 </Typography>
                 <FormControl fullWidth error={fieldErrors.idmunicipio}>
                   <Select
@@ -1443,7 +1443,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Aldea Centro Educativo
+                  Aldea del Centro Educativo
                 </Typography>
                 <FormControl disabled={camposBloqueados.idaldea} fullWidth>
                   <Select
@@ -1823,7 +1823,7 @@ const PreInscripcion = () => {
               {formData.media === true && (
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Grados Académicos (Media)*
+                    Grados Académicos (Media)
                   </Typography>
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 4 }}>

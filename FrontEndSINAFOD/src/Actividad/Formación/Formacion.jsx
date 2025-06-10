@@ -374,7 +374,7 @@ const Formacion = () => {
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 8 }}>
               <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Datos sobre la Formación
+                Registro de Datos sobre la Acción Formativa
               </Typography>
             </Grid>
             <Grid
@@ -454,7 +454,7 @@ const Formacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Se Tiene Convenio la Institución Asociada
+                  Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -639,7 +639,7 @@ const Formacion = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
-                Cargo a la que va dirigido
+                Cargo al que va Dirigido
               </Typography>
               <TextField
                 fullWidth

@@ -46,7 +46,6 @@ import Swal from "sweetalert2";
 import TablaFormacion from "./Actividad/Formación/TablaFormacion";
 import TablaInvestigacion from "./Actividad/Investigación/TablaInvestigación";
 
-
 import PreInscripcion from "./Participantes/Pre-Inscripcion";
 
 const ProtectedRoute = () => {
@@ -218,7 +217,7 @@ function App() {
 
             {/* Formación */}
             <Route
-              path="/Listado_De_Formaciones"
+              path="/Listado_De_Acciones_Formativas"
               element={
                 <PermissionValidator requiredPermission={2}>
                   <TablaFormacion />

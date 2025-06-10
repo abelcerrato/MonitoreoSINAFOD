@@ -436,7 +436,7 @@ const ModificarParticipante = () => {
             >
               <Tab label="Datos Generales del Participante" value="1" />
               {formacioninvest !== "investigacion" && (
-              <Tab label="Datos del Centro Educativo" value="2" />
+                <Tab label="Datos del Centro Educativo" value="2" />
               )}
             </Tabs>
 
@@ -472,7 +472,7 @@ const ModificarParticipante = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl>
-                    <Typography variant="subtitle1">Genero</Typography>
+                    <Typography variant="subtitle1">Género</Typography>
                     <RadioGroup
                       row
                       name="genero"
@@ -730,7 +730,7 @@ const ModificarParticipante = () => {
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Departamento Centro Educativo
+                      Departamento del Centro Educativo
                     </Typography>
                     <FormControl fullWidth>
                       <Select
@@ -756,7 +756,7 @@ const ModificarParticipante = () => {
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Municipio Centro Educativo
+                      Municipio del Centro Educativo
                     </Typography>
                     <FormControl fullWidth>
                       <Select
@@ -779,7 +779,7 @@ const ModificarParticipante = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Aldea Centro Educativo
+                      Aldea del Centro Educativo
                     </Typography>
                     <FormControl fullWidth>
                       <Select

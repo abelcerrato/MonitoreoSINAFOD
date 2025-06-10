@@ -612,7 +612,7 @@ const ModificarLineamientos = () => {
         <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
           <Grid size={{ xs: 12, md: 9 }}>
             <Typography variant="h4" sx={{ color: color.primary.azul }}>
-              Actualizar de Lineamientos para Formación
+              Actualizar de Lineamientos para la Acción Formativa
             </Typography>
           </Grid>
           <Grid
@@ -634,7 +634,10 @@ const ModificarLineamientos = () => {
 
         <Grid container spacing={5} mt={2}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="subtitle1"> Nombre de la Formación</Typography>
+            <Typography variant="subtitle1">
+              {" "}
+              Nombre de la Acción Formativa
+            </Typography>
             <TextField
               fullWidth
               name="formacion"

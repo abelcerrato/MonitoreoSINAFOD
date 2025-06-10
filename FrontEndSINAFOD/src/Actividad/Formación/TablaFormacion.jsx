@@ -366,7 +366,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
             component="h2"
             sx={{ fontWeight: "bold", color: color.primary.azul }}
           >
-            Formaciones
+           Acciones Formativas
           </Typography>
           {tienePermisoInsertar(2) && (
             <Button

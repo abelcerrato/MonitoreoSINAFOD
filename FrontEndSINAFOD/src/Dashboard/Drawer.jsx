@@ -42,7 +42,7 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
-  
+
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
@@ -206,16 +206,16 @@ const ProjectDrawer = ({ open }) => {
           {tienePermiso(2) && (
             <List>
               <LightTooltip
-                title="Nueva Formación"
+                title="Nueva Acción Formativa"
                 placement="right"
                 disableHoverListener={open}
               >
                 <div>
                   <MenuItem
-                    path="/Listado_De_Formaciones"
+                    path="/Listado_De_Acciones_Formativas"
                     icon={<PostAddOutlinedIcon />}
-                    text=" Nueva Formación"
-                    onClick={() => navigate("/Listado_De_Formaciones")}
+                    text=" Nueva Acción Formativa"
+                    onClick={() => navigate("/Listado_De_Acciones_Formativas")}
                   />
                 </div>
               </LightTooltip>

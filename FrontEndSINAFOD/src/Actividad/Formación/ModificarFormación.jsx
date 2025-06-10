@@ -390,7 +390,7 @@ const ModificarFormacion = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Typography variant="h4" sx={{ color: color.primary.azul }}>
-            Actualizar de Datos sobre la Formación
+            Actualizar de Datos sobre la Acción Formativa
           </Typography>
           <Grid
             container
@@ -522,7 +522,7 @@ const ModificarFormacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Se Tiene Convenio la Institución Asociada
+                    Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -705,7 +705,7 @@ const ModificarFormacion = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
-                Cargo a la que va dirigido
+                Cargo al que va dirigido
               </Typography>
               <TextField
                 fullWidth

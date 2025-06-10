@@ -717,7 +717,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl error={fieldErrors.genero}>
-                    <Typography variant="subtitle1">Genero</Typography>
+                    <Typography variant="subtitle1">Género</Typography>
                     <RadioGroup
                       row
                       name="genero"
@@ -996,7 +996,7 @@ const FormularParticipantes = () => {
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Departamento Centro Educativo
+                      Departamento del Centro Educativo
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.iddepartamento}>
                       <Select
@@ -1027,7 +1027,7 @@ const FormularParticipantes = () => {
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Municipio Centro Educativo
+                      Municipio del Centro Educativo
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.idmunicipio}>
                       <Select
@@ -1055,7 +1055,7 @@ const FormularParticipantes = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Aldea Centro Educativo
+                      Aldea del Centro Educativo
                     </Typography>
                     <FormControl fullWidth>
                       <Select

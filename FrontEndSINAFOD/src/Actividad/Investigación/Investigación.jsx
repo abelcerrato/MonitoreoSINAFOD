@@ -337,7 +337,7 @@ const Investigacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Se Tiene Convenio la Institución Asociada
+                    Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -499,7 +499,7 @@ const Investigacion = () => {
               </Grid>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Fecha Inicio</Typography>
+              <Typography variant="subtitle1">Fecha de Inicio</Typography>
               <TextField
                 fullWidth
                 type="date"
