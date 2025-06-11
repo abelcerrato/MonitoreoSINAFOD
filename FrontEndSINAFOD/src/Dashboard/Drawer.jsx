@@ -105,7 +105,12 @@ const ProjectDrawer = ({ open }) => {
     isActive("/Reportería/Listado_Investigadores");
 
   const isSeguridadActive =
-    isActive("/Seguridad/Usuarios") || isActive("/Seguridad/Roles-y-Permisos");
+    isActive("/Seguridad/Usuarios") ||
+    isActive("/Seguridad/Registrar_Usuario") ||
+    isActive("/Seguridad/Actualizar_Usuario") ||
+    isActive("/Seguridad/Roles-y-Permisos") ||
+    isActive("/Seguridad/Registrar_Rol-y-Permisos") ||
+    isActive("/Seguridad/Actualizar_Rol-y-Permisos");
 
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
     const active = isParent ? parentActive : isActive(path);
