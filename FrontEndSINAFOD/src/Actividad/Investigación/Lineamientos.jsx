@@ -333,7 +333,7 @@ const LineamientosI = () => {
         formDataToSend
       );
 
-      navigate("/Investigación", {
+      navigate("/Crear_Investigación", {
         state: {
           investCap: response.data.id,
           investigacion: formData.investigacion,
@@ -400,7 +400,7 @@ const LineamientosI = () => {
                 borderColor: color.primary.rojo,
                 color: color.primary.rojo,
               }}
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/Listado_De_Investigaciones")}
             >
               Cerrar
             </Button>
@@ -698,7 +698,7 @@ const LineamientosI = () => {
                 variant="contained"
                 sx={{ backgroundColor: color.primary.rojo }}
                 startIcon={<FastForwardOutlinedIcon />}
-                onClick={() => navigate("/Investigación")}
+                onClick={() => navigate("/Crear_Investigación")}
               >
                 Omitir
               </Button>

@@ -91,6 +91,13 @@ const ProjectDrawer = ({ open }) => {
     isActive(`/Actualizar_Acción_Formativa`) ||
     isActive(`/Actualizar_Lineamientos_De_La_Acción_Formativa`);
 
+  const isInvestigacionActive =
+    isActive("/Listado_De_Investigaciones") ||
+    isActive("/Lineamientos_De_Investigación") ||
+    isActive("/Crear_Investigación") ||
+    isActive(`/Actualizar_Investigación`) ||
+    isActive(`/Actualizar_Lineamientos_De_Investigación`);
+
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
     isActive("/Reportería/Listado_Participantes") ||
@@ -254,6 +261,8 @@ const ProjectDrawer = ({ open }) => {
                     icon={<ZoomInIcon />}
                     text="Nueva Investigación"
                     onClick={() => navigate("/Listado_De_Investigaciones")}
+                    isParent={true}
+                    parentActive={isInvestigacionActive}
                   />
                 </div>
               </LightTooltip>

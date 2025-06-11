@@ -258,7 +258,10 @@ const Investigacion = () => {
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 9 }}>
-              <Typography variant="h4" sx={{ fontWeight: "bold", color: color.primary.azul }}>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: "bold", color: color.primary.azul }}
+              >
                 Registro de Datos sobre la Investigación
               </Typography>
             </Grid>
@@ -272,7 +275,7 @@ const Investigacion = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Investigaciones")}
               >
                 Cerrar
               </Button>

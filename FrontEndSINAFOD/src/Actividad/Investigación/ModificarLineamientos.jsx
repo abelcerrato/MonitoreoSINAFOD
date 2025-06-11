@@ -527,7 +527,7 @@ const LineamientosI = () => {
               borderColor: color.primary.rojo,
               color: color.primary.rojo,
             }}
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/Listado_De_Investigaciones")}
           >
             Cerrar
           </Button>

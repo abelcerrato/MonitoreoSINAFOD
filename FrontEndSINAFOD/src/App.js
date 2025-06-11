@@ -199,7 +199,7 @@ function App() {
               }
             />
             <Route
-              path="/Investigación"
+              path="/Crear_Investigación"
               element={
                 <PermissionValidator requiredPermission={1} action="insertar">
                   <Investigación />
