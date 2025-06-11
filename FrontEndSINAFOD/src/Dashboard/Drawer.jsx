@@ -81,16 +81,25 @@ const ProjectDrawer = ({ open }) => {
     // Decodifica tanto la ruta actual como la ruta que estamos comparando
     const decodedCurrentPath = decodeURIComponent(location.pathname);
     const decodedComparePath = decodeURIComponent(path);
-    return decodedCurrentPath === decodedComparePath;
+    return decodedCurrentPath.startsWith(decodedComparePath);
   };
+
+  const isFormacionActive =
+    isActive("/Listado_De_Acciones_Formativas") ||
+    isActive("/Lineamientos_De_La_Acción_Formativa") ||
+    isActive("/Crear_Acción_Formativa") ||
+    isActive(`/Actualizar_Acción_Formativa`) ||
+    isActive(`/Actualizar_Lineamientos_De_La_Acción_Formativa`);
 
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
     isActive("/Reportería/Listado_Participantes") ||
     isActive("/Reportería/Listado_De_Investigaciones") ||
-    isActive("/Reportería/Listado_Investigadores"); 
+    isActive("/Reportería/Listado_Investigadores");
+
   const isSeguridadActive =
     isActive("/Seguridad/Usuarios") || isActive("/Seguridad/Roles-y-Permisos");
+
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
     const active = isParent ? parentActive : isActive(path);
 
@@ -204,7 +213,7 @@ const ProjectDrawer = ({ open }) => {
       {tienePermisosModulo(2) && (
         <>
           {open && <Divider />}
-          {/* Formación */}
+          {/* Acciones_Formativas */}
           {tienePermiso(2) && (
             <List>
               <LightTooltip
@@ -218,6 +227,8 @@ const ProjectDrawer = ({ open }) => {
                     icon={<PostAddOutlinedIcon />}
                     text=" Nueva Acción Formativa"
                     onClick={() => navigate("/Listado_De_Acciones_Formativas")}
+                    isParent={true}
+                    parentActive={isFormacionActive}
                   />
                 </div>
               </LightTooltip>

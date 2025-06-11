@@ -625,7 +625,7 @@ const ModificarLineamientos = () => {
                 borderColor: color.primary.rojo,
                 color: color.primary.rojo,
               }}
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/Listado_De_Acciones_Formativas")}
             >
               Cerrar
             </Button>

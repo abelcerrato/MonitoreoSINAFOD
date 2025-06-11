@@ -224,7 +224,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     if (selectedRow?.estado_lineamientos === "No Lleno Lineamientos") {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>acción formativa</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -234,7 +234,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     ) {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>acción formativa</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -244,12 +244,12 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
 
   const handleFormacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Formación/${id}`);
+    navigate(`/Actualizar_Acción_Formativa/${id}`);
   };
 
   const handleLineamientosFormacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
+    navigate(`/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`);
   };
 
   const handleOpenQrModal = (id) => {
@@ -366,13 +366,13 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
             component="h2"
             sx={{ fontWeight: "bold", color: color.primary.azul }}
           >
-           Acciones Formativas
+            Acciones Formativas
           </Typography>
           {tienePermisoInsertar(2) && (
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => navigate("/Lineamientos_De_Formación")}
+              onClick={() => navigate("/Lineamientos_De_La_Acción_Formativa")}
               sx={{
                 color: color.primary.contrastText,
                 backgroundColor: color.primary.azul,

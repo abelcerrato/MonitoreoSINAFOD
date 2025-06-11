@@ -387,7 +387,7 @@ const Formacion = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Acciones_Formativas")}
               >
                 Cerrar
               </Button>
@@ -454,7 +454,7 @@ const Formacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                  Tiene Convenio la Institución Asociada
+                    Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select

@@ -216,7 +216,7 @@ const LineamientosF = () => {
         }
       );
       const investCap = response.data.id;
-      navigate("/Formación", {
+      navigate("/Crear_Acción_Formativa", {
         state: { investCap, accionformacion: formData.accionformacion },
       });
     } catch (error) {
@@ -421,7 +421,7 @@ const LineamientosF = () => {
                 variant="contained"
                 sx={{ backgroundColor: color.primary.rojo }}
                 startIcon={<FastForwardOutlinedIcon />}
-                onClick={() => navigate("/Formación")}
+                onClick={() => navigate("/Crear_Acción_Formativa")}
               >
                 Omitir
               </Button>

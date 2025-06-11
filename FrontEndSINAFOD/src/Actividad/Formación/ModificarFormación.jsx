@@ -438,7 +438,9 @@ const ModificarFormacion = () => {
                 }}
                 startIcon={<ChecklistIcon />}
                 onClick={() =>
-                  navigate(`/Actualizar_Lineamientos_De_Formación/${id}`)
+                  navigate(
+                    `/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`
+                  )
                 }
               >
                 Lineamientos
@@ -456,7 +458,7 @@ const ModificarFormacion = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Acciones_Formativas")}
               >
                 Cerrar
               </Button>

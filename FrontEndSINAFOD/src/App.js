@@ -225,7 +225,7 @@ function App() {
               }
             />
             <Route
-              path="/Lineamientos_De_Formación"
+              path="/Lineamientos_De_La_Acción_Formativa"
               element={
                 <PermissionValidator requiredPermission={2}>
                   <LineamientosF />
@@ -233,7 +233,7 @@ function App() {
               }
             />
             <Route
-              path="/Actualizar_Lineamientos_De_Formación/:id"
+              path="/Actualizar_Lineamientos_De_La_Acción_Formativa/:id"
               element={
                 <PermissionValidator requiredPermission={2}>
                   <LineamientosFormacionM />
@@ -242,7 +242,7 @@ function App() {
             />
 
             <Route
-              path="/Formación"
+              path="/Crear_Acción_Formativa"
               element={
                 <PermissionValidator requiredPermission={2} action="insertar">
                   <Formacion />
@@ -250,7 +250,7 @@ function App() {
               }
             />
             <Route
-              path="/Actualizar_Formación/:id"
+              path="/Actualizar_Acción_Formativa/:id"
               element={
                 <PermissionValidator requiredPermission={2} action="actualizar">
                   <ActualizarFormacion />
