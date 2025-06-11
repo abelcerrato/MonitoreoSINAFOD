@@ -86,7 +86,9 @@ const ProjectDrawer = ({ open }) => {
 
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
-    isActive("/Reportería/Listado_Participantes");
+    isActive("/Reportería/Listado_Participantes") ||
+    isActive("/Reportería/Listado_De_Investigaciones") ||
+    isActive("/Reportería/Listado_Investigadores"); 
   const isSeguridadActive =
     isActive("/Seguridad/Usuarios") || isActive("/Seguridad/Roles-y-Permisos");
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
