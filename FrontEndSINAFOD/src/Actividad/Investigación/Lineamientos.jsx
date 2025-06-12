@@ -287,7 +287,7 @@ const LineamientosI = () => {
 
     formDataToSend.append(
       "estadoprotocolo",
-      formData.presentoprotocolourl ? "Completa" : "Incompleta"
+      formData.presentoprotocolourl ? "Completo" : "Incompleto"
     );
 
     // Contador de archivos subidos
@@ -333,7 +333,7 @@ const LineamientosI = () => {
         formDataToSend
       );
 
-      navigate("/Investigación", {
+      navigate("/Crear_Investigación", {
         state: {
           investCap: response.data.id,
           investigacion: formData.investigacion,
@@ -400,7 +400,7 @@ const LineamientosI = () => {
                 borderColor: color.primary.rojo,
                 color: color.primary.rojo,
               }}
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/Listado_De_Investigaciones")}
             >
               Cerrar
             </Button>
@@ -413,6 +413,7 @@ const LineamientosI = () => {
             <Typography
               variant="h4"
               sx={{
+                fontWeight: "bold",
                 color: color.primary.azul,
                 fontSize: {
                   xs: "1.5rem",
@@ -427,7 +428,9 @@ const LineamientosI = () => {
 
             <Grid container spacing={5} mt={2}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">Título de la Investigación</Typography>
+                <Typography variant="subtitle1">
+                  Título de la Investigación
+                </Typography>
                 <TextField
                   fullWidth
                   name="investigacion"
@@ -512,6 +515,7 @@ const LineamientosI = () => {
             <Typography
               variant="h6"
               sx={{
+                fontWeight: "bold",
                 color: color.primary.azul,
                 fontSize: {
                   xs: "1.5rem",
@@ -635,7 +639,7 @@ const LineamientosI = () => {
 
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h6">
-                  Linemaientos para la Difución y Divulagación de Resultados
+                  Lineamientos para la Difusión y Divulgación de Resultados
                 </Typography>
                 <Button
                   component="label"
@@ -694,7 +698,7 @@ const LineamientosI = () => {
                 variant="contained"
                 sx={{ backgroundColor: color.primary.rojo }}
                 startIcon={<FastForwardOutlinedIcon />}
-                onClick={() => navigate("/Investigación")}
+                onClick={() => navigate("/Crear_Investigación")}
               >
                 Omitir
               </Button>

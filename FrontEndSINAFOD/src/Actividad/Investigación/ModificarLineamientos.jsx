@@ -266,7 +266,7 @@ const LineamientosI = () => {
       formData.presentoprotocolourl || existingFiles.presentoprotocolourl;
     formDataToSend.append(
       "estadoprotocolo",
-      hasProtocoloFile ? "Completa" : "Incompleta"
+      hasProtocoloFile ? "Completo" : "Incompleto"
     );
 
     // Contador de archivos subidos
@@ -527,7 +527,7 @@ const LineamientosI = () => {
               borderColor: color.primary.rojo,
               color: color.primary.rojo,
             }}
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/Listado_De_Investigaciones")}
           >
             Cerrar
           </Button>
@@ -541,6 +541,7 @@ const LineamientosI = () => {
           <Typography
             variant="h4"
             sx={{
+              fontWeight: "bold",
               color: color.primary.azul,
               fontSize: {
                 xs: "1.5rem",
@@ -550,7 +551,7 @@ const LineamientosI = () => {
               },
             }}
           >
-            Registro de Lineamientos para Investigación
+            Actualizar de Lineamientos para Investigación
           </Typography>
 
           <Grid container spacing={5} mt={2}>
@@ -580,6 +581,7 @@ const LineamientosI = () => {
           <Typography
             variant="h4"
             sx={{
+              fontWeight: "bold",
               color: color.primary.azul,
               fontSize: {
                 xs: "1.5rem",
@@ -602,7 +604,7 @@ const LineamientosI = () => {
             )}
             {renderFileField(
               "divulgacionresultadosurl",
-              "Linemaientos para la Difución y Divulagación de Resultados"
+              "Lineamientos para la Difusión y Divulgación de Resultados"
             )}
           </Grid>
 
