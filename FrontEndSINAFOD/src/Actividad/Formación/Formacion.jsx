@@ -373,8 +373,8 @@ const Formacion = () => {
         >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Datos sobre la Acción Formativa
+              <Typography variant="h4" sx={{ color: color.primary.azul,fontWeight: "bold",  }}>
+                Registro de Datos de la Acción Formativa
               </Typography>
             </Grid>
             <Grid
