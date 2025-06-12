@@ -97,53 +97,55 @@ const FormularioExterno = () => {
     creadopor: null,
   });
 
-  const [camposBloqueados, setCamposBloqueados] = useState({
-    correo: "",
-    telefono: "",
-    edad: "",
-    fechanacimiento: "",
-    identificacion: "",
-    codigosace: "",
-    nombre: "",
-    cargo: "",
-    genero: "",
-    añosdeservicio: 0,
-    codigodered: "",
-    deptoresidencia: "",
-    municipioresidencia: "",
-    aldearesidencia: null,
-    idnivelacademicos: "",
-    idgradoacademicos: null,
-    idfuncion: "",
-    caserio: "",
-    tipocentro: "",
+   const [camposBloqueados, setCamposBloqueados] = useState({
+      correo: "",
+      telefono: "",
+      edad: "",
+      fechanacimiento: "",
+      identificacion: "",
+      codigosace: "",
+      nombre: "",
+      cargo: "",
+      genero: "",
+      añosdeservicio: 0,
+      codigodered: "",
+      deptoresidencia: "",
+      municipioresidencia: "",
+      aldearesidencia: null,
+      idnivelacademicos: "",
+      idgradoacademicos: null,
+      idfuncion: "",
+      caserio: "",
+      tipocentro: "",
+  
+      nombreced: "",
+      codigosaceced: "",
+      prebasica: false,
+      basica: false,
+      media: false,
+      primero: false,
+      segundo: false,
+      tercero: false,
+      cuarto: false,
+      quinto: false,
+      sexto: false,
+      septimo: false,
+      octavo: false,
+      noveno: false,
+      decimo: false,
+      onceavo: false,
+      doceavo: false,
+      modalidad: "",
+      datoscorrectos: false,
+      autorizadatos: false,
+      zona: "",
+      idmunicipio: "",
+      iddepartamento: "",
+      idaldea: null,
+      tipoadministracion: "",
+    });
 
-    nombreced: "",
-    codigosaceced: "",
-    prebasica: false,
-    basica: false,
-    media: false,
-    primero: false,
-    segundo: false,
-    tercero: false,
-    cuarto: false,
-    quinto: false,
-    sexto: false,
-    septimo: false,
-    octavo: false,
-    noveno: false,
-    decimo: false,
-    onceavo: false,
-    doceavo: false,
-    modalidad: "",
-    datoscorrectos: false,
-    autorizadatos: false,
-    zona: "",
-    idmunicipio: "",
-    iddepartamento: "",
-    idaldea: null,
-    tipoadministracion: "",
-  });
+
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -153,6 +155,9 @@ const FormularioExterno = () => {
       let updatedData = { ...prevData };
       // Validación para años de servicio (solo números positivos)
       if (name === "añosdeservicio") {
+  
+  
+  
         if (!/^\d*$/.test(value)) {
           return prevData; // Si no es un número positivo, no actualiza el estado
         }
@@ -383,7 +388,6 @@ const FormularioExterno = () => {
         );
 
         setFormData(response.data[0]);
-        console.log("investformacionC", response.data[0]);
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
@@ -408,7 +412,7 @@ const FormularioExterno = () => {
             icon: "success",
             timer: 6000,
           });
-          console.log(response.data);
+          console.log(response.data[0]);
         } else {
           // Si hay múltiples registros
           setDocentesEncontrados(response.data);
@@ -485,7 +489,7 @@ const FormularioExterno = () => {
       cargo: docente.cargo || "",
       nombreced: docente.nombreced || "",
       codigosaceced: docente.codigosaceced || "",
-      tipoadministracion: docente.tipoadministracion || "",
+      tipoadministracion: docente.tipoadministracion || "Gubernamental",
       tipocentro: docente.tipocentro || "",
       jornada: docente.jornada || "",
       modalidad: docente.modalidad || "",
@@ -1637,7 +1641,7 @@ const FormularioExterno = () => {
               {formData.media === true && (
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Grados Académicos (Media)*
+                    Grados Académicos (Media)
                   </Typography>
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 4 }}>
@@ -1818,8 +1822,9 @@ const FormularioExterno = () => {
                             </Box>
                             <Box component="span" display="block">
                               Nivel Educativo que Atiende:{" "}
-                              {docente.nombrenivelced || ""} - Grado Educativo
-                              que Atiende: {docente.nombregradoced || ""}
+                              {docente.nivelacademico_ced || ""} - Grado
+                              Educativo que Atiende:{" "}
+                              {docente.gradoacademico_ced || ""}
                             </Box>
                           </>
                         }

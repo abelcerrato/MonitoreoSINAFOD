@@ -358,7 +358,6 @@ const PreInscripcion = () => {
           `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${formData.iddepartamento}/${formData.idmunicipio}`
         );
         setCentrosEducativos(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error al obtener los departamentos", error);
       }
@@ -2005,8 +2004,9 @@ const PreInscripcion = () => {
                             </Box>
                             <Box component="span" display="block">
                               Nivel Educativo que Atiende:{" "}
-                              {docente.nombrenivelced || ""} - Grado Educativo
-                              que Atiende: {docente.nombregradoced || ""}
+                              {docente.nivelacademico_ced || ""} - Grado
+                              Educativo que Atiende:{" "}
+                              {docente.gradoacademico_ced || ""}
                             </Box>
                           </>
                         }
