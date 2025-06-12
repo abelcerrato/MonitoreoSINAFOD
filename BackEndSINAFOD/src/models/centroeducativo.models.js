@@ -4,7 +4,7 @@ export const getCentroEducativoM = async () => {
   try {
     const { rows } = await pool.query(`
             SELECT 
-                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, 
+                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico, ced.zona, 
                 ced.iddepartamento, d.nombre as departamentoced,
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced
@@ -12,6 +12,7 @@ export const getCentroEducativoM = async () => {
             inner join departamento d on ced.iddepartamento = d.id
             inner join municipio m on ced.idmunicipio = m.id 
             left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
             order by ced.id desc
         `);
 
@@ -27,7 +28,7 @@ export const getIdCentroEducativoM = async (id) => {
     const { rows } = await pool.query(
       `
             SELECT 
-                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, 
+                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico, ced.zona, 
                 ced.iddepartamento, d.nombre as departamentoced,
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced
@@ -35,6 +36,7 @@ export const getIdCentroEducativoM = async (id) => {
             inner join departamento d on ced.iddepartamento = d.id
             inner join municipio m on ced.idmunicipio = m.id 
             left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
             where ced.id=$1
             order by ced.id desc
         `,
@@ -47,13 +49,14 @@ export const getIdCentroEducativoM = async (id) => {
   }
 };
 
-//get de centros educativos por id del registro del centro educativo
-export const getIdCentroEducativoSACEM = async (codigosace) => {
+
+//get de centros educativos por id del departamento
+export const getIdCentroEducativoIdDeptoM = async (iddepto, idmuni) => {
   try {
     const { rows } = await pool.query(
       `
             SELECT 
-                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, 
+                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico, ced.zona, 
                 ced.iddepartamento, d.nombre as departamentoced,
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced
@@ -61,6 +64,40 @@ export const getIdCentroEducativoSACEM = async (codigosace) => {
             inner join departamento d on ced.iddepartamento = d.id
             inner join municipio m on ced.idmunicipio = m.id 
             left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
+            where ced.iddepartamento=$1 and ced.idmunicipio=$2
+
+            order by ced.nombreced asc
+        `,
+      [iddepto, idmuni]
+    );
+    /*          WHERE (ced.iddepartamento = $1 OR $1 IS NULL)
+              AND (ced.idmunicipio = $2 OR $2 IS NULL) */
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
+
+//get de centros educativos por id del registro del centro educativo
+export const getIdCentroEducativoSACEM = async (codigosace) => {
+  try {
+    const { rows } = await pool.query(
+      `
+            SELECT 
+                ced.id, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico, ced.zona, 
+                ced.iddepartamento, d.nombre as departamentoced,
+                ced.idmunicipio, m.nombre  as municipioced,
+                ced.idaldea, a.nombre as aldeaced
+            FROM centroeducativo as ced
+            inner join departamento d on ced.iddepartamento = d.id
+            inner join municipio m on ced.idmunicipio = m.id 
+            left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
             where  ced.codigosace=$1
             order by ced.id desc
         `,
@@ -89,7 +126,7 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
                 p.deptoresidencia, de.nombre as departamento, p.municipioresidencia, me.nombre as municipio, p.aldearesidencia, ae.nombre as aldea,  p.caserio,
                 p.idfuncion, cd.cargo as cargoparticipante, p.datoscorrectos,  p.autorizadatos, 
                 pc.idcentroeducativo,
-                ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, 
+                ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, na.nombre as nivelacademico,
                 ced.iddepartamento, d.nombre as departamentoced,
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced, ced.zona, 
@@ -125,6 +162,7 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
             inner join departamento d on ced.iddepartamento = d.id
             inner join municipio m on ced.idmunicipio = m.id 
             left join aldeas a on ced.idaldea = a.id 
+            inner join nivelesacademicos na on ced.idnivelacademico=na.id
             ---------------------------------------------------------------
             inner join participantes p on pc.id=pc.idparticipante
             LEFT JOIN nivelesacademicos n ON p.idnivelacademicos = n.id 
@@ -152,15 +190,16 @@ export const postCentroEducativoM = async (
   zona,
   iddepartamento,
   idmunicipio,
-  idaldea
+  idaldea, 
+  idnivelacademico
 ) => {
   try {
     const { rows } = await pool.query(
       `
             INSERT INTO centroeducativo ( 
-                nombreced, codigosace, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea) 
+                nombreced, codigosace, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico) 
             VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8
+                $1, $2, $3, $4, $5, $6, $7, $8, $9
             ) 
             RETURNING id
             `,
@@ -172,7 +211,8 @@ export const postCentroEducativoM = async (
         zona,
         iddepartamento,
         idmunicipio,
-        idaldea,
+        idaldea, 
+        idnivelacademico
       ]
     );
     return rows[0].id;
@@ -194,6 +234,7 @@ export const putCentroEducativoM = async (
   iddepartamento,
   idmunicipio,
   idaldea,
+  idnivelacademico,
   id
 ) => {
   try {
@@ -201,8 +242,8 @@ export const putCentroEducativoM = async (
       `
                 UPDATE centroeducativo 
                 SET 
-                    nombreced = $1, codigosace = $2, tipoadministracion = $3, tipocentro = $4, zona = $5, iddepartamento = $6, idmunicipio = $7, idaldea = $8  
-                WHERE id = $9
+                    nombreced = $1, codigosace = $2, tipoadministracion = $3, tipocentro = $4, zona = $5, iddepartamento = $6, idmunicipio = $7, idaldea = $8, idnivelacademico=$9
+                WHERE id = $10
                 RETURNING *`,
       [
         nombreced,
@@ -213,6 +254,7 @@ export const putCentroEducativoM = async (
         iddepartamento,
         idmunicipio,
         idaldea,
+        idnivelacademico,
         id,
       ]
     );

@@ -40,10 +40,19 @@ const Formacion = () => {
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
+
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
+    institucionresponsable: "",
+    responsablefirmas: "",
+    ambitoformacion: "",
+    tipoformacion: "",
+
+    modalidad: "",
+    plataforma: "",
     duracion: "",
+    estado: "",
     funciondirigido: "",
     prebasica: false,
     basica: false,
@@ -51,8 +60,14 @@ const Formacion = () => {
     primerciclo: false,
     segundociclo: false,
     tercerciclo: false,
+
     fechainicio: "",
     fechafinal: "",
+
+    participantesprog: "",
+    espaciofisico: "",
+    direccion: "",
+    zona: "",
     socializaron: "",
     observacion: "",
 
@@ -85,7 +100,7 @@ const Formacion = () => {
 
       // Limpiar campos según cambio de modalidad
       if (name === "modalidad") {
-        if (sanitizedValue === "Virtual") {
+        if (sanitizedValue === "Online") {
           // Limpiar campos de modalidad presencial
           newData.espaciofisico = "";
           newData.direccion = "";
@@ -101,8 +116,8 @@ const Formacion = () => {
             ...prev,
             plataforma: false,
           }));
-        } else if (sanitizedValue === "Bimodal") {
-          // No limpiar nada para bimodal ya que necesita ambos
+        } else if (sanitizedValue === "Híbrido") {
+          // No limpiar nada para Híbrido ya que necesita ambos
         } else {
           // Limpiar todos los campos relacionados
           newData.plataforma = "";
@@ -358,8 +373,8 @@ const Formacion = () => {
         >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Datos sobre la Formación
+              <Typography variant="h4" sx={{ color: color.primary.azul,fontWeight: "bold",  }}>
+                Registro de Datos de la Acción Formativa
               </Typography>
             </Grid>
             <Grid
@@ -372,7 +387,7 @@ const Formacion = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Acciones_Formativas")}
               >
                 Cerrar
               </Button>
@@ -439,7 +454,7 @@ const Formacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Se Tiene Convenio la Institución Asociada
+                    Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -487,7 +502,7 @@ const Formacion = () => {
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Ambito de Formación</Typography>
+              <Typography variant="subtitle1">Ámbito de Formación</Typography>
               <TextField
                 fullWidth
                 name="ambitoformacion"
@@ -526,20 +541,20 @@ const Formacion = () => {
                   value={formData.modalidad || ""}
                   onChange={handleChange}
                 >
-                  <MenuItem value="Virtual">Virtual</MenuItem>
+                  <MenuItem value="Online">Online</MenuItem>
                   <MenuItem value="Presencial">Presencial</MenuItem>
-                  <MenuItem value="Bimodal">Bimodal</MenuItem>
+                  <MenuItem value="Híbrido">Híbrido</MenuItem>
                 </Select>
                 {fieldErrors.modalidad && (
                   <FormHelperText>Este campo es obligatorio</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            {(formData.modalidad === "Virtual" ||
-              formData.modalidad === "Bimodal") && (
+            {(formData.modalidad === "Online" ||
+              formData.modalidad === "Híbrido") && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Plataforma en la que se Relizara la Actividad
+                  Plataforma en la que se Realizará la Actividad
                 </Typography>
                 <TextField
                   fullWidth
@@ -624,7 +639,7 @@ const Formacion = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
-                Cargo a la que va dirigido
+                Cargo al que va Dirigido
               </Typography>
               <TextField
                 fullWidth
@@ -852,7 +867,7 @@ const Formacion = () => {
               />
             </Grid>
             {(formData.modalidad === "Presencial" ||
-              formData.modalidad === "Bimodal") && (
+              formData.modalidad === "Híbrido") && (
               <>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Espacio Físico</Typography>

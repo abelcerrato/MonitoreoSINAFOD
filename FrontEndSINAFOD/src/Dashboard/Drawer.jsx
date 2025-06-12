@@ -42,6 +42,7 @@ const ProjectDrawer = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { permissions } = useUser();
+
   // Estados separados para cada menú
   const [openRepoeteria, setOpenReporteria] = useState(false);
   const [openSeguridad, setOpenSeguridad] = useState(false);
@@ -53,13 +54,13 @@ const ProjectDrawer = ({ open }) => {
   const [seguridadMenuOpen, setSeguridadMenuOpen] = useState(false);
 
   const handelReporteriaMenuOpen = (event) => {
-    if (!open) {
+    if (!open && reporteriaAnchorRef.current) {
       setReporteriaMenuOpen(true);
     }
   };
 
   const handleSeguridadMenuOpen = (event) => {
-    if (!open) {
+    if (!open && seguridadAnchorRef.current) {
       setSeguridadMenuOpen(true);
     }
   };
@@ -80,14 +81,37 @@ const ProjectDrawer = ({ open }) => {
     // Decodifica tanto la ruta actual como la ruta que estamos comparando
     const decodedCurrentPath = decodeURIComponent(location.pathname);
     const decodedComparePath = decodeURIComponent(path);
-    return decodedCurrentPath === decodedComparePath;
+    return decodedCurrentPath.startsWith(decodedComparePath);
   };
+
+  const isFormacionActive =
+    isActive("/Listado_De_Acciones_Formativas") ||
+    isActive("/Lineamientos_De_La_Acción_Formativa") ||
+    isActive("/Crear_Acción_Formativa") ||
+    isActive(`/Actualizar_Acción_Formativa`) ||
+    isActive(`/Actualizar_Lineamientos_De_La_Acción_Formativa`);
+
+  const isInvestigacionActive =
+    isActive("/Listado_De_Investigaciones") ||
+    isActive("/Lineamientos_De_Investigación") ||
+    isActive("/Crear_Investigación") ||
+    isActive(`/Actualizar_Investigación`) ||
+    isActive(`/Actualizar_Lineamientos_De_Investigación`);
 
   const isReporteriaActive =
     isActive("/Reportería/Listado_De_Acciones_Formativas") ||
-    isActive("/Reportería/Listado_Participantes");
+    isActive("/Reportería/Listado_Participantes") ||
+    isActive("/Reportería/Listado_De_Investigaciones") ||
+    isActive("/Reportería/Listado_Investigadores");
+
   const isSeguridadActive =
-    isActive("/Seguridad/Usuarios") || isActive("/Seguridad/Roles-y-Permisos");
+    isActive("/Seguridad/Usuarios") ||
+    isActive("/Seguridad/Registrar_Usuario") ||
+    isActive("/Seguridad/Actualizar_Usuario") ||
+    isActive("/Seguridad/Roles-y-Permisos") ||
+    isActive("/Seguridad/Registrar_Rol-y-Permisos") ||
+    isActive("/Seguridad/Actualizar_Rol-y-Permisos");
+
   const getMenuItemStyles = (path, isParent = false, parentActive = false) => {
     const active = isParent ? parentActive : isActive(path);
 
@@ -201,20 +225,22 @@ const ProjectDrawer = ({ open }) => {
       {tienePermisosModulo(2) && (
         <>
           {open && <Divider />}
-          {/* Formación */}
+          {/* Acciones_Formativas */}
           {tienePermiso(2) && (
             <List>
               <LightTooltip
-                title="Nueva Formación"
+                title="Nueva Acción Formativa"
                 placement="right"
                 disableHoverListener={open}
               >
                 <div>
                   <MenuItem
-                    path="/Listado_De_Formaciones"
+                    path="/Listado_De_Acciones_Formativas"
                     icon={<PostAddOutlinedIcon />}
-                    text=" Nueva Formación"
-                    onClick={() => navigate("/Listado_De_Formaciones")}
+                    text=" Nueva Acción Formativa"
+                    onClick={() => navigate("/Listado_De_Acciones_Formativas")}
+                    isParent={true}
+                    parentActive={isFormacionActive}
                   />
                 </div>
               </LightTooltip>
@@ -240,6 +266,8 @@ const ProjectDrawer = ({ open }) => {
                     icon={<ZoomInIcon />}
                     text="Nueva Investigación"
                     onClick={() => navigate("/Listado_De_Investigaciones")}
+                    isParent={true}
+                    parentActive={isInvestigacionActive}
                   />
                 </div>
               </LightTooltip>
@@ -289,8 +317,7 @@ const ProjectDrawer = ({ open }) => {
                       }
                     />
                   )}
-
-                  {tienePermiso(4) && (
+                  {tienePermiso(3) && (
                     <MenuItem
                       path="/Reportería/Listado_Participantes"
                       icon={<TextSnippetOutlinedIcon />}
@@ -306,27 +333,59 @@ const ProjectDrawer = ({ open }) => {
                       }
                     />
                   )}
+                  {tienePermiso(7) && (
+                    <MenuItem
+                      path="/Reportería/Listado_De_Investigaciones"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de
+                          <br />
+                          Investigaciones
+                        </>
+                      }
+                      onClick={() =>
+                        navigate("/Reportería/Listado_De_Investigaciones")
+                      }
+                    />
+                  )}
+
+                  {tienePermiso(8) && (
+                    <MenuItem
+                      path="/Reportería/Listado_Investigadores"
+                      icon={<TextSnippetOutlinedIcon />}
+                      text={
+                        <>
+                          Listado de
+                          <br />
+                          Investigadores
+                        </>
+                      }
+                      onClick={() =>
+                        navigate("/Reportería/Listado_Investigadores")
+                      }
+                    />
+                  )}
                 </List>
               </Collapse>
             )}
 
             {/* Menú flotante de Reportería */}
             <Menu
-              anchorEl={reporteriaAnchorRef.current}
+              anchorEl={() => reporteriaAnchorRef.current}
               open={reporteriaMenuOpen && !open}
               onClose={handleMenuClose}
               anchorOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "right",
               }}
               transformOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "left",
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 35,
-                  ml: 10,
+                  ml: 3,
                   boxShadow: 3,
                   minWidth: 200,
                 },
@@ -363,7 +422,6 @@ const ProjectDrawer = ({ open }) => {
                   />
                 </MuiMenuItem>
               )}
-
               {tienePermiso(3) && (
                 <MuiMenuItem
                   onClick={() =>
@@ -384,6 +442,58 @@ const ProjectDrawer = ({ open }) => {
                     primary="Listado de Participantes"
                     primaryTypographyProps={{
                       color: isActive("/Reportería/Listado_Participantes")
+                        ? color.primary.azul
+                        : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
+              {tienePermiso(7) && (
+                <MuiMenuItem
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_De_Investigaciones")
+                  }
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={
+                        isActive("/Reportería/Listado_De_Investigaciones")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Investigaciones"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_De_Investigaciones")
+                        ? color.primary.azul
+                        : "inherit",
+                    }}
+                  />
+                </MuiMenuItem>
+              )}
+              {tienePermiso(8) && (
+                <MuiMenuItem
+                  onClick={() =>
+                    handleItemClick("/Reportería/Listado_Investigadores")
+                  }
+                >
+                  <ListItemIcon>
+                    <TextSnippetOutlinedIcon
+                      fontSize="small"
+                      color={
+                        isActive("/Reportería/Listado_Investigadores")
+                          ? color.primary.azul
+                          : "inherit"
+                      }
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Listado de Investigadores"
+                    primaryTypographyProps={{
+                      color: isActive("/Reportería/Listado_Investigadores")
                         ? color.primary.azul
                         : "inherit",
                     }}
@@ -442,21 +552,20 @@ const ProjectDrawer = ({ open }) => {
 
             {/* Menú flotante de Seguridad */}
             <Menu
-              anchorEl={seguridadAnchorRef.current}
+              anchorEl={() => seguridadAnchorRef.current}
               open={seguridadMenuOpen && !open}
               onClose={handleMenuCloseSegu}
               anchorOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "right",
               }}
               transformOrigin={{
-                vertical: "center",
+                vertical: "top",
                 horizontal: "left",
               }}
               PaperProps={{
                 sx: {
-                  marginTop: 43,
-                  ml: 10,
+                  ml: 3,
                   boxShadow: 3,
                   minWidth: 200,
                 },

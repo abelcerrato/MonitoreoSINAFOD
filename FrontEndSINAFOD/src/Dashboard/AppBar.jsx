@@ -6,6 +6,8 @@ import {
   IconButton,
   Tooltip,
   Grid,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -17,53 +19,44 @@ import FormatIndentDecreaseOutlinedIcon from "@mui/icons-material/FormatIndentDe
 import LogouIcon from "@mui/icons-material/Logout";
 
 const AppBarComponent = ({ open, toggleDrawer }) => {
-  // Removí openDrawer ya que parece redundante
   const navigate = useNavigate();
   const { user } = useUser();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Detecta pantallas pequeñas
 
   const handleRedirect = async () => {
     try {
-      // Verifica que user.id exista
       if (!user?.id) {
         console.error("No se encontró el ID del usuario");
         throw new Error("Usuario no identificado");
       }
 
-      // Llama al endpoint sin token (si no es necesario)
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/cierreSesion/${user.id}`
       );
-      console.log("Respuesta del backend:", response.data); // Para depuración
+      console.log("Respuesta del backend:", response.data);
 
-      // Limpieza y redirección
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error completo:", {
         message: error.message,
-        response: error.response?.data, // Respuesta del backend si hay error HTTP
+        response: error.response?.data,
       });
-      // Fuerza la limpieza y redirección
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
       navigate("/", { replace: true });
     }
   };
+
   return (
     <AppBar
       position="fixed"
       sx={{
-        /*      width: open ? "calc(100% - 250px)" : "100%", // Usamos solo 'open'
-        ml: open ? "250px" : 0, */
         zIndex: (theme) => theme.zIndex.drawer + 1,
         backgroundColor: color.primary.azul,
         boxShadow: "none",
-        transition: (theme) =>
-          theme.transitions.create(["width", "margin"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
       }}
     >
       <Toolbar
@@ -71,21 +64,21 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          paddingX: 4,
+          paddingX: isMobile ? 1 : 4, // Menor padding en móviles
+          minHeight: "64px", // Altura mínima para móviles
         }}
       >
         {/* Logo y Botón de Toggle */}
         <Grid container alignItems="center" justifyContent="flex-start">
           <div
             style={{
-              width: "260px",
-              height: "90px",
-
+              width: isMobile ? "180px" : "260px", // Logo más pequeño en móviles
+              height: isMobile ? "60px" : "90px",
               background: "white",
-              padding: 5,
+              padding: isMobile ? 2 : 5,
               display: "flex",
               justifyContent: "center",
-              marginLeft: -33,
+              marginLeft: isMobile ? -15 : -33, // Ajuste de margen en móviles
               cursor: "pointer",
             }}
             onClick={() => navigate("/dashboard")}
@@ -97,53 +90,62 @@ const AppBarComponent = ({ open, toggleDrawer }) => {
             />
           </div>
 
-          {/* Botón de Toggle - Versión Simplificada */}
-          <IconButton
-            onClick={toggleDrawer}
-            sx={{
-              color: "white",
-              marginRight: 2,
-              backgroundColor: color.primary.azul,
-              borderRadius: 2,
-              width: 40,
-              height: 40,
-              transition: "all 0.3s ease", // Transición suave
-              "&:hover": {
-                backgroundColor: color.primary.rojo,
-                transform: "scale(1.05)", // Efecto de escala al hacer hover
-              },
-              "& .MuiSvgIcon-root": {
-                fontSize: "1.5rem",
-                transition: "transform 0.3s ease",
-              },
-            }}
-            aria-label={open ? "Ocultar menú" : "Mostrar menú"}
-          >
-            {open ? (
-              <FormatIndentDecreaseOutlinedIcon />
-            ) : (
-              <FormatIndentIncreaseOutlinedIcon />
-            )}
-          </IconButton>
+          {/* Botón de Toggle (solo si no es móvil o si el drawer está cerrado) */}
+          {!isMobile && (
+            <IconButton
+              onClick={toggleDrawer}
+              sx={{
+                color: "white",
+                marginRight: 2,
+                backgroundColor: color.primary.azul,
+                borderRadius: 2,
+                width: 40,
+                height: 40,
+                "&:hover": {
+                  backgroundColor: color.primary.rojo,
+                  transform: "scale(1.05)",
+                },
+              }}
+              aria-label={open ? "Ocultar menú" : "Mostrar menú"}
+            >
+              {open ? (
+                <FormatIndentDecreaseOutlinedIcon />
+              ) : (
+                <FormatIndentIncreaseOutlinedIcon />
+              )}
+            </IconButton>
+          )}
         </Grid>
 
-        {/* Usuario y Cerrar Sesión */}
+        {/* Usuario y Cerrar Sesión (reorganizado en móviles) */}
         <Grid
           container
           alignItems="center"
           justifyContent="flex-end"
-          spacing={2}
+          spacing={1}
           sx={{ width: "auto" }}
         >
-          <Grid item xs={12} sm={9}>
-            <Typography variant="h6" noWrap sx={{ color: "white" }}>
-              {user.usuario}
+          <Grid item xs={8} sm={9}>
+            <Typography
+              variant={isMobile ? "subtitle1" : "h6"}
+              noWrap
+              sx={{ color: "white", textAlign: "right" }}
+            >
+              {user?.usuario || "Usuario"}
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={4} sm={3}>
             <Tooltip title="Cerrar Sesión">
-              <IconButton onClick={handleRedirect} sx={{ padding: 0 }}>
-                <LogouIcon sx={{ color: "red", fontSize: "25px" }} />
+              <IconButton
+                onClick={handleRedirect}
+                sx={{ padding: 0, "&:hover": { opacity: 0.8 } }}
+              >
+                <LogouIcon
+                  sx={{
+                    color: "red",
+                    fontSize: isMobile ? "20px" : "25px", // Icono más pequeño en móviles
+                  }}
+                />
               </IconButton>
             </Tooltip>
           </Grid>

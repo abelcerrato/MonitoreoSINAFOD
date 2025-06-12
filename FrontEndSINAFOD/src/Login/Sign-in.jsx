@@ -149,7 +149,13 @@ export default function SignIn() {
           // Redirigir al dashboard
           navigate("/dashboard", { replace: true }); // Usa replace para evitar problemas de navegación
         } else {
-          alert("Error en la autenticación. Inténtelo de nuevo.");
+          Swal.fire({
+            title: "Error",
+            text: error.response.data.message,
+            icon: "error",
+            timer: 6000,
+          });
+         
         }
       } else if (error.request) {
         alert("Error en la conexión con el servidor.");

@@ -39,7 +39,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
   });
 
   const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -116,6 +115,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
     { field: "nombre", headerName: "Nombre ", width: 230 },
     { field: "correo", headerName: "Correo Electrónico", width: 300 },
     { field: "usuario", headerName: "Usuario", width: 150 },
+    { field: "rol", headerName: " Rol", width: 120 },
     { field: "estado", headerName: "Estado", width: 120 },
   ];
 

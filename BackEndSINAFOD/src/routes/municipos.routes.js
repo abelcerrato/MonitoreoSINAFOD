@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { getMunicipiosIdC } from "../controllers/municipos.controller.js";
+import { getMunicipiosC, getMunicipiosIdC } from "../controllers/municipos.controller.js";
 const router=Router();
 
 
@@ -8,6 +8,6 @@ const router=Router();
 //---------------------------------------------------------
 
 router.get('/municipios/:id', getMunicipiosIdC)
-
+router.get('/municipios', getMunicipiosC)
 
 export default router;

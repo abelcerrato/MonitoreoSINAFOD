@@ -133,7 +133,7 @@ const ModificarFormacion = () => {
 
       // Limpiar campos según cambio de modalidad
       if (name === "modalidad") {
-        if (sanitizedValue === "Virtual") {
+        if (sanitizedValue === "Online") {
           // Limpiar campos de modalidad presencial
           newData.espaciofisico = "";
           newData.direccion = "";
@@ -149,8 +149,8 @@ const ModificarFormacion = () => {
             ...prev,
             plataforma: false,
           }));
-        } else if (sanitizedValue === "Bimodal") {
-          // No limpiar nada para bimodal ya que necesita ambos
+        } else if (sanitizedValue === "Híbrido") {
+          // No limpiar nada para Híbrido ya que necesita ambos
         } else {
           // Limpiar todos los campos relacionados
           newData.plataforma = "";
@@ -390,7 +390,7 @@ const ModificarFormacion = () => {
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
           <Typography variant="h4" sx={{ color: color.primary.azul }}>
-            Actualizar de Datos sobre la Formación
+            Actualizar de Datos sobre la Acción Formativa
           </Typography>
           <Grid
             container
@@ -438,7 +438,9 @@ const ModificarFormacion = () => {
                 }}
                 startIcon={<ChecklistIcon />}
                 onClick={() =>
-                  navigate(`/Actualizar_Lineamientos_De_Formación/${id}`)
+                  navigate(
+                    `/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`
+                  )
                 }
               >
                 Lineamientos
@@ -456,7 +458,7 @@ const ModificarFormacion = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/Listado_De_Acciones_Formativas")}
               >
                 Cerrar
               </Button>
@@ -522,7 +524,7 @@ const ModificarFormacion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Se Tiene Convenio la Institución Asociada
+                    Tiene Convenio la Institución Asociada
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -570,7 +572,7 @@ const ModificarFormacion = () => {
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="subtitle1">Ambito de Formación</Typography>
+              <Typography variant="subtitle1">Ámbito de Formación</Typography>
               <TextField
                 fullWidth
                 name="ambitoformacion"
@@ -621,7 +623,7 @@ const ModificarFormacion = () => {
               formData.modalidad === "Híbrido") && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
-                  Plataforma en la que se Relizara la Actividad
+                  Plataforma en la que se Realizará la Actividad
                 </Typography>
                 <TextField
                   fullWidth
@@ -705,7 +707,7 @@ const ModificarFormacion = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
-                Cargo a la que va dirigido
+                Cargo al que va dirigido
               </Typography>
               <TextField
                 fullWidth
@@ -804,87 +806,7 @@ const ModificarFormacion = () => {
                 </Grid>
               </Grid>
             )}
-            {formData.media === true && (
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">
-                  Grados Académicos ()
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.btp1}
-                          onChange={handleChange}
-                          name="btp1"
-                        />
-                      }
-                      label="BTP 1"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.btp2}
-                          onChange={handleChange}
-                          name="btp2"
-                        />
-                      }
-                      label="BTP 2"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.btp3}
-                          onChange={handleChange}
-                          name="btp3"
-                        />
-                      }
-                      label="BTP 3"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.bch1}
-                          onChange={handleChange}
-                          name="bch1"
-                        />
-                      }
-                      label="BCH 1"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.bch2}
-                          onChange={handleChange}
-                          name="bch2"
-                        />
-                      }
-                      label="BCH 2"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.bch3}
-                          onChange={handleChange}
-                          name="bch3"
-                        />
-                      }
-                      label="BCH 3"
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            )}
+
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Fecha Inicio</Typography>
               <TextField

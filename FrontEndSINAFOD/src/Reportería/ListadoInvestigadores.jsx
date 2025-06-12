@@ -11,15 +11,8 @@ import dayjs from "dayjs";
 import { useTheme } from "@mui/material/styles";
 import {
   IconButton,
-  Box,
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableFooter,
-  TablePagination,
+  Checkbox,
+  FormControlLabel,
   Paper,
   Tooltip,
   Typography,
@@ -30,6 +23,7 @@ import {
   Grid,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { Margin } from "@mui/icons-material";
 
 const toBase64 = async (url) => {
   const response = await fetch(url);
@@ -42,7 +36,7 @@ const toBase64 = async (url) => {
   });
 };
 
-const ListadoParticipantes = () => {
+const ListadoInvestigadores = () => {
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -50,14 +44,13 @@ const ListadoParticipantes = () => {
   const [filterColumn, setFilterColumn] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [departamentos, setDepartamentos] = useState([]);
-  const [municipios, setMunicipios] = useState([]);
-  const [niveles, setNiveles] = useState([]);
-  const [grados, setGrados] = useState([]);
+
+  const [funcion, setFuncion] = useState([]);
 
   useEffect(() => {
     // Obtener los datos de los participantes después de guardar
     axios
-      .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
+      .get(`${process.env.REACT_APP_API_URL}/participanteInvest`)
       .then((response) => {
         setRows(response.data);
         setFilteredRows(response.data);
@@ -73,37 +66,32 @@ const ListadoParticipantes = () => {
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
       .then((response) => setDepartamentos(response.data));
     axios
-      .get(`${process.env.REACT_APP_API_URL}/nivelesAcademicos`)
-      .then((response) => setNiveles(response.data));
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/gradosAcademicos`)
-      .then((response) => setGrados(response.data));
+      .get(`${process.env.REACT_APP_API_URL}/cargodes`)
+      .then((response) => setFuncion(response.data));
   }, []);
 
-  useEffect(() => {
-    if (filterColumn === "municipioced" && filterValue) {
-      axios
-        .get(`${process.env.REACT_APP_API_URL}/municipios/${filterValue}`)
-        .then((response) => setMunicipios(response.data));
-    }
-  }, [filterColumn, filterValue]);
+  const [exactMatch, setExactMatch] = useState(false);
 
   useEffect(() => {
     if (!filterColumn || !filterValue) {
       setFilteredRows(rows);
     } else {
       setFilteredRows(
-        rows.filter(
-          (row) => row[filterColumn]?.toString() === filterValue.toString()
-        )
+        rows.filter((row) => {
+          const rowValue = row[filterColumn]?.toString().toLowerCase();
+          const searchValue = filterValue.toString().toLowerCase();
+          return exactMatch
+            ? rowValue === searchValue
+            : rowValue?.includes(searchValue);
+        })
       );
     }
-  }, [filterColumn, filterValue, rows]);
+  }, [filterColumn, filterValue, exactMatch, rows]);
 
   const exportExcel = async () => {
     try {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Participantes");
+      const worksheet = workbook.addWorksheet("Investigadores");
       // Convertir imágenes a base64 (si es necesario)
       const image1Base64 = await toBase64(LogoCONED);
       const image2Base64 = await toBase64(LogoDGDP);
@@ -125,7 +113,7 @@ const ListadoParticipantes = () => {
       // Definir el título
       worksheet.mergeCells("A8:F8");
       const title = worksheet.getCell("A8");
-      title.value = "Listado de los Participantes";
+      title.value = "Listado de los Investigadores";
       title.font = { size: 16, bold: true };
 
       // Agregar fecha y hora
@@ -138,50 +126,11 @@ const ListadoParticipantes = () => {
 
       const colorPrimarioAzul = color.primary.azul;
 
-      worksheet.mergeCells("B11:R11");
-      const DatosP = worksheet.getCell("B11");
-      DatosP.value = "Datos Generales del Participante";
-
-      // Aplicar los estilos directamente a la celda fusionada
-      DatosP.font = {
-        size: 16,
-        bold: true,
-        color: { argb: "FFFFFFFF" }, // Blanco (nota el formato de 8 caracteres)
-      };
-      DatosP.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: color.primary.azul.replace("#", "FF") }, // FF para opacidad completa
-      };
-      DatosP.alignment = {
-        horizontal: "center",
-        vertical: "middle",
-      };
-
-      worksheet.mergeCells("S11:AE11");
-      const DacosCentro = worksheet.getCell("S11");
-      DacosCentro.value =
-        "Datos del Centro Educativo al que representa el Participante";
-      DacosCentro.font = { size: 16, bold: true };
-      // Aplicar los estilos directamente a la celda fusionada
-      DacosCentro.font = {
-        bold: true,
-        color: { argb: "FFFFFFFF" }, // Blanco (nota el formato de 8 caracteres)
-      };
-      DacosCentro.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: color.primary.azul.replace("#", "FF") }, // FF para opacidad completa
-      };
-      DacosCentro.alignment = {
-        horizontal: "center",
-        vertical: "middle",
-      };
       // Espacio en blanco entre regionales
       worksheet.addRow([]);
       // Definir encabezados de la tabla
       const headers = [
-        "Nombre de la Acción Formativa",
+        "Nombre de la Investigación",
         "Código SACE",
         "Nombre",
         "Identificación",
@@ -199,20 +148,6 @@ const ListadoParticipantes = () => {
         "Municipio en el que Reside",
         "Aldea en la que Reside",
         "Caserio",
-
-        "Centro Educativo",
-        "Código SACE del Centro Educativo",
-        "Nivel Académico que Atiende",
-        "Grado que Atiende",
-        "Cargo que Desempeña en el Centro Educativo",
-        "Tipo Administración",
-        "Tipo de Centro Educativo",
-        "Jornada que Atiende",
-        "Modalidad que Atiende",
-        "Zona Centro Educativo",
-        "Departamento Centro Educativo",
-        "Municipio Centro Educativo",
-        "Aldea Centro Educativo",
       ];
 
       // Agregar encabezados a la primera fila
@@ -232,7 +167,7 @@ const ListadoParticipantes = () => {
       // Agregar los datos como filas en la tabla
       filteredRows.forEach((item) => {
         worksheet.addRow([
-          item.formacion,
+          item.investigacion,
           item.codigosace ?? "-",
           item.nombre,
           item.identificacion,
@@ -250,20 +185,6 @@ const ListadoParticipantes = () => {
           item.municipio,
           item.aldea,
           item.caserio,
-
-          item.nombreced,
-          item.codigosaceced,
-          item.nivelacademico_ced ?? "-",
-          item.gradoacademico_ced ?? "-",
-          item.cargoced,
-          item.tipoadministracion,
-          item.tipocentro,
-          item.jornada,
-          item.modalidad,
-          item.zona,
-          item.departamentoced ?? "-",
-          item.municipioced ?? "-",
-          item.aldeaced ?? "-",
         ]);
       });
 
@@ -278,7 +199,7 @@ const ListadoParticipantes = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "Reporte_Participantes.xlsx";
+      a.download = "Reporte_Investigadores.xlsx";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -289,9 +210,9 @@ const ListadoParticipantes = () => {
 
   const columns = [
     {
-      field: "formacion",
-      headerName: "Nombre de la Acción Formativa ",
-      width: 180,
+      field: "investigacion",
+      headerName: "Nombre de la Investigación ",
+      width: 280,
     },
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
@@ -338,65 +259,6 @@ const ListadoParticipantes = () => {
       headerName: "Caserio",
       width: 180,
     },
-
-    { field: "nombreced", headerName: "Centro Educativo", width: 180 },
-    {
-      field: "codigosaceced",
-      headerName: "Código SACE del Centro Educativo",
-      width: 180,
-    },
-    {
-      field: "nivelacademico_ced",
-      headerName: "Nivel Académico que Atiende",
-      width: 200,
-    },
-
-    {
-      field: "gradoacademico_ced",
-      headerName: "Grado que Atiende",
-      width: 230,
-    },
-    {
-      field: "cargoced",
-      headerName: "Cargo que Desempeña en el Centro Educativo",
-      width: 180,
-    },
-    {
-      field: "tipoadministracion",
-      headerName: "Tipo Administración",
-      width: 180,
-    },
-    {
-      field: "tipocentro",
-      headerName: "Tipo de Centro Educativo",
-      width: 180,
-    },
-    {
-      field: "jornada",
-      headerName: "Jornada que Atiende",
-      width: 180,
-    },
-    {
-      field: "modalidad",
-      headerName: "Modalidad que Atiende",
-      width: 180,
-    },
-    { field: "zona", headerName: "Zona Centro Educativo", width: 180 },
-    {
-      field: "departamentoced",
-      headerName: "Departamento Centro Educativo",
-      width: 230,
-    },
-    {
-      field: "municipioced",
-      headerName: "Municipio Centro Educativo",
-      width: 200,
-    },
-    {
-      field: "aldeaced",
-      headerName: "Aldea Centro Educativo",
-      width: 180,
-    },
   ];
 
   return (
@@ -406,77 +268,49 @@ const ListadoParticipantes = () => {
           variant="h3"
           sx={{ fontWeight: "bold", color: color.primary.azul, mb: 5 }}
         >
-          Listado de Participantes
+          Listado de Investigadores
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 3, md: 3 }}>
             <FormControl fullWidth>
               <Select onChange={(e) => setFilterColumn(e.target.value)}>
                 <MenuItem value="">Seleccionar columna</MenuItem>
-                <MenuItem value="formacion">Nombre de la Accion Formativa</MenuItem>
+                <MenuItem value="investigacion">
+                  Nombre de la Investigación
+                </MenuItem>
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
                 <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="fechanacimiento">Fecha de Nacimiento</MenuItem>
+                <MenuItem value="edad">Edad</MenuItem>
+                <MenuItem value="telefono">Teléfono</MenuItem>
                 <MenuItem value="nivelacademico">
                   Nivel Académico del Participante
                 </MenuItem>
                 <MenuItem value="gradoacademico">
                   Grado Académico del Participante
                 </MenuItem>
+                <MenuItem value="cargopart">Cargo que Desempeña</MenuItem>
                 <MenuItem value="añosdeservicio">Años de Servicio</MenuItem>
-                <MenuItem value="codigodered">
-                  Código de Red que Pertenece
-                </MenuItem>
-                <MenuItem value="cargoced">Función</MenuItem>
                 <MenuItem value="departamento">
                   Departamento en el que Reside
                 </MenuItem>
-                <MenuItem value="municipio">
-                  Municipio en el que Reside
-                </MenuItem>
-                <MenuItem value="aldea">Aldea en el que Reside</MenuItem>
-                <MenuItem value="nombreced">Centro Educativo</MenuItem>
-                <MenuItem value="nivelacademico_ced">
-                  Nivel Educativo que Atiende
-                </MenuItem>
-
-                <MenuItem value="gradoacademico_ced">
-                  Grado que Atiende
-                </MenuItem>
-                <MenuItem value="tipoadministracion">
-                  Tipo Administración
-                </MenuItem>
-                <MenuItem value="zona">Zona Centro Educativo</MenuItem>
-                <MenuItem value="departamentoced">
-                  Departamento Centro Educativo
-                </MenuItem>
-                <MenuItem value="municipioced">
-                  Municipio Centro Educativo
-                </MenuItem>
-                <MenuItem value="aldeaced">Aldea Centro Educativo</MenuItem>
+                <MenuItem value="caserio">Caserio</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 6, md: 6 }}>
             {filterColumn === "genero" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Hombre">Hombre</MenuItem>
-                  <MenuItem value="Femenino">Mujer</MenuItem>
+                  <MenuItem value="Masculino">Masculino</MenuItem>
+                  <MenuItem value="Femenino">Femenino</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "zona" ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar zona</MenuItem>
-                  <MenuItem value="Rural">Rural</MenuItem>
-                  <MenuItem value="Urbana">Urbana</MenuItem>
-                </Select>
-              </FormControl>
-            ) : ["departamento", "departamentoced"].includes(filterColumn) ? (
+            ) : filterColumn === "departamento" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar departamento</MenuItem>
@@ -487,58 +321,71 @@ const ListadoParticipantes = () => {
                   ))}
                 </Select>
               </FormControl>
-            ) : ["municipio", "municipioced"].includes(filterColumn) ? (
-              <FormControl fullWidth>
-                <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar municipio</MenuItem>
-                  {municipios.map((mun) => (
-                    <MenuItem key={mun.id} value={mun.id}>
-                      {mun.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ) : filterColumn === "idnivelesacademicos" ? (
+            ) : filterColumn === "nivelacademico" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar nivel</MenuItem>
-                  {niveles.map((niv) => (
-                    <MenuItem key={niv.id} value={niv.id}>
-                      {niv.nombre}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Media">Media</MenuItem>
+                  <MenuItem value="Superior">Superior</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "idgradosacademicos" ? (
+            ) : filterColumn === "gradoacademico" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar grado</MenuItem>
-                  {grados.map((gra) => (
-                    <MenuItem key={gra.id} value={gra.id}>
-                      {gra.gradoacademico}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Técnico">Técnico</MenuItem>
+                  <MenuItem value="Licenciatura">Licenciatura</MenuItem>
+                  <MenuItem value="Maestría">Maestría</MenuItem>
+                  <MenuItem value="Doctorado">Doctorado</MenuItem>
                 </Select>
               </FormControl>
-            ) : filterColumn === "tipoadministracion" ? (
+            ) : filterColumn === "cargopart" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">
-                    Seleccionar Tipo de Administración
+                  <MenuItem value="" disabled>
+                    Seleccione un cargo
                   </MenuItem>
-                  <MenuItem value="Gubernamental">Gubernamental</MenuItem>
-                  <MenuItem value="No Gubernamental">No Gubernamental</MenuItem>
+                  {funcion.length > 0 ? (
+                    funcion.map((dep) => (
+                      <MenuItem key={dep.cargo} value={dep.cargo}>
+                        {dep.cargo}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>Cargando...</MenuItem>
+                  )}
                 </Select>
               </FormControl>
             ) : (
-              <TextField
-                type="text"
-                placeholder="Ingresar valor"
-                onChange={(e) => setFilterValue(e.target.value)}
-              />
+              <Grid
+          
+                display="flex"
+                alignItems="center"
+              >
+                <Grid  mr={4} size={{ xs: 5, md: 5 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      placeholder="Ingresar valor"
+                      onChange={(e) => setFilterValue(e.target.value)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 2, md: 2 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={exactMatch}
+                        onChange={() => setExactMatch(!exactMatch)}
+                      />
+                    }
+                    label="Coincidencia exacta"
+                  />
+                </Grid>
+              </Grid>
             )}
           </Grid>
-          <Grid item xs={12} size={4} container justifyContent="flex-end">
+          <Grid size={{ xs: 3, md: 3 }} container justifyContent="flex-end">
             <Tooltip title="Exportar Excel">
               <IconButton
                 onClick={() => exportExcel(rows)}
@@ -567,4 +414,4 @@ const ListadoParticipantes = () => {
   );
 };
 
-export default ListadoParticipantes;
+export default ListadoInvestigadores;

@@ -21,7 +21,7 @@ export const getRolIdM = async (id) => {
     try {
         const { rows } = await pool.query('SELECT rol, estado, descripcion FROM ms_roles WHERE id=$1', [id]);
         //console.log('Resultado de la consulta del Rol:', rows);
-        return rows;
+        return rows[0];
     } catch (error) {
         console.error('Error al obtener el Rol:', error);
         throw error;

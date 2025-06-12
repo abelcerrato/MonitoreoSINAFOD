@@ -224,7 +224,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     if (selectedRow?.estado_lineamientos === "No Lleno Lineamientos") {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>acción formativa</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -234,7 +234,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     ) {
       await Swal.fire({
         title: "¡Advertencia!",
-        html: `Esta <b>formación</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
+        html: `Esta <b>acción formativa</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
         confirmButtonText: "Ok",
         confirmButtonColor: color.primary.azul,
@@ -244,12 +244,12 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
 
   const handleFormacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Formación/${id}`);
+    navigate(`/Actualizar_Acción_Formativa/${id}`);
   };
 
   const handleLineamientosFormacion = async (id) => {
     await checkLineamientos(id);
-    navigate(`/Actualizar_Lineamientos_De_Formación/${id}`);
+    navigate(`/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`);
   };
 
   const handleOpenQrModal = (id) => {
@@ -269,8 +269,13 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     return permiso?.actualizar === true;
   };
 
+  const tienePermisoInsertar = (idobjeto) => {
+    const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
+    return permiso?.insertar === true;
+  };
+
   const columns = [
-    ...(tienePermiso(5)
+    ...(tienePermiso(2)
       ? [
           {
             field: "actions",
@@ -304,14 +309,14 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Ver Detalles">
+                {/* <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
                     color="info"
                   >
                     <RemoveRedEyeIcon />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
               </>
             ),
           },
@@ -361,22 +366,24 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
             component="h2"
             sx={{ fontWeight: "bold", color: color.primary.azul }}
           >
-            Formaciones
+            Acciones Formativas
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/Lineamientos_De_Formación")}
-            sx={{
-              color: color.primary.contrastText,
-              backgroundColor: color.primary.azul,
-              "&:hover": {
-                backgroundColor: color.dark,
-              },
-            }}
-          >
-            Nuevo
-          </Button>
+          {tienePermisoInsertar(2) && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/Lineamientos_De_La_Acción_Formativa")}
+              sx={{
+                color: color.primary.contrastText,
+                backgroundColor: color.primary.azul,
+                "&:hover": {
+                  backgroundColor: color.dark,
+                },
+              }}
+            >
+              Nuevo
+            </Button>
+          )}
         </Box>
         <DataGrid
           rows={rows}

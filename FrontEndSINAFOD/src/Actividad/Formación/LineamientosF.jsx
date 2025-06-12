@@ -16,7 +16,7 @@ import {
   Tab,
   Tabs,
   FormHelperText,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
@@ -28,9 +28,8 @@ import TablaPacticantes from "../../Participantes/TablaParticipantes";
 import Swal from "sweetalert2";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
-import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
+import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -55,7 +54,7 @@ const LineamientosF = () => {
   });
   const [errors, setErrors] = useState({
     accionformacion: false,
-    criterioseticosurl: false
+    criterioseticosurl: false,
   });
 
   const navigate = useNavigate();
@@ -70,13 +69,17 @@ const LineamientosF = () => {
   };
 
   const handleRemoveFile = (fieldName) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [fieldName]: null,
     }));
 
+    // Resetear el valor del input file
+    if (fileInputRefs[fieldName]?.current) {
+      fileInputRefs[fieldName].current.value = "";
+    }
   };
-
+  
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -84,23 +87,30 @@ const LineamientosF = () => {
 
     // Validar tipo de archivo (nueva validación)
     if (file) {
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+      ];
       const fileType = file.type;
-      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const fileExtension = file.name.split(".").pop().toLowerCase();
 
       // Verificar si el tipo o extensión están permitidos
-      if (!allowedTypes.includes(fileType) &&
-        !['pdf', 'jpg', 'jpeg', 'png'].includes(fileExtension)) {
+      if (
+        !allowedTypes.includes(fileType) &&
+        !["pdf", "jpg", "jpeg", "png"].includes(fileExtension)
+      ) {
         // Mostrar alerta de error
         Swal.fire({
-          title: 'Tipo de archivo no permitido',
-          text: 'Solo se permiten archivos PDF, JPG, JPEG o PNG.',
-          icon: 'error',
+          title: "Tipo de archivo no permitido",
+          text: "Solo se permiten archivos PDF, JPG, JPEG o PNG.",
+          icon: "error",
           confirmButtonColor: color.primary.azul,
         });
 
         // Limpiar el input file
-        e.target.value = '';
+        e.target.value = "";
         return;
       }
 
@@ -125,15 +135,12 @@ const LineamientosF = () => {
       ...prev,
       [name]: file,
     }));
-
-
   };
-
 
   const fileInputRefs = {
     criteriosfactibilidadurl: React.useRef(null),
     requisitostecnicosurl: React.useRef(null),
-    criterioseticosurl: React.useRef(null)
+    criterioseticosurl: React.useRef(null),
   };
 
   const handleSubmit = async (e) => {
@@ -142,11 +149,9 @@ const LineamientosF = () => {
     // Resetear errores
     const newErrors = {
       accionformacion: false,
-
     };
 
     let hasError = false;
-
 
     // Validación del título del proyecto
     if (!formData.accionformacion) {
@@ -180,7 +185,7 @@ const LineamientosF = () => {
     ];
 
     // Agregar archivos si existen
-    fileFields.forEach(field => {
+    fileFields.forEach((field) => {
       if (formData[field]) {
         formDataToSend.append(field, formData[field]);
         uploadedFilesCount++;
@@ -190,15 +195,15 @@ const LineamientosF = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: 'Lineamientos incompletos',
+        title: "Lineamientos incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: color.primary.azul,
         cancelButtonColor: color.primary.rojo,
-        confirmButtonText: 'Sí, Registar',
-        cancelButtonText: 'No, cancelar',
-        reverseButtons: true
+        confirmButtonText: "Sí, Registar",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
       });
 
       if (!result.isConfirmed) {
@@ -217,7 +222,7 @@ const LineamientosF = () => {
         }
       );
       const investCap = response.data.id;
-      navigate("/Formación", {
+      navigate("/Crear_Acción_Formativa", {
         state: { investCap, accionformacion: formData.accionformacion },
       });
     } catch (error) {
@@ -236,8 +241,8 @@ const LineamientosF = () => {
         >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 9 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                Registro de Lineamientos para Formación
+              <Typography variant="h4"  sx={{ fontWeight: "bold", color: color.primary.azul }}>
+                Registro de Lineamientos para la Acción Formativa
               </Typography>
             </Grid>
             <Grid
@@ -250,7 +255,7 @@ const LineamientosF = () => {
                   borderColor: color.primary.rojo,
                   color: color.primary.rojo,
                 }}
-                onClick={() => navigate("/Listado_De_Formaciones")}
+                onClick={() => navigate("/Listado_De_Acciones_Formativas")}
               >
                 Cerrar
               </Button>
@@ -261,7 +266,7 @@ const LineamientosF = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
                 {" "}
-                Nombre de la Formación
+                Nombre de la Acción Formativa
               </Typography>
               <TextField
                 fullWidth
@@ -287,7 +292,7 @@ const LineamientosF = () => {
             <Grid size={{ xs: 12, md: 6 }}></Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom>
-                Documento de Cumplimientos de los Criterios de Factibilidad
+                Documento de Cumplimiento de los Criterios de Factibilidad
               </Typography>
               <Button
                 component="label"
@@ -374,7 +379,7 @@ const LineamientosF = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom>
-                Documento de Cumplimientos de los Criterios Éticos
+                Documento de Cumplimiento de los Criterios Éticos
               </Typography>
               <Button
                 component="label"
@@ -422,7 +427,7 @@ const LineamientosF = () => {
                 variant="contained"
                 sx={{ backgroundColor: color.primary.rojo }}
                 startIcon={<FastForwardOutlinedIcon />}
-                onClick={() => navigate("/Formación")}
+                onClick={() => navigate("/Crear_Acción_Formativa")}
               >
                 Omitir
               </Button>
