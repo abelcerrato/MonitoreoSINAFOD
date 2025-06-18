@@ -347,9 +347,15 @@ const ModificarLineamientos = () => {
         }
       );
 
-      Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
+      Swal.fire({
+        title: "Actualización",
+        text: "Lineamientos actualizados correctamente",
+        icon: "success",
+        timer: 6000,
+      });
+
       // navigate(`/Actualizar_Formación/${id}`);
-      navigate("/dashboard");
+      navigate("/Listado_De_Acciones_Formativas");
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       Swal.fire("Error", "Hubo un problema al guardar los datos", "error");
@@ -611,7 +617,10 @@ const ModificarLineamientos = () => {
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
         <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
           <Grid size={{ xs: 12, md: 9 }}>
-            <Typography variant="h4" sx={{ color: color.primary.azul }}>
+            <Typography
+              variant="h4"
+              sx={{ color: color.primary.azul, fontWeight: "bold" }}
+            >
               Actualizar de Lineamientos para la Acción Formativa
             </Typography>
           </Grid>

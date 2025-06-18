@@ -79,7 +79,6 @@ const LineamientosF = () => {
       fileInputRefs[fieldName].current.value = "";
     }
   };
-  
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -241,7 +240,10 @@ const LineamientosF = () => {
         >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 9 }}>
-              <Typography variant="h4"  sx={{ fontWeight: "bold", color: color.primary.azul }}>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: "bold", color: color.primary.azul }}
+              >
                 Registro de Lineamientos para la Acción Formativa
               </Typography>
             </Grid>
