@@ -1,19 +1,149 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import AppBarComponent from "./AppBar";
 import ProjectDrawer from "./Drawer";
 import React from "react";
-import TablaFormacion from "../Actividad/Formación/TablaFormacion";
-import TablaInvestigacion from "../Actividad/Investigación/TablaInvestigación";
+import { PDFViewer } from "@react-pdf/renderer";
 import { useUser } from "../Components/UserContext";
-import { useLocation } from "react-router-dom";
+import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
+
+import { QRCodeCanvas } from "qrcode.react";
 import CambiarContraModal from "../Login/CambiarContraModal";
+import { color } from "../Components/color";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  Image,
+  StyleSheet,
+} from "@react-pdf/renderer";
+
+// Componente para el PDF
+import logoDGDP from "../Components/img/Logo DGDP_FondoB.png";
+import logoSE from "../Components/img/LogoEducacion.png";
+import marcaH from "../Components/img/5 estrellas y H.png";
+
+// Estilos para el PDF
+
+const styles = StyleSheet.create({
+  page: {
+    position: "relative",
+    padding: 30,
+    fontFamily: "Helvetica",
+  },
+  backgroundColumn: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 40,
+    height: "100%",
+    backgroundColor: color.primary.azul,
+  },
+  logoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 120,
+    height: "auto",
+  },
+  marcaH: {
+    position: "absolute",
+    padding: 5,
+    bottom: 100,
+    left: 35,
+    width: 80,
+    height: 40,
+    backgroundColor: color.primary.azul,
+  },
+  content: {
+    marginTop: 20,
+    paddingHorizontal: 60,
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  section: {
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  value: {
+    fontSize: 12,
+    marginBottom: 15,
+  },
+  qrContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  qrImage: {
+    width: 150,
+    height: 150,
+  },
+  url: {
+    fontSize: 10,
+    marginTop: 10,
+    color: "#666",
+  },
+});
+
+const FormationPDF = ({ qrUrl }) => (
+  <Document>
+    <Page size="LETTER" style={styles.page}>
+      <View style={styles.backgroundColumn} />
+
+      <View style={styles.logoContainer}>
+        <Image style={styles.logo} src={logoDGDP} />
+        <Image style={styles.logo} src={logoSE} />
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.title}>Formulario de Pre Inscripción</Text>
+
+        <View style={styles.qrContainer}>
+          <Text style={styles.label}>Código QR</Text>
+          <Image
+            style={styles.qrImage}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+              qrUrl
+            )}`}
+          />
+          <Text style={styles.url}>{qrUrl}</Text>
+        </View>
+      </View>
+      <Image style={styles.marcaH} src={marcaH} />
+    </Page>
+  </Document>
+);
 
 const Dashboard = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
-
-
+  const [qrUrl, setQrUrl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
   const toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
@@ -34,6 +164,18 @@ const Dashboard = ({ children }) => {
 
     // Opcional: Guardar en localStorage/sessionStorage
     sessionStorage.setItem("passwordChanged", "true");
+  };
+
+  const handleOpenQrModal = async () => {
+    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Inscripción`;
+
+    try {
+      setQrUrl(qrLink);
+
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Error generando QR:", error);
+    }
   };
 
   return (
@@ -63,8 +205,16 @@ const Dashboard = ({ children }) => {
           backgroundColor: "#f2f2f2",
         }}
       >
+        <Tooltip title="Generar QR para participantes">
+          <IconButton
+            sx={{ color: color.primary.azul }}
+            onClick={() => handleOpenQrModal()}
+          >
+            <QrCodeScannerOutlinedIcon />
+          </IconButton>
+        </Tooltip>
         {children}
-      
+
         <Typography
           variant="body2"
           color="text.secondary"
@@ -84,6 +234,69 @@ const Dashboard = ({ children }) => {
           onSuccess={handlePasswordChangeSuccess}
         />
       </Box>
+
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Descarga de Qr</DialogTitle>
+        <DialogContent style={{ textAlign: "center", padding: "20px" }}>
+          {qrUrl && (
+            <>
+              {!showPreview && (
+                <>
+                  <QRCodeCanvas value={qrUrl} size={200} />
+                  <p style={{ marginTop: "15px", wordBreak: "break-all" }}>
+                    {qrUrl}
+                  </p>
+                </>
+              )}
+
+              <div style={{ marginTop: "25px" }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowPreview(!showPreview)}
+                  sx={{ mr: 2 }}
+                >
+                  {showPreview ? "Ocultar Vista Previa" : "Vista Previa"}
+                </Button>
+
+                <PDFDownloadLink
+                  document={<FormationPDF qrUrl={qrUrl} />}
+                  fileName="Qr_de_PreInscripción.pdf"
+                >
+                  {({ loading }) => (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={loading}
+                      sx={{
+                        backgroundColor: color.primary.azul,
+                        "&:hover": {
+                          backgroundColor: color.dark,
+                        },
+                      }}
+                    >
+                      {loading ? "Generando PDF..." : "Descargar PDF"}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              </div>
+
+              {showPreview && (
+                <div style={{ marginTop: "30px", height: "600px" }}>
+                  <PDFViewer width="100%" height="100%">
+                    <FormationPDF qrUrl={qrUrl} />
+                  </PDFViewer>
+                </div>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

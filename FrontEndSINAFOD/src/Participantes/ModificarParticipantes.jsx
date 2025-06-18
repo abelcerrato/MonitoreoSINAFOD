@@ -695,7 +695,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Caserio</Typography>
+                  <Typography variant="subtitle1">Caserío</Typography>
                   <TextField
                     fullWidth
                     name="caserio"
