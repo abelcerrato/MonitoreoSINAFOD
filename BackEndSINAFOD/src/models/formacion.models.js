@@ -274,7 +274,7 @@ export const postLineamientosFormacionM = async (
     try {
         const { rows } = await pool.query(
             `
-            INSERT INTO investigacioncap ( formacion, criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, creadopor, fechacreacion) 
+            INSERT INTO formacion ( formacion, criteriosfactibilidad, criteriosfactibilidadurl, requisitostecnicos, requisitostecnicosurl, criterioseticos, criterioseticosurl, creadopor, fechacreacion) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP) 
             RETURNING id`,
             [
