@@ -224,7 +224,7 @@ export const putParticipanteC = async (req, res) => {
         identificacion, codigosace, correo, nombre, fechanacimiento,
         edad, telefono, genero, idfuncion, idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
         deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos,
-        modificadopor, 
+        modificadopor,
         //datos del centro educativo
         idcentroeducativo, nombreced, codigosaceced, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea,
         //datos de la relacion del centro educativo con el participante
@@ -244,7 +244,7 @@ export const putParticipanteC = async (req, res) => {
     }
 
     try {
-        
+
         const Participante = await putParticipanteM(identificacion, codigosace, correo, nombre, fechanacimiento,
             edad, telefono, genero, idfuncion, idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered,
             deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos,
@@ -262,7 +262,7 @@ export const putParticipanteC = async (req, res) => {
             message: "Datos del participante y el centro educativo actualizados correctamente",
             participante: Participante,
             centroEd: CentroEducativo,
-            relacionCentroPart:CentroEducativoPart
+            relacionCentroPart: CentroEducativoPart
         });
     } catch (error) {
         console.error("Error al actualizar la acitacion del participante: ", error);
@@ -442,14 +442,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             const idPart = participante;
             console.log("idPart: ", idPart);
 
-            // Insertar formaciones
-            if (Array.isArray(idformacion)) {
-                response.formacion = [];
-                for (const form of idformacion) {
-                    const r = await postParticipanteFormacionM(form, idPart);
-                    response.formacion.push(r);
-                }
-            }
+
 
             // Insertar centro educativo
             const centro = await postCentroEducativoM(
@@ -490,7 +483,17 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-           
+
+            // Insertar formaciones
+            if (Array.isArray(idformacion)) {
+                response.formacion = [];
+                for (const form of idformacion) {
+                    const r = await postParticipanteFormacionM(form, idPart, centro);
+                    response.formacion.push(r);
+                }
+            }
+
+
         }
         // CASO 2: Existe docente, pero no participante ni centro educativo
         else if (iddocente && !idparticipante && !idcentroeducativo) {
@@ -520,13 +523,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
             const idPart = participante;
 
-            if (Array.isArray(idformacion)) {
-                response.formacion = [];
-                for (const form of idformacion) {
-                    const r = await postParticipanteFormacionM(form, idPart);
-                    response.formacion.push(r);
-                }
-            }
+
 
             const centro = await postCentroEducativoM(
                 nombreced,
@@ -565,7 +562,15 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            
+            if (Array.isArray(idformacion)) {
+                response.formacion = [];
+                for (const form of idformacion) {
+                    const r = await postParticipanteFormacionM(form, idPart, centro);
+                    response.formacion.push(r);
+                }
+            }
+
+
         }
         // CASO 3: No existe docente, pero sí existe participante y centro educativo
         else if (!iddocente && idparticipante && idcentroeducativo) {
@@ -586,7 +591,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.docentes = docente;
 
-            
+
 
             const relacionCed = await postCentroEducativoParticipanteM(
                 idcentroeducativo,
@@ -612,7 +617,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-            
+
         }
         // CASO 4: Existe docente y participante, pero NO existe centro educativo
         else if (iddocente && idparticipante && !idcentroeducativo) {
@@ -659,12 +664,12 @@ export const postParticipantesIFCedC = async (req, res) => {
             if (Array.isArray(idformacion)) {
                 response.formacion = [];
                 for (const form of idformacion) {
-                    const r = await postParticipanteFormacionM(form, idparticipante);
+                    const r = await postParticipanteFormacionM(form, idparticipante, centro);
                     response.formacion.push(r);
                 }
             }
 
-           
+
         }
         // CASO 5: Existe docente y centro educativo, pero NO existe participante
         else if (iddocente && !idparticipante && idcentroeducativo) {
@@ -696,7 +701,8 @@ export const postParticipantesIFCedC = async (req, res) => {
                 for (const formacion of idformacion) {
                     const r = await postParticipanteFormacionM(
                         formacion,
-                        response.participantes
+                        response.participantes,
+                        idcentroeducativo
                     );
                     response.formacion.push(r);
                 }
@@ -725,14 +731,14 @@ export const postParticipantesIFCedC = async (req, res) => {
                 doceavo
             );
 
-           
+
         }
         // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
         else {
             if (Array.isArray(idformacion)) {
                 response.formacion = [];
                 for (const form of idformacion) {
-                    const r = await postParticipanteFormacionM(form, idparticipante);
+                    const r = await postParticipanteFormacionM(form, idparticipante, idcentroeducativo);
                     response.formacion.push(r);
                 }
             }
@@ -761,7 +767,7 @@ export const postParticipantesIFCedC = async (req, res) => {
             );
             response.ced2 = relacionCed;
 
-           
+
         }
 
         return res.status(201).json({
