@@ -13,7 +13,7 @@ export const getObjetosM = async () => {
         left join ms_usuarios muc on mso.creadopor = muc.id 
         left join ms_usuarios mum on mso.modificadopor = mum.id 
         order by mso.id asc`)
-        console.log(rows);
+        //console.log(rows);
         return rows;
     } catch (error) {
         throw error;

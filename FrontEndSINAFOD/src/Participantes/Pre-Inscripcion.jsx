@@ -1972,7 +1972,7 @@ const PreInscripcion = () => {
                     >
                       <ListItemText
                         primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.nombreced || "Sin centro educativo"
+                          docente.identificacion || "Sin centro educativo"
                         }`}
                         secondary={
                           <>

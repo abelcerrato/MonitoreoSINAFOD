@@ -9,7 +9,7 @@ export const getModulosM = async () => {
         left join ms_usuarios muc on mm.creadopor = muc.id 
         left join ms_usuarios mum on mm.modificadopor = mum.id
         order by mm.id asc`)
-        console.log(rows);
+        //console.log(rows);
         return rows;
     } catch (error) {
         throw error;

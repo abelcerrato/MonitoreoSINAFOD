@@ -102,6 +102,8 @@ export default function TablaPacticantes({
   setIsSaved,
   formacioninvest,
 }) {
+  console.log("investCap", investCap);
+  console.log("formacioninvest", formacioninvest);
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
@@ -130,7 +132,6 @@ export default function TablaPacticantes({
       .then((response) => {
         setRows(response.data); // Actualizar las filas con los nuevos datos
         setIsSaved(false);
-        console.log(rows);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
@@ -149,8 +150,7 @@ export default function TablaPacticantes({
         variant="h4"
         sx={{ color: color.primary.azul, textAlign: "center" }}
       >
-        {" "}
-        Participantes{" "}
+        Participantes
       </Typography>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead sx={{ backgroundColor: color.primary.azul }}>
@@ -242,7 +242,7 @@ export default function TablaPacticantes({
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={23}
+              colSpan={5}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}

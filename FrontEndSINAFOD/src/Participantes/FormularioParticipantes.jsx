@@ -212,7 +212,6 @@ const FormularParticipantes = () => {
       }, {});
     };
     try {
-      console.log("formData", formData);
       const transformedFormData = transformFormData(formData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/participante/${formacioninvest}/${investCap}`,
@@ -447,9 +446,6 @@ const FormularParticipantes = () => {
           `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${formData.iddepartamento}/${formData.idmunicipio}`
         );
         setCentrosEducativos(response.data);
-        console.log(response.data);
-        console.log("departamento", formData.iddepartamento);
-        console.log("municipio", formData.idmunicipio);
       } catch (error) {
         console.error("Error al obtener los departamentos", error);
       }
@@ -484,12 +480,11 @@ const FormularParticipantes = () => {
           // Si solo hay un registro, llenar directamente
           llenarFormulario(response.data[0]);
           Swal.fire({
-            title: "Participante encontrado",
+            title: "Participante Encontrado",
             text: "Se encontraron datos del participante",
             icon: "success",
-            timer: 6000,
+            timer: 6000,   
           });
-          console.log(response.data[0]);
         } else {
           // Si hay múltiples registros, mostrar modal de selección
           setDocentesEncontrados(response.data);
@@ -497,8 +492,8 @@ const FormularParticipantes = () => {
         }
       } else {
         Swal.fire({
-          title: "No encontrado",
-          text: "No se encontraron registros para el filtro proporcionado",
+          title: "Participante No Encontrado",
+          text: "No se encontraron registros",
           icon: "info",
           timer: 6000,
         });
@@ -1567,8 +1562,8 @@ const FormularParticipantes = () => {
                           </Box>
                           <Box component="span" display="block">
                             Nivel Educativo que Atiende:{" "}
-                            {docente.nombrenivelced || ""} - Grado Educativo que
-                            Atiende: {docente.nombregradoced || ""}
+                            {docente.nivelacademico_ced || ""} - Grado Educativo
+                            que Atiende: {docente.gradoacademico_ced || ""}
                           </Box>
                         </>
                       }
