@@ -815,6 +815,18 @@ const ModificarParticipante = () => {
                           typeof option === "string" ? option : option.nombreced
                         }
                         value={formData.nombreced || ""}
+                        onChange={(event, newValue) => {
+                          if (
+                            typeof newValue === "object" &&
+                            newValue !== null
+                          ) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              nombreced: newValue.nombreced,
+                              codigosaceced: newValue.codigosace, 
+                            }));
+                          }
+                        }}
                         onInputChange={(event, newInputValue) => {
                           setFormData((prev) => ({
                             ...prev,

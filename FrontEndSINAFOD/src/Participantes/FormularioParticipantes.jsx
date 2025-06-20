@@ -422,7 +422,7 @@ const FormularParticipantes = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
-  // Obtener funcion que desempeña
+  // Obtener cargo que desempeña
   useEffect(() => {
     const obtenerfuncion = async () => {
       try {
@@ -1072,6 +1072,18 @@ const FormularParticipantes = () => {
                           typeof option === "string" ? option : option.nombreced
                         }
                         value={formData.nombreced || ""}
+                        onChange={(event, newValue) => {
+                          if (
+                            typeof newValue === "object" &&
+                            newValue !== null
+                          ) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              nombreced: newValue.nombreced,
+                              codigosaceced: newValue.codigosace, 
+                            }));
+                          }
+                        }}
                         onInputChange={(event, newInputValue) => {
                           setFormData((prev) => ({
                             ...prev,
