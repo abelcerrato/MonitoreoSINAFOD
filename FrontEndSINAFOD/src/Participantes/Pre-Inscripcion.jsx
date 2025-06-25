@@ -667,9 +667,7 @@ const PreInscripcion = () => {
                     sx={{ mb: 1 }}
                   >
                     <strong>Modalidad:</strong> {formacion.modalidad}
-                    {formacion.modalidad === "Virtual" &&
-                      formacion.plataforma &&
-                      ` (${formacion.plataforma})`}
+                  
                   </Typography>
 
                   <Typography
@@ -681,6 +679,17 @@ const PreInscripcion = () => {
                     {formacion.duracion.minutes}m
                   </Typography>
 
+                  {(formacion.modalidad === "Virtual" ||
+                    formacion.modalidad === "Bimodal") &&
+                    formacion.plataforma && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        <strong>Plataforma:</strong> {formacion.plataforma}
+                      </Typography>
+                    )}
                   <Typography
                     variant="body2"
                     color="text.secondary"

@@ -114,7 +114,7 @@ const ModificarParticipante = () => {
           const fecha = new Date(datosParticipante.fechanacimiento);
           datosParticipante.fechanacimiento = fecha.toISOString().split("T")[0];
         }
-
+        datosParticipante.cargo = datosParticipante.idcargo;
         setFormData(datosParticipante); // Si aún necesitas formData para otros campos
 
         // 2. Extraer iddepartamento e idmunicipio y usarlos directamente
@@ -127,7 +127,6 @@ const ModificarParticipante = () => {
           );
 
           setCentrosEducativos(responseCentros.data);
-          console.log(responseCentros.data);
         }
       } catch (error) {
         console.error("Error al obtener los datos", error);

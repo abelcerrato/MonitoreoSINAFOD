@@ -938,12 +938,16 @@ const FormularioExterno = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Teléfono</Typography>
+                <Typography variant="subtitle1">Teléfono*</Typography>
                 <TextField
                   fullWidth
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
+                  error={fieldErrors.telefono}
+                  helperText={
+                    fieldErrors.telefono ? "Este campo es obligatorio" : ""
+                  }
                   InputProps={{
                     readOnly: camposBloqueados.telefono,
                   }}
@@ -1277,7 +1281,7 @@ const FormularioExterno = () => {
                         setFormData((prev) => ({
                           ...prev,
                           nombreced: newValue.nombreced,
-                          codigosaceced: newValue.codigosace, 
+                          codigosaceced: newValue.codigosace,
                         }));
                       }
                     }}

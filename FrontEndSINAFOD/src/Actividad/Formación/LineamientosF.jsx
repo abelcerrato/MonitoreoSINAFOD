@@ -194,7 +194,7 @@ const LineamientosF = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: "Lineamientos incompletos",
+        title: "Lineamientos Incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: "warning",
         showCancelButton: true,
@@ -222,8 +222,15 @@ const LineamientosF = () => {
       );
       const investCap = response.data.id;
       navigate("/Crear_Acción_Formativa", {
-        state: { investCap, formacion: formData.formacion },
+        state: {
+          investCap,
+          formacion: formData.formacion,
+          lineamientosIncompletos: uploadedFilesCount < totalRequiredFiles,
+          uploadedFilesCount,
+          totalRequiredFiles,
+        },
       });
+      
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
@@ -277,9 +284,7 @@ const LineamientosF = () => {
                 onChange={handleChange}
                 error={errors.formacion}
                 helperText={
-                  errors.formacion
-                    ? "El título del proyecto es requerido"
-                    : ""
+                  errors.formacion ? "El título del proyecto es requerido" : ""
                 }
                 FormHelperTextProps={{ style: { color: "red" } }}
                 sx={{
