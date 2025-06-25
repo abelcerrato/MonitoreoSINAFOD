@@ -162,6 +162,7 @@ export const getParticipanteIdM = async (id) => {
                     ) AS gradoacademico_ced,
                 ced2.iddepartamento, dced.nombre as departamentoced, ced2.idmunicipio, mced.nombre as municipioced, ced2.idaldea, aced.nombre as aldeaced
                 FROM participantes as p
+                LEFT JOIN participantesformacion pf ON p.id = pf.idparticipante
                 left join departamento dres on p.deptoresidencia = dres.id 
                 left join municipio mres on p.municipioresidencia = mres.id 
                 left join aldeas ares on p.aldearesidencia = ares.id
@@ -180,7 +181,6 @@ export const getParticipanteIdM = async (id) => {
         `,
       [id]
     );
-    console.log(rows);
 
     return rows;
   } catch (error) {
@@ -705,16 +705,17 @@ export const postParticipanteInvestigacionM = async (
 
 export const postParticipanteFormacionM = async (
   idformacion,
-  idparticipante, idcentro
+  idparticipante,
+  idcentroeducativo
 ) => {
   try {
     const { rows } = await pool.query(
       `
-            INSERT INTO participantesformacion ( idformacion, idparticipante, idcentro ) 
+            INSERT INTO participantesformacion ( idformacion, idparticipante, idcentroeducativo ) 
             VALUES ( $1, $2, $3 ) 
             RETURNING id
         `,
-      [idformacion, idparticipante]
+      [idformacion, idparticipante, idcentroeducativo]
     );
 
     return rows[0];

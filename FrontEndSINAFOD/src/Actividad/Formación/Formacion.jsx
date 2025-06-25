@@ -10,22 +10,14 @@ import {
   MenuItem,
   FormControl,
   Box,
-  Radio,
-  RadioGroup,
+
   FormControlLabel,
-  Tab,
-  Tabs,
+
   FormHelperText,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Tooltip,
-  IconButton,
-} from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
 
-import { PDFViewer } from "@react-pdf/renderer";
+} from "@mui/material";
+
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -34,139 +26,18 @@ import { useUser } from "../../Components/UserContext";
 
 import Swal from "sweetalert2";
 
-import { QRCodeCanvas } from "qrcode.react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  Image,
-  StyleSheet,
-} from "@react-pdf/renderer";
 
-// Componente para el PDF
-import logoDGDP from "../../Components/img/Logo DGDP_FondoB.png";
-import logoSE from "../../Components/img/LogoEducacion.png";
-import marcaH from "../../Components/img/5 estrellas y H.png";
-
-// Estilos para el PDF
-
-const styles = StyleSheet.create({
-  page: {
-    position: "relative",
-    padding: 30,
-    fontFamily: "Helvetica",
-  },
-  backgroundColumn: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 40,
-    height: "100%",
-    backgroundColor: color.primary.azul,
-  },
-  logoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    paddingHorizontal: 20,
-  },
-  logo: {
-    width: 120,
-    height: "auto",
-  },
-  marcaH: {
-    position: "absolute",
-    padding: 5,
-    bottom: 100,
-    left: 35,
-    width: 80,
-    height: 40,
-    backgroundColor: color.primary.azul,
-  },
-  content: {
-    marginTop: 20,
-    paddingHorizontal: 60,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  section: {
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  value: {
-    fontSize: 12,
-    marginBottom: 15,
-  },
-  qrContainer: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  qrImage: {
-    width: 150,
-    height: 150,
-  },
-  url: {
-    fontSize: 10,
-    marginTop: 10,
-    color: "#666",
-  },
-});
-
-const FormationPDF = ({ qrUrl }) => (
-  <Document>
-    <Page size="LETTER" style={styles.page}>
-      <View style={styles.backgroundColumn} />
-
-      <View style={styles.logoContainer}>
-        <Image style={styles.logo} src={logoDGDP} />
-        <Image style={styles.logo} src={logoSE} />
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.title}>Formulario de Pre Inscripción</Text>
-
-        <View style={styles.qrContainer}>
-          <Text style={styles.label}>Código QR</Text>
-          <Image
-            style={styles.qrImage}
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-              qrUrl
-            )}`}
-          />
-          <Text style={styles.url}>{qrUrl}</Text>
-        </View>
-      </View>
-      <Image style={styles.marcaH} src={marcaH} />
-    </Page>
-  </Document>
-);
 
 const Formacion = () => {
   const { user } = useUser();
   const location = useLocation();
   const [isSaved, setIsSaved] = useState(false);
-  const [qrUrl, setQrUrl] = useState(null);
   const [investCapId, setInvestCapId] = useState(null);
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
-
-  const [openModal, setOpenModal] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+  const { lineamientosIncompletos, uploadedFilesCount, totalRequiredFiles } =
+    location.state || {};
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
 
@@ -428,10 +299,9 @@ const Formacion = () => {
       // Si no hay ID (flujo "Omitir"), pedir confirmación
       if (!idToUse) {
         const confirmResult = await Swal.fire({
-          title: "Advertencia!",
-          text: "La formación se registrará sin lineamientos.",
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
           icon: "warning",
-
           showCancelButton: true,
           confirmButtonColor: color.primary.azul,
           cancelButtonColor: color.primary.rojo,
@@ -439,7 +309,6 @@ const Formacion = () => {
           cancelButtonText: "No, cancelar",
           reverseButtons: true,
         });
-
         // Si el usuario cancela, no continuar
         if (!confirmResult.isConfirmed) {
           return;
@@ -453,6 +322,21 @@ const Formacion = () => {
         );
         idToUse = response.data.id;
       } else {
+        const confirmResult = await Swal.fire({
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: color.primary.azul,
+          cancelButtonColor: color.primary.rojo,
+          confirmButtonText: "Sí, Registrar",
+          cancelButtonText: "No, cancelar",
+          reverseButtons: true,
+        });
+        // Si el usuario cancela, no continuar
+        if (!confirmResult.isConfirmed) {
+          return;
+        }
         // Actualizar el registro
         const updateResponse = await axios.put(
           `${process.env.REACT_APP_API_URL}/formacion/${idToUse}`,

@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
-    cargo: "",
+ 
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -70,7 +70,6 @@ const FormularParticipantes = () => {
     idfuncion: "",
     caserio: "",
     tipocentro: "",
-
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
@@ -93,7 +92,8 @@ const FormularParticipantes = () => {
     autorizadatos: false,
     zona: "",
     idmunicipio: "",
-    iddepartamento: "",
+    iddepartamento: "", 
+      cargo: "",
     idaldea: null,
     tipoadministracion: "Gubernamental",
     creadopor: user.id,
@@ -422,7 +422,7 @@ const FormularParticipantes = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
-  // Obtener funcion que desempeña
+  // Obtener cargo que desempeña
   useEffect(() => {
     const obtenerfuncion = async () => {
       try {
@@ -483,7 +483,7 @@ const FormularParticipantes = () => {
             title: "Participante Encontrado",
             text: "Se encontraron datos del participante",
             icon: "success",
-            timer: 6000,   
+            timer: 6000,
           });
         } else {
           // Si hay múltiples registros, mostrar modal de selección
@@ -1072,6 +1072,18 @@ const FormularParticipantes = () => {
                           typeof option === "string" ? option : option.nombreced
                         }
                         value={formData.nombreced || ""}
+                        onChange={(event, newValue) => {
+                          if (
+                            typeof newValue === "object" &&
+                            newValue !== null
+                          ) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              nombreced: newValue.nombreced,
+                              codigosaceced: newValue.codigosace,
+                            }));
+                          }
+                        }}
                         onInputChange={(event, newInputValue) => {
                           setFormData((prev) => ({
                             ...prev,
@@ -1150,7 +1162,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.tipocentro}>
                       <Typography variant="subtitle1">
-                        Tipo de Centro Educativo*
+                        Tipo de Centro Educativo
                       </Typography>
                       <Select
                         fullWidth
@@ -1175,7 +1187,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.jornada}>
                       <Typography variant="subtitle1">
-                        Jornada que Atiende*
+                        Jornada que Atiende
                       </Typography>
                       <Select
                         fullWidth
@@ -1199,7 +1211,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.modalidad}>
                       <Typography variant="subtitle1">
-                        Modalidad que Atiende*
+                        Modalidad que Atiende
                       </Typography>
                       <Select
                         fullWidth
@@ -1446,7 +1458,7 @@ const FormularParticipantes = () => {
                   )}
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Cargo que Desempeña en el Centro Educativo*
+                      Cargo que Desempeña en el Centro Educativo
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.cargo}>
                       <Select

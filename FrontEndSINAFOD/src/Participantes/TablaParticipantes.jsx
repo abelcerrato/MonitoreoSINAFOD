@@ -102,8 +102,7 @@ export default function TablaPacticantes({
   setIsSaved,
   formacioninvest,
 }) {
-  console.log("investCap", investCap);
-  console.log("formacioninvest", formacioninvest);
+ 
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);

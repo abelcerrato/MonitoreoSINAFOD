@@ -420,7 +420,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
           maxWidth="lg"
           fullWidth
         >
-          <DialogTitle>Información de la Formación</DialogTitle>
+          <DialogTitle>QR para Inscripción</DialogTitle>
           <DialogContent style={{ textAlign: "center", padding: "20px" }}>
             {qrUrl && currentRow && (
               <>
@@ -454,7 +454,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                         qrUrl={qrUrl}
                       />
                     }
-                    fileName={`formacion_${currentRow.formacion.replace(
+                    fileName={`QR_${currentRow.formacion.replace(
                       /\s+/g,
                       "_"
                     )}.pdf`}

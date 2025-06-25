@@ -205,12 +205,12 @@ const Dashboard = ({ children }) => {
           backgroundColor: "#f2f2f2",
         }}
       >
-        <Tooltip title="Generar QR para participantes">
+        <Tooltip title="Generar QR para Pre Inscripción">
           <IconButton
             sx={{ color: color.primary.azul }}
             onClick={() => handleOpenQrModal()}
           >
-            <QrCodeScannerOutlinedIcon />
+            <QrCodeScannerOutlinedIcon fontSize="large" />
           </IconButton>
         </Tooltip>
         {children}

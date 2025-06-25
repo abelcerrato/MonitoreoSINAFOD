@@ -938,12 +938,16 @@ const FormularioExterno = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Teléfono</Typography>
+                <Typography variant="subtitle1">Teléfono*</Typography>
                 <TextField
                   fullWidth
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
+                  error={fieldErrors.telefono}
+                  helperText={
+                    fieldErrors.telefono ? "Este campo es obligatorio" : ""
+                  }
                   InputProps={{
                     readOnly: camposBloqueados.telefono,
                   }}
@@ -1267,12 +1271,20 @@ const FormularioExterno = () => {
                 <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                   <Autocomplete
                     freeSolo
-                    disabled={camposBloqueados.nombreced}
                     options={centroseducativos}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.nombreced
                     }
                     value={formData.nombreced || ""}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === "object" && newValue !== null) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newValue.nombreced,
+                          codigosaceced: newValue.codigosace,
+                        }));
+                      }
+                    }}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
                         ...prev,

@@ -320,7 +320,7 @@ const ModificarLineamientos = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: "Lineamientos incompletos",
+        title: "Lineamientos Incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con la actualización?`,
         icon: "warning",
         showCancelButton: true,

@@ -667,9 +667,7 @@ const PreInscripcion = () => {
                     sx={{ mb: 1 }}
                   >
                     <strong>Modalidad:</strong> {formacion.modalidad}
-                    {formacion.modalidad === "Virtual" &&
-                      formacion.plataforma &&
-                      ` (${formacion.plataforma})`}
+                  
                   </Typography>
 
                   <Typography
@@ -681,6 +679,17 @@ const PreInscripcion = () => {
                     {formacion.duracion.minutes}m
                   </Typography>
 
+                  {(formacion.modalidad === "Virtual" ||
+                    formacion.modalidad === "Bimodal") &&
+                    formacion.plataforma && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        <strong>Plataforma:</strong> {formacion.plataforma}
+                      </Typography>
+                    )}
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -1454,12 +1463,20 @@ const PreInscripcion = () => {
                 <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                   <Autocomplete
                     freeSolo
-                    disabled={camposBloqueados.nombreced}
                     options={centroseducativos}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.nombreced
                     }
                     value={formData.nombreced || ""}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === "object" && newValue !== null) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newValue.nombreced,
+                          codigosaceced: newValue.codigosace,
+                        }));
+                      }
+                    }}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
                         ...prev,
