@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
- 
+
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -92,8 +92,8 @@ const FormularParticipantes = () => {
     autorizadatos: false,
     zona: "",
     idmunicipio: "",
-    iddepartamento: "", 
-      cargo: "",
+    iddepartamento: "",
+    cargo: "",
     idaldea: null,
     tipoadministracion: "Gubernamental",
     creadopor: user.id,
@@ -619,9 +619,13 @@ const FormularParticipantes = () => {
               variant="scrollable"
               scrollButtons="auto"
             >
-              <Tab label="Datos Generales del Participante" value="1" />
-              {formacioninvest !== "investigacion" && (
-                <Tab label="Datos del Centro Educativo" value="2" />
+              {formacioninvest === "investigacion" ? (
+                <Tab label="Datos Generales del Investigador" value="1" />
+              ) : (
+                <>
+                  <Tab label="Datos Generales del Participante" value="1" />
+                  <Tab label="Datos del Centro Educativo" value="2" />
+                </>
               )}
             </Tabs>
             {/* Tab 1: Datos Generales del Participante */}

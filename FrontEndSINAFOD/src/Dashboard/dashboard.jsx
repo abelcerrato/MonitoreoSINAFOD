@@ -11,7 +11,7 @@ import {
 import { useState, useEffect } from "react";
 import AppBarComponent from "./AppBar";
 import ProjectDrawer from "./Drawer";
-import React from "react";
+import { useLocation } from "react-router-dom";
 import { PDFViewer } from "@react-pdf/renderer";
 import { useUser } from "../Components/UserContext";
 import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
@@ -141,6 +141,11 @@ const Dashboard = ({ children }) => {
   const [qrUrl, setQrUrl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const mostrarBotonQR =
+    pathname === "/Listado_De_Acciones_Formativas" || pathname === "/dashboard";
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -205,14 +210,16 @@ const Dashboard = ({ children }) => {
           backgroundColor: "#f2f2f2",
         }}
       >
-        <Tooltip title="Generar QR para Pre Inscripción">
-          <IconButton
-            sx={{ color: color.primary.azul }}
-            onClick={() => handleOpenQrModal()}
-          >
-            <QrCodeScannerOutlinedIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
+        {mostrarBotonQR && (
+          <Tooltip title="Generar QR para Pre Inscripción">
+            <IconButton
+              sx={{ color: color.primary.azul }}
+              onClick={() => handleOpenQrModal()}
+            >
+              <QrCodeScannerOutlinedIcon fontSize="large" />
+            </IconButton>
+          </Tooltip>
+        )}
         {children}
 
         <Typography
