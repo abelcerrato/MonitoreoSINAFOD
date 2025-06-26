@@ -480,8 +480,14 @@ const FormularParticipantes = () => {
           // Si solo hay un registro, llenar directamente
           llenarFormulario(response.data[0]);
           Swal.fire({
-            title: "Participante Encontrado",
-            text: "Se encontraron datos del participante",
+            title:
+              formacioninvest === "investigacion"
+                ? "Investigador Encontrado"
+                : "Participante Encontrado",
+            text:
+              formacioninvest === "investigacion"
+                ? "Se encontraron datos del investigador"
+                : "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
           });
@@ -492,7 +498,10 @@ const FormularParticipantes = () => {
         }
       } else {
         Swal.fire({
-          title: "Participante No Encontrado",
+          title:
+            formacioninvest === "investigacion"
+              ? "Investigador No Encontrado"
+              : "Participante No Encontrado",
           text: "No se encontraron registros",
           icon: "info",
           timer: 6000,
@@ -634,7 +643,7 @@ const FormularParticipantes = () => {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Código SACE</Typography>
                   <Grid spacing={2} container>
-                    <Grid size={{ xs: 12, md: 9 }}>
+                    <Grid size={{ xs: 12, md: 12 }}>
                       <TextField
                         fullWidth
                         name="codigosace"
@@ -648,7 +657,7 @@ const FormularParticipantes = () => {
                         }
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    {/* <Grid size={{ xs: 12, md: 3 }}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -656,7 +665,7 @@ const FormularParticipantes = () => {
                       >
                         Buscar
                       </Button>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
