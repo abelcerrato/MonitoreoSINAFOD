@@ -368,7 +368,7 @@ const Investigacion = () => {
                   })
                 }
               >
-                Participantes
+                INVESTIGADORES
               </Button>
             </Grid>
             <Grid>
