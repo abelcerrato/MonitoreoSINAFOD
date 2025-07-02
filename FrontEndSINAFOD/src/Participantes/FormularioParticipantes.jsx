@@ -235,7 +235,7 @@ const FormularParticipantes = () => {
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,

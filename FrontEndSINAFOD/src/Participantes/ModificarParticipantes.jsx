@@ -158,8 +158,8 @@ const ModificarParticipante = () => {
 
       if (response.status === 200) {
         Swal.fire({
-          title: "Guardado",
-          text: "Datos guardados correctamente",
+          title: "¡Actualización Exitosa!",
+          text: "Datos actualizados correctamente",
           icon: "success",
           timer: 6000,
         });
@@ -169,7 +169,7 @@ const ModificarParticipante = () => {
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,

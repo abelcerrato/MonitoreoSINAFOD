@@ -10,12 +10,9 @@ import {
   MenuItem,
   FormControl,
   Box,
-
   FormControlLabel,
-
   FormHelperText,
   Checkbox,
-
 } from "@mui/material";
 
 import { color } from "../../Components/color";
@@ -25,8 +22,6 @@ import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
 
 import Swal from "sweetalert2";
-
-
 
 const Formacion = () => {
   const { user } = useUser();
@@ -262,7 +257,7 @@ const Formacion = () => {
     // Verificación de minutos antes de guardar los datos
     if (formData.minutos > 59) {
       Swal.fire({
-        title: "Advertencia!",
+        title: "¡Advertencia!",
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
@@ -273,7 +268,7 @@ const Formacion = () => {
     if (formData.fechainicio && formData.fechafinal) {
       if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
         Swal.fire({
-          title: "Advertencia!",
+          title: "¡Advertencia!",
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
@@ -355,7 +350,7 @@ const Formacion = () => {
       navigate("/Listado_De_Acciones_Formativas");
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 

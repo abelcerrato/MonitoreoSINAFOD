@@ -667,7 +667,6 @@ const PreInscripcion = () => {
                     sx={{ mb: 1 }}
                   >
                     <strong>Modalidad:</strong> {formacion.modalidad}
-                  
                   </Typography>
 
                   <Typography
@@ -870,7 +869,7 @@ const PreInscripcion = () => {
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,

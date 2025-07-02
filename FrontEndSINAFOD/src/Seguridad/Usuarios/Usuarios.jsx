@@ -88,7 +88,7 @@ const Usuario = () => {
       handleRedirect();
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 
