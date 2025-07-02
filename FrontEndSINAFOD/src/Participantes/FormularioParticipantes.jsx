@@ -621,22 +621,31 @@ const FormularParticipantes = () => {
             </Grid>
           </Grid>
           <TabContext value={value}>
-            <Tabs
-              value={value}
-              onChange={handleChangeValues}
-              allowScrollButtonsMobile
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              {formacioninvest === "investigacion" ? (
-                <Tab label="Datos Generales del Investigador" value="1" />
-              ) : (
-                <>
+            {formacioninvest === "investigacion" ? (
+              <Tabs
+                value={value}
+                onChange={handleChangeValues}
+                allowScrollButtonsMobile
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label="Datos Generales del Investigadores" value="1" />
+              </Tabs>
+            ) : (
+              <>
+                <Tabs
+                  value={value}
+                  onChange={handleChangeValues}
+                  allowScrollButtonsMobile
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
                   <Tab label="Datos Generales del Participante" value="1" />
                   <Tab label="Datos del Centro Educativo" value="2" />
-                </>
-              )}
-            </Tabs>
+                </Tabs>
+              </>
+            )}
+
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>

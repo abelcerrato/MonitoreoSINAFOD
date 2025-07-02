@@ -426,18 +426,30 @@ const ModificarParticipante = () => {
           </Grid>
 
           <TabContext value={value}>
-            <Tabs
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-              value={value}
-              onChange={handleChangeValues}
-            >
-              <Tab label="Datos Generales del Participante" value="1" />
-              {formacioninvest !== "investigacion" && (
-                <Tab label="Datos del Centro Educativo" value="2" />
-              )}
-            </Tabs>
+            {formacioninvest === "investigacion" ? (
+              <Tabs
+                value={value}
+                onChange={handleChangeValues}
+                allowScrollButtonsMobile
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label="Datos Generales del Investigadores" value="1" />
+              </Tabs>
+            ) : (
+              <>
+                <Tabs
+                  value={value}
+                  onChange={handleChangeValues}
+                  allowScrollButtonsMobile
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  <Tab label="Datos Generales del Participante" value="1" />
+                  <Tab label="Datos del Centro Educativo" value="2" />
+                </Tabs>
+              </>
+            )}
 
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
@@ -822,7 +834,7 @@ const ModificarParticipante = () => {
                             setFormData((prev) => ({
                               ...prev,
                               nombreced: newValue.nombreced,
-                              codigosaceced: newValue.codigosace, 
+                              codigosaceced: newValue.codigosace,
                             }));
                           }
                         }}
