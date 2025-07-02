@@ -149,8 +149,9 @@ export default function TablaPacticantes({
         variant="h4"
         sx={{ color: color.primary.azul, textAlign: "center" }}
       >
-        Participantes
+        {formacioninvest === "formacion" ? "Participantes" : "Investigadores"}
       </Typography>
+
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead sx={{ backgroundColor: color.primary.azul }}>
           <TableRow>
