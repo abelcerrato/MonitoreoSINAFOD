@@ -337,6 +337,9 @@ const LineamientosI = () => {
         state: {
           investCap: response.data.id,
           investigacion: formData.investigacion,
+          lineamientosIncompletos: uploadedFilesCount < totalRequiredFiles,
+          uploadedFilesCount,
+          totalRequiredFiles,
         },
       });
     } catch (error) {

@@ -31,11 +31,11 @@ const Formacion = () => {
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
-  const { lineamientosIncompletos, uploadedFilesCount, totalRequiredFiles } =
+  const { uploadedFilesCount, totalRequiredFiles } =
     location.state || {};
+
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
-
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
@@ -295,7 +295,7 @@ const Formacion = () => {
       if (!idToUse) {
         const confirmResult = await Swal.fire({
           title: "Lineamientos Incompletos",
-          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          text: `Solo has subido 0 de 3 lineamientos requeridos. ¿Deseas continuar con el registro?`,
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: color.primary.azul,
@@ -558,22 +558,22 @@ const Formacion = () => {
             </Grid>
             {(formData.modalidad === "Virtual" ||
               formData.modalidad === "Bimodal") && (
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">
-                  Plataforma en la que se Realizará la Actividad
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="plataforma"
-                  value={formData.plataforma}
-                  onChange={handleChange}
-                  error={fieldErrors.plataforma}
-                  helperText={
-                    fieldErrors.plataforma ? "Este campo es obligatorio" : ""
-                  }
-                />
-              </Grid>
-            )}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Plataforma en la que se Realizará la Actividad
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="plataforma"
+                    value={formData.plataforma}
+                    onChange={handleChange}
+                    error={fieldErrors.plataforma}
+                    helperText={
+                      fieldErrors.plataforma ? "Este campo es obligatorio" : ""
+                    }
+                  />
+                </Grid>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Duración</Typography>
 
@@ -874,37 +874,37 @@ const Formacion = () => {
             </Grid>
             {(formData.modalidad === "Presencial" ||
               formData.modalidad === "Bimodal") && (
-              <>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Espacio Físico</Typography>
-                  <TextField
-                    fullWidth
-                    name="espaciofisico"
-                    value={formData.espaciofisico}
-                    onChange={handleChange}
-                    error={fieldErrors.espaciofisico}
-                    helperText={
-                      fieldErrors.espaciofisico
-                        ? "Este campo es obligatorio"
-                        : ""
-                    }
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Dirección</Typography>
-                  <TextField
-                    fullWidth
-                    name="direccion"
-                    value={formData.direccion}
-                    onChange={handleChange}
-                    error={fieldErrors.direccion}
-                    helperText={
-                      fieldErrors.direccion ? "Este campo es obligatorio" : ""
-                    }
-                  />
-                </Grid>
-              </>
-            )}
+                <>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Espacio Físico</Typography>
+                    <TextField
+                      fullWidth
+                      name="espaciofisico"
+                      value={formData.espaciofisico}
+                      onChange={handleChange}
+                      error={fieldErrors.espaciofisico}
+                      helperText={
+                        fieldErrors.espaciofisico
+                          ? "Este campo es obligatorio"
+                          : ""
+                      }
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Dirección</Typography>
+                    <TextField
+                      fullWidth
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                      error={fieldErrors.direccion}
+                      helperText={
+                        fieldErrors.direccion ? "Este campo es obligatorio" : ""
+                      }
+                    />
+                  </Grid>
+                </>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth error={fieldErrors.zona}>

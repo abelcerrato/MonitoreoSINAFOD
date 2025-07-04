@@ -255,8 +255,13 @@ const ModificarFormacion = () => {
 
   const handleSave = async () => {
     // Lista de campos obligatorios
-    const requiredFields = ["formacion"];
-
+    const requiredFields = [
+      "formacion",
+      "tipoactividad",
+      "fechainicio",
+      "fechafinal",
+      "socializaron",
+    ];
     // Detectar campos vacíos
     let errors = {};
     requiredFields.forEach((field) => {
