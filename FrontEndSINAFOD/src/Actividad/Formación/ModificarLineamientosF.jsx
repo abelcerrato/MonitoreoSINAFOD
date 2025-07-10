@@ -135,19 +135,20 @@ const ModificarLineamientos = () => {
       }
 
       // Validación opcional de tamaño (descomenta si lo necesitas)
-      /*
-            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-            if (file.size > MAX_FILE_SIZE) {
-              Swal.fire({
-                title: 'Archivo demasiado grande',
-                text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
-                icon: 'error',
-                confirmButtonColor: color.primary.azul,
-              });
-              e.target.value = '';
-              return;
-            }
-            */
+
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          title: "Archivo demasiado grande",
+          text: `El tamaño máximo permitido es ${
+            MAX_FILE_SIZE / (1024 * 1024)
+          }MB`,
+          icon: "error",
+          confirmButtonColor: color.primary.azul,
+        });
+        e.target.value = "";
+        return;
+      }
     }
 
     // Actualiza formData con el archivo (esto ya lo tenías)
@@ -376,20 +377,24 @@ const ModificarLineamientos = () => {
         <Typography variant="h6" gutterBottom>
           {label}
         </Typography>
-        <Button
-          component="label"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          sx={{ mb: 2, backgroundColor: color.primary.azul }}
-        >
-          Seleccionar archivo
-          <VisuallyHiddenInput
-            type="file"
-            name={fieldName}
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleFileChange}
-          />
-        </Button>
+
+        {/* Mostrar botón solo si NO hay archivo cargado */}
+        {!(existingFile || newFile) && (
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            sx={{ mb: 2, backgroundColor: color.primary.azul }}
+          >
+            Seleccionar archivo
+            <VisuallyHiddenInput
+              type="file"
+              name={fieldName}
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={handleFileChange}
+            />
+          </Button>
+        )}
 
         {(existingFile || newFile) && (
           <Grid

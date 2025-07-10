@@ -102,13 +102,13 @@ const ModificarParticipante = () => {
   useEffect(() => {
     const obtenerDetallesYCentros = async () => {
       try {
-        // 1. Obtener datos del participante
+        //Obtener datos del participante
         const responseParticipante = await axios.get(
           `${process.env.REACT_APP_API_URL}/participante/${id}`
         );
 
         const datosParticipante = responseParticipante.data[0];
-        console.log(responseParticipante.data);
+        //console.log(responseParticipante.data);
 
         if (datosParticipante.fechanacimiento) {
           const fecha = new Date(datosParticipante.fechanacimiento);
@@ -117,16 +117,18 @@ const ModificarParticipante = () => {
         datosParticipante.cargo = datosParticipante.idcargo;
         setFormData(datosParticipante); // Si aún necesitas formData para otros campos
 
-        // 2. Extraer iddepartamento e idmunicipio y usarlos directamente
+        //Extraer iddepartamento e idmunicipio y usarlos directamente
         const { iddepartamento, idmunicipio } = datosParticipante;
 
         if (iddepartamento && idmunicipio) {
-          // 3. Obtener centros educativos usando los datos del participante
+          //Obtener centros educativos usando los datos del participante
           const responseCentros = await axios.get(
             `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${iddepartamento}/${idmunicipio}`
           );
 
           setCentrosEducativos(responseCentros.data);
+          console.log("Centros educativos:", responseCentros.data);
+
         }
       } catch (error) {
         console.error("Error al obtener los datos", error);
@@ -134,8 +136,27 @@ const ModificarParticipante = () => {
     };
 
     obtenerDetallesYCentros();
-  }, [id]); // Dependencia solo en `id`, no en formData
+  }, [id]);
 
+  //Carga de centros educativos cuando el participante cambia de departamento o municipio; o no traer datos del centro educativo
+  useEffect(() => {
+    const cargarCentrosEducativos = async () => {
+      if (formData.iddepartamento && formData.idmunicipio) {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${formData.iddepartamento}/${formData.idmunicipio}`
+          );
+          setCentrosEducativos(response.data);
+          console.log("Centros educativos:", response.data);
+        } catch (error) {
+          console.error("Error al obtener centros educativos", error);
+        }
+      }
+    };
+
+    cargarCentrosEducativos();
+  }, [formData.iddepartamento, formData.idmunicipio]);
+  
   const handleSave = async () => {
     try {
       console.log("Datos que envio parti", formData);
