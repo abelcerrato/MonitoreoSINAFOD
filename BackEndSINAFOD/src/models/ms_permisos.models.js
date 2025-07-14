@@ -62,10 +62,10 @@ export const getPermisosIdRolM = async (id) => {
             p.idrol=$1 `,
       [id]
     );
-    console.log(
+    /*  console.log(
       "Resultado de la consulta de los permisos que tiene el Rol:",
       rows
-    );
+    ); */
     return rows;
   } catch (error) {
     console.error("Error al obtener los permisos que tiene el Rol:", error);
