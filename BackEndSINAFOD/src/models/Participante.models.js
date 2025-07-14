@@ -736,16 +736,17 @@ export const postParticipanteInvestigacionM = async (
 
 export const postParticipanteFormacionM = async (
   idformacion,
-  idparticipante
+  idparticipante,
+  idcentroeducativo
 ) => {
   try {
     const { rows } = await pool.query(
       `
-            INSERT INTO participantesformacion ( idformacion, idparticipante ) 
-            VALUES ( $1, $2 ) 
+            INSERT INTO participantesformacion ( idformacion, idparticipante, idcentroeducativo ) 
+            VALUES ( $1, $2, $3 ) 
             RETURNING id
         `,
-      [idformacion, idparticipante]
+      [idformacion, idparticipante, idcentroeducativo]
     );
 
     return rows[0];
