@@ -460,9 +460,9 @@ export const postParticipantesIFCedC = async (req, res) => {
     const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
     const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
 
-        const iddocente = resultado1;
-        const idparticipante = resultado3;
-        const idcentroeducativo = resultado4;
+    const iddocente = resultado1;
+    const idparticipante = resultado3;
+    const idcentroeducativo = resultado4;
 
     console.log("iddocente: ", iddocente);
     console.log("idparticipante: ", idparticipante);
@@ -646,6 +646,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         }
       }
     }
+
     // CASO 3: No existe docente, pero sí existe participante y centro educativo
     else if (!iddocente && idparticipante && idcentroeducativo) {
       const docente = await postDocentesM(
@@ -688,6 +689,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+
+      // Insertar formaciones
+      if (Array.isArray(idformacion)) {
+        response.formacion = [];
+        for (const form of idformacion) {
+          const r = await postParticipanteFormacionM(form, idparticipante, idcentroeducativo);
+          response.formacion.push(r);
+        }
+      }
     }
     // CASO 4: Existe docente y participante, pero NO existe centro educativo
     else if (iddocente && idparticipante && !idcentroeducativo) {
@@ -743,6 +753,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         }
       }
     }
+
+
     // CASO 5: Existe docente y centro educativo, pero NO existe participante
     else if (iddocente && !idparticipante && idcentroeducativo) {
       response.participantes = await postParticipanteM(
