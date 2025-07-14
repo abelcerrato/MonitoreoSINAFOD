@@ -692,7 +692,7 @@ export const getFiltroDocentesC = async (req, res) => {
         // Insertar relación participante-centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentroeducativo,
-          idparticipante,
+          idPart,
           cargo,
           jornada,
           modalidad,
