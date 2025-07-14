@@ -757,7 +757,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
     // CASO 5: Existe docente y centro educativo, pero NO existe participante
     else if (iddocente && !idparticipante && idcentroeducativo) {
-      response.participantes = await postParticipanteM(
+      const participante = await postParticipanteM(
         identificacion,
         codigosace,
         correo,
@@ -779,22 +779,13 @@ export const postParticipantesIFCedC = async (req, res) => {
         autorizadatos,
         creadopor
       );
+      response.participantes = participante;
 
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const formacion of idformacion) {
-          const r = await postParticipanteFormacionM(
-            formacion,
-            response.participantes,
-            idcentroeducativo
-          );
-          response.formacion.push(r);
-        }
-      }
+      const idPart = participante;
 
       response.ced2 = await postCentroEducativoParticipanteM(
         idcentroeducativo,
-        response.participantes,
+        idPart,
         cargo,
         jornada,
         modalidad,
@@ -814,6 +805,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         onceavo,
         doceavo
       );
+
+
+      if (Array.isArray(idformacion)) {
+        response.formacion = [];
+        for (const form of idformacion) {
+          const r = await postParticipanteFormacionM(form, idPart, idcentroeducativo);
+          response.formacion.push(r);
+        }
+      }
     }
     // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
     else {
