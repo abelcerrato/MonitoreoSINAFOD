@@ -64,7 +64,7 @@ export const getUserIdM = async (id) => {
 export const verificarUsuarioM = async (usuario) => {
     try {
 
-        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
+        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
             [usuario]);
 
 
@@ -128,7 +128,7 @@ export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
         // Actualizar solo la contraseña
         const { rows } = await pool.query(
             `UPDATE ms_usuarios 
-                SET contraseña = $1, cambiocontraseña=false
+                SET contraseña = $1, cambiocontraseña=false, estado='Activo'
                 WHERE usuario = $2
                 RETURNING usuario, nombre, correo`,
             [contraseñaCifrada, usuario]
