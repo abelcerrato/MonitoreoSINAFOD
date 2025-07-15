@@ -29,7 +29,7 @@ import Swal from "sweetalert2";
 const Usuario = () => {
   const { user } = useUser();
   const [roles, setRoles] = useState([]);
-
+  const [fieldErrors, setFieldErrors] = useState({});
   const [formData, setFormData] = useState({
     nombre: "",
     usuario: "",
@@ -70,21 +70,37 @@ const Usuario = () => {
   }, []);
 
   const handleSave = async () => {
+    const requiredFields = ["nombre", "usuario", "idrol"];
+    const newErrors = {};
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = "Este campo es obligatorio";
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      Swal.fire(
+        "Campos obligatorios",
+        "Por favor complete todos los campos",
+        "warning"
+      );
+      return;
+    }
+
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/insertarUsuarios`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // Mostrar mensaje de éxito
       await Swal.fire(
         "¡Guardado!",
         "El usuario ha sido registrado correctamente.",
         "success"
       );
-
-      console.log("Datos que envio", formData);
       handleRedirect();
     } catch (error) {
       console.error("Error al guardar los datos", error);
@@ -96,12 +112,19 @@ const Usuario = () => {
     <>
       <Dashboard>
         <Paper sx={{ padding: 3, marginBottom: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <Typography variant="h4" sx={{ color: color.primary.azul }}>
-              Registro de Usuarios
-            </Typography>
-
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Grid container spacing={2} alignItems="center" sx={{ mb: 5 }}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: "bold", color: color.primary.azul }}
+              >
+                Registro de Usuarios
+              </Typography>
+            </Grid>
+            <Grid
+              size={{ xs: 12, md: 4 }}
+              sx={{ display: "flex", justifyContent: "flex-end" }}
+            >
               <Button
                 variant="outlined"
                 sx={{
@@ -112,8 +135,8 @@ const Usuario = () => {
               >
                 Cerrar
               </Button>
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
           <Grid container spacing={2} sx={{ marginTop: 2 }}>
             <Grid item xs={12} size={6}>
               <TextField
@@ -122,6 +145,8 @@ const Usuario = () => {
                 value={formData.nombre || ""}
                 onChange={handleChange}
                 fullWidth
+                error={!!fieldErrors.nombre}
+                helperText={fieldErrors.nombre}
               />
             </Grid>
             <Grid item xs={12} size={6}>
@@ -140,10 +165,12 @@ const Usuario = () => {
                 value={formData.usuario || ""}
                 onChange={handleChange}
                 fullWidth
+                error={!!fieldErrors.usuario}
+                helperText={fieldErrors.usuario}
               />
             </Grid>
             <Grid item xs={12} size={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={!!fieldErrors.idrol}>
                 <InputLabel id="demo-simple-select-label">Rol</InputLabel>
                 <Select
                   name="idrol"
@@ -158,6 +185,9 @@ const Usuario = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldErrors.idrol && (
+                  <FormHelperText>{fieldErrors.idrol}</FormHelperText>
+                )}
               </FormControl>
             </Grid>
           </Grid>

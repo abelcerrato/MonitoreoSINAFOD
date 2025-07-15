@@ -59,8 +59,8 @@ export default function TablaActividad(isSaved, setIsSaved) {
       );
 
       Swal.fire({
-        title: "Contraseña Restablecida",
-        text: "La contraseña ha sido restablecida exitosamente a Temporal1*.",
+        title: "Contraseña Actualizada",
+        text: "La contraseña ha sido actualizada exitosamente a Temporal1*.",
         icon: "success",
         timer: 6000,
       });
