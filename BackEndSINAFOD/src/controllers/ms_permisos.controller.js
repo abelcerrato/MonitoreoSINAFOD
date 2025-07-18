@@ -22,6 +22,9 @@ export const getPermisosIdRolC = async (req, res) => {
         if (!rol) {
             return res.status(404).json({ message: "Rol no encontrado" });
         }
+         if (rol.estado===false) {
+            return res.status(404).json({ message: "Rol Inactivo" });
+        }
 
         const permisos = await getPermisosIdRolM(id);
 
@@ -65,7 +68,7 @@ export const putPerfilPermisosC = async (req, res) => {
         const { rol, estado, descripcion,  modificadopor, permisos, idrol } = req.body;
         console.log(req.body);
 
-        if (!idrol || !rol || estado === undefined || !descripcion || !modificadopor || !permisos) {
+        if (!idrol || !rol || estado === undefined || !modificadopor || !permisos) {
             return res.status(400).json({ message: 'Faltan campos obligatorios' });
         }
 
