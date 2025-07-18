@@ -285,6 +285,7 @@ const ModificarFormacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -296,6 +297,7 @@ const ModificarFormacion = () => {
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return; // Detiene la ejecución si la validación falla
     }
@@ -308,6 +310,7 @@ const ModificarFormacion = () => {
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return; // No proceder con la solicitud si la validación falla
       }
@@ -367,6 +370,7 @@ const ModificarFormacion = () => {
         text: "La acción formativa ha sido actualizada.",
         icon: "success",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
 
       // Redirigir a Participantes con el ID

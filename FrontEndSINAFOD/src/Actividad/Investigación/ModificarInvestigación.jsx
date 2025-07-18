@@ -241,6 +241,7 @@ const Investigacion = () => {
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return;
       }
@@ -253,6 +254,7 @@ const Investigacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -313,11 +315,13 @@ const Investigacion = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      await Swal.fire(
-        "Actualización!",
-        "La investigación ha sido actualizada",
-        "success"
-      );
+      await Swal.fire({
+        title: "Actualización!",
+        text: "La investigación ha sido actualizada",
+        icon: "success",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
+      });
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al guardar los datos", error);

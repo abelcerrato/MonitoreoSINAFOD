@@ -150,6 +150,7 @@ const Investigacion = () => {
           : "Revise los campos marcados en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -196,8 +197,6 @@ const Investigacion = () => {
       let idToUse = investCapId;
       let response;
 
-   
-
       if (!idToUse) {
         const confirmResult = await Swal.fire({
           title: "Lineamientos Incompletos",
@@ -239,11 +238,13 @@ const Investigacion = () => {
         );
       }
 
-      await Swal.fire(
-        "¡Guardado!",
-        "La investigación ha sido registrada",
-        "success"
-      );
+      await Swal.fire({
+        title: "¡Guardado!",
+        text: "La investigación ha sido registrada",
+        icon: "success",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
+      });
 
       navigate("/Participantes", {
         state: {

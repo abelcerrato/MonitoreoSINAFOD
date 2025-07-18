@@ -250,6 +250,7 @@ const Formacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -261,6 +262,7 @@ const Formacion = () => {
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return; // Detiene la ejecución si la validación falla
     }
@@ -272,6 +274,7 @@ const Formacion = () => {
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return; // No proceder con la solicitud si la validación falla
       }
