@@ -229,6 +229,7 @@ const FormularParticipantes = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         setIsSaved(true);
       }
@@ -239,6 +240,7 @@ const FormularParticipantes = () => {
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -466,6 +468,7 @@ const FormularParticipantes = () => {
         title: "Campo vacío",
         text: "Por favor, ingrese un valor en el campo seleccionado.",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
       });
       return;
     }
@@ -490,6 +493,7 @@ const FormularParticipantes = () => {
                 : "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
+            confirmButtonColor: color.primary.azul,
           });
         } else {
           // Si hay múltiples registros, mostrar modal de selección
@@ -505,6 +509,7 @@ const FormularParticipantes = () => {
           text: "No se encontraron registros",
           icon: "info",
           timer: 6000,
+          confirmButtonColor: color.primary.rojo,
         });
       }
     } catch (error) {
@@ -514,6 +519,7 @@ const FormularParticipantes = () => {
         text: "Error al buscar los datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };

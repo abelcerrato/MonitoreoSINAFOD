@@ -183,6 +183,7 @@ const ModificarParticipante = () => {
           text: "Datos actualizados correctamente",
           icon: "success",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
 
         navigate("/dashboard");
@@ -194,6 +195,7 @@ const ModificarParticipante = () => {
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };

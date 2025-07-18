@@ -248,11 +248,11 @@ const CreateRole = () => {
           (p) => p.insertar || p.actualizar
         );
         if (hasInsertOrUpdate) {
-        //   Swal.fire({
-        //     title: "No se puede desactivar",
-        //     text: 'Primero desactiva todos los permisos "insertar" o "actualizar"',
-        //     icon: "warning",
-        //   });
+          //   Swal.fire({
+          //     title: "No se puede desactivar",
+          //     text: 'Primero desactiva todos los permisos "insertar" o "actualizar"',
+          //     icon: "warning",
+          //   });
           return prev;
         }
       }
@@ -320,6 +320,7 @@ const CreateRole = () => {
             title: "No se puede desactivar",
             text: 'Primero desactiva los permisos "insertar" o "actualizar" para este módulo',
             icon: "warning",
+            confirmButtonColor: color.primary.azul,
           });
           return prev;
         }

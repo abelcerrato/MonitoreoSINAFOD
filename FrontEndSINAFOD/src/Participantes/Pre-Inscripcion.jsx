@@ -395,6 +395,7 @@ const PreInscripcion = () => {
             text: "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
+            confirmButtonColor: color.primary.azul,
           });
           console.log(response.data);
         } else {
@@ -416,6 +417,7 @@ const PreInscripcion = () => {
         text: "Por favor ingrese sus datos",
         icon: "warning",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -830,6 +832,7 @@ const PreInscripcion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         confirmButtonText: "OK",
+        confirmButtonColor: color.primary.rojo,
       });
       return;
     }
@@ -864,6 +867,7 @@ const PreInscripcion = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 12000,
+          confirmButtonColor: color.primary.azul,
         });
       }
     } catch (error) {
@@ -873,6 +877,7 @@ const PreInscripcion = () => {
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };

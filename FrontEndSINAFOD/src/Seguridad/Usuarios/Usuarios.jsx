@@ -81,11 +81,12 @@ const Usuario = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
-      Swal.fire(
-        "Campos obligatorios",
-        "Por favor complete todos los campos",
-        "warning"
-      );
+      Swal.fire({
+        title: "Campos obligatorios",
+        text: "Por favor complete todos los campos",
+        icon: "warning",
+        confirmButtonColor: color.primary.rojo,
+      });
       return;
     }
 
@@ -96,11 +97,12 @@ const Usuario = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      await Swal.fire(
-        "¡Guardado!",
-        "El usuario ha sido registrado correctamente.",
-        "success"
-      );
+      await Swal.fire({
+        title: "Actualización!",
+        text: "El usuario ha sido registrado correctamente.",
+        icon: "success",
+        confirmButtonColor: color.primary.azul,
+      });
       handleRedirect();
     } catch (error) {
       console.error("Error al guardar los datos", error);

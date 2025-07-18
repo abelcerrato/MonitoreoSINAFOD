@@ -388,6 +388,7 @@ const FormularioExterno = () => {
             title: "Participante encontrado",
             text: "Se encontraron datos del participante",
             icon: "success",
+            confirmButtonColor: color.primary.azul,
             timer: 6000,
           });
           console.log(response.data[0]);
@@ -409,6 +410,7 @@ const FormularioExterno = () => {
         title: "No se encontró ningún registro previo.",
         text: "Por favor ingrese sus datos",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
         timer: 12000,
       });
     }
@@ -617,6 +619,7 @@ const FormularioExterno = () => {
         title: "Campos obligatorios",
         text: "Llenar los campos en rojo",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
         confirmButtonText: "OK",
       });
       return;
@@ -652,6 +655,7 @@ const FormularioExterno = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 12000,
+          confirmButtonColor: color.primary.azul,
         });
       }
     } catch (error) {
@@ -661,6 +665,7 @@ const FormularioExterno = () => {
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };

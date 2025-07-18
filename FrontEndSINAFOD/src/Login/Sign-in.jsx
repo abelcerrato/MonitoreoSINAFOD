@@ -107,6 +107,7 @@ export default function SignIn() {
             : message,
           timer: 3000,
           showConfirmButton: false
+          
         });
 
         // Indicar que la sesión está activa
@@ -124,6 +125,7 @@ export default function SignIn() {
             text: error.response.data.message,
             icon: "error",
             timer: 6000,
+            confirmButtonColor: color.primary.rojo,
           });
         } else if (error.response.status === 403) {
           const { id, usuario, token } = error.response.data.user; // Asegúrate de recibir el token desde el backend
@@ -154,6 +156,7 @@ export default function SignIn() {
             text: error.response.data.message,
             icon: "error",
             timer: 6000,
+            confirmButtonColor: color.primary.rojo,
           });
          
         }

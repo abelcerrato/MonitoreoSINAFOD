@@ -94,7 +94,7 @@ const EditRole = () => {
           };
 
           setFormData(roleData);
-         // console.log("Datos transformados:", roleData);
+          // console.log("Datos transformados:", roleData);
         }
       } catch (error) {
         console.error("Error al obtener datos", error);
@@ -340,6 +340,7 @@ const EditRole = () => {
             title: "No se puede desactivar",
             text: 'Primero desactiva los permisos "insertar" o "actualizar" para este módulo',
             icon: "warning",
+            confirmButtonColor: color.primary.azul,
           });
           return prev;
         }
