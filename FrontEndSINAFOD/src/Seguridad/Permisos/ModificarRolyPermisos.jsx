@@ -130,8 +130,8 @@ const EditRole = () => {
       await axios.put(`${process.env.REACT_APP_API_URL}/permisos`, dataToSend);
 
       Swal.fire({
-        title: "¡Éxito!",
-        text: "Rol actualizado correctamente",
+        title: "¡Actualización!",
+        text: "El rol ha sido actualizado correctamente",
         icon: "success",
         confirmButtonColor: color.primary.azul,
       }).then(() => {

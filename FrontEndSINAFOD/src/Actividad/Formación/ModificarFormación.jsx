@@ -366,7 +366,7 @@ const ModificarFormacion = () => {
       // Mostrar mensaje de éxito
 
       Swal.fire({
-        title: "Actualización",
+        title: "¡Actualización!",
         text: "La acción formativa ha sido actualizada.",
         icon: "success",
         timer: 6000,

@@ -349,10 +349,11 @@ const ModificarLineamientos = () => {
       );
 
       Swal.fire({
-        title: "Actualización",
+        title: "¡Actualización!",
         text: "Lineamientos actualizados correctamente",
         icon: "success",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
 
       // navigate(`/Actualizar_Formación/${id}`);

@@ -98,7 +98,7 @@ const Usuario = () => {
       );
 
       await Swal.fire({
-        title: "Actualización!",
+        title: "¡Registro!",
         text: "El usuario ha sido registrado correctamente.",
         icon: "success",
         confirmButtonColor: color.primary.azul,

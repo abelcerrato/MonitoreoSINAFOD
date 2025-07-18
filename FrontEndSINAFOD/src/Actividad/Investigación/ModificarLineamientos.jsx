@@ -322,7 +322,13 @@ const LineamientosI = () => {
         }
       );
 
-      Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
+      Swal.fire({
+                title: "¡Actualización!",
+                text: "Lineamientos actualizados correctamente",
+                icon: "success",
+                timer: 6000,
+                confirmButtonColor: color.primary.azul,
+      });
       //   navigate(`/Actualizar_Investigación/${id}`);
       navigate("/dashboard");
     } catch (error) {

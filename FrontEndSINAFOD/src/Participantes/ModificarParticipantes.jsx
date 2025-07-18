@@ -179,8 +179,8 @@ const ModificarParticipante = () => {
 
       if (response.status === 200) {
         Swal.fire({
-          title: "¡Actualización Exitosa!",
-          text: "Datos actualizados correctamente",
+          title: "¡Actualización!",
+          text: "Los datos han sido actualizados correctamente",
           icon: "success",
           timer: 6000,
           confirmButtonColor: color.primary.azul,

@@ -316,8 +316,8 @@ const Investigacion = () => {
       );
 
       await Swal.fire({
-        title: "Actualización!",
-        text: "La investigación ha sido actualizada",
+        title: "¡Actualización!",
+        text: "La investigación ha sido actualizada correctamente",
         icon: "success",
         timer: 6000,
         confirmButtonColor: color.primary.azul,
