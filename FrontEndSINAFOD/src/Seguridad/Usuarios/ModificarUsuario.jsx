@@ -126,28 +126,31 @@ const Usuario = () => {
         <>
             <Dashboard>
                 <Paper sx={{ padding: 3, marginBottom: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                        <Typography variant="h4" sx={{ color: color.primary.azul }}>
-                            Actualizar de Usuario
-                        </Typography>
-
-                        <Box
-
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
-                            <Button
-                                variant="outlined"
-                                sx={{
+                    <Grid container spacing={2} alignItems="center" sx={{ mb: 5 }}>
+                              <Grid size={{ xs: 12, md: 8 }}>
+                                <Typography
+                                  variant="h4"
+                                  sx={{ fontWeight: "bold", color: color.primary.azul}}
+                                >
+                                  Actualizar Usuario
+                                </Typography>
+                              </Grid>
+                              <Grid
+                                size={{ xs: 12, md: 4 }}
+                                sx={{ display: "flex", justifyContent: "flex-end" }}
+                              >
+                                <Button
+                                  variant="outlined"
+                                  sx={{
                                     borderColor: color.primary.rojo,
                                     color: color.primary.rojo,
-                                }}
-                                onClick={() => handleRedirect()}
-                            >
-                                Cerrar
-                            </Button>
-
-                        </Box>
-                    </Box>
+                                  }}
+                                  onClick={() => handleRedirect()}
+                                >
+                                  Cerrar
+                                </Button>
+                              </Grid>
+                            </Grid> 
                     <Grid container spacing={2} sx={{ marginTop: 2 }}>
                         <Grid item xs={12} size={6}>
                             <TextField
