@@ -10,22 +10,11 @@ import {
   MenuItem,
   FormControl,
   Box,
-  Radio,
-  RadioGroup,
   FormControlLabel,
-  Tab,
-  Tabs,
   FormHelperText,
   Checkbox,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Tooltip,
-  IconButton,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
 
-import { PDFViewer } from "@react-pdf/renderer";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -34,142 +23,18 @@ import { useUser } from "../../Components/UserContext";
 
 import Swal from "sweetalert2";
 
-import { QRCodeCanvas } from "qrcode.react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  Image,
-  StyleSheet,
-} from "@react-pdf/renderer";
-
-// Componente para el PDF
-import logoDGDP from "../../Components/img/Logo DGDP_FondoB.png";
-import logoSE from "../../Components/img/LogoEducacion.png";
-import marcaH from "../../Components/img/5 estrellas y H.png";
-
-// Estilos para el PDF
-
-const styles = StyleSheet.create({
-  page: {
-    position: "relative",
-    padding: 30,
-    fontFamily: "Helvetica",
-  },
-  backgroundColumn: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 40,
-    height: "100%",
-    backgroundColor: color.primary.azul,
-  },
-  logoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    paddingHorizontal: 20,
-  },
-  logo: {
-    width: 120,
-    height: "auto",
-  },
-  marcaH: {
-    position: "absolute",
-    padding: 5,
-    bottom: 100,
-    left: 35,
-    width: 80,
-    height: 40,
-    backgroundColor: color.primary.azul,
-  },
-  content: {
-    marginTop: 20,
-    paddingHorizontal: 60,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  section: {
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  value: {
-    fontSize: 12,
-    marginBottom: 15,
-  },
-  qrContainer: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  qrImage: {
-    width: 150,
-    height: 150,
-  },
-  url: {
-    fontSize: 10,
-    marginTop: 10,
-    color: "#666",
-  },
-});
-
-const FormationPDF = ({ qrUrl }) => (
-  <Document>
-    <Page size="LETTER" style={styles.page}>
-      <View style={styles.backgroundColumn} />
-
-      <View style={styles.logoContainer}>
-        <Image style={styles.logo} src={logoDGDP} />
-        <Image style={styles.logo} src={logoSE} />
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.title}>Formulario de Pre Inscripción</Text>
-
-        <View style={styles.qrContainer}>
-          <Text style={styles.label}>Código QR</Text>
-          <Image
-            style={styles.qrImage}
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-              qrUrl
-            )}`}
-          />
-          <Text style={styles.url}>{qrUrl}</Text>
-        </View>
-      </View>
-      <Image style={styles.marcaH} src={marcaH} />
-    </Page>
-  </Document>
-);
-
 const Formacion = () => {
   const { user } = useUser();
   const location = useLocation();
   const [isSaved, setIsSaved] = useState(false);
-  const [qrUrl, setQrUrl] = useState(null);
   const [investCapId, setInvestCapId] = useState(null);
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
+  const { uploadedFilesCount, totalRequiredFiles } = location.state || {};
 
-  const [openModal, setOpenModal] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
-
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
@@ -384,6 +249,7 @@ const Formacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -391,10 +257,11 @@ const Formacion = () => {
     // Verificación de minutos antes de guardar los datos
     if (formData.minutos > 59) {
       Swal.fire({
-        title: "Advertencia!",
+        title: "¡Advertencia!",
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return; // Detiene la ejecución si la validación falla
     }
@@ -402,10 +269,11 @@ const Formacion = () => {
     if (formData.fechainicio && formData.fechafinal) {
       if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
         Swal.fire({
-          title: "Advertencia!",
+          title: "¡Advertencia!",
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return; // No proceder con la solicitud si la validación falla
       }
@@ -428,10 +296,9 @@ const Formacion = () => {
       // Si no hay ID (flujo "Omitir"), pedir confirmación
       if (!idToUse) {
         const confirmResult = await Swal.fire({
-          title: "Advertencia!",
-          text: "La formación se registrará sin lineamientos.",
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido 0 de 3 lineamientos requeridos. ¿Deseas continuar con el registro?`,
           icon: "warning",
-
           showCancelButton: true,
           confirmButtonColor: color.primary.azul,
           cancelButtonColor: color.primary.rojo,
@@ -439,7 +306,6 @@ const Formacion = () => {
           cancelButtonText: "No, cancelar",
           reverseButtons: true,
         });
-
         // Si el usuario cancela, no continuar
         if (!confirmResult.isConfirmed) {
           return;
@@ -453,6 +319,21 @@ const Formacion = () => {
         );
         idToUse = response.data.id;
       } else {
+        const confirmResult = await Swal.fire({
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: color.primary.azul,
+          cancelButtonColor: color.primary.rojo,
+          confirmButtonText: "Sí, Registrar",
+          cancelButtonText: "No, cancelar",
+          reverseButtons: true,
+        });
+        // Si el usuario cancela, no continuar
+        if (!confirmResult.isConfirmed) {
+          return;
+        }
         // Actualizar el registro
         const updateResponse = await axios.put(
           `${process.env.REACT_APP_API_URL}/formacion/${idToUse}`,
@@ -462,16 +343,17 @@ const Formacion = () => {
       }
 
       // Mostrar mensaje de éxito
-      await Swal.fire(
-        "¡Guardado!",
-        "La formación ha sido registrada",
-        "success"
-      );
+      await Swal.fire({
+        title: "¡Registro!",
+        text: "La formación ha sido registrada correctamente",
+        icon: "success",
+        confirmButtonColor: color.primary.azul,
+      });
       setIsSaved(true);
       navigate("/Listado_De_Acciones_Formativas");
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 

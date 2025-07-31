@@ -395,6 +395,7 @@ const PreInscripcion = () => {
             text: "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
+            confirmButtonColor: color.primary.azul,
           });
           console.log(response.data);
         } else {
@@ -416,6 +417,7 @@ const PreInscripcion = () => {
         text: "Por favor ingrese sus datos",
         icon: "warning",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -667,9 +669,6 @@ const PreInscripcion = () => {
                     sx={{ mb: 1 }}
                   >
                     <strong>Modalidad:</strong> {formacion.modalidad}
-                    {formacion.modalidad === "Virtual" &&
-                      formacion.plataforma &&
-                      ` (${formacion.plataforma})`}
                   </Typography>
 
                   <Typography
@@ -681,6 +680,17 @@ const PreInscripcion = () => {
                     {formacion.duracion.minutes}m
                   </Typography>
 
+                  {(formacion.modalidad === "Virtual" ||
+                    formacion.modalidad === "Bimodal") &&
+                    formacion.plataforma && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        <strong>Plataforma:</strong> {formacion.plataforma}
+                      </Typography>
+                    )}
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -822,6 +832,7 @@ const PreInscripcion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         confirmButtonText: "OK",
+        confirmButtonColor: color.primary.rojo,
       });
       return;
     }
@@ -856,15 +867,17 @@ const PreInscripcion = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 12000,
+          confirmButtonColor: color.primary.azul,
         });
       }
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -1454,12 +1467,20 @@ const PreInscripcion = () => {
                 <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                   <Autocomplete
                     freeSolo
-                    disabled={camposBloqueados.nombreced}
                     options={centroseducativos}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.nombreced
                     }
                     value={formData.nombreced || ""}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === "object" && newValue !== null) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newValue.nombreced,
+                          codigosaceced: newValue.codigosace,
+                        }));
+                      }
+                    }}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -1972,7 +1993,7 @@ const PreInscripcion = () => {
                     >
                       <ListItemText
                         primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.nombreced || "Sin centro educativo"
+                          docente.identificacion || "Sin centro educativo"
                         }`}
                         secondary={
                           <>

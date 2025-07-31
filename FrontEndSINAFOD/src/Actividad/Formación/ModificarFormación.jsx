@@ -255,8 +255,13 @@ const ModificarFormacion = () => {
 
   const handleSave = async () => {
     // Lista de campos obligatorios
-    const requiredFields = ["formacion"];
-
+    const requiredFields = [
+      "formacion",
+      "tipoactividad",
+      "fechainicio",
+      "fechafinal",
+      "socializaron",
+    ];
     // Detectar campos vacíos
     let errors = {};
     requiredFields.forEach((field) => {
@@ -280,6 +285,7 @@ const ModificarFormacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -287,10 +293,11 @@ const ModificarFormacion = () => {
     // Verificación de minutos antes de guardar los datos
     if (formData.minutos > 59) {
       Swal.fire({
-        title: "Advertencia!",
+        title: "¡Advertencia!",
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return; // Detiene la ejecución si la validación falla
     }
@@ -299,10 +306,11 @@ const ModificarFormacion = () => {
     if (formData.fechainicio && formData.fechafinal) {
       if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
         Swal.fire({
-          title: "Advertencia!",
+          title: "¡Advertencia!",
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return; // No proceder con la solicitud si la validación falla
       }
@@ -358,10 +366,11 @@ const ModificarFormacion = () => {
       // Mostrar mensaje de éxito
 
       Swal.fire({
-        title: "Actualización",
+        title: "¡Actualización!",
         text: "La acción formativa ha sido actualizada.",
         icon: "success",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
 
       // Redirigir a Participantes con el ID
@@ -369,7 +378,7 @@ const ModificarFormacion = () => {
       navigate("/Listado_De_Acciones_Formativas");
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 

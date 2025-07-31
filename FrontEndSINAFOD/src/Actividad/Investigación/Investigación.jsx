@@ -32,8 +32,8 @@ const Investigacion = () => {
   const { user } = useUser();
   const location = useLocation();
   const [investCapId, setInvestCapId] = useState(null);
+  const { uploadedFilesCount, totalRequiredFiles } = location.state || {};
 
-  const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
   const [formData, setFormData] = useState({
     investigacion: location.state?.investigacion || "",
@@ -63,133 +63,107 @@ const Investigacion = () => {
 
   const navigate = useNavigate();
 
-  // Manejar cambios en campos de texto y selects
+  const validarDuracion = ({ año, mes, dia }) => {
+    const numAño = Number(año) || 0;
+    const numMes = Number(mes) || 0;
+    const numDia = Number(dia) || 0;
+
+    const atLeastOne = numAño > 0 || numMes > 0 || numDia > 0;
+    const errorAño = isNaN(numAño) || numAño < 0;
+    const errorMes = isNaN(numMes) || numMes < 0 || numMes > 12;
+    const errorDia = isNaN(numDia) || numDia < 0 || numDia > 31;
+
+    const errores = {
+      año: !atLeastOne || errorAño,
+      mes: !atLeastOne || errorMes,
+      dia: !atLeastOne || errorDia,
+    };
+
+    const tieneErrores = errores.año || errores.mes || errores.dia;
+
+    const duracion = !tieneErrores
+      ? `${numAño} years ${numMes} months ${numDia} days`
+      : "";
+
+    return { errores, duracion, atLeastOne };
+  };
+
+  const translateDuracion = (duracion) => {
+    if (!duracion) return "";
+    return duracion
+      .replace(/years?/g, "años")
+      .replace(/months?/g, "meses")
+      .replace(/days?/g, "días");
+  };
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-
-    // Manejar tanto inputs normales como checkboxes
     const sanitizedValue = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => {
-      let newData = {
-        ...prevData,
-        [name]: sanitizedValue,
-      };
+      let newData = { ...prevData, [name]: sanitizedValue };
 
-      // Validación rápida de errores de campo vacío (solo para inputs normales)
       if (type !== "checkbox") {
         const isEmpty = String(sanitizedValue || "").trim() === "";
-        setFieldErrors((prev) => ({
-          ...prev,
-          [name]: isEmpty,
-        }));
+        setFieldErrors((prev) => ({ ...prev, [name]: isEmpty }));
       }
 
-      // Validación de los campos de duración (año, mes, día)
-      if (name === "año" || name === "mes" || name === "dia") {
-        const inputValue = event.target.value;
+      if (["año", "mes", "dia"].includes(name)) {
+        if (!/^[0-9]*$/.test(value)) return prevData;
+        newData[name] = value === "" ? "" : Number(value);
 
-        // 1. Validar que solo sean números (bloquear letras/símbolos)
-        const isPositiveInteger = /^[0-9]*$/.test(inputValue);
-        if (!isPositiveInteger) {
-          return prevData;
-        }
-
-        // 2. Actualizar el estado con el valor numérico (o "")
-        newData[name] = inputValue === "" ? "" : Number(inputValue);
-
-        // 3. Validar rangos
-        const año = Number(newData.año) || 0;
-        const mes = Number(newData.mes) || 0;
-        const dia = Number(newData.dia) || 0;
-
-        const errorAño = isNaN(año) || año < 0;
-        const errorMes = isNaN(mes) || mes < 0 || mes > 12;
-        const errorDia = isNaN(dia) || dia < 0 || dia > 31;
-
-        setFieldErrors((prev) => ({
-          ...prev,
-          año: errorAño,
-          mes: errorMes,
-          dia: errorDia,
-        }));
-
-        // 4. Calcular duración solo si no hay errores
-        if (!errorAño && !errorMes && !errorDia) {
-          newData.duracion = `${año} years ${mes} months ${dia} days`;
+        const { errores, duracion } = validarDuracion(newData);
+        setFieldErrors((prev) => ({ ...prev, ...errores }));
+        if (duracion) {
+          newData.duracion = duracion;
         }
       }
 
       return newData;
     });
   };
-
-  const translateDuracion = (duracion) => {
-    if (!duracion) return "";
-
-    return duracion
-      .replace(/years?/g, "años")
-      .replace(/months?/g, "meses")
-      .replace(/days?/g, "días");
-  };
-
   const handleSave = async () => {
-    const requiredFields = ["investigacion", "tipoactividad", "socializaron"];
-    let errors = {};
+    const requiredFields = [
+      "investigacion",
+      "tipoactividad",
+      "socializaron",
+      "presupuesto",
+      "tipomoneda",
+      "funciondirigido",
+      "fechafinal",
+      "fechainicio",
+    ];
 
+    let errors = {};
     requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        errors[field] = true;
-      }
+      if (!formData[field]) errors[field] = true;
     });
 
-    // Validación de duración
+    const { errores: erroresDuracion, atLeastOne } = validarDuracion(formData);
+    errors = { ...errors, ...erroresDuracion };
+    setFieldErrors(errors);
+
+    if (Object.values(errors).some((val) => val)) {
+      Swal.fire({
+        title: "Error en los campos",
+        text: !atLeastOne
+          ? "Debe ingresar al menos un valor en año, mes o día"
+          : "Revise los campos marcados en rojo",
+        icon: "warning",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
+      });
+      return;
+    }
+
     const año = Number(formData.año) || 0;
     const mes = Number(formData.mes) || 0;
     const dia = Number(formData.dia) || 0;
 
-    // Verificar que al menos uno sea mayor a 0
-    const atLeastOneFieldHasValue = año > 0 || mes > 0 || dia > 0;
-
-    // Validación de rangos
-    const errorAño = isNaN(año) || año < 0;
-    const errorMes = isNaN(mes) || mes < 0 || mes > 12;
-    const errorDia = isNaN(dia) || dia < 0 || dia > 31;
-
-    // Si no hay ningún valor o hay errores de rango
-    if (!atLeastOneFieldHasValue || errorAño || errorMes || errorDia) {
-      errors = {
-        ...errors,
-        año: !atLeastOneFieldHasValue || errorAño,
-        mes: !atLeastOneFieldHasValue || errorMes,
-        dia: !atLeastOneFieldHasValue || errorDia,
-      };
-    }
-
-    // Actualizar errores visuales
-    setFieldErrors(errors);
-
-    // Mostrar alerta si hay errores
-    if (Object.keys(errors).length > 0) {
-      const errorMessage = !atLeastOneFieldHasValue
-        ? "Debe ingresar al menos un valor en año, mes o día"
-        : "Revise los campos marcados en rojo";
-
-      Swal.fire({
-        title: "Error en los campos",
-        text: errorMessage,
-        icon: "warning",
-        timer: 6000,
-      });
-      return;
-    }
-    // Limpieza de datos - asegurando que los campos vacíos se envíen como 0
     const cleanedFormData = {
       ...formData,
-      año: año, // Esto ya es 0 si estaba vacío
-      mes: mes, // Esto ya es 0 si estaba vacío
-      dia: dia, // Esto ya es 0 si estaba vacío
-      // Limpieza de otros campos
+      año,
+      mes,
+      dia,
       ...Object.fromEntries(
         Object.entries(formData)
           .filter(([key]) => !["año", "mes", "dia"].includes(key))
@@ -200,11 +174,43 @@ const Investigacion = () => {
       ),
     };
 
+    // Validación fecha
+    const { fechainicio, fechafinal } = formData;
+    const fechaInicioValida =
+      fechainicio && !isNaN(new Date(fechainicio).getTime());
+    const fechaFinalValida =
+      fechafinal && !isNaN(new Date(fechafinal).getTime());
+
+    if (fechaInicioValida && fechaFinalValida) {
+      const inicio = new Date(fechainicio);
+      const fin = new Date(fechafinal);
+
+      if (inicio > fin) {
+        errors.fechainicio =
+          "La fecha de inicio no puede ser posterior a la final.";
+        errors.fechafinal =
+          "La fecha de finalización debe ser posterior a la de inicio.";
+      }
+    }
+
     try {
       let idToUse = investCapId;
       let response;
 
       if (!idToUse) {
+        const confirmResult = await Swal.fire({
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido 0 de 3 lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: color.primary.azul,
+          cancelButtonColor: color.primary.rojo,
+          confirmButtonText: "Sí, Registrar",
+          cancelButtonText: "No, cancelar",
+          reverseButtons: true,
+        });
+
+        if (!confirmResult.isConfirmed) return;
         response = await axios.post(
           `${process.env.REACT_APP_API_URL}/investigacion`,
           cleanedFormData,
@@ -212,6 +218,19 @@ const Investigacion = () => {
         );
         idToUse = response.data.id;
       } else {
+        const confirmResult = await Swal.fire({
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: color.primary.azul,
+          cancelButtonColor: color.primary.rojo,
+          confirmButtonText: "Sí, Registrar",
+          cancelButtonText: "No, cancelar",
+          reverseButtons: true,
+        });
+
+        if (!confirmResult.isConfirmed) return;
         response = await axios.put(
           `${process.env.REACT_APP_API_URL}/investigacion/${idToUse}`,
           cleanedFormData,
@@ -219,11 +238,13 @@ const Investigacion = () => {
         );
       }
 
-      await Swal.fire(
-        "¡Guardado!",
-        "La investigación ha sido registrada",
-        "success"
-      );
+      await Swal.fire({
+        title: "¡Guardado!",
+        text: "La investigación ha sido registrada",
+        icon: "success",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
+      });
 
       navigate("/Participantes", {
         state: {
@@ -233,7 +254,7 @@ const Investigacion = () => {
       });
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 
@@ -363,6 +384,10 @@ const Investigacion = () => {
                 value={formData.presupuesto}
                 onChange={handleChange}
                 type="number"
+                error={fieldErrors.presupuesto}
+                helperText={
+                  fieldErrors.presupuesto ? "Este campo es obligatorio" : ""
+                }
                 inputProps={{ min: 0 }}
                 InputProps={{
                   endAdornment: (
@@ -458,6 +483,10 @@ const Investigacion = () => {
                 name="funciondirigido"
                 value={formData.funciondirigido}
                 onChange={handleChange}
+                error={fieldErrors.funciondirigido}
+                helperText={
+                  fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""
+                }
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -509,8 +538,10 @@ const Investigacion = () => {
                 name="fechainicio"
                 value={formData.fechainicio || ""}
                 onChange={handleChange}
-                error={fieldErrors.fechainicio} // Aquí se activa el error
-                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
+                error={Boolean(fieldErrors.fechainicio)}
+                helperText={
+                  fieldErrors.fechainicio ? "Este campo es obligatorio" : ""
+                }
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -520,12 +551,14 @@ const Investigacion = () => {
                 type="date"
                 name="fechafinal"
                 value={formData.fechafinal || ""}
-                error={fieldErrors.fechafinal} // Aquí se activa el error
-                helperText={fieldErrors.funciondirigido}
+                onChange={handleChange}
+                error={Boolean(fieldErrors.fechafinal)}
+                helperText={
+                  fieldErrors.fechafinal ? "Este campo es obligatorio" : ""
+                }
                 inputProps={{
                   min: formData.fechainicio || "",
                 }}
-                onChange={handleChange}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>

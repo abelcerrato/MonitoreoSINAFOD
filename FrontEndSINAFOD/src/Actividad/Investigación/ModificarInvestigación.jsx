@@ -101,36 +101,56 @@ const Investigacion = () => {
     obtenerDetalles();
   }, [id]);
 
-  // Manejar cambios en campos de texto y selects
+  const validarDuracion = ({ año, mes, dia }) => {
+    const numAño = Number(año) || 0;
+    const numMes = Number(mes) || 0;
+    const numDia = Number(dia) || 0;
+
+    const atLeastOne = numAño > 0 || numMes > 0 || numDia > 0;
+    const errorAño = isNaN(numAño) || numAño < 0;
+    const errorMes = isNaN(numMes) || numMes < 0 || numMes > 12;
+    const errorDia = isNaN(numDia) || numDia < 0;
+
+    const errores = {
+      año: !atLeastOne || errorAño,
+      mes: !atLeastOne || errorMes,
+      dia: !atLeastOne || errorDia,
+    };
+
+    const tieneErrores = errores.año || errores.mes || errores.dia;
+    const duracion = !tieneErrores
+      ? `${numAño} years ${numMes} months ${numDia} days`
+      : "";
+
+    return { errores, duracion };
+  };
+  const translateDuracion = (duracion) => {
+    if (!duracion) return "";
+    return duracion
+      .replace(/years?/g, "años")
+      .replace(/months?/g, "meses")
+      .replace(/days?/g, "días");
+  };
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-
-    // Manejar tanto inputs normales como checkboxes
     const sanitizedValue = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => {
-      let newData = {
-        ...prevData,
-        [name]: sanitizedValue,
-      };
+      let newData = { ...prevData, [name]: sanitizedValue };
 
-      // Validación rápida de errores de campo vacío (solo para inputs normales)
       if (type !== "checkbox") {
         const isEmpty = String(sanitizedValue || "").trim() === "";
-        setFieldErrors((prev) => ({
-          ...prev,
-          [name]: isEmpty,
-        }));
+        setFieldErrors((prev) => ({ ...prev, [name]: isEmpty }));
       }
 
-      // Limpiar ciclos cuando se desmarca "Básica"
+      // Limpiar ciclos si se desactiva "basica"
       if (name === "basica" && !sanitizedValue) {
         newData.primerciclo = false;
         newData.segundociclo = false;
         newData.tercerciclo = false;
       }
 
-      // Si cambiamos a "Interna", limpiamos los campos de convenio
+      // Limpiar convenios si se cambia a Interna
       if (name === "tipoactividad" && sanitizedValue === "Interna") {
         newData.institucionconvenio = "";
         newData.existeconvenio = "";
@@ -145,7 +165,6 @@ const Investigacion = () => {
       if (name === "fechainicio" || name === "fechafinal") {
         const isValidDate =
           sanitizedValue && !isNaN(new Date(sanitizedValue).getTime());
-
         if (isValidDate) {
           newData[name] = new Date(sanitizedValue).toISOString().split("T")[0];
         } else {
@@ -153,146 +172,121 @@ const Investigacion = () => {
         }
 
         const { fechainicio, fechafinal } = newData;
-
-        if (
+        const fechaError =
           fechainicio &&
           fechafinal &&
-          new Date(fechainicio) > new Date(fechafinal)
-        ) {
+          new Date(fechainicio) > new Date(fechafinal);
+
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          fechainicio: !fechainicio || fechaError,
+          fechafinal: !fechafinal || fechaError,
+        }));
+
+        if (fechaError) {
           setError(
             "La fecha de inicio no puede ser posterior a la fecha de finalización."
           );
-          setFieldErrors({ fechainicio: true, fechafinal: true });
         } else {
-          setError("Este campo es obligatorio");
-          setFieldErrors((prevErrors) => ({
-            ...prevErrors,
-            fechainicio: !fechainicio,
-            fechafinal: !fechafinal,
-          }));
+          setError("");
         }
       }
 
-      // Validación de los campos de duración (año, mes, día)
-      if (name === "año" || name === "mes" || name === "dia") {
-        const inputValue = event.target.value;
+      // Validación de duración
+      if (["año", "mes", "dia"].includes(name)) {
+        if (!/^[0-9]*$/.test(value)) return prevData;
+        newData[name] = value === "" ? "" : Number(value);
 
-        // 1. Validar que solo sean números (bloquear letras/símbolos)
-        const isPositiveInteger = /^[0-9]*$/.test(inputValue);
-        if (!isPositiveInteger) {
-          return prevData;
-        }
-
-        // 2. Actualizar el estado con el valor numérico (o "")
-        newData[name] = inputValue === "" ? "" : Number(inputValue);
-
-        // 3. Validar rangos
-        const año = Number(newData.año) || 0;
-        const mes = Number(newData.mes) || 0;
-        const dia = Number(newData.dia) || 0;
-
-        const errorAño = isNaN(año) || año < 0;
-        const errorMes = isNaN(mes) || mes < 0 || mes > 12;
-        const errorDia = isNaN(dia) || dia < 0;
-
-        setFieldErrors((prev) => ({
-          ...prev,
-          año: errorAño,
-          mes: errorMes,
-          dia: errorDia,
-        }));
-
-        // 4. Calcular duración solo si no hay errores
-        if (!errorAño && !errorMes && !errorDia) {
-          newData.duracion = `${año} years ${mes} months ${dia} days`;
+        const { errores, duracion } = validarDuracion(newData);
+        setFieldErrors((prev) => ({ ...prev, ...errores }));
+        if (duracion) {
+          newData.duracion = duracion;
         }
       }
 
       return newData;
     });
   };
-
-  const translateDuracion = (duracion) => {
-    if (!duracion) return "";
-
-    return duracion
-      .replace(/years?/g, "años")
-      .replace(/months?/g, "meses")
-      .replace(/days?/g, "días");
-  };
-
   const handleSave = async () => {
-    // Lista de campos obligatorios
-    const requiredFields = ["investigacion", "tipoactividad", "socializaron"];
+    const requiredFields = [
+      "investigacion",
+      "tipoactividad",
+      "socializaron",
+      "presupuesto",
+      "tipomoneda",
+      "funciondirigido",
+      "fechafinal",
+      "fechainicio",
+    ];
 
-    // Detectar campos vacíos
     let errors = {};
     requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        errors[field] = true; // Marcar campo como vacío
-      }
+      if (!formData[field]) errors[field] = true;
     });
 
-    // Si hay campos vacíos, actualizar estado y mostrar alerta
-    if (Object.keys(errors).length > 0) {
+    // Validación duración
+    const { errores: duracionErrores } = validarDuracion(formData);
+    errors = { ...errors, ...duracionErrores };
+
+    // Validación fecha
+    if (formData.fechainicio && formData.fechafinal) {
+      const inicio = new Date(formData.fechainicio);
+      const fin = new Date(formData.fechafinal);
+      if (inicio > fin) {
+        errors.fechainicio = true;
+        errors.fechafinal = true;
+        setFieldErrors(errors);
+        Swal.fire({
+          title: "¡Advertencia!",
+          text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
+          icon: "warning",
+          timer: 6000,
+          confirmButtonColor: color.primary.azul,
+        });
+        return;
+      }
+    }
+
+    if (Object.values(errors).some((e) => e)) {
       setFieldErrors(errors);
       Swal.fire({
         title: "Campos obligatorios",
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
 
-    // 2. Validar campos numéricos (año, mes, día)
-    const { año, mes, dia } = formData;
+    // Validación fecha
+    const { fechainicio, fechafinal } = formData;
+    const fechaInicioValida =
+      fechainicio && !isNaN(new Date(fechainicio).getTime());
+    const fechaFinalValida =
+      fechafinal && !isNaN(new Date(fechafinal).getTime());
 
-    // Verificar si son números válidos y cumplen rangos
-    const errorAño = año === null || isNaN(año) || año < 0;
-    const errorMes = mes === null || isNaN(mes) || mes < 0 || mes > 12;
-    const errorDia = dia === null || isNaN(dia) || dia < 0;
+    if (fechaInicioValida && fechaFinalValida) {
+      const inicio = new Date(fechainicio);
+      const fin = new Date(fechafinal);
 
-    if (errorAño || errorMes || errorDia) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        año: errorAño,
-        mes: errorMes,
-        dia: errorDia,
-      }));
-
-      Swal.fire({
-        title: "Error en duración",
-        text: "Revise los campos de año, mes o día. Asegúrese de que sean números válidos y que el mes no sea mayor a 12.",
-        icon: "error",
-        timer: 6000,
-      });
-      return; // Detiene el guardado
-    }
-
-    // Verificación de la fecha antes de guardar los datos
-    if (formData.fechainicio && formData.fechafinal) {
-      if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
-        Swal.fire({
-          title: "Advertencia!",
-          text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
-          icon: "warning",
-          timer: 6000,
-        });
-        return; // No proceder con la solicitud si la validación falla
+      if (inicio > fin) {
+        errors.fechainicio =
+          "La fecha de inicio no puede ser posterior a la final.";
+        errors.fechafinal =
+          "La fecha de finalización debe ser posterior a la de inicio.";
       }
     }
 
-    // Verificar los campos booleanos
-    const { presentoprotocolo, monitoreoyevaluacion, aplicacionevaluacion } =
-      formData;
+    // Validación de booleanos mínimos
     const trueCount = [
-      presentoprotocolo,
-      monitoreoyevaluacion,
-      aplicacionevaluacion,
-    ].filter((value) => value === true).length;
+      formData.presentoprotocolo,
+      formData.monitoreoyevaluacion,
+      formData.aplicacionevaluacion,
+      formData.divulgacionresultadosurl,
+    ].filter(Boolean).length;
 
-    if (trueCount < 3) {
+    if (trueCount < 4) {
       const result = await Swal.fire({
         title: "Confirmación",
         text: `¿Está seguro de actualizar esta investigación con solo ${trueCount} de los 3 lineamientos requeridos?`,
@@ -304,10 +298,7 @@ const Investigacion = () => {
         cancelButtonText: "No, cancelar",
         reverseButtons: true,
       });
-
-      if (!result.isConfirmed) {
-        return; // No proceder si el usuario cancela
-      }
+      if (!result.isConfirmed) return;
     }
 
     const cleanedFormData = Object.fromEntries(
@@ -316,28 +307,25 @@ const Investigacion = () => {
         value === "" && key !== "investigacion" ? null : value,
       ])
     );
-    console.log("Datos que envio", formData);
+
     try {
-      // Actualizar el registro
-      const updateResponse = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_API_URL}/investigacion/${id}`,
         cleanedFormData,
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // Mostrar mensaje de éxito
-      await Swal.fire(
-        "Actualización!",
-        "La investigación ha sido actualizada",
-        "success"
-      );
-
-      // Redirigir a Participantes con el ID
-      // navigate("/Participantes", { state: { investCap: id } });
+      await Swal.fire({
+        title: "¡Actualización!",
+        text: "La investigación ha sido actualizada correctamente",
+        icon: "success",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
+      });
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 
@@ -368,7 +356,7 @@ const Investigacion = () => {
                   })
                 }
               >
-                Participantes
+                INVESTIGADORES
               </Button>
             </Grid>
             <Grid>
@@ -465,11 +453,18 @@ const Investigacion = () => {
                 name="presupuesto"
                 value={formData.presupuesto}
                 onChange={handleChange}
+                error={fieldErrors.presupuesto}
+                helperText={
+                  fieldErrors.presupuesto ? "Este campo es obligatorio" : ""
+                }
                 type="number"
                 inputProps={{ min: 0 }}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
+                    <InputAdornment
+                      position="end"
+                      error={fieldErrors.tipomoneda}
+                    >
                       <TextField
                         select
                         name="tipomoneda"
@@ -482,6 +477,11 @@ const Investigacion = () => {
                         <MenuItem value="Dolar">USD</MenuItem>
                         <MenuItem value="Euro">EUR</MenuItem>
                       </TextField>
+                      {fieldErrors.tipomoneda && (
+                        <FormHelperText>
+                          Este campo es obligatorio
+                        </FormHelperText>
+                      )}
                     </InputAdornment>
                   ),
                 }}
@@ -740,8 +740,10 @@ const Investigacion = () => {
                 name="fechainicio"
                 value={formData.fechainicio || ""}
                 onChange={handleChange}
-                error={fieldErrors.fechainicio} // Aquí se activa el error
-                helperText={fieldErrors.fechainicio && error} // Muestra el mensaje de error
+                error={fieldErrors.fechainicio}
+                helperText={
+                  fieldErrors.fechainicio ? "Este campo es obligatorio" : ""
+                }
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -753,7 +755,7 @@ const Investigacion = () => {
                 value={formData.fechafinal || ""}
                 error={fieldErrors.fechafinal} // Aquí se activa el error
                 helperText={
-                  fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""
+                  fieldErrors.fechafinal ? "Este campo es obligatorio" : ""
                 }
                 inputProps={{
                   min: formData.fechainicio || "",

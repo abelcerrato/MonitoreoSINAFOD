@@ -228,7 +228,7 @@ export const getFiltroDocenteC = async (req, res) => {
       return res.json(resultadoValido);
     }
 
-   // console.log("respuesta back", getDocenteIdentificacionM);
+    // console.log("respuesta back", getDocenteIdentificacionM);
 
     return res.status(202).json({
       mensaje: "No se encontraron registros para el filtro proporcionado.",
@@ -400,7 +400,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-        form = await postParticipanteFormacionM(idformacion, idPart);
+
 
         // Insertar centro educativo
         const centro = await postCentroEducativoM(
@@ -441,6 +441,9 @@ export const getFiltroDocentesC = async (req, res) => {
           doceavo
         );
         ced2 = relacionCed;
+
+        form = await postParticipanteFormacionM(idformacion, idPart, idcentro);
+
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -480,7 +483,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-        form = await postParticipanteFormacionM(idformacion, idPart);
+
 
         const centro = await postCentroEducativoM(
           nombreced,
@@ -519,6 +522,9 @@ export const getFiltroDocentesC = async (req, res) => {
           doceavo
         );
         ced2 = relacionCed;
+
+
+        form = await postParticipanteFormacionM(idformacion, idPart, idcentro);
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -551,7 +557,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
-        form = await postParticipanteFormacionM(idformacion, idparticipante);
+        form = await postParticipanteFormacionM(idformacion, idparticipante, idcentroeducativo);
 
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentroeducativo,
@@ -576,6 +582,8 @@ export const getFiltroDocentesC = async (req, res) => {
           doceavo
         );
         ced2 = relacionCed;
+
+        
       }
 
       if (tipo === "investigacion" && idinvestigacion && idparticipante) {
@@ -594,7 +602,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
-        form = await postParticipanteFormacionM(idformacion, idparticipante);
+
 
         // Insertar centro educativo
         const centro = await postCentroEducativoM(
@@ -635,6 +643,8 @@ export const getFiltroDocentesC = async (req, res) => {
           doceavo
         );
         ced2 = relacionCed;
+
+        form = await postParticipanteFormacionM(idformacion, idparticipante, idcentro);
       }
 
       if (tipo === "investigacion" && idinvestigacion && idparticipante) {
@@ -677,12 +687,12 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-        form = await postParticipanteFormacionM(idformacion, idPart);
+        form = await postParticipanteFormacionM(idformacion, idPart, idcentroeducativo);
 
         // Insertar relación participante-centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
-          idparticipante,
+          idcentroeducativo,
+          idPart,
           cargo,
           jornada,
           modalidad,
@@ -760,11 +770,11 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-        form = await postParticipanteFormacionM(idformacion, idPart);
+        form = await postParticipanteFormacionM(idformacion, idPart, idcentroeducativo);
 
         // Insertar relación participante-centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
+          idcentroeducativo,
           idparticipante,
           cargo,
           jornada,
@@ -799,7 +809,7 @@ export const getFiltroDocentesC = async (req, res) => {
       );
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
-        form = await postParticipanteFormacionM(idformacion, idparticipante);
+        form = await postParticipanteFormacionM(idformacion, idparticipante, idcentroeducativo);
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentroeducativo,
           idparticipante,

@@ -388,6 +388,7 @@ const FormularioExterno = () => {
             title: "Participante encontrado",
             text: "Se encontraron datos del participante",
             icon: "success",
+            confirmButtonColor: color.primary.azul,
             timer: 6000,
           });
           console.log(response.data[0]);
@@ -409,6 +410,7 @@ const FormularioExterno = () => {
         title: "No se encontró ningún registro previo.",
         text: "Por favor ingrese sus datos",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
         timer: 12000,
       });
     }
@@ -617,6 +619,7 @@ const FormularioExterno = () => {
         title: "Campos obligatorios",
         text: "Llenar los campos en rojo",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
         confirmButtonText: "OK",
       });
       return;
@@ -652,15 +655,17 @@ const FormularioExterno = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 12000,
+          confirmButtonColor: color.primary.azul,
         });
       }
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -938,12 +943,16 @@ const FormularioExterno = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Teléfono</Typography>
+                <Typography variant="subtitle1">Teléfono*</Typography>
                 <TextField
                   fullWidth
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
+                  error={fieldErrors.telefono}
+                  helperText={
+                    fieldErrors.telefono ? "Este campo es obligatorio" : ""
+                  }
                   InputProps={{
                     readOnly: camposBloqueados.telefono,
                   }}
@@ -1267,12 +1276,20 @@ const FormularioExterno = () => {
                 <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                   <Autocomplete
                     freeSolo
-                    disabled={camposBloqueados.nombreced}
                     options={centroseducativos}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.nombreced
                     }
                     value={formData.nombreced || ""}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === "object" && newValue !== null) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newValue.nombreced,
+                          codigosaceced: newValue.codigosace,
+                        }));
+                      }
+                    }}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -1786,7 +1803,7 @@ const FormularioExterno = () => {
                     >
                       <ListItemText
                         primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.nombreced || "Sin centro educativo"
+                          docente.identificacion || "Sin centro educativo"
                         }`}
                         secondary={
                           <>

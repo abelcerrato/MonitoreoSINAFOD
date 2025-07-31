@@ -46,14 +46,14 @@ const VisuallyHiddenInput = styled("input")({
 const LineamientosF = () => {
   const { user } = useUser();
   const [formData, setFormData] = useState({
-    accionformacion: "",
+    formacion: "",
     criteriosfactibilidadurl: null,
     requisitostecnicosurl: null,
     criterioseticosurl: null,
     formacioninvest: "",
   });
   const [errors, setErrors] = useState({
-    accionformacion: false,
+    formacion: false,
     criterioseticosurl: false,
   });
 
@@ -147,14 +147,14 @@ const LineamientosF = () => {
 
     // Resetear errores
     const newErrors = {
-      accionformacion: false,
+      formacion: false,
     };
 
     let hasError = false;
 
     // Validación del título del proyecto
-    if (!formData.accionformacion) {
-      newErrors.accionformacion = true;
+    if (!formData.formacion) {
+      newErrors.formacion = true;
       hasError = true;
     }
 
@@ -168,7 +168,7 @@ const LineamientosF = () => {
     const formDataToSend = new FormData();
 
     // Agregar campos de texto
-    formDataToSend.append("accionformacion", formData.accionformacion);
+    formDataToSend.append("formacion", formData.formacion);
 
     formDataToSend.append("creadopor", user.id);
     formDataToSend.append("modificadopor", user.id);
@@ -194,7 +194,7 @@ const LineamientosF = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: "Lineamientos incompletos",
+        title: "Lineamientos Incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: "warning",
         showCancelButton: true,
@@ -222,8 +222,15 @@ const LineamientosF = () => {
       );
       const investCap = response.data.id;
       navigate("/Crear_Acción_Formativa", {
-        state: { investCap, accionformacion: formData.accionformacion },
+        state: {
+          investCap,
+          formacion: formData.formacion,
+          lineamientosIncompletos: uploadedFilesCount < totalRequiredFiles,
+          uploadedFilesCount,
+          totalRequiredFiles,
+        },
       });
+      
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       Swal.fire("Error", "Ocurrió un error al guardar los datos", "error");
@@ -272,20 +279,18 @@ const LineamientosF = () => {
               </Typography>
               <TextField
                 fullWidth
-                name="accionformacion"
-                value={formData.accionformacion}
+                name="formacion"
+                value={formData.formacion}
                 onChange={handleChange}
-                error={errors.accionformacion}
+                error={errors.formacion}
                 helperText={
-                  errors.accionformacion
-                    ? "El título del proyecto es requerido"
-                    : ""
+                  errors.formacion ? "El título del proyecto es requerido" : ""
                 }
                 FormHelperTextProps={{ style: { color: "red" } }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                      borderColor: errors.accionformacion ? "red" : "",
+                      borderColor: errors.formacion ? "red" : "",
                     },
                   },
                 }}
