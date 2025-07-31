@@ -48,18 +48,22 @@ const ListadoInvestigadores = () => {
   const [funcion, setFuncion] = useState([]);
 
   useEffect(() => {
-    // Obtener los datos de los participantes después de guardar
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/participanteInvest`)
-      .then((response) => {
-        setRows(response.data);
-        setFilteredRows(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos:", error);
-      });
-  }, []);
+  axios
+    .get(`${process.env.REACT_APP_API_URL}/participanteInvest`)
+    .then((response) => {
+      const dataConIds = response.data.map((item, index) => ({
+        ...item,
+        id: `${item.identificacion}-${item.idinvestigacion || index}`,
+      }));
+      setRows(dataConIds);
+      setFilteredRows(dataConIds);
+      console.log("Filas con IDs únicos:", dataConIds);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los datos:", error);
+    });
+}, []);
+
 
   useEffect(() => {
     axios
@@ -134,7 +138,7 @@ const ListadoInvestigadores = () => {
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Genero",
+        "Género",
         "Fecha de Nacimiento",
         "Edad",
         "Correo Electrónico",
@@ -209,6 +213,7 @@ const ListadoInvestigadores = () => {
   };
 
   const columns = [
+
     {
       field: "investigacion",
       headerName: "Nombre de la Investigación ",
@@ -217,7 +222,7 @@ const ListadoInvestigadores = () => {
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "genero", headerName: "Género", width: 180 },
     { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
@@ -282,7 +287,7 @@ const ListadoInvestigadores = () => {
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="genero">Género</MenuItem>
                 <MenuItem value="fechanacimiento">Fecha de Nacimiento</MenuItem>
                 <MenuItem value="edad">Edad</MenuItem>
                 <MenuItem value="telefono">Teléfono</MenuItem>
@@ -305,9 +310,9 @@ const ListadoInvestigadores = () => {
             {filterColumn === "genero" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Masculino">Masculino</MenuItem>
-                  <MenuItem value="Femenino">Femenino</MenuItem>
+                 <MenuItem value="" disabled>Seleccionar género</MenuItem>
+                                  <MenuItem value="Femenino">Femenino</MenuItem>
+                                  <MenuItem value="Masculino">Masculino</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "departamento" ? (
@@ -357,12 +362,8 @@ const ListadoInvestigadores = () => {
                 </Select>
               </FormControl>
             ) : (
-              <Grid
-          
-                display="flex"
-                alignItems="center"
-              >
-                <Grid  mr={4} size={{ xs: 5, md: 5 }}>
+              <Grid display="flex" alignItems="center">
+                <Grid mr={4} size={{ xs: 5, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
                       type="text"
@@ -400,7 +401,6 @@ const ListadoInvestigadores = () => {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => row.id}
           pageSizeOptions={[5, 10, 25]}
           paginationModel={{ page, pageSize: rowsPerPage }}
           onPaginationModelChange={({ page, pageSize }) => {

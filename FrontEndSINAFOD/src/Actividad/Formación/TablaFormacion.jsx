@@ -222,33 +222,47 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     const selectedRow = rows.find((row) => row.id === id);
 
     if (selectedRow?.estado_lineamientos === "No Lleno Lineamientos") {
-      await Swal.fire({
+      const confirmResult = await Swal.fire({
         title: "¡Advertencia!",
         html: `Esta <b>acción formativa</b> <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
-        confirmButtonText: "Ok",
+        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
       });
+      return confirmResult.isConfirmed;
     } else if (
       selectedRow?.estado_lineamientos === "Lineamientos Incompletos"
     ) {
-      await Swal.fire({
+      const confirmResult = await Swal.fire({
         title: "¡Advertencia!",
         html: `Esta <b>acción formativa</b> tiene sus <b>"${selectedRow.estado_lineamientos}"</b>.<br>`,
         icon: "warning",
-        confirmButtonText: "Ok",
+        showCancelButton: true,
         confirmButtonColor: color.primary.azul,
+        cancelButtonColor: color.primary.rojo,
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
       });
+      return confirmResult.isConfirmed;
     }
+
+    return true;
   };
 
   const handleFormacion = async (id) => {
-    await checkLineamientos(id);
+    const shouldContinue = await checkLineamientos(id);
+    if (!shouldContinue) return;
     navigate(`/Actualizar_Acción_Formativa/${id}`);
   };
 
   const handleLineamientosFormacion = async (id) => {
-    await checkLineamientos(id);
+    const shouldContinue = await checkLineamientos(id);
+    if (!shouldContinue) return;
     navigate(`/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`);
   };
 
@@ -406,7 +420,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
           maxWidth="lg"
           fullWidth
         >
-          <DialogTitle>Información de la Formación</DialogTitle>
+          <DialogTitle>QR para Inscripción</DialogTitle>
           <DialogContent style={{ textAlign: "center", padding: "20px" }}>
             {qrUrl && currentRow && (
               <>
@@ -440,7 +454,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                         qrUrl={qrUrl}
                       />
                     }
-                    fileName={`formacion_${currentRow.formacion.replace(
+                    fileName={`QR_${currentRow.formacion.replace(
                       /\s+/g,
                       "_"
                     )}.pdf`}

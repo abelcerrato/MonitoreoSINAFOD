@@ -10,15 +10,11 @@ import {
   MenuItem,
   FormControl,
   Box,
-  Radio,
-  RadioGroup,
   FormControlLabel,
-  Tab,
-  Tabs,
   FormHelperText,
   Checkbox,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
+
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -27,20 +23,18 @@ import { useUser } from "../../Components/UserContext";
 
 import Swal from "sweetalert2";
 
-import { QRCodeCanvas } from "qrcode.react";
-
 const Formacion = () => {
   const { user } = useUser();
   const location = useLocation();
   const [isSaved, setIsSaved] = useState(false);
-  const [qrUrl, setQrUrl] = useState(null);
   const [investCapId, setInvestCapId] = useState(null);
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
+  const { uploadedFilesCount, totalRequiredFiles } = location.state || {};
+
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
-
     tipoactividad: "",
     existeconvenio: "",
     institucionconvenio: "",
@@ -100,7 +94,7 @@ const Formacion = () => {
 
       // Limpiar campos según cambio de modalidad
       if (name === "modalidad") {
-        if (sanitizedValue === "Online") {
+        if (sanitizedValue === "Virtual") {
           // Limpiar campos de modalidad presencial
           newData.espaciofisico = "";
           newData.direccion = "";
@@ -116,8 +110,8 @@ const Formacion = () => {
             ...prev,
             plataforma: false,
           }));
-        } else if (sanitizedValue === "Híbrido") {
-          // No limpiar nada para Híbrido ya que necesita ambos
+        } else if (sanitizedValue === "Bimodal") {
+          // No limpiar nada para Bimodal ya que necesita ambos
         } else {
           // Limpiar todos los campos relacionados
           newData.plataforma = "";
@@ -255,6 +249,7 @@ const Formacion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return;
     }
@@ -262,10 +257,11 @@ const Formacion = () => {
     // Verificación de minutos antes de guardar los datos
     if (formData.minutos > 59) {
       Swal.fire({
-        title: "Advertencia!",
+        title: "¡Advertencia!",
         text: "Los minutos no pueden ser mayores a 59.",
         icon: "warning",
         timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
       return; // Detiene la ejecución si la validación falla
     }
@@ -273,10 +269,11 @@ const Formacion = () => {
     if (formData.fechainicio && formData.fechafinal) {
       if (new Date(formData.fechainicio) > new Date(formData.fechafinal)) {
         Swal.fire({
-          title: "Advertencia!",
+          title: "¡Advertencia!",
           text: "La fecha de inicio no puede ser posterior a la fecha de finalización.",
           icon: "warning",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         return; // No proceder con la solicitud si la validación falla
       }
@@ -299,10 +296,9 @@ const Formacion = () => {
       // Si no hay ID (flujo "Omitir"), pedir confirmación
       if (!idToUse) {
         const confirmResult = await Swal.fire({
-          title: "Advertencia!",
-          text: "La formación se registrará sin lineamientos.",
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido 0 de 3 lineamientos requeridos. ¿Deseas continuar con el registro?`,
           icon: "warning",
-
           showCancelButton: true,
           confirmButtonColor: color.primary.azul,
           cancelButtonColor: color.primary.rojo,
@@ -310,7 +306,6 @@ const Formacion = () => {
           cancelButtonText: "No, cancelar",
           reverseButtons: true,
         });
-
         // Si el usuario cancela, no continuar
         if (!confirmResult.isConfirmed) {
           return;
@@ -324,30 +319,41 @@ const Formacion = () => {
         );
         idToUse = response.data.id;
       } else {
+        const confirmResult = await Swal.fire({
+          title: "Lineamientos Incompletos",
+          text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: color.primary.azul,
+          cancelButtonColor: color.primary.rojo,
+          confirmButtonText: "Sí, Registrar",
+          cancelButtonText: "No, cancelar",
+          reverseButtons: true,
+        });
+        // Si el usuario cancela, no continuar
+        if (!confirmResult.isConfirmed) {
+          return;
+        }
         // Actualizar el registro
         const updateResponse = await axios.put(
           `${process.env.REACT_APP_API_URL}/formacion/${idToUse}`,
           cleanedFormData,
-          { headers: { "Content-Type": "application/json" } },
-          navigate("/dashboard")
+          { headers: { "Content-Type": "application/json" } }
         );
       }
 
       // Mostrar mensaje de éxito
-      await Swal.fire(
-        "¡Guardado!",
-        "La formación ha sido registrada",
-        "success"
-      );
+      await Swal.fire({
+        title: "¡Registro!",
+        text: "La formación ha sido registrada correctamente",
+        icon: "success",
+        confirmButtonColor: color.primary.azul,
+      });
       setIsSaved(true);
-      console.log("Datos que envio", formData);
-
-      // Redirigir a Participantes con el ID  navigate(`/Participantes/${idToUse}`, { state: { investCap: idToUse, formacioninvest: formData.formacioninvest } });
-      const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${idToUse}`;
-      setQrUrl(qrLink); // <- guarda la URL en estado para mostrar QR
+      navigate("/Listado_De_Acciones_Formativas");
     } catch (error) {
       console.error("Error al guardar los datos", error);
-      Swal.fire("Error!", "Error al guardar datos", "error");
+      Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
 
@@ -373,7 +379,10 @@ const Formacion = () => {
         >
           <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography variant="h4" sx={{ color: color.primary.azul,fontWeight: "bold",  }}>
+              <Typography
+                variant="h4"
+                sx={{ color: color.primary.azul, fontWeight: "bold" }}
+              >
                 Registro de Datos de la Acción Formativa
               </Typography>
             </Grid>
@@ -541,17 +550,17 @@ const Formacion = () => {
                   value={formData.modalidad || ""}
                   onChange={handleChange}
                 >
-                  <MenuItem value="Online">Online</MenuItem>
+                  <MenuItem value="Virtual">Virtual</MenuItem>
                   <MenuItem value="Presencial">Presencial</MenuItem>
-                  <MenuItem value="Híbrido">Híbrido</MenuItem>
+                  <MenuItem value="Bimodal">Bimodal</MenuItem>
                 </Select>
                 {fieldErrors.modalidad && (
                   <FormHelperText>Este campo es obligatorio</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            {(formData.modalidad === "Online" ||
-              formData.modalidad === "Híbrido") && (
+            {(formData.modalidad === "Virtual" ||
+              formData.modalidad === "Bimodal") && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">
                   Plataforma en la que se Realizará la Actividad
@@ -867,7 +876,7 @@ const Formacion = () => {
               />
             </Grid>
             {(formData.modalidad === "Presencial" ||
-              formData.modalidad === "Híbrido") && (
+              formData.modalidad === "Bimodal") && (
               <>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Espacio Físico</Typography>
@@ -909,6 +918,7 @@ const Formacion = () => {
                 >
                   <MenuItem value="Rural">Rural</MenuItem>
                   <MenuItem value="Urbana">Urbana</MenuItem>
+                  <MenuItem value="Ambas">Ambas</MenuItem>
                 </Select>
                 {fieldErrors.zona && (
                   <FormHelperText>Este campo es obligatorio</FormHelperText>
@@ -918,7 +928,7 @@ const Formacion = () => {
 
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">
-                ¿Se realizó convocatoria?
+                ¿Se realizó Convocatoria?
               </Typography>
               <FormControl fullWidth error={fieldErrors.socializaron}>
                 <Select
@@ -949,14 +959,6 @@ const Formacion = () => {
           <Box
             sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
           >
-            {qrUrl && (
-              <div style={{ marginTop: "20px" }}>
-                <h3>Escanea este QR:</h3>
-                <QRCodeCanvas value={qrUrl} size={200} />
-                <p>{qrUrl}</p>
-              </div>
-            )}
-
             <Button
               variant="contained"
               sx={{ backgroundColor: color.primary.azul, ml: 5 }}

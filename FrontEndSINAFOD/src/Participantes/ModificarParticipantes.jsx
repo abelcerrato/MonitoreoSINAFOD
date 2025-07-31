@@ -102,32 +102,33 @@ const ModificarParticipante = () => {
   useEffect(() => {
     const obtenerDetallesYCentros = async () => {
       try {
-        // 1. Obtener datos del participante
+        //Obtener datos del participante
         const responseParticipante = await axios.get(
           `${process.env.REACT_APP_API_URL}/participante/${id}`
         );
 
         const datosParticipante = responseParticipante.data[0];
-        console.log(responseParticipante.data);
+        //console.log(responseParticipante.data);
 
         if (datosParticipante.fechanacimiento) {
           const fecha = new Date(datosParticipante.fechanacimiento);
           datosParticipante.fechanacimiento = fecha.toISOString().split("T")[0];
         }
-
+        datosParticipante.cargo = datosParticipante.idcargo;
         setFormData(datosParticipante); // Si aún necesitas formData para otros campos
 
-        // 2. Extraer iddepartamento e idmunicipio y usarlos directamente
+        //Extraer iddepartamento e idmunicipio y usarlos directamente
         const { iddepartamento, idmunicipio } = datosParticipante;
 
         if (iddepartamento && idmunicipio) {
-          // 3. Obtener centros educativos usando los datos del participante
+          //Obtener centros educativos usando los datos del participante
           const responseCentros = await axios.get(
             `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${iddepartamento}/${idmunicipio}`
           );
 
           setCentrosEducativos(responseCentros.data);
-          console.log(responseCentros.data);
+          console.log("Centros educativos:", responseCentros.data);
+
         }
       } catch (error) {
         console.error("Error al obtener los datos", error);
@@ -135,8 +136,27 @@ const ModificarParticipante = () => {
     };
 
     obtenerDetallesYCentros();
-  }, [id]); // Dependencia solo en `id`, no en formData
+  }, [id]);
 
+  //Carga de centros educativos cuando el participante cambia de departamento o municipio; o no traer datos del centro educativo
+  useEffect(() => {
+    const cargarCentrosEducativos = async () => {
+      if (formData.iddepartamento && formData.idmunicipio) {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${formData.iddepartamento}/${formData.idmunicipio}`
+          );
+          setCentrosEducativos(response.data);
+          console.log("Centros educativos:", response.data);
+        } catch (error) {
+          console.error("Error al obtener centros educativos", error);
+        }
+      }
+    };
+
+    cargarCentrosEducativos();
+  }, [formData.iddepartamento, formData.idmunicipio]);
+  
   const handleSave = async () => {
     try {
       console.log("Datos que envio parti", formData);
@@ -159,10 +179,11 @@ const ModificarParticipante = () => {
 
       if (response.status === 200) {
         Swal.fire({
-          title: "Guardado",
-          text: "Datos guardados correctamente",
+          title: "¡Actualización!",
+          text: "Los datos han sido actualizados correctamente",
           icon: "success",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
 
         navigate("/dashboard");
@@ -170,10 +191,11 @@ const ModificarParticipante = () => {
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -427,18 +449,30 @@ const ModificarParticipante = () => {
           </Grid>
 
           <TabContext value={value}>
-            <Tabs
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-              value={value}
-              onChange={handleChangeValues}
-            >
-              <Tab label="Datos Generales del Participante" value="1" />
-              {formacioninvest !== "investigacion" && (
-                <Tab label="Datos del Centro Educativo" value="2" />
-              )}
-            </Tabs>
+            {formacioninvest === "investigacion" ? (
+              <Tabs
+                value={value}
+                onChange={handleChangeValues}
+                allowScrollButtonsMobile
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label="Datos Generales del Investigadores" value="1" />
+              </Tabs>
+            ) : (
+              <>
+                <Tabs
+                  value={value}
+                  onChange={handleChangeValues}
+                  allowScrollButtonsMobile
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  <Tab label="Datos Generales del Participante" value="1" />
+                  <Tab label="Datos del Centro Educativo" value="2" />
+                </Tabs>
+              </>
+            )}
 
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
@@ -695,7 +729,7 @@ const ModificarParticipante = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Caserio</Typography>
+                  <Typography variant="subtitle1">Caserío</Typography>
                   <TextField
                     fullWidth
                     name="caserio"
@@ -815,6 +849,18 @@ const ModificarParticipante = () => {
                           typeof option === "string" ? option : option.nombreced
                         }
                         value={formData.nombreced || ""}
+                        onChange={(event, newValue) => {
+                          if (
+                            typeof newValue === "object" &&
+                            newValue !== null
+                          ) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              nombreced: newValue.nombreced,
+                              codigosaceced: newValue.codigosace,
+                            }));
+                          }
+                        }}
                         onInputChange={(event, newInputValue) => {
                           setFormData((prev) => ({
                             ...prev,

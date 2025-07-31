@@ -4,10 +4,12 @@ import ExcelJS from "exceljs";
 import Dashboard from "../Dashboard/dashboard";
 import PropTypes from "prop-types";
 import { color } from "../Components/color";
-import { FaRegFileExcel } from "react-icons/fa";
+import { FaRegFileExcel, FaFileCsv } from "react-icons/fa";
+import dayjs from "dayjs";
+
+
 import LogoCONED from "../Components/img/logos_CONED.png";
 import LogoDGDP from "../Components/img/Logo_DGDP.png";
-import dayjs from "dayjs";
 import { useTheme } from "@mui/material/styles";
 import {
   IconButton,
@@ -54,20 +56,24 @@ const ListadoParticipantes = () => {
   const [niveles, setNiveles] = useState([]);
   const [grados, setGrados] = useState([]);
 
-  useEffect(() => {
-    // Obtener los datos de los participantes después de guardar
+
+    useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
-        setRows(response.data);
-        setFilteredRows(response.data);
-        console.log(response.data);
+        const dataConIds = response.data.map((item, index) => ({
+          ...item,
+          id: `${item.identificacion}-${item.idformacion || index}`,
+        }));
+        setRows(dataConIds);
+        setFilteredRows(dataConIds);
+        console.log("Filas con IDs únicos:", dataConIds);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
       });
   }, []);
-
+  
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
@@ -185,7 +191,7 @@ const ListadoParticipantes = () => {
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Genero",
+        "Género",
         "Fecha de Nacimiento",
         "Edad",
         "Correo Electrónico",
@@ -233,7 +239,7 @@ const ListadoParticipantes = () => {
       filteredRows.forEach((item) => {
         worksheet.addRow([
           item.formacion,
-          item.codigosace ?? "-",
+          item.codigosace,
           item.nombre,
           item.identificacion,
           item.genero,
@@ -287,6 +293,88 @@ const ListadoParticipantes = () => {
     }
   };
 
+  const cargaParaIBERTEL = () => {
+    try {
+      const headers = [
+        "email",
+        "firstname",
+        "lastname",
+        "username",
+        "idnumber",
+        "password",
+        "profile_field_ID",
+        "profile_field_gender",
+        "profile_field_edad",
+        "phone1",
+        "profile_field_cargo",
+        "institution",
+        "profile_field_tipoCentro",
+        "profile_field_SACE",
+        "department",
+        "city",
+        "profile_field_aldea",
+        "profile_field_caserio",
+        "profile_field_jornada",
+        "profile_field_level",
+        "profile_field_Ciclo",
+        "profile_field_zona",
+        "course1",
+      ];
+
+      // Iniciar contenido CSV con encabezados
+      let csvContent = headers.join(",") + "\n";
+
+      // Agregar cada fila
+      filteredRows.forEach((item) => {
+        const row = [
+          item.correo,
+          item.nombre,
+          item.apellido,
+          item.identificacion,
+          item.identificacion,
+          item.identificacion,
+          item.identificacion,
+          item.genero,
+          item.edad,
+          item.telefono,
+          item.cargopart,
+          item.nombreced,
+          item.tipocentro,
+          item.codigosaceced,
+          item.departamentoced,
+          item.municipioced,
+          item.aldeaced,
+          item.caserio,
+          item.jornada,
+          item.nivelacademico_ced,
+          item.gradoacademico_ced,
+          item.zona,
+          item.formacion,
+        ];
+
+        // Escapar valores con comas o saltos de línea
+        const escapedRow = row.map((value) => {
+          const str = value != null ? String(value) : "";
+          return str.includes(",") || str.includes("\n") ? `"${str}"` : str;
+        });
+
+        csvContent += escapedRow.join(",") + "\n";
+      });
+
+      // Descargar el archivo CSV
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Participantes_IBERTEL.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error al exportar a CSV:", error);
+    }
+  };
+  
   const columns = [
     {
       field: "formacion",
@@ -296,7 +384,7 @@ const ListadoParticipantes = () => {
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "genero", headerName: "Género", width: 180 },
     { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
@@ -414,11 +502,13 @@ const ListadoParticipantes = () => {
             <FormControl fullWidth>
               <Select onChange={(e) => setFilterColumn(e.target.value)}>
                 <MenuItem value="">Seleccionar columna</MenuItem>
-                <MenuItem value="formacion">Nombre de la Accion Formativa</MenuItem>
+                <MenuItem value="formacion">
+                  Nombre de la Accion Formativa
+                </MenuItem>
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="genero">Género</MenuItem>
                 <MenuItem value="nivelacademico">
                   Nivel Académico del Participante
                 </MenuItem>
@@ -548,12 +638,20 @@ const ListadoParticipantes = () => {
                 <FaRegFileExcel />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Exportar Participantes para IBERTEL">
+              <IconButton
+                onClick={() => cargaParaIBERTEL(rows)}
+                aria-label="exportar CSV"
+                sx={{ fontSize: 30, color: color.primary.azul }}
+              >
+                <FaFileCsv />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => row.id}
           pageSizeOptions={[5, 10, 25]}
           paginationModel={{ page, pageSize: rowsPerPage }}
           onPaginationModelChange={({ page, pageSize }) => {

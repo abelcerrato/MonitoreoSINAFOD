@@ -206,7 +206,6 @@ export default function TablaActividad(isSaved, setIsSaved) {
     return permiso?.insertar === true;
   };
 
-
   const columns = [
     ...(tienePermisoActualizar(1)
       ? [

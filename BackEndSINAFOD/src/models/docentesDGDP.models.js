@@ -154,7 +154,7 @@ export const getDocenteIdentificacionM = async (filtro) => {
                 dgdp.iddepartamento, d.nombre as nombredeptoced,
                 dgdp.idmunicipio, m.nombre as nombremunicipioced,
                 dgdp.idaldea, a.nombre as nombrealdeaced,
-                dgdp.genero, dgdp.institucion as nombreced, dgdp.institucioncodsace, 
+                dgdp.genero, dgdp.institucion as nombreced, dgdp.institucioncodsace as codigosaceced, 
                 dgdp.idnivelesacademicos , n.nombre as nombrenivelced, 
                 dgdp.idciclosacademicos, c.nombre as nombrecicloced,
                 dgdp.zona 

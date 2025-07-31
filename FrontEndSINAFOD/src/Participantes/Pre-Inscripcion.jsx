@@ -150,63 +150,45 @@ const PreInscripcion = () => {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? checked : value;
+
+    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
+    let sanitizedValue =
+      type === "checkbox" ? checked : value === null ? "" : value;
 
     setFormData((prevData) => {
-      let updatedData = { ...prevData };
-      // Validación para años de servicio (solo números positivos)
+      // Base de la nueva data
+      let newData = { ...prevData, [name]: sanitizedValue };
+
       if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
-          return prevData; // Si no es un número positivo, no actualiza el estado
-        }
-      }
-
-      // Si es el campo de fecha, validamos el formato
-      if (name === "fechanacimiento") {
-        // Si el usuario borra el campo, lo limpiamos
-        if (!value) {
-          updatedData.fechanacimiento = "";
-          updatedData.edad = "";
-          return updatedData;
-        }
-
-        // Convertimos a Date para validar
-        const dateObj = new Date(value);
-
-        // Si la fecha es inválida, no actualizamos
-        if (isNaN(dateObj.getTime())) {
           return prevData;
         }
-
-        // Formateamos a YYYY-MM-DD (formato que acepta el input date)
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day}`;
-
-        updatedData.fechanacimiento = formattedDate;
-
-        // Calculamos la edad
-        const today = new Date();
-        let age = today.getFullYear() - year;
-        const monthDiff = today.getMonth() - dateObj.getMonth();
-
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < dateObj.getDate())
-        ) {
-          age--;
-        }
-
-        updatedData.edad = age.toString();
-      } else {
-        updatedData[name] = newValue;
       }
 
-      return updatedData;
+      // Si es fecha de nacimiento, calcular edad
+      if (name === "fechanacimiento" && value) {
+        const birthDate = new Date(value);
+        if (!isNaN(birthDate.getTime())) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+
+          if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birthDate.getDate())
+          ) {
+            age--;
+          }
+
+          newData.edad = age.toString();
+        } else {
+          // Si la fecha no es válida, limpiamos la edad
+          newData.edad = "";
+        }
+      }
+      return newData;
     });
   };
-
   // Obtener departamentos del centro educativo
   useEffect(() => {
     const obtenerDepartamentos = async () => {
@@ -413,6 +395,7 @@ const PreInscripcion = () => {
             text: "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
+            confirmButtonColor: color.primary.azul,
           });
           console.log(response.data);
         } else {
@@ -434,6 +417,7 @@ const PreInscripcion = () => {
         text: "Por favor ingrese sus datos",
         icon: "warning",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -685,9 +669,6 @@ const PreInscripcion = () => {
                     sx={{ mb: 1 }}
                   >
                     <strong>Modalidad:</strong> {formacion.modalidad}
-                    {formacion.modalidad === "Virtual" &&
-                      formacion.plataforma &&
-                      ` (${formacion.plataforma})`}
                   </Typography>
 
                   <Typography
@@ -699,6 +680,17 @@ const PreInscripcion = () => {
                     {formacion.duracion.minutes}m
                   </Typography>
 
+                  {(formacion.modalidad === "Virtual" ||
+                    formacion.modalidad === "Bimodal") &&
+                    formacion.plataforma && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        <strong>Plataforma:</strong> {formacion.plataforma}
+                      </Typography>
+                    )}
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -840,6 +832,7 @@ const PreInscripcion = () => {
         text: "Llenar los campos en rojo",
         icon: "warning",
         confirmButtonText: "OK",
+        confirmButtonColor: color.primary.rojo,
       });
       return;
     }
@@ -874,15 +867,17 @@ const PreInscripcion = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 12000,
+          confirmButtonColor: color.primary.azul,
         });
       }
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 12000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -1360,7 +1355,7 @@ const PreInscripcion = () => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Caserio</Typography>
+                <Typography variant="subtitle1">Caserío</Typography>
                 <TextField
                   fullWidth
                   name="caserio"
@@ -1472,12 +1467,20 @@ const PreInscripcion = () => {
                 <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                   <Autocomplete
                     freeSolo
-                    disabled={camposBloqueados.nombreced}
                     options={centroseducativos}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.nombreced
                     }
                     value={formData.nombreced || ""}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === "object" && newValue !== null) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newValue.nombreced,
+                          codigosaceced: newValue.codigosace,
+                        }));
+                      }
+                    }}
                     onInputChange={(event, newInputValue) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -1990,7 +1993,7 @@ const PreInscripcion = () => {
                     >
                       <ListItemText
                         primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.nombreced || "Sin centro educativo"
+                          docente.identificacion || "Sin centro educativo"
                         }`}
                         secondary={
                           <>

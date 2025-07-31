@@ -205,6 +205,12 @@ export const loginC = async (req, res) => {
             return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
         }
 
+
+        // Verificar si el usuario no tiene rol asignado
+        if (user.estado === "Inactivo" || user.estado === "Bloqueado" ) {
+            return res.status(401).json({ message: "El usuario no tiene permisos para acceder" });
+        }
+
         // Verificar si el usuario no tiene rol asignado
         if (user.idrol === null) {
             return res.status(401).json({ message: "El usuario no tiene un rol asignado" });
@@ -228,7 +234,8 @@ export const loginC = async (req, res) => {
                 user: {
                     id: user.id,
                     usuario: user.usuario,
-                    idrol: user.idrol
+                    idrol: user.idrol,
+                    estado: user.estado
                 }
             });
         }

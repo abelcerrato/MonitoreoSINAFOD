@@ -112,8 +112,8 @@ const CreateRole = () => {
       await axios.post(`${process.env.REACT_APP_API_URL}/permisos`, dataToSend);
 
       Swal.fire({
-        title: "¡Éxito!",
-        text: "Rol creado correctamente",
+        title: "¡Registro!",
+        text: "El rol ha sido registrado correctamente",
         icon: "success",
         confirmButtonColor: color.primary.azul,
       }).then(() => {
@@ -248,11 +248,11 @@ const CreateRole = () => {
           (p) => p.insertar || p.actualizar
         );
         if (hasInsertOrUpdate) {
-        //   Swal.fire({
-        //     title: "No se puede desactivar",
-        //     text: 'Primero desactiva todos los permisos "insertar" o "actualizar"',
-        //     icon: "warning",
-        //   });
+          //   Swal.fire({
+          //     title: "No se puede desactivar",
+          //     text: 'Primero desactiva todos los permisos "insertar" o "actualizar"',
+          //     icon: "warning",
+          //   });
           return prev;
         }
       }
@@ -320,6 +320,7 @@ const CreateRole = () => {
             title: "No se puede desactivar",
             text: 'Primero desactiva los permisos "insertar" o "actualizar" para este módulo',
             icon: "warning",
+            confirmButtonColor: color.primary.azul,
           });
           return prev;
         }

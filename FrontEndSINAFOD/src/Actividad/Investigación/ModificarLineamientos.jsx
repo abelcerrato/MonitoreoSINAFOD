@@ -139,19 +139,20 @@ const LineamientosI = () => {
       }
 
       // Validación opcional de tamaño (descomenta si lo necesitas)
-      /*
-                  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-                  if (file.size > MAX_FILE_SIZE) {
-                    Swal.fire({
-                      title: 'Archivo demasiado grande',
-                      text: `El tamaño máximo permitido es ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
-                      icon: 'error',
-                      confirmButtonColor: color.primary.azul,
-                    });
-                    e.target.value = '';
-                    return;
-                  }
-                  */
+
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX_FILE_SIZE) {
+        Swal.fire({
+          title: "Archivo demasiado grande",
+          text: `El tamaño máximo permitido es ${
+            MAX_FILE_SIZE / (1024 * 1024)
+          }MB`,
+          icon: "error",
+          confirmButtonColor: color.primary.azul,
+        });
+        e.target.value = "";
+        return;
+      }
     }
 
     // Actualiza formData con el archivo (esto ya lo tenías)
@@ -294,7 +295,7 @@ const LineamientosI = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: "Lineamientos incompletos",
+        title: "Lineamientos Incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con la actualización?`,
         icon: "warning",
         showCancelButton: true,
@@ -321,7 +322,13 @@ const LineamientosI = () => {
         }
       );
 
-      Swal.fire("Éxito", "Lineamientos actualizados correctamente", "success");
+      Swal.fire({
+                title: "¡Actualización!",
+                text: "Lineamientos actualizados correctamente",
+                icon: "success",
+                timer: 6000,
+                confirmButtonColor: color.primary.azul,
+      });
       //   navigate(`/Actualizar_Investigación/${id}`);
       navigate("/dashboard");
     } catch (error) {
@@ -415,6 +422,7 @@ const LineamientosI = () => {
         <Typography variant="h6" gutterBottom>
           {label}
         </Typography>
+        {!(existingFile || newFile) && (
         <Button
           component="label"
           variant="contained"
@@ -429,7 +437,8 @@ const LineamientosI = () => {
             onChange={handleFileChange}
           />
         </Button>
-
+        )}
+        
         {(existingFile || newFile) && (
           <Grid
             sx={{

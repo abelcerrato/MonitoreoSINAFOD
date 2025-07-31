@@ -136,6 +136,7 @@ const PermissionValidator = ({
       title: "Acceso denegado",
       text: `No tienes permisos para visualizar esta sección`, //${getActionText(action)}
       timer: 3000,
+      showConfirmButton: false,
     });
     return <Navigate to="/dashboard" replace />;
   }

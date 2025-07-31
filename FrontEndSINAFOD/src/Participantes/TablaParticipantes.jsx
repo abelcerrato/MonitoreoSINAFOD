@@ -102,6 +102,7 @@ export default function TablaPacticantes({
   setIsSaved,
   formacioninvest,
 }) {
+ 
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
@@ -130,7 +131,6 @@ export default function TablaPacticantes({
       .then((response) => {
         setRows(response.data); // Actualizar las filas con los nuevos datos
         setIsSaved(false);
-        console.log(rows);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
@@ -149,9 +149,9 @@ export default function TablaPacticantes({
         variant="h4"
         sx={{ color: color.primary.azul, textAlign: "center" }}
       >
-        {" "}
-        Participantes{" "}
+        {formacioninvest === "formacion" ? "Participantes" : "Investigadores"}
       </Typography>
+
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead sx={{ backgroundColor: color.primary.azul }}>
           <TableRow>
@@ -161,7 +161,7 @@ export default function TablaPacticantes({
 
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
-            <TableCell align="right">Genero</TableCell>
+            <TableCell align="right">Género</TableCell>
             <TableCell align="right">
               Nivel Académico del Participante
             </TableCell>
@@ -180,7 +180,10 @@ export default function TablaPacticantes({
                 <TableCell align="right">Centro Educativo</TableCell>
                 <TableCell align="right">Nivel Académico que Atiende</TableCell>
                 <TableCell align="right">Grado que Atiende</TableCell>
-                <TableCell align="right">Tipo Administración</TableCell>
+                <TableCell align="right">
+                  Cargo que Desempeña en el Centro Educativo
+                </TableCell>
+                |<TableCell align="right">Tipo Administración</TableCell>
                 <TableCell align="right">Zona Centro Educativo</TableCell>
                 <TableCell align="right">
                   Departamento Centro Educativo
@@ -223,6 +226,7 @@ export default function TablaPacticantes({
                   <TableCell align="right">{row.nombreced}</TableCell>
                   <TableCell align="right">{row.nivelacademico_ced}</TableCell>
                   <TableCell align="right">{row.gradoacademico_ced}</TableCell>
+                  <TableCell align="right">{row.cargoced}</TableCell>
                   <TableCell align="right">{row.tipoadministracion}</TableCell>
                   <TableCell align="right">{row.zona}</TableCell>
                   <TableCell align="right">{row.departamentoced}</TableCell>
@@ -242,7 +246,7 @@ export default function TablaPacticantes({
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={23}
+              colSpan={5}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}

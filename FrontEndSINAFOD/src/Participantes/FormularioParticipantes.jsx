@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
-    cargo: "",
+
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -70,7 +70,6 @@ const FormularParticipantes = () => {
     idfuncion: "",
     caserio: "",
     tipocentro: "",
-
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
@@ -94,6 +93,7 @@ const FormularParticipantes = () => {
     zona: "",
     idmunicipio: "",
     iddepartamento: "",
+    cargo: "",
     idaldea: null,
     tipoadministracion: "Gubernamental",
     creadopor: user.id,
@@ -165,6 +165,9 @@ const FormularParticipantes = () => {
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
+      "fechanacimiento",
+      "correo",
+      "telefono",
     ];
 
     // Campos condicionales (no obligatorios para investigación)
@@ -209,7 +212,6 @@ const FormularParticipantes = () => {
       }, {});
     };
     try {
-      console.log("formData", formData);
       const transformedFormData = transformFormData(formData);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/participante/${formacioninvest}/${investCap}`,
@@ -227,76 +229,61 @@ const FormularParticipantes = () => {
           text: "Datos guardados correctamente",
           icon: "success",
           timer: 6000,
+          confirmButtonColor: color.primary.azul,
         });
         setIsSaved(true);
       }
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire({
-        title: "Error!",
+        title: "¡Error!",
         text: "Error al guardar datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? checked : value;
+
+    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
+    let sanitizedValue =
+      type === "checkbox" ? checked : value === null ? "" : value;
 
     setFormData((prevData) => {
-      let updatedData = { ...prevData };
-      // Validación para años de servicio (solo números positivos)
+      // Base de la nueva data
+      let newData = { ...prevData, [name]: sanitizedValue };
+
       if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
-          return prevData; // Si no es un número positivo, no actualiza el estado
-        }
-      }
-
-      // Si es el campo de fecha, validamos el formato
-      if (name === "fechanacimiento") {
-        // Si el usuario borra el campo, lo limpiamos
-        if (!value) {
-          updatedData.fechanacimiento = "";
-          updatedData.edad = "";
-          return updatedData;
-        }
-
-        // Convertimos a Date para validar
-        const dateObj = new Date(value);
-
-        // Si la fecha es inválida, no actualizamos
-        if (isNaN(dateObj.getTime())) {
           return prevData;
         }
-
-        // Formateamos a YYYY-MM-DD (formato que acepta el input date)
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day}`;
-
-        updatedData.fechanacimiento = formattedDate;
-
-        // Calculamos la edad
-        const today = new Date();
-        let age = today.getFullYear() - year;
-        const monthDiff = today.getMonth() - dateObj.getMonth();
-
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < dateObj.getDate())
-        ) {
-          age--;
-        }
-
-        updatedData.edad = age.toString();
-      } else {
-        updatedData[name] = newValue;
       }
 
-      return updatedData;
+      // Si es fecha de nacimiento, calcular edad
+      if (name === "fechanacimiento" && value) {
+        const birthDate = new Date(value);
+        if (!isNaN(birthDate.getTime())) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+
+          if (
+            monthDiff < 0 ||
+            (monthDiff === 0 && today.getDate() < birthDate.getDate())
+          ) {
+            age--;
+          }
+
+          newData.edad = age.toString();
+        } else {
+          // Si la fecha no es válida, limpiamos la edad
+          newData.edad = "";
+        }
+      }
+      return newData;
     });
   };
 
@@ -437,7 +424,7 @@ const FormularParticipantes = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
-  // Obtener funcion que desempeña
+  // Obtener cargo que desempeña
   useEffect(() => {
     const obtenerfuncion = async () => {
       try {
@@ -461,9 +448,6 @@ const FormularParticipantes = () => {
           `${process.env.REACT_APP_API_URL}/centroeducativoiddepto/${formData.iddepartamento}/${formData.idmunicipio}`
         );
         setCentrosEducativos(response.data);
-        console.log(response.data);
-        console.log("departamento", formData.iddepartamento);
-        console.log("municipio", formData.idmunicipio);
       } catch (error) {
         console.error("Error al obtener los departamentos", error);
       }
@@ -484,6 +468,7 @@ const FormularParticipantes = () => {
         title: "Campo vacío",
         text: "Por favor, ingrese un valor en el campo seleccionado.",
         icon: "warning",
+        confirmButtonColor: color.primary.rojo,
       });
       return;
     }
@@ -498,12 +483,18 @@ const FormularParticipantes = () => {
           // Si solo hay un registro, llenar directamente
           llenarFormulario(response.data[0]);
           Swal.fire({
-            title: "Participante encontrado",
-            text: "Se encontraron datos del participante",
+            title:
+              formacioninvest === "investigacion"
+                ? "Investigador Encontrado"
+                : "Participante Encontrado",
+            text:
+              formacioninvest === "investigacion"
+                ? "Se encontraron datos del investigador"
+                : "Se encontraron datos del participante",
             icon: "success",
             timer: 6000,
+            confirmButtonColor: color.primary.azul,
           });
-          console.log(response.data[0]);
         } else {
           // Si hay múltiples registros, mostrar modal de selección
           setDocentesEncontrados(response.data);
@@ -511,10 +502,14 @@ const FormularParticipantes = () => {
         }
       } else {
         Swal.fire({
-          title: "No encontrado",
-          text: "No se encontraron registros para el filtro proporcionado",
+          title:
+            formacioninvest === "investigacion"
+              ? "Investigador No Encontrado"
+              : "Participante No Encontrado",
+          text: "No se encontraron registros",
           icon: "info",
           timer: 6000,
+          confirmButtonColor: color.primary.rojo,
         });
       }
     } catch (error) {
@@ -524,6 +519,7 @@ const FormularParticipantes = () => {
         text: "Error al buscar los datos",
         icon: "error",
         timer: 6000,
+        confirmButtonColor: color.primary.rojo,
       });
     }
   };
@@ -631,25 +627,38 @@ const FormularParticipantes = () => {
             </Grid>
           </Grid>
           <TabContext value={value}>
-            <Tabs
-              value={value}
-              onChange={handleChangeValues}
-              allowScrollButtonsMobile
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab label="Datos Generales del Participante" value="1" />
-              {formacioninvest !== "investigacion" && (
-                <Tab label="Datos del Centro Educativo" value="2" />
-              )}
-            </Tabs>
+            {formacioninvest === "investigacion" ? (
+              <Tabs
+                value={value}
+                onChange={handleChangeValues}
+                allowScrollButtonsMobile
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label="Datos Generales del Investigadores" value="1" />
+              </Tabs>
+            ) : (
+              <>
+                <Tabs
+                  value={value}
+                  onChange={handleChangeValues}
+                  allowScrollButtonsMobile
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  <Tab label="Datos Generales del Participante" value="1" />
+                  <Tab label="Datos del Centro Educativo" value="2" />
+                </Tabs>
+              </>
+            )}
+
             {/* Tab 1: Datos Generales del Participante */}
             <TabPanel value="1">
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Código SACE</Typography>
                   <Grid spacing={2} container>
-                    <Grid size={{ xs: 12, md: 9 }}>
+                    <Grid size={{ xs: 12, md: 12 }}>
                       <TextField
                         fullWidth
                         name="codigosace"
@@ -663,7 +672,7 @@ const FormularParticipantes = () => {
                         }
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    {/* <Grid size={{ xs: 12, md: 3 }}>
                       <Button
                         variant="contained"
                         sx={{ backgroundColor: color.primary.azul }}
@@ -671,7 +680,7 @@ const FormularParticipantes = () => {
                       >
                         Buscar
                       </Button>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -961,7 +970,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Caserio</Typography>
+                  <Typography variant="subtitle1">Caserío</Typography>
                   <TextField
                     fullWidth
                     name="caserio"
@@ -1091,6 +1100,18 @@ const FormularParticipantes = () => {
                           typeof option === "string" ? option : option.nombreced
                         }
                         value={formData.nombreced || ""}
+                        onChange={(event, newValue) => {
+                          if (
+                            typeof newValue === "object" &&
+                            newValue !== null
+                          ) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              nombreced: newValue.nombreced,
+                              codigosaceced: newValue.codigosace,
+                            }));
+                          }
+                        }}
                         onInputChange={(event, newInputValue) => {
                           setFormData((prev) => ({
                             ...prev,
@@ -1169,7 +1190,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.tipocentro}>
                       <Typography variant="subtitle1">
-                        Tipo de Centro Educativo*
+                        Tipo de Centro Educativo
                       </Typography>
                       <Select
                         fullWidth
@@ -1194,7 +1215,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.jornada}>
                       <Typography variant="subtitle1">
-                        Jornada que Atiende*
+                        Jornada que Atiende
                       </Typography>
                       <Select
                         fullWidth
@@ -1218,7 +1239,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.modalidad}>
                       <Typography variant="subtitle1">
-                        Modalidad que Atiende*
+                        Modalidad que Atiende
                       </Typography>
                       <Select
                         fullWidth
@@ -1465,7 +1486,7 @@ const FormularParticipantes = () => {
                   )}
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Cargo que Desempeña en el Centro Educativo*
+                      Cargo que Desempeña en el Centro Educativo
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.cargo}>
                       <Select
@@ -1581,8 +1602,8 @@ const FormularParticipantes = () => {
                           </Box>
                           <Box component="span" display="block">
                             Nivel Educativo que Atiende:{" "}
-                            {docente.nombrenivelced || ""} - Grado Educativo que
-                            Atiende: {docente.nombregradoced || ""}
+                            {docente.nivelacademico_ced || ""} - Grado Educativo
+                            que Atiende: {docente.gradoacademico_ced || ""}
                           </Box>
                         </>
                       }

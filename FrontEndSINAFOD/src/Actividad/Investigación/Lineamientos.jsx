@@ -217,7 +217,7 @@ const LineamientosI = () => {
   //   // Verificar si faltan archivos
   //   if (uploadedFilesCount < totalRequiredFiles) {
   //     const result = await Swal.fire({
-  //       title: 'Lineamientos incompletos',
+  //       title: 'Lineamientos Incompletos',
   //       text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos.`,
   //       icon: 'warning',
   //       showCancelButton: true,
@@ -311,7 +311,7 @@ const LineamientosI = () => {
     // Verificar si faltan archivos
     if (uploadedFilesCount < totalRequiredFiles) {
       const result = await Swal.fire({
-        title: "Lineamientos incompletos",
+        title: "Lineamientos Incompletos",
         text: `Solo has subido ${uploadedFilesCount} de ${totalRequiredFiles} lineamientos requeridos. ¿Deseas continuar con el registro?`,
         icon: "warning",
         showCancelButton: true,
@@ -337,6 +337,9 @@ const LineamientosI = () => {
         state: {
           investCap: response.data.id,
           investigacion: formData.investigacion,
+          lineamientosIncompletos: uploadedFilesCount < totalRequiredFiles,
+          uploadedFilesCount,
+          totalRequiredFiles,
         },
       });
     } catch (error) {
