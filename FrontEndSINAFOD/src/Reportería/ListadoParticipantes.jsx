@@ -191,7 +191,7 @@ const ListadoParticipantes = () => {
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Genero",
+        "Género",
         "Fecha de Nacimiento",
         "Edad",
         "Correo Electrónico",
@@ -384,7 +384,7 @@ const ListadoParticipantes = () => {
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "genero", headerName: "Género", width: 180 },
     { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
@@ -508,7 +508,7 @@ const ListadoParticipantes = () => {
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="genero">Género</MenuItem>
                 <MenuItem value="nivelacademico">
                   Nivel Académico del Participante
                 </MenuItem>

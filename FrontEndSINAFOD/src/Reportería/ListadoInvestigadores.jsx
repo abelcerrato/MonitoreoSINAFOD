@@ -138,7 +138,7 @@ const ListadoInvestigadores = () => {
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Genero",
+        "Género",
         "Fecha de Nacimiento",
         "Edad",
         "Correo Electrónico",
@@ -222,7 +222,7 @@ const ListadoInvestigadores = () => {
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "genero", headerName: "Género", width: 180 },
     { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
@@ -287,7 +287,7 @@ const ListadoInvestigadores = () => {
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="genero">Género</MenuItem>
                 <MenuItem value="fechanacimiento">Fecha de Nacimiento</MenuItem>
                 <MenuItem value="edad">Edad</MenuItem>
                 <MenuItem value="telefono">Teléfono</MenuItem>
@@ -310,9 +310,9 @@ const ListadoInvestigadores = () => {
             {filterColumn === "genero" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
-                  <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Masculino">Masculino</MenuItem>
-                  <MenuItem value="Femenino">Femenino</MenuItem>
+                 <MenuItem value="" disabled>Seleccionar género</MenuItem>
+                                  <MenuItem value="Femenino">Femenino</MenuItem>
+                                  <MenuItem value="Masculino">Masculino</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "departamento" ? (
