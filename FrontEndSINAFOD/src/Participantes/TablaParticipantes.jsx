@@ -183,13 +183,14 @@ export default function TablaPacticantes({
                 <TableCell align="right">
                   Cargo que Desempeña en el Centro Educativo
                 </TableCell>
-                |<TableCell align="right">Tipo Administración</TableCell>
+                <TableCell align="right">Tipo Administración</TableCell>
                 <TableCell align="right">Zona Centro Educativo</TableCell>
                 <TableCell align="right">
                   Departamento Centro Educativo
                 </TableCell>
                 <TableCell align="right">Municipio Centro Educativo</TableCell>
                 <TableCell align="right">Aldea Centro Educativo</TableCell>
+                   <TableCell align="right">Cargo que Desempeña en el Centro Educativo</TableCell>
               </>
             )}
           </TableRow>
@@ -232,6 +233,7 @@ export default function TablaPacticantes({
                   <TableCell align="right">{row.departamentoced}</TableCell>
                   <TableCell align="right">{row.municipioced}</TableCell>
                   <TableCell align="right">{row.aldeaced}</TableCell>
+                  <TableCell align="right">{row.cargoced}</TableCell>
                 </>
               )}
             </TableRow>
