@@ -563,12 +563,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
       if (Array.isArray(idformacion)) {
         response.formacion = [];
         for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, centro);
+          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
           response.formacion.push(r);
         }
       }
@@ -614,6 +617,7 @@ export const postParticipantesIFCedC = async (req, res) => {
       );
       response.ced = centro;
 
+      // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
         centro,
         idPart,
@@ -637,11 +641,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
 
+      // Insertar formaciones
       if (Array.isArray(idformacion)) {
         response.formacion = [];
         for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, centro);
+          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
           response.formacion.push(r);
         }
       }
@@ -666,9 +674,10 @@ export const postParticipantesIFCedC = async (req, res) => {
       );
       response.docentes = docente;
 
+      // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        idcentroeducativo,
-        idparticipante,
+        centro,
+        idPart,
         cargo,
         jornada,
         modalidad,
@@ -689,12 +698,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
       if (Array.isArray(idformacion)) {
         response.formacion = [];
         for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idparticipante, idcentroeducativo);
+          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
           response.formacion.push(r);
         }
       }
@@ -715,10 +727,10 @@ export const postParticipantesIFCedC = async (req, res) => {
       );
       response.ced = centro;
 
-      // Insertar relación participante-centro educativo
+      // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
         centro,
-        idparticipante,
+        idPart,
         cargo,
         jornada,
         modalidad,
@@ -739,16 +751,15 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
 
-      // Insertar formacion si viene
+      // Insertar formaciones
       if (Array.isArray(idformacion)) {
         response.formacion = [];
         for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(
-            form,
-            idparticipante,
-            centro
-          );
+          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
           response.formacion.push(r);
         }
       }
@@ -783,8 +794,9 @@ export const postParticipantesIFCedC = async (req, res) => {
 
       const idPart = participante;
 
-      response.ced2 = await postCentroEducativoParticipanteM(
-        idcentroeducativo,
+      // Insertar relación con centro educativo
+      const relacionCed = await postCentroEducativoParticipanteM(
+        centro,
         idPart,
         cargo,
         jornada,
@@ -805,33 +817,26 @@ export const postParticipantesIFCedC = async (req, res) => {
         onceavo,
         doceavo
       );
+      response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
 
-
+      // Insertar formaciones
       if (Array.isArray(idformacion)) {
         response.formacion = [];
         for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, idcentroeducativo);
+          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
           response.formacion.push(r);
         }
       }
     }
     // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
     else {
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(
-            form,
-            idparticipante,
-            idcentroeducativo
-          );
-          response.formacion.push(r);
-        }
-      }
-
+      // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        idcentroeducativo,
-        idparticipante,
+        centro,
+        idPart,
         cargo,
         jornada,
         modalidad,
@@ -852,6 +857,18 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
+      
+      const idparticipantecentro = relacionCed;
+      console.log("idparticipantecentro: ", idparticipantecentro);
+
+      // Insertar formaciones
+      if (Array.isArray(idformacion)) {
+        response.formacion = [];
+        for (const form of idformacion) {
+          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
+          response.formacion.push(r);
+        }
+      }
     }
 
     return res.status(201).json({
