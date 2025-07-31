@@ -276,8 +276,8 @@ export const getParticipanteIdInvestM = async (id) => {
 export const getParticipanteFormacionM = async () => {
   try {
     const { rows } = await pool.query(
-      `
-              SELECT 
+      `            
+SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 pf.idformacion,  pf.idparticipante,  p.identificacion, p.nombre, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
@@ -337,9 +337,9 @@ export const getParticipanteFormacionM = async () => {
                 left join gradosacademicos g on p.idgradoacademicos = g.id  
                 left join cargodesempeña c on p.idfuncion = c.id
 				
-                inner join centroeducativo ced on pf.idcentroeducativo = ced.id
-            	inner join participantescentroeducativo pced on pf.idparticipantecentro= pced.id
-               
+                
+            inner join participantescentroeducativo pced on pf.idparticipantecentro= pced.id
+               inner join centroeducativo ced on pced.idcentroeducativo = ced.id
                 left join cargodesempeña c2 on pced.cargo = c2.id
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
@@ -357,7 +357,8 @@ export const getParticipanteFormacionM = async () => {
 export const getParticipanteIdFormacionM = async (id) => {
   try {
     const { rows } = await pool.query(
-      ` SELECT 
+      `             
+SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 pf.idformacion,  pf.idparticipante,  p.identificacion, p.nombre, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
@@ -417,9 +418,9 @@ export const getParticipanteIdFormacionM = async (id) => {
                 left join gradosacademicos g on p.idgradoacademicos = g.id  
                 left join cargodesempeña c on p.idfuncion = c.id
 				
-                inner join centroeducativo ced on pf.idcentroeducativo = ced.id
-            	inner join participantescentroeducativo pced on pf.idparticipantecentro= pced.id
-               
+                
+            inner join participantescentroeducativo pced on pf.idparticipantecentro= pced.id
+               inner join centroeducativo ced on pced.idcentroeducativo = ced.id
                 left join cargodesempeña c2 on pced.cargo = c2.id
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
