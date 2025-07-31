@@ -161,7 +161,7 @@ export default function TablaPacticantes({
 
             <TableCell align="right">Nombre</TableCell>
             <TableCell align="right">Identidad</TableCell>
-            <TableCell align="right">Genero</TableCell>
+            <TableCell align="right">Género</TableCell>
             <TableCell align="right">
               Nivel Académico del Participante
             </TableCell>
@@ -180,7 +180,10 @@ export default function TablaPacticantes({
                 <TableCell align="right">Centro Educativo</TableCell>
                 <TableCell align="right">Nivel Académico que Atiende</TableCell>
                 <TableCell align="right">Grado que Atiende</TableCell>
-                <TableCell align="right">Tipo Administración</TableCell>
+                <TableCell align="right">
+                  Cargo que Desempeña en el Centro Educativo
+                </TableCell>
+                |<TableCell align="right">Tipo Administración</TableCell>
                 <TableCell align="right">Zona Centro Educativo</TableCell>
                 <TableCell align="right">
                   Departamento Centro Educativo
@@ -223,6 +226,7 @@ export default function TablaPacticantes({
                   <TableCell align="right">{row.nombreced}</TableCell>
                   <TableCell align="right">{row.nivelacademico_ced}</TableCell>
                   <TableCell align="right">{row.gradoacademico_ced}</TableCell>
+                  <TableCell align="right">{row.cargoced}</TableCell>
                   <TableCell align="right">{row.tipoadministracion}</TableCell>
                   <TableCell align="right">{row.zona}</TableCell>
                   <TableCell align="right">{row.departamentoced}</TableCell>

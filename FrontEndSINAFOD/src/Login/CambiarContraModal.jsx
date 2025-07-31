@@ -86,7 +86,7 @@ const CambiarContraModal = ({ open, onClose, mandatory = false, onSuccess }) => 
             if (response.status === 200) {
                 Swal.fire({
                   title: "Contraseña Actualizada",
-                  text: "Su contraseña ha sido actualizada exitosamente, sera rederigido/a al inicio de sección con su contraseña nueva.",
+                  text: "Su contraseña ha sido actualizada exitosamente, sera rederigido/a al inicio de sección y podra ingrsar con su contraseña nueva.",
                   icon: "success",
                   timer: 8000,
                   confirmButtonColor: color.primary.azul,

@@ -56,20 +56,24 @@ const ListadoParticipantes = () => {
   const [niveles, setNiveles] = useState([]);
   const [grados, setGrados] = useState([]);
 
-  useEffect(() => {
-    // Obtener los datos de los participantes después de guardar
+
+    useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
-        setRows(response.data);
-        setFilteredRows(response.data);
-        console.log(response.data);
+        const dataConIds = response.data.map((item, index) => ({
+          ...item,
+          id: `${item.identificacion}-${item.idformacion || index}`,
+        }));
+        setRows(dataConIds);
+        setFilteredRows(dataConIds);
+        console.log("Filas con IDs únicos:", dataConIds);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
       });
   }, []);
-
+  
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
@@ -187,7 +191,7 @@ const ListadoParticipantes = () => {
         "Código SACE",
         "Nombre",
         "Identificación",
-        "Genero",
+        "Género",
         "Fecha de Nacimiento",
         "Edad",
         "Correo Electrónico",
@@ -380,7 +384,7 @@ const ListadoParticipantes = () => {
     { field: "codigosace", headerName: "Código SACE", width: 180 },
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
-    { field: "genero", headerName: "Genero", width: 180 },
+    { field: "genero", headerName: "Género", width: 180 },
     { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
@@ -504,7 +508,7 @@ const ListadoParticipantes = () => {
                 <MenuItem value="codigosace">Código SACE</MenuItem>
                 <MenuItem value="nombre">Nombre</MenuItem>
                 <MenuItem value="identificacion">Identidad</MenuItem>
-                <MenuItem value="genero">Genero</MenuItem>
+                <MenuItem value="genero">Género</MenuItem>
                 <MenuItem value="nivelacademico">
                   Nivel Académico del Participante
                 </MenuItem>
@@ -648,7 +652,6 @@ const ListadoParticipantes = () => {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => row.id}
           pageSizeOptions={[5, 10, 25]}
           paginationModel={{ page, pageSize: rowsPerPage }}
           onPaginationModelChange={({ page, pageSize }) => {

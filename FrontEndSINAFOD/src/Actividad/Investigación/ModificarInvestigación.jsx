@@ -322,7 +322,7 @@ const Investigacion = () => {
         timer: 6000,
         confirmButtonColor: color.primary.azul,
       });
-      navigate("/dashboard");
+      navigate("/Listado_De_Investigaciones");
     } catch (error) {
       console.error("Error al guardar los datos", error);
       Swal.fire("¡Error!", "Error al guardar datos", "error");
@@ -562,6 +562,10 @@ const Investigacion = () => {
                 name="funciondirigido"
                 value={formData.funciondirigido}
                 onChange={handleChange}
+                error={fieldErrors.funciondirigido}
+                helperText={
+                  fieldErrors.funciondirigido ? "Este campo es obligatorio" : ""
+                }
               />
             </Grid>
 
@@ -608,7 +612,7 @@ const Investigacion = () => {
               </Grid>
             </Grid>
 
-            {formData.basica === true && (
+            {/*       {formData.basica === true && (
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle1">Ciclo Educativo</Typography>
                 <Grid container spacing={2}>
@@ -731,7 +735,7 @@ const Investigacion = () => {
                   </Grid>
                 </Grid>
               </Grid>
-            )}
+            )} */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Fecha de Inicio</Typography>
               <TextField

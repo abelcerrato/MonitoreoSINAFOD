@@ -127,7 +127,7 @@ const ListadoActividad = () => {
         else if (filterColumn === "duracion") {
           const duracionObj = row.duracion || {};
           const dias = parseInt(duracionObj.days) || 0;
-          const meses = parseInt(duracionObj.mons) || 0;
+          const meses = parseInt(duracionObj.months) || 0;
           const anios = parseInt(duracionObj.years) || 0;
 
           const matchAnios = !filterAnios || anios === parseInt(filterAnios);
@@ -246,7 +246,7 @@ const ListadoActividad = () => {
           item.tipomoneda ?? "-",
           item.duracion
             ? `${item.duracion?.days ?? 0} Días ${
-                item.duracion?.mons ?? 0
+                item.duracion?.months ?? 0
               } Meses ${item.duracion?.years ?? 0} Años`
             : "0 Días 0 Meses 0Años",
           item.funciondirigido ?? "-",
@@ -276,7 +276,7 @@ const ListadoActividad = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "Reporte_Acciones Formativas.xlsx";
+      a.download = "Reporte_Investigaciones.xlsx";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -330,9 +330,9 @@ const ListadoActividad = () => {
       renderCell: ({ row }) => {
         const duracion = row.duracion || {};
         const days = duracion.days || 0;
-        const mons = duracion.mons || 0;
+        const months = duracion.months || 0;
         const years = duracion.years || 0;
-        return `${years} Años ${mons} Meses ${days} Días `;
+        return `${years} Años ${months} Meses ${days} Días `;
       },
     },
     {
