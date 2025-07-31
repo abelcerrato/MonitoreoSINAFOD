@@ -48,18 +48,22 @@ const ListadoInvestigadores = () => {
   const [funcion, setFuncion] = useState([]);
 
   useEffect(() => {
-    // Obtener los datos de los participantes después de guardar
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/participanteInvest`)
-      .then((response) => {
-        setRows(response.data);
-        setFilteredRows(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos:", error);
-      });
-  }, []);
+  axios
+    .get(`${process.env.REACT_APP_API_URL}/participanteInvest`)
+    .then((response) => {
+      const dataConIds = response.data.map((item, index) => ({
+        ...item,
+        id: `${item.identificacion}-${item.idinvestigacion || index}`,
+      }));
+      setRows(dataConIds);
+      setFilteredRows(dataConIds);
+      console.log("Filas con IDs únicos:", dataConIds);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los datos:", error);
+    });
+}, []);
+
 
   useEffect(() => {
     axios
@@ -209,6 +213,7 @@ const ListadoInvestigadores = () => {
   };
 
   const columns = [
+
     {
       field: "investigacion",
       headerName: "Nombre de la Investigación ",
@@ -357,12 +362,8 @@ const ListadoInvestigadores = () => {
                 </Select>
               </FormControl>
             ) : (
-              <Grid
-          
-                display="flex"
-                alignItems="center"
-              >
-                <Grid  mr={4} size={{ xs: 5, md: 5 }}>
+              <Grid display="flex" alignItems="center">
+                <Grid mr={4} size={{ xs: 5, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
                       type="text"
@@ -400,7 +401,6 @@ const ListadoInvestigadores = () => {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => row.idinvestigacion}
           pageSizeOptions={[5, 10, 25]}
           paginationModel={{ page, pageSize: rowsPerPage }}
           onPaginationModelChange={({ page, pageSize }) => {

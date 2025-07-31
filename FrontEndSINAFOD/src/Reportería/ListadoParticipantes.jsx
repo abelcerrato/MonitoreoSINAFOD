@@ -56,20 +56,24 @@ const ListadoParticipantes = () => {
   const [niveles, setNiveles] = useState([]);
   const [grados, setGrados] = useState([]);
 
-  useEffect(() => {
-    // Obtener los datos de los participantes después de guardar
+
+    useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
-        setRows(response.data);
-        setFilteredRows(response.data);
-        console.log(response.data);
+        const dataConIds = response.data.map((item, index) => ({
+          ...item,
+          id: `${item.identificacion}-${item.idformacion || index}`,
+        }));
+        setRows(dataConIds);
+        setFilteredRows(dataConIds);
+        console.log("Filas con IDs únicos:", dataConIds);
       })
       .catch((error) => {
         console.error("Error al obtener los datos:", error);
       });
   }, []);
-
+  
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
@@ -648,7 +652,6 @@ const ListadoParticipantes = () => {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => row.idformacion}
           pageSizeOptions={[5, 10, 25]}
           paginationModel={{ page, pageSize: rowsPerPage }}
           onPaginationModelChange={({ page, pageSize }) => {
