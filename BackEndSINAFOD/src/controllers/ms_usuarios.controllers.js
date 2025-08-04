@@ -97,10 +97,10 @@ export const verificarUsuarioC = async (req, res) => {
 
 export const postUserC = async (req, res) => {
     try {
-        const { nombre, usuario,  correo, idrol, estado, creadopor } = req.body
+        const { nombre, usuario,  correo, idrol, estado, contraseña, creadopor } = req.body
         console.log(req.body);
 
-        const users = await postUserM(nombre, usuario,  correo, idrol, estado, creadopor)
+        const users = await postUserM(nombre, usuario,  correo, idrol, estado, contraseña,  creadopor)
         //res.json(users)
         res.json({ message: "Usuario Agregado Exitosamente", user: users });
     } catch (error) {
@@ -126,6 +126,7 @@ export const updateUserC = async (req, res) => {
 }
 
 
+//no está en uso, ya que la contraseña es la identidad del usuario
 export const updateContraseñaC = async (req, res) => {
     try {
         console.log("Entro a la función de actualizar contraseña");
@@ -145,6 +146,7 @@ export const updateContraseñaC = async (req, res) => {
 
 
 
+//no está en uso, ya que la contraseña es la identidad del usuario
 export const resetContraseñaUserC = async (req, res) => {
     try {
         const { usuario } = req.params;
@@ -222,9 +224,7 @@ export const loginC = async (req, res) => {
         }
 
         // const contraseñaNuevoUsuario = await bcrypt.compare("NuevoUsuario1*", user.contraseña);
-        const contraseñaTemporal = await bcrypt.compare("Temporal1*", user.contraseña);
-
-
+      /*const contraseñaTemporal = await bcrypt.compare("Temporal1*", user.contraseña); // yano se usa ya que la contraseña es la identidad del usuario
         const requiereCambio = user.cambiocontraseña === true || contraseñaTemporal;
 
         if (requiereCambio) {
@@ -238,7 +238,7 @@ export const loginC = async (req, res) => {
                     estado: user.estado
                 }
             });
-        }
+        } */
 
         // Verificar si ya había una sesión activa
         const yaHabiaSesion = user.sesionactiva !== null;

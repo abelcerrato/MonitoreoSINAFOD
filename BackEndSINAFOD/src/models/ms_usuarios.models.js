@@ -64,7 +64,7 @@ export const getUserIdM = async (id) => {
 export const verificarUsuarioM = async (usuario) => {
     try {
 
-        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
+        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado FROM ms_usuarios WHERE usuario = $1', 
             [usuario]);
 
 
@@ -79,17 +79,17 @@ export const verificarUsuarioM = async (usuario) => {
 };
 
 
-export const postUserM = async (nombre, usuario,  correo, idrol, estado, creadopor) => {
+export const postUserM = async (nombre, usuario,  correo, idrol, estado, contraseña,  creadopor) => {
     try {
         // Definir la nueva contraseña temporal
-        const ContraseñaUsuarioNuevo = "NuevoUsuario1*";
+       // const ContraseñaUsuarioNuevo = "NuevoUsuario1*";  //ya no se usa
 
 
-        const contraseñaCifrada  = await bcrypt.hash(ContraseñaUsuarioNuevo, 10);
+        const contraseñaCifrada  = await bcrypt.hash(contraseña, 10);
         const { rows } = await pool.query(`INSERT INTO ms_usuarios
                                                 (nombre, usuario,  correo, idrol, contraseña,
-                                                estado, creadopor, fechacreacion, fechamodificacion, cambiocontraseña) 
-                                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, null, true) RETURNING *`,
+                                                estado, creadopor, fechacreacion, fechamodificacion ) 
+                                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, null) RETURNING *`,
             [nombre, usuario,  correo, idrol, contraseñaCifrada,  estado, creadopor])
 
         console.log(rows);
@@ -119,7 +119,7 @@ export const updateUserM = async ( nombre,  correo, idrol,  estado, modificadopo
 
 }
 
-
+//no está en uso, ya que la contraseña es la identidad del usuario
 export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
     try {
         // Encriptar la nueva contraseña
@@ -145,7 +145,7 @@ export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
 };
 
 
-
+//no está en uso, ya que la contraseña es la identidad del usuario
 export const resetContraseñaM = async (usuario) => {
     try {
         // Definir la nueva contraseña temporal
