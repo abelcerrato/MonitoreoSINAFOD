@@ -29,7 +29,7 @@ export const getUsuarioIdM = async (usuario) => {
     console.log('Usuario enviado:', usuario);
     try {
         const { rows } = await pool.query(`
-            SELECT id, nombre, correo, idrol, contraseña, estado, fechacreacion, creadopor, fechamodificacion, modificadopor 
+            SELECT id, nombre, correo, idrol, '********' AS contraseña, estado, fechacreacion, creadopor, fechamodificacion, modificadopor 
             FROM ms_usuarios 
             WHERE usuario=$1`, 
             [usuario]);
@@ -45,7 +45,7 @@ export const getUsuarioIdM = async (usuario) => {
 export const getUserIdM = async (id) => {
     try {
         const { rows } = await pool.query(`
-            SELECT nombre,  correo, idrol, contraseña, 
+            SELECT nombre,  correo, idrol, '********' AS contraseña, 
             estado, fechacreacion, creadopor, fechamodificacion, modificadopor, usuario
             FROM ms_usuarios WHERE id=$1`, [id])
 
@@ -102,16 +102,12 @@ export const postUserM = async (nombre, usuario,  correo, idrol, estado, contras
 
 export const updateUserM = async ( nombre,  correo, idrol,  estado, modificadopor, usuario, id) => {
     try {
-
-        //const contraseñaCifrada  = await bcrypt.hash(contraseña, 10);
-
         const { rows } = await pool.query(`UPDATE ms_usuarios SET 
                                                 nombre=$1, correo=$2, idrol=$3, 
-                                                estado=$4, modificadopor=$5, usuario=$6,
+                                                estado=$4, modificadopor=$5, usuario=$6, 
                                                 fechamodificacion=CURRENT_TIMESTAMP, fechacreacion=null
                                             WHERE id=$7 RETURNING *`,
             [nombre,  correo, idrol,  estado, modificadopor, usuario, id])
-
         return rows[0]
     } catch (error) {
         throw error;
@@ -149,7 +145,7 @@ export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
 export const resetContraseñaM = async (usuario) => {
     try {
         // Definir la nueva contraseña temporal
-        const nuevaContraseña = "Temporal1*";
+        const nuevaContraseña = "12345678";
 
         // Encriptar la contraseña temporal
         const contraseñaCifrada = await bcrypt.hash(nuevaContraseña, 10);

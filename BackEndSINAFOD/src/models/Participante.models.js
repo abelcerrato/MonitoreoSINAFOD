@@ -5,7 +5,7 @@ export const getParticipanteM = async () => {
     const { rows } = await pool.query(`
              SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, TO_CHAR(p.fechanacimiento, 'DD/MM/YYYY') AS fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, TO_CHAR(p.fechanacimiento, 'DD/MM/YYYY') AS fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -92,7 +92,7 @@ export const getParticipanteDNIM = async (identificacion) => {
   try {
     const { rows } = await pool.query(
       `
-            SELECT p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+            SELECT p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
@@ -131,7 +131,7 @@ export const getParticipanteIdM = async (id) => {
       `
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -196,7 +196,7 @@ export const getParticipanteInvestigacionM = async () => {
                
               SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -236,7 +236,7 @@ export const getParticipanteIdInvestM = async (id) => {
     const { rows } = await pool.query(
       `   SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -279,7 +279,7 @@ export const getParticipanteFormacionM = async () => {
       `            
 SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                pf.idformacion,  pf.idparticipante,  p.identificacion, p.nombre, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                pf.idformacion,  pf.idparticipante,  p.identificacion, p.nombre, p.apellido, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -361,7 +361,7 @@ export const getParticipanteIdFormacionM = async (id) => {
       `             
 SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                pf.idformacion,  pf.idparticipante as id,  p.identificacion, p.nombre, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                pf.idformacion,  pf.idparticipante as id,  p.identificacion, p.nombre, p.apellido, p.codigosace, p.correo,  p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -442,6 +442,7 @@ export const postParticipanteM = async (
   codigosace,
   correo,
   nombre,
+  apellido,
   fechanacimiento,
   edad,
   telefono,
@@ -463,12 +464,12 @@ export const postParticipanteM = async (
     const { rows } = await pool.query(
       `
             INSERT INTO participantes (
-                identificacion, codigosace, correo, nombre, fechanacimiento, edad, telefono, genero, idfuncion,
+                identificacion, codigosace, correo, nombre, apellido, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered, 
                 deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, 
                 creadopor, fechacreacion, fechamodificacion ) 
             VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,  CURRENT_TIMESTAMP, null
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21,  CURRENT_TIMESTAMP, null
             ) 
             RETURNING id
         `,
@@ -477,6 +478,7 @@ export const postParticipanteM = async (
         codigosace,
         correo,
         nombre,
+        apellido,
         fechanacimiento,
         edad,
         telefono,
@@ -524,6 +526,7 @@ export const putParticipanteM = async (
   datoscorrectos,
   autorizadatos,
   modificadopor,
+  apellido,
   id
 ) => {
   try {
@@ -551,8 +554,9 @@ export const putParticipanteM = async (
                 caserio=$17, 
                 datoscorrectos=$18, 
                 autorizadatos=$19, 
-                modificadopor=$20
-                WHERE id=$21
+                modificadopor=$20,
+                apellido=$21
+                WHERE id=$22
                 RETURNING *`,
       [
         identificacion,
@@ -575,6 +579,7 @@ export const putParticipanteM = async (
         datoscorrectos,
         autorizadatos,
         modificadopor,
+        apellido,
         id,
       ]
     );
@@ -593,7 +598,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
       `
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
-                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+                p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
@@ -654,7 +659,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
 export const getParticipanteCodSACEM = async (filtro) => {
   try {
     const { rows } = await pool.query(
-      ` SELECT p.identificacion, p.codigosace, p.correo, p.nombre, p.fechanacimiento, p.edad, p.telefono, p.genero, 
+      ` SELECT p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
                 p.idnivelacademicos, n.nombre as nivelacademico,  p.idgradoacademicos, g.nombre as gradoacademico,
                 p.añosdeservicio, p.codigodered, 
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
