@@ -51,6 +51,7 @@ export const postDocentesC = async (req, res) => {
   const {
     codigosace,
     nombre,
+    apellido,
     identificacion,
     correo,
     iddepartamento,
@@ -67,6 +68,7 @@ export const postDocentesC = async (req, res) => {
     const docentes = await postDocentesM(
       codigosace,
       nombre,
+      apellido,
       identificacion,
       correo,
       iddepartamento,
@@ -92,6 +94,7 @@ export const putDocentesC = async (req, res) => {
     const {
       codigosace,
       nombre,
+      apellido,
       identificacion,
       correo,
       iddepartamento,
@@ -109,6 +112,7 @@ export const putDocentesC = async (req, res) => {
     const docentes = await putDocentesM(
       codigosace,
       nombre,
+      apellido,
       identificacion,
       correo,
       iddepartamento,
@@ -262,6 +266,7 @@ export const getFiltroDocentesC = async (req, res) => {
     codigosace,
     correo,
     nombre,
+    apellido,
     fechanacimiento,
     edad,
     telefono,
@@ -356,6 +361,7 @@ export const getFiltroDocentesC = async (req, res) => {
       const docente = await postDocentesM(
         codigosace,
         nombre,
+        apellido,
         identificacion,
         correo,
         iddepartamento,
@@ -548,6 +554,7 @@ export const getFiltroDocentesC = async (req, res) => {
       const docente = await postDocentesM(
         codigosace,
         nombre,
+        apellido,
         identificacion,
         correo,
         iddepartamento,
@@ -746,6 +753,7 @@ export const getFiltroDocentesC = async (req, res) => {
       const docente = await postDocentesM(
         codigosace,
         nombre,
+        apellido,
         identificacion,
         correo,
         iddepartamento,
