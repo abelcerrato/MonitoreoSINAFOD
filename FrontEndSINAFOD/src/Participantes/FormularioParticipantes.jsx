@@ -162,7 +162,6 @@ apellido: "",
       "apellido",
       "idfuncion",
       "genero",
-      "añosdeservicio",
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
@@ -854,12 +853,7 @@ apellido: "",
                     name="añosdeservicio"
                     value={formData.añosdeservicio || ""}
                     onChange={handleChange}
-                    error={fieldErrors.añosdeservicio}
-                    helperText={
-                      fieldErrors.añosdeservicio
-                        ? "Este campo es obligatorio"
-                        : ""
-                    }
+                    
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>

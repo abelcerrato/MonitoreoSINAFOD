@@ -1064,12 +1064,7 @@ const FormularioExterno = () => {
                   name="añosdeservicio"
                   value={formData.añosdeservicio || ""}
                   onChange={handleChange}
-                  error={fieldErrors.añosdeservicio}
-                  helperText={
-                    fieldErrors.añosdeservicio
-                      ? "Este campo es obligatorio"
-                      : ""
-                  }
+
                   InputProps={{
                     readOnly: camposBloqueados.añosdeservicio,
                   }}
