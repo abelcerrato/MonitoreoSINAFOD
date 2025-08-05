@@ -160,6 +160,7 @@ export default function TablaPacticantes({
             </TableCell>
 
             <TableCell align="right">Nombre</TableCell>
+            <TableCell align="right">Apellido</TableCell>
             <TableCell align="right">Identidad</TableCell>
             <TableCell align="right">Género</TableCell>
             <TableCell align="right">
@@ -190,7 +191,9 @@ export default function TablaPacticantes({
                 </TableCell>
                 <TableCell align="right">Municipio Centro Educativo</TableCell>
                 <TableCell align="right">Aldea Centro Educativo</TableCell>
-                   <TableCell align="right">Cargo que Desempeña en el Centro Educativo</TableCell>
+                <TableCell align="right">
+                  Cargo que Desempeña en el Centro Educativo
+                </TableCell>
               </>
             )}
           </TableRow>
@@ -210,6 +213,7 @@ export default function TablaPacticantes({
               </TableCell>
 
               <TableCell align="right">{row.nombre}</TableCell>
+              <TableCell align="right">{row.apellido}</TableCell>
               <TableCell align="right">{row.identificacion}</TableCell>
               <TableCell align="right">{row.genero}</TableCell>
               <TableCell align="right">{row.nivelacademico}</TableCell>

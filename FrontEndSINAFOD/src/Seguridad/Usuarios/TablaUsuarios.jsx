@@ -60,7 +60,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
       Swal.fire({
         title: "Contraseña Actualizada",
-        text: "La contraseña ha sido actualizada exitosamente a Temporal1*.",
+        text: "La contraseña ha sido actualizada exitosamente a .",
         icon: "success",
         timer: 6000,
       });

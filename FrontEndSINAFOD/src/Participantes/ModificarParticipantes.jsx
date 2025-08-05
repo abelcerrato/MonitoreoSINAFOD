@@ -51,6 +51,7 @@ const ModificarParticipante = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
+    apellido: "",
     cargo: "",
     genero: "",
     añosdeservicio: 0,
@@ -501,6 +502,15 @@ const ModificarParticipante = () => {
                     fullWidth
                     name="nombre"
                     value={formData?.nombre}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Apellido</Typography>
+                  <TextField
+                    fullWidth
+                    name="apellido"
+                    value={formData?.apellido}
                     onChange={handleChange}
                   />
                 </Grid>

@@ -34,6 +34,7 @@ const Usuario = () => {
     nombre: "",
     usuario: "",
     correo: "",
+    contraseña: "",
     idrol: "",
     estado: "Nuevo",
     creadopor: user.id,
@@ -70,7 +71,7 @@ const Usuario = () => {
   }, []);
 
   const handleSave = async () => {
-    const requiredFields = ["nombre", "usuario", "idrol"];
+    const requiredFields = ["nombre", "usuario", "idrol", "contraseña"];
     const newErrors = {};
 
     requiredFields.forEach((field) => {
@@ -142,13 +143,24 @@ const Usuario = () => {
           <Grid container spacing={2} sx={{ marginTop: 2 }}>
             <Grid item xs={12} size={6}>
               <TextField
-                label="Nombre"
+                label="Nombres"
                 name="nombre"
                 value={formData.nombre || ""}
                 onChange={handleChange}
                 fullWidth
                 error={!!fieldErrors.nombre}
                 helperText={fieldErrors.nombre}
+              />
+            </Grid>
+            <Grid item xs={12} size={6}>
+              <TextField
+                label="Identidad"
+                name="contraseña"
+                value={formData.contraseña || ""}
+                onChange={handleChange}
+                fullWidth
+                error={!!fieldErrors.contraseña}
+                helperText={fieldErrors.contraseña}
               />
             </Grid>
             <Grid item xs={12} size={6}>

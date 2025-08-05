@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
-
+apellido: "",
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -159,6 +159,7 @@ const FormularParticipantes = () => {
     const baseRequiredFields = [
       "identificacion",
       "nombre",
+      "apellido",
       "idfuncion",
       "genero",
       "añosdeservicio",
@@ -544,6 +545,7 @@ const FormularParticipantes = () => {
       codigosace: docente.codigosace || "",
       identificacion: docente.identificacion || "",
       nombre: docente.nombre || "",
+      apellido: docente.apellido || "",
       genero: docente.genero || "",
       fechanacimiento: fechaFormateada || "",
       añosdeservicio: docente.añosdeservicio || "",
@@ -721,6 +723,19 @@ const FormularParticipantes = () => {
                     error={fieldErrors.nombre}
                     helperText={
                       fieldErrors.nombre ? "Este campo es obligatorio" : ""
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Apellido</Typography>
+                  <TextField
+                    fullWidth
+                    name="apellido"
+                    value={formData.apellido}
+                    onChange={handleChange}
+                    error={fieldErrors.apellido}
+                    helperText={
+                      fieldErrors.apellido ? "Este campo es obligatorio" : ""
                     }
                   />
                 </Grid>

@@ -17,12 +17,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { color } from "../Components/color";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import LogoCONED from "../Components/img/logos_CONED.png"
-import LogoDGDP from "../Components/img/Logo_DGDP.png"
-import { useUser } from "../Components/UserContext"
+import LogoCONED from "../Components/img/logos_CONED.png";
+import LogoDGDP from "../Components/img/Logo_DGDP.png";
+import { useUser } from "../Components/UserContext";
 import Swal from "sweetalert2";
-
-
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
@@ -34,7 +32,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ usuario: "", contraseña: "" });
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{5,}$/;
+  // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{5,}$/;
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -44,15 +42,14 @@ export default function SignIn() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === "contraseña") {
+    /*  if (name === "contraseña") {
       if (!passwordRegex.test(value)) {
         setError("La contraseña debe tener al menos 5 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
       } else {
         setError(""); // Elimina el error si la contraseña es válida
       }
-    }
+    } */
   };
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -71,23 +68,26 @@ export default function SignIn() {
         setUser({ id, usuario, idrol });
 
         // Guardar en localStorage
-        localStorage.setItem("user", JSON.stringify({
-          id,
-          usuario,
-        }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id,
+            usuario,
+          })
+        );
         localStorage.setItem("token", token);
 
         const permisosResponse = await axios.get(
           `${process.env.REACT_APP_API_URL}/permisos/${idrol}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (permisosResponse.status === 200) {
-          const permisos = permisosResponse.data.map(p => ({
+          const permisos = permisosResponse.data.map((p) => ({
             idobjeto: p.idobjeto,
             objeto: p.objeto,
             idmodulo: p.idmodulo,
@@ -100,14 +100,13 @@ export default function SignIn() {
         }
         // Mostrar mensaje de éxito (si no es caso de sesión activa)
         Swal.fire({
-          icon: yaHabiaSesion ? 'info' : 'success',
-          title: 'Inicio de sesión',
+          icon: yaHabiaSesion ? "info" : "success",
+          title: "Inicio de sesión",
           text: yaHabiaSesion
-            ? 'Existe una sesión abierta en otro dispositivo. Por motivos de seguridad, fue cerrada.'
+            ? "Existe una sesión abierta en otro dispositivo. Por motivos de seguridad, fue cerrada."
             : message,
           timer: 3000,
-          showConfirmButton: false
-          
+          showConfirmButton: false,
         });
 
         // Indicar que la sesión está activa
@@ -131,18 +130,21 @@ export default function SignIn() {
           const { id, usuario, token } = error.response.data.user; // Asegúrate de recibir el token desde el backend
 
           // Guardar en localStorage
-          localStorage.setItem("user", JSON.stringify({
-            id,
-            usuario,
-            requiresPasswordChange: true
-          }));
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              id,
+              usuario,
+              //requiresPasswordChange: true,
+            })
+          );
           localStorage.setItem("token", token); // ¡IMPORTANTE! Sin esto, ProtectedRoute bloqueará el acceso
 
           // Actualizar el contexto
           setUser({
             id,
             usuario,
-            changePasswordRequired: true
+           // changePasswordRequired: true,
           });
 
           // Marcar como autenticado
@@ -158,7 +160,6 @@ export default function SignIn() {
             timer: 6000,
             confirmButtonColor: color.primary.rojo,
           });
-         
         }
       } else if (error.request) {
         alert("Error en la conexión con el servidor.");
@@ -167,8 +168,6 @@ export default function SignIn() {
       }
     }
   };
-
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -195,14 +194,13 @@ export default function SignIn() {
                   src={LogoCONED}
                   alt="Logo"
                   style={{ width: "90%", height: "90%", objectFit: "contain" }}
-
-                /> </Grid>
+                />{" "}
+              </Grid>
               <Grid item xs={12} size={6}>
                 <img
                   src={LogoDGDP}
                   alt="Logo"
                   style={{ width: "90%", height: "90%", objectFit: "contain" }}
-
                 />
               </Grid>
             </Grid>
@@ -273,12 +271,9 @@ export default function SignIn() {
             sx={{ mt: 5, py: 2 }}
           >
             {"Copyright © "}
-
-        Propiedad Intelectual del Estado de Honduras
+            Propiedad Intelectual del Estado de Honduras
           </Typography>
         </Box>
-
-
       </Container>
     </ThemeProvider>
   );
