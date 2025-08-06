@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
-
+apellido: "",
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -159,9 +159,9 @@ const FormularParticipantes = () => {
     const baseRequiredFields = [
       "identificacion",
       "nombre",
+      "apellido",
       "idfuncion",
       "genero",
-      "añosdeservicio",
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
@@ -544,6 +544,7 @@ const FormularParticipantes = () => {
       codigosace: docente.codigosace || "",
       identificacion: docente.identificacion || "",
       nombre: docente.nombre || "",
+      apellido: docente.apellido || "",
       genero: docente.genero || "",
       fechanacimiento: fechaFormateada || "",
       añosdeservicio: docente.añosdeservicio || "",
@@ -725,6 +726,19 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Apellido</Typography>
+                  <TextField
+                    fullWidth
+                    name="apellido"
+                    value={formData.apellido}
+                    onChange={handleChange}
+                    error={fieldErrors.apellido}
+                    helperText={
+                      fieldErrors.apellido ? "Este campo es obligatorio" : ""
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl error={fieldErrors.genero}>
                     <Typography variant="subtitle1">Género</Typography>
                     <RadioGroup
@@ -839,12 +853,7 @@ const FormularParticipantes = () => {
                     name="añosdeservicio"
                     value={formData.añosdeservicio || ""}
                     onChange={handleChange}
-                    error={fieldErrors.añosdeservicio}
-                    helperText={
-                      fieldErrors.añosdeservicio
-                        ? "Este campo es obligatorio"
-                        : ""
-                    }
+                    
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>

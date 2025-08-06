@@ -48,9 +48,15 @@ import TablaInvestigacion from "./Actividad/Investigación/TablaInvestigación";
 
 import PreInscripcion from "./Participantes/Pre-Inscripcion";
 
+
+export const VerificationContext = React.createContext({
+  pauseVerification: () => {},
+  resumeVerification: () => {},
+});
 const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = React.useState(false);
+  const verificationRef = React.useRef(true); 
 
   React.useEffect(() => {
     const verifyAuth = () => {
@@ -73,16 +79,18 @@ const ProtectedRoute = () => {
 
     // Verificar validez del token cada 10 segundos
     const checkSessionValidity = async () => {
+      if (!verificationRef.current) return;
+
       const token = localStorage.getItem("token");
+
       if (!token) return;
 
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/verify-token`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 10000, // 10 segundos
           }
         );
 
@@ -90,7 +98,9 @@ const ProtectedRoute = () => {
           logoutAndRedirect();
         }
       } catch (error) {
-        logoutAndRedirect();
+        if (error.response?.status === 401) {
+          logoutAndRedirect();
+        }
       }
     };
 
@@ -107,7 +117,7 @@ const ProtectedRoute = () => {
       navigate("/", { replace: true });
     };
 
-    const interval = setInterval(checkSessionValidity, 20000);
+    const interval = setInterval(checkSessionValidity, 300000); // 5 minutos
     return () => clearInterval(interval);
   }, [navigate]);
 
@@ -115,7 +125,20 @@ const ProtectedRoute = () => {
     return null; // O un componente de carga
   }
 
-  return <Outlet />;
+  return (
+    <VerificationContext.Provider
+      value={{
+        pauseVerification: () => {
+          verificationRef.current = false;
+        },
+        resumeVerification: () => {
+          verificationRef.current = true;
+        },
+      }}
+    >
+      <Outlet />
+    </VerificationContext.Provider>
+  );
 };
 
 const PermissionValidator = ({
