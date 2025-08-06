@@ -97,10 +97,10 @@ export const verificarUsuarioC = async (req, res) => {
 
 export const postUserC = async (req, res) => {
     try {
-        const { nombre, usuario,  correo, idrol, estado, contraseña, creadopor } = req.body
+        const { nombre, usuario, correo, idrol, estado, contraseña, creadopor } = req.body
         console.log(req.body);
 
-        const users = await postUserM(nombre, usuario,  correo, idrol, estado, contraseña,  creadopor)
+        const users = await postUserM(nombre, usuario,  correo, idrol, estado, contraseña, creadopor)
         //res.json(users)
         res.json({ message: "Usuario Agregado Exitosamente", user: users });
     } catch (error) {
@@ -151,9 +151,13 @@ export const resetContraseñaUserC = async (req, res) => {
     try {
         const { usuario } = req.params;
 
-        const usuarioActualizado = await resetContraseñaM(usuario);
+        const users = await getUsuarioIdM(usuario);
+        const identidad = users.identidad;
+        console.log("Identidad del usuario:", identidad);
+    
+        const usuarioActualizado = await resetContraseñaM(identidad, usuario);
 
-        res.json({ message: "Contraseña reseteada con éxito. Se asignó 'Temporal1*'.", user: usuarioActualizado });
+        res.json({ message: "Contraseña reseteada con éxito. ", user: usuarioActualizado });
     } catch (error) {
         console.error("Error al resetear la contraseña del usuario: ", error);
         res.status(500).json({ error: "Error interno del servidor" });
@@ -224,8 +228,8 @@ export const loginC = async (req, res) => {
         }
 
         // const contraseñaNuevoUsuario = await bcrypt.compare("NuevoUsuario1*", user.contraseña);
-      /*const contraseñaTemporal = await bcrypt.compare("Temporal1*", user.contraseña); // yano se usa ya que la contraseña es la identidad del usuario
-        const requiereCambio = user.cambiocontraseña === true || contraseñaTemporal;
+       /*const contraseñaTemporal = await bcrypt.compare("Temporal1*", user.contraseña); // yano se usa ya que la contraseña es la identidad del usuario*/
+        const requiereCambio = user.cambiocontraseña === true;
 
         if (requiereCambio) {
             return res.status(403).json({
@@ -238,7 +242,7 @@ export const loginC = async (req, res) => {
                     estado: user.estado
                 }
             });
-        } */
+        }
 
         // Verificar si ya había una sesión activa
         const yaHabiaSesion = user.sesionactiva !== null;
