@@ -109,7 +109,6 @@ const CambiarContraModal = ({
           nuevaContraseña: passwords.newPassword,
         }
       );
-
       if (response.status === 200) {
         Swal.fire({
           title: "Contraseña Actualizada",
