@@ -51,6 +51,7 @@ const FormularioExterno = () => {
     formacion: "",
     correo: "",
     telefono: "",
+    apellido: "",
     edad: "",
     fechanacimiento: "",
     identificacion: "",
@@ -100,6 +101,7 @@ const FormularioExterno = () => {
   const [camposBloqueados, setCamposBloqueados] = useState({
     correo: "",
     telefono: "",
+    apellido: "",
     edad: "",
     fechanacimiento: "",
     identificacion: "",
@@ -435,6 +437,7 @@ const FormularioExterno = () => {
       /*Datos del participante */
       codigosace: docente.codigosace || "",
       nombre: docente.nombre || "",
+      apellido: docente.apellido || "",
       genero: docente.genero || "",
       fechanacimiento: fechaFormateada || "",
       edad: docente.edad || "",
@@ -484,6 +487,7 @@ const FormularioExterno = () => {
     setCamposBloqueados({
       codigosace: !!docente.codigosace,
       nombre: !!docente.nombre,
+      apellido: !!docente.apellido,
       genero: !!docente.genero,
       fechanacimiento: fechaFormateada,
       edad: !!docente.edad,
@@ -585,6 +589,7 @@ const FormularioExterno = () => {
     const requiredFields = [
       "identificacion",
       "nombre",
+      "apellido",
       "correo",
       "telefono",
       "fechanacimiento",
@@ -874,6 +879,22 @@ const FormularioExterno = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">Apellido*</Typography>
+                <TextField
+                  fullWidth
+                  name="apellido"
+                  value={formData.apellido}
+                  onChange={handleChange}
+                  error={fieldErrors.apellido}
+                  helperText={
+                    fieldErrors.apellido ? "Este campo es obligatorio" : ""
+                  }
+                  InputProps={{
+                    readOnly: camposBloqueados.apellido,
+                  }}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl error={fieldErrors.genero}>
                   <Typography variant="subtitle1">Género*</Typography>
                   <RadioGroup
@@ -1043,12 +1064,7 @@ const FormularioExterno = () => {
                   name="añosdeservicio"
                   value={formData.añosdeservicio || ""}
                   onChange={handleChange}
-                  error={fieldErrors.añosdeservicio}
-                  helperText={
-                    fieldErrors.añosdeservicio
-                      ? "Este campo es obligatorio"
-                      : ""
-                  }
+
                   InputProps={{
                     readOnly: camposBloqueados.añosdeservicio,
                   }}

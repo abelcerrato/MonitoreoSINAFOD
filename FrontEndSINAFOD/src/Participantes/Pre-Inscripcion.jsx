@@ -108,6 +108,7 @@ const PreInscripcion = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
+    apellido: "",
     cargo: "",
     genero: "",
     añosdeservicio: 0,
@@ -441,6 +442,7 @@ const PreInscripcion = () => {
       /*Datos del participante */
       codigosace: docente.codigosace || "",
       nombre: docente.nombre || "",
+      apellido: docente.apellido || "",
       genero: docente.genero || "",
       fechanacimiento: fechaFormateada || "",
       edad: docente.edad || "",
@@ -798,6 +800,7 @@ const PreInscripcion = () => {
       "identificacion",
       "nombre",
       "correo",
+      "apellido",
       "telefono",
       "fechanacimiento",
       "cargo",
@@ -1070,6 +1073,22 @@ const PreInscripcion = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">Apellido*</Typography>
+                <TextField
+                  fullWidth
+                  name="apellido"
+                  value={formData.apellido}
+                  onChange={handleChange}
+                  error={fieldErrors.apellido}
+                  helperText={
+                    fieldErrors.apellido ? "Este campo es obligatorio" : ""
+                  }
+                  InputProps={{
+                    readOnly: camposBloqueados.apellido,
+                  }}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl error={fieldErrors.genero}>
                   <Typography variant="subtitle1">Género*</Typography>
                   <RadioGroup
@@ -1235,12 +1254,8 @@ const PreInscripcion = () => {
                   name="añosdeservicio"
                   value={formData.añosdeservicio || ""}
                   onChange={handleChange}
-                  error={fieldErrors.añosdeservicio}
-                  helperText={
-                    fieldErrors.añosdeservicio
-                      ? "Este campo es obligatorio"
-                      : ""
-                  }
+              
+                 
                   InputProps={{
                     readOnly: camposBloqueados.añosdeservicio,
                   }}
