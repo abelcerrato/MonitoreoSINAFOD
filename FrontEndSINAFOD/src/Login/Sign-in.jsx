@@ -135,7 +135,7 @@ export default function SignIn() {
             JSON.stringify({
               id,
               usuario,
-              //requiresPasswordChange: true,
+              requiresPasswordChange: true,
             })
           );
           localStorage.setItem("token", token); // ¡IMPORTANTE! Sin esto, ProtectedRoute bloqueará el acceso
@@ -144,7 +144,7 @@ export default function SignIn() {
           setUser({
             id,
             usuario,
-           // changePasswordRequired: true,
+           changePasswordRequired: true,
           });
 
           // Marcar como autenticado
