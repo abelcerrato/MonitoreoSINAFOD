@@ -544,9 +544,12 @@ export const postParticipantesIFCedC = async (req, res) => {
       );
       response.ced = centro;
 
+      const idcentro = centro;
+      console.log("idcentro: ", idcentro);
+
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
+        idcentro,
         idPart,
         cargo,
         jornada,
@@ -568,7 +571,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
@@ -609,6 +612,7 @@ export const postParticipantesIFCedC = async (req, res) => {
       response.participantes = participante;
 
       const idPart = participante;
+      console.log("idPart: ", idPart);
 
       const centro = await postCentroEducativoM(
         nombreced,
@@ -623,9 +627,12 @@ export const postParticipantesIFCedC = async (req, res) => {
       );
       response.ced = centro;
 
+      const idcentro = centro;
+      console.log("idcentro: ", idcentro);
+
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
+        idcentro,
         idPart,
         cargo,
         jornada,
@@ -647,7 +654,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
@@ -682,8 +689,8 @@ export const postParticipantesIFCedC = async (req, res) => {
 
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
-        idPart,
+        idcentroeducativo,
+        idparticipante,
         cargo,
         jornada,
         modalidad,
@@ -704,7 +711,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
@@ -732,11 +739,13 @@ export const postParticipantesIFCedC = async (req, res) => {
         idnivelacademicocentro
       );
       response.ced = centro;
+      const idcentro = centro;
+      console.log("idcentro: ", idcentro);
 
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
-        idPart,
+        idcentro,
+        idparticipante,
         cargo,
         jornada,
         modalidad,
@@ -757,7 +766,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
@@ -800,10 +809,11 @@ export const postParticipantesIFCedC = async (req, res) => {
       response.participantes = participante;
 
       const idPart = participante;
+      console.log("idPart: ", idPart);
 
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
+        idcentroeducativo,
         idPart,
         cargo,
         jornada,
@@ -825,7 +835,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
@@ -842,8 +852,8 @@ export const postParticipantesIFCedC = async (req, res) => {
     else {
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
-        centro,
-        idPart,
+        idcentroeducativo,
+        idparticipante,
         cargo,
         jornada,
         modalidad,
@@ -864,7 +874,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         doceavo
       );
       response.ced2 = relacionCed;
-      
+
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 

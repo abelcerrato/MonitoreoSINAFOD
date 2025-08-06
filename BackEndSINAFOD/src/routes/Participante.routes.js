@@ -11,6 +11,13 @@ import {
   putParticipanteC,
 } from "../controllers/Participante.controller.js";
 import { getFiltroDocentesC } from "../controllers/docentesDGDP.controller.js";
+
+import { cargaMasivaFormacion } from "../controllers/cargamasiva.js";
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() });
+
+
+
 const router = Router();
 
 router.get("/participante", getParticipanteC);
@@ -25,5 +32,9 @@ router.put("/participante/:id", putParticipanteC);
 router.get("/participante/:tipo/:id", getParticipanteIdFormInvestC);
 
 router.post("/participanteInvFormCed", postParticipantesIFCedC); //ruta que refgistra todos los participantes con la formacion o investigacion a la que pertenece y centro educativo
+
+
+// Nueva ruta para carga masiva
+router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacion);
 
 export default router;
