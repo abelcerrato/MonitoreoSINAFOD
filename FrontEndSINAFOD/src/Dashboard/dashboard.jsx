@@ -155,14 +155,14 @@ const Dashboard = ({ children }) => {
 
   const { user, updateUser } = useUser();
 
-  /* useEffect(() => {
+ useEffect(() => {
     // Verificar si necesita cambio de contraseña solo al cargar el dashboard
     if (user?.changePasswordRequired) {
       setOpenChangePasswordModal(true);
     }
-  }, [user?.changePasswordRequired]); */ // Solo se ejecuta cuando cambia este valor
+  }, [user?.changePasswordRequired]);  // Solo se ejecuta cuando cambia este valor
 
-/*   const handlePasswordChangeSuccess = () => {
+ const handlePasswordChangeSuccess = () => {
     // Actualizar el estado del usuario para eliminar el requerimiento
     updateUser({ ...user, changePasswordRequired: false });
     setOpenChangePasswordModal(false);
@@ -170,7 +170,7 @@ const Dashboard = ({ children }) => {
     // Opcional: Guardar en localStorage/sessionStorage
     sessionStorage.setItem("passwordChanged", "true");
   };
- */
+
   const handleOpenQrModal = async () => {
     const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Inscripción`;
 
@@ -232,14 +232,14 @@ const Dashboard = ({ children }) => {
           Propiedad Intelectual del Estado de Honduras
         </Typography>
 
-      {/*   <CambiarContraModal
+     <CambiarContraModal
           open={openChangePasswordModal}
           onClose={() =>
             !user?.changePasswordRequired && setOpenChangePasswordModal(false)
           }
           mandatory={user?.changePasswordRequired}
           onSuccess={handlePasswordChangeSuccess}
-        /> */}
+        />
       </Box>
 
       <Dialog
