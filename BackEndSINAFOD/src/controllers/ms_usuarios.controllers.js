@@ -92,12 +92,11 @@ export const verificarUsuarioC = async (req, res) => {
 };
 
 export const postUserC = async (req, res) => {
-  try {
-    const { nombre, usuario, correo, idrol, estado, contraseña, creadopor } =
-      req.body;
-    console.log(req.body);
 
-    const users = await postUserM(
+    try {
+        const { nombre, usuario,  correo, idrol, estado, contraseña, creadopor } = req.body
+        console.log(req.body);
+const users = await postUserM(
       nombre,
       usuario,
       correo,
@@ -116,26 +115,26 @@ export const postUserC = async (req, res) => {
 
 export const updateUserC = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { nombre, correo, idrol, estado, modificadopor, usuario, identidad } =
-      req.body;
+      const { id } = req.params;
+      const { nombre, correo, idrol, estado, modificadopor, usuario, identidad } =
+        req.body;
 
-    const users = await updateUserM(
-      nombre,
-      correo,
-      idrol,
-      estado,
-      modificadopor,
-      usuario,
-      identidad,
-      id
-    );
-
-    res.json({ message: "Usuario Actualizado Exitosamente", user: users });
-  } catch (error) {
-    console.error("Error al actualizar el usuario: ", error);
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
+      const users = await updateUserM(
+        nombre,
+        correo,
+        idrol,
+        estado,
+        modificadopor,
+        usuario,
+        identidad,
+        id
+      );
+      res.json({ message: "Usuario Actualizado Exitosamente", user: users });
+    } 
+    catch (error) {
+        console.error('Error al actualizar el usuario: ', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 };
 
 //no está en uso, ya que la contraseña es la identidad del usuario
