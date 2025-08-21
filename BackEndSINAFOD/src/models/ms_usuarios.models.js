@@ -64,7 +64,7 @@ export const getUserIdM = async (id) => {
 export const verificarUsuarioM = async (usuario) => {
     try {
 
-        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado FROM ms_usuarios WHERE usuario = $1', 
+        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
             [usuario]);
 
 
