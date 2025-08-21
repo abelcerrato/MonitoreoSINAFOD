@@ -209,30 +209,30 @@ export default function TablaActividad(isSaved, setIsSaved) {
   const columns = [
     ...(tienePermisoActualizar(1)
       ? [
-          {
-            field: "actions",
-            headerName: "Acción",
-            width: 190,
-            renderCell: (params) => (
-              <>
-                <Tooltip title="Editar">
-                  <IconButton
-                    onClick={() => handleinvestigacion(params.id)}
-                    color="action"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
+        {
+          field: "actions",
+          headerName: "Acción",
+          width: 190,
+          renderCell: (params) => (
+            <>
+              <Tooltip title="Editar">
+                <IconButton
+                  onClick={() => handleinvestigacion(params.id)}
+                  color="action"
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
 
-                <Tooltip title="Actualizar Lineamientos">
-                  <IconButton
-                    onClick={() => handleLineamientosinvestigacion(params.id)}
-                    color="success"
-                  >
-                    <ChecklistIcon />
-                  </IconButton>
-                </Tooltip>
-                {/* <Tooltip title="Ver Detalles">
+              <Tooltip title="Actualizar Lineamientos">
+                <IconButton
+                  onClick={() => handleLineamientosinvestigacion(params.id)}
+                  color="success"
+                >
+                  <ChecklistIcon />
+                </IconButton>
+              </Tooltip>
+              {/* <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
                     color="info"
@@ -240,10 +240,10 @@ export default function TablaActividad(isSaved, setIsSaved) {
                     <RemoveRedEyeIcon />
                   </IconButton>
                 </Tooltip> */}
-              </>
-            ),
-          },
-        ]
+            </>
+          ),
+        },
+      ]
       : []),
     { field: "id", headerName: "ID", width: 90 },
     {
@@ -256,20 +256,20 @@ export default function TablaActividad(isSaved, setIsSaved) {
       headerName: "Fecha Inicio",
       width: 150,
       renderCell: (params) => {
-        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        if (!params.value) return "";
         const date = new Date(params.value);
-        return date.toLocaleDateString("es-ES");
-      },
+        return date.toLocaleDateString("es-ES", { timeZone: "UTC" });
+      }
     },
     {
       field: "fechafinal",
       headerName: "Fecha de Finalización",
       width: 180,
       renderCell: (params) => {
-        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        if (!params.value) return "";
         const date = new Date(params.value);
-        return date.toLocaleDateString("es-ES");
-      },
+        return date.toLocaleDateString("es-ES", { timeZone: "UTC" });
+      }
     },
 
     {
