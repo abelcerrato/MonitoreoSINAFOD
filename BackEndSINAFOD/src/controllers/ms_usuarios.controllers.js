@@ -92,11 +92,11 @@ export const verificarUsuarioC = async (req, res) => {
 };
 
 export const postUserC = async (req, res) => {
-
-    try {
-        const { nombre, usuario,  correo, idrol, estado, contraseña, creadopor } = req.body
-        console.log(req.body);
-const users = await postUserM(
+  try {
+    const { nombre, usuario, correo, idrol, estado, contraseña, creadopor } =
+      req.body;
+    console.log(req.body);
+    const users = await postUserM(
       nombre,
       usuario,
       correo,
@@ -115,26 +115,25 @@ const users = await postUserM(
 
 export const updateUserC = async (req, res) => {
   try {
-      const { id } = req.params;
-      const { nombre, correo, idrol, estado, modificadopor, usuario, identidad } =
-        req.body;
+    const { id } = req.params;
+    const { nombre, correo, idrol, estado, modificadopor, usuario, identidad } =
+      req.body;
 
-      const users = await updateUserM(
-        nombre,
-        correo,
-        idrol,
-        estado,
-        modificadopor,
-        usuario,
-        identidad,
-        id
-      );
-      res.json({ message: "Usuario Actualizado Exitosamente", user: users });
-    } 
-    catch (error) {
-        console.error('Error al actualizar el usuario: ', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
+    const users = await updateUserM(
+      nombre,
+      correo,
+      idrol,
+      estado,
+      modificadopor,
+      usuario,
+      identidad,
+      id
+    );
+    res.json({ message: "Usuario Actualizado Exitosamente", user: users });
+  } catch (error) {
+    console.error("Error al actualizar el usuario: ", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
 //no está en uso, ya que la contraseña es la identidad del usuario
@@ -147,12 +146,10 @@ export const updateContraseñaC = async (req, res) => {
 
     const users = await updateContraseñaM(nuevaContraseña, usuario);
 
-    res
-      .status(200)
-      .json({
-        message: "Contraseña del Usuario Actualizada Exitosamente",
-        user: users,
-      });
+    res.status(200).json({
+      message: "Contraseña del Usuario Actualizada Exitosamente",
+      user: users,
+    });
   } catch (error) {
     console.error("Error al actualizar la contraseña del usuario: ", error);
     res.status(500).json({ error: "Error interno del servidor" });
@@ -200,12 +197,10 @@ export const verificarToken = async (req, res) => {
     const storedToken = result.rows[0]?.sesionactiva;
 
     if (storedToken !== token) {
-      return res
-        .status(403)
-        .json({
-          valid: false,
-          message: "Sesión inválida o cerrada en otro lugar",
-        });
+      return res.status(403).json({
+        valid: false,
+        message: "Sesión inválida o cerrada en otro lugar",
+      });
     }
 
     return res.json({ valid: true });
@@ -259,12 +254,13 @@ export const loginC = async (req, res) => {
     if (requiereCambio) {
       return res.status(403).json({
         message: "Debe cambiar su contraseña",
-        changePasswordRequired: user.cambiocontraseña,
+
         user: {
           id: user.id,
           usuario: user.usuario,
           idrol: user.idrol,
           estado: user.estado,
+          changePasswordRequired: user.cambiocontraseña,
         },
       });
     }
@@ -284,7 +280,7 @@ export const loginC = async (req, res) => {
       token,
       user.id,
     ]);
-
+ console.log("Usuario autenticado:", user);
     // Responder incluyendo si ya había sesión activa
     return res.json({
       message: yaHabiaSesion
@@ -299,6 +295,8 @@ export const loginC = async (req, res) => {
       },
       yaHabiaSesion,
     });
+
+   
   } catch (error) {
     console.error("Error en login: ", error);
     res.status(500).json({ error: "Error interno del servidor" });

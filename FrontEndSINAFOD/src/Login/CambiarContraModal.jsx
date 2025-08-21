@@ -64,6 +64,8 @@ const CambiarContraModal = ({
     setErrors({ ...errors, [name]: "" }); // Limpia error al escribir
   };
 
+ 
+
   const validate = () => {
     let valid = true;
     const newErrors = { newPassword: "", confirmPassword: "" };
@@ -73,11 +75,11 @@ const CambiarContraModal = ({
             valid = false;
         }
  */
-        if (!passwordRegex.test(passwords.newPassword)) {
-          newErrors.newPassword =
-            "La contraseña deve tener entre 5 y 15 caracteres.";
-          valid = false;
-        }
+    if (!passwordRegex.test(passwords.newPassword)) {
+      newErrors.newPassword =
+        "La contraseña deve tener entre 5 y 15 caracteres.";
+      valid = false;
+    }
     if (passwords.newPassword !== passwords.confirmPassword) {
       newErrors.confirmPassword = "Las contraseñas no coinciden";
       valid = false;
