@@ -127,7 +127,7 @@ export default function SignIn() {
             confirmButtonColor: color.primary.rojo,
           });
         } else if (error.response.status === 403) {
-          const { id, usuario, token } = error.response.data.user; // Asegúrate de recibir el token desde el backend
+          const { id, usuario, token, changePasswordRequired } = error.response.data.user; // Asegúrate de recibir el token desde el backend
 
           // Guardar en localStorage
           localStorage.setItem(
@@ -135,7 +135,7 @@ export default function SignIn() {
             JSON.stringify({
               id,
               usuario,
-              //requiresPasswordChange: true,
+              requiresPasswordChange: changePasswordRequired,
             })
           );
           localStorage.setItem("token", token); // ¡IMPORTANTE! Sin esto, ProtectedRoute bloqueará el acceso
@@ -144,7 +144,7 @@ export default function SignIn() {
           setUser({
             id,
             usuario,
-           // changePasswordRequired: true,
+            requiresPasswordChange: changePasswordRequired,
           });
 
           // Marcar como autenticado

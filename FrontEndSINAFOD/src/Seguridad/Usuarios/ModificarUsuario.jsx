@@ -35,6 +35,7 @@ const Usuario = () => {
     nombre: "",
     usuario: "",
     correo: "",
+    identidad: "",
     idrol: "",
     estado: "",
     modificadopor: user.id,
@@ -58,6 +59,7 @@ const Usuario = () => {
           usuario: userData.usuario || "",
           nombre: userData.nombre || "",
           correo: userData.correo || "",
+          identidad: userData.identidad || "",
           idrol: userData.idrol || "",
           estado: userData.estado || "",
         });
@@ -157,6 +159,15 @@ const Usuario = () => {
             </Grid>
             <Grid item xs={12} size={6}>
               <TextField
+                label="Identidad"
+                name="identidad"
+                value={formData.identidad || ""}
+                onChange={handleChange}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} size={6}>
+              <TextField
                 label="Correo Electrónico"
                 name="correo"
                 value={formData.correo || ""}
@@ -164,15 +175,7 @@ const Usuario = () => {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} size={6}>
-              <TextField
-                label="Usuario"
-                name="usuario"
-                value={formData.usuario || ""}
-                onChange={handleChange}
-                fullWidth
-              />
-            </Grid>
+
             <Grid item xs={12} size={6}>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Rol</InputLabel>

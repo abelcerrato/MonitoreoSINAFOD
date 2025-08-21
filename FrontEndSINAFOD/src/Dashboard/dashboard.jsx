@@ -157,14 +157,14 @@ const Dashboard = ({ children }) => {
 
  useEffect(() => {
     // Verificar si necesita cambio de contraseña solo al cargar el dashboard
-    if (user?.changePasswordRequired) {
+    if (user?.requiresPasswordChange) {
       setOpenChangePasswordModal(true);
     }
-  }, [user?.changePasswordRequired]);  // Solo se ejecuta cuando cambia este valor
+  }, [user?.requiresPasswordChange]);  // Solo se ejecuta cuando cambia este valor
 
  const handlePasswordChangeSuccess = () => {
     // Actualizar el estado del usuario para eliminar el requerimiento
-    updateUser({ ...user, changePasswordRequired: false });
+    updateUser({ ...user, requiresPasswordChange: false });
     setOpenChangePasswordModal(false);
 
     // Opcional: Guardar en localStorage/sessionStorage
@@ -235,9 +235,9 @@ const Dashboard = ({ children }) => {
      <CambiarContraModal
           open={openChangePasswordModal}
           onClose={() =>
-            !user?.changePasswordRequired && setOpenChangePasswordModal(false)
+            !user?.requiresPasswordChange && setOpenChangePasswordModal(false)
           }
-          mandatory={user?.changePasswordRequired}
+          mandatory={true}
           onSuccess={handlePasswordChangeSuccess}
         />
       </Box>
