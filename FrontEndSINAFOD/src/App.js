@@ -53,10 +53,13 @@ export const VerificationContext = React.createContext({
   pauseVerification: () => {},
   resumeVerification: () => {},
 });
+
+
 const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = React.useState(false);
-  const verificationRef = React.useRef(true); 
+  const verificationRef = React.useRef(true);
+  const tokenRef = React.useRef(localStorage.getItem("token"));
 
   React.useEffect(() => {
     const verifyAuth = () => {
@@ -64,24 +67,42 @@ const ProtectedRoute = () => {
       const token = localStorage.getItem("token");
 
       if (!isAuthenticated || !token) {
-        localStorage.removeItem("user");
+        localStorage.clear();
+        sessionStorage.clear();
         navigate("/", { replace: true });
         return false;
       }
+
+      tokenRef.current = token;
       return true;
     };
 
-    if (!verifyAuth()) {
-      return;
-    }
+    if (!verifyAuth()) return;
 
     setIsVerified(true);
 
-    // Verificar validez del token cada 10 segundos
+    const logoutAndRedirect = () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      Swal.fire({
+        icon: "info",
+        title: "Sesión cerrada",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      navigate("/", { replace: true });
+    };
+
     const checkSessionValidity = async () => {
       if (!verificationRef.current) return;
 
       const token = localStorage.getItem("token");
+
+      // Token cambió localmente
+      if (tokenRef.current !== token) {
+        logoutAndRedirect();
+        return;
+      }
 
       if (!token) return;
 
@@ -90,50 +111,31 @@ const ProtectedRoute = () => {
           `${process.env.REACT_APP_API_URL}/verify-token`,
           {
             headers: { Authorization: `Bearer ${token}` },
-            timeout: 10000, // 10 segundos
+            timeout: 10000,
           }
         );
 
-        if (!response.data.valid) {
-          logoutAndRedirect();
-        }
+        if (!response.data.valid) logoutAndRedirect();
       } catch (error) {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
           logoutAndRedirect();
         }
       }
     };
 
-    const logoutAndRedirect = () => {
-      localStorage.clear();
-      sessionStorage.clear();
-      Swal.fire({
-        icon: "info",
-        title: "Sesión cerrada",
-        //text: "Tu sesión ha sido cerrada porque se inició desde otro dispositivo.",
-        timer: 3000,
-        showConfirmButton: false,
-      });
-      navigate("/", { replace: true });
-    };
-
-    const interval = setInterval(checkSessionValidity, 300000); // 5 minutos
+    const interval = setInterval(checkSessionValidity, 60000); // 1 minuto
     return () => clearInterval(interval);
   }, [navigate]);
 
-  if (!isVerified) {
-    return null; // O un componente de carga
-  }
+  if (!isVerified){
+    return null;
+  } 
 
   return (
     <VerificationContext.Provider
       value={{
-        pauseVerification: () => {
-          verificationRef.current = false;
-        },
-        resumeVerification: () => {
-          verificationRef.current = true;
-        },
+        pauseVerification: () => { verificationRef.current = false; },
+        resumeVerification: () => { verificationRef.current = true; },
       }}
     >
       <Outlet />
