@@ -608,6 +608,8 @@ const FormularioExterno = () => {
       "iddepartamento",
       "tipoadministracion",
       "jornada",
+      "nombreced",
+      "codigosaceced"
     ];
 
     // Detectar campos vacíos
@@ -691,7 +693,7 @@ const FormularioExterno = () => {
         >
           <Modal
             open={openDNIModal}
-            onClose={() => {}} // No permitimos cerrar haciendo click fuera
+            onClose={() => { }} // No permitimos cerrar haciendo click fuera
             aria-labelledby="dni-modal-title"
             aria-describedby="dni-modal-description"
           >
@@ -1469,7 +1471,7 @@ const FormularioExterno = () => {
                       readOnly: camposBloqueados.zona,
                     }}
                   >
-                    <MenuItem value="Rural<">Rural</MenuItem>
+                    <MenuItem value="Rural">Rural</MenuItem>
                     <MenuItem value="Urbana">Urbana</MenuItem>
                   </Select>
                   {fieldErrors.zona && (
@@ -1771,7 +1773,7 @@ const FormularioExterno = () => {
             </Box>
             <Modal
               open={openSeleccionModal}
-              onClose={() => {}} // Elimina la función onClose o déjala vacía
+              onClose={() => { }} // Elimina la función onClose o déjala vacía
               aria-labelledby="seleccion-docente-title"
               disableBackdropClick // Esta prop evita que se cierre al hacer clic en el backdrop
               disableEscapeKeyDown // Esta prop evita que se cierre con la tecla ESC
@@ -1818,9 +1820,8 @@ const FormularioExterno = () => {
                       }}
                     >
                       <ListItemText
-                        primary={`${docente.nombre || "Sin nombre"} - ${
-                          docente.identificacion || "Sin centro educativo"
-                        }`}
+                        primary={`${docente.nombre || "Sin nombre"} - ${docente.identificacion || "Sin centro educativo"
+                          }`}
                         secondary={
                           <>
                             <Box

@@ -574,8 +574,8 @@ export const getFiltroDocentesC = async (req, res) => {
       if (tipo === "formacion" && idformacion && idparticipante) {
         // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
-          idPart,
+          idcentroeducativo,
+          idparticipante,
           cargo,
           jornada,
           modalidad,
@@ -641,7 +641,7 @@ export const getFiltroDocentesC = async (req, res) => {
         // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentro,
-          idPart,
+          idparticipante,
           cargo,
           jornada,
           modalidad,
@@ -712,7 +712,7 @@ export const getFiltroDocentesC = async (req, res) => {
       if (tipo === "formacion" && idformacion && idPart) {
         // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
+          idcentroeducativo,
           idPart,
           cargo,
           jornada,
@@ -800,7 +800,7 @@ export const getFiltroDocentesC = async (req, res) => {
       if (tipo === "formacion" && idformacion && idPart) {
        // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
+          idcentroeducativo,
           idPart,
           cargo,
           jornada,
@@ -842,8 +842,8 @@ export const getFiltroDocentesC = async (req, res) => {
       if (tipo === "formacion" && idformacion && idparticipante) {
         // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
-          idcentro,
-          idPart,
+          idcentroeducativo,
+          idparticipante,
           cargo,
           jornada,
           modalidad,
@@ -883,8 +883,11 @@ export const getFiltroDocentesC = async (req, res) => {
     return res.status(201).json({
       message: "Proceso completado exitosamente.",
       docentes,
+      iddocente,
       idPart,
+      idparticipante,
       idcentro,
+      idcentroeducativo,
       ced2,
       form,
       inv,

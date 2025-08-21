@@ -60,7 +60,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
 
       Swal.fire({
         title: "Contraseña Actualizada",
-        text: "La contraseña ha sido actualizada exitosamente a 12345678.",
+        text: "La contraseña ha sido actualizada exitosamente al número de identidad del usuario.",
         icon: "success",
         timer: 6000,
       });
@@ -113,6 +113,7 @@ export default function TablaActividad(isSaved, setIsSaved) {
       : []),
     { field: "id", headerName: "ID", width: 90 },
     { field: "nombre", headerName: "Nombre ", width: 230 },
+    { field: "identidad", headerName: "Identidad", width: 300 },
     { field: "correo", headerName: "Correo Electrónico", width: 300 },
     { field: "usuario", headerName: "Usuario", width: 150 },
     { field: "rol", headerName: " Rol", width: 120 },
