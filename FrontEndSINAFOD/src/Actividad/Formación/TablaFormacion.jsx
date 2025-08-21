@@ -21,6 +21,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import IconButton from "@mui/material/IconButton";
@@ -291,39 +292,39 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
   const columns = [
     ...(tienePermiso(2)
       ? [
-          {
-            field: "actions",
-            headerName: "Acción",
-            width: 190,
-            renderCell: (params) => (
-              <>
-                <Tooltip title="Editar">
-                  <IconButton
-                    onClick={() => handleFormacion(params.id)}
-                    color="action"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
+        {
+          field: "actions",
+          headerName: "Acción",
+          width: 190,
+          renderCell: (params) => (
+            <>
+              <Tooltip title="Editar">
+                <IconButton
+                  onClick={() => handleFormacion(params.id)}
+                  color="action"
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
 
-                <Tooltip title="Actualizar Lineamientos">
-                  <IconButton
-                    onClick={() => handleLineamientosFormacion(params.id)}
-                    color="success"
-                  >
-                    <ChecklistIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Generar QR para participantes">
-                  <IconButton
-                    sx={{ color: color.primary.azul }}
-                    onClick={() => handleOpenQrModal(params.id)}
-                  >
-                    <QrCodeScannerOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
+              <Tooltip title="Actualizar Lineamientos">
+                <IconButton
+                  onClick={() => handleLineamientosFormacion(params.id)}
+                  color="success"
+                >
+                  <ChecklistIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Generar QR para participantes">
+                <IconButton
+                  sx={{ color: color.primary.azul }}
+                  onClick={() => handleOpenQrModal(params.id)}
+                >
+                  <QrCodeScannerOutlinedIcon />
+                </IconButton>
+              </Tooltip>
 
-                {/* <Tooltip title="Ver Detalles">
+              {/* <Tooltip title="Ver Detalles">
                   <IconButton
                     onClick={() => handleOpen(params.id)}
                     color="info"
@@ -331,10 +332,10 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                     <RemoveRedEyeIcon />
                   </IconButton>
                 </Tooltip> */}
-              </>
-            ),
-          },
-        ]
+            </>
+          ),
+        },
+      ]
       : []),
     { field: "id", headerName: "ID", width: 50 },
     {
@@ -351,8 +352,9 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
       renderCell: (params) => {
         if (!params.value) return "";
         const date = new Date(params.value);
-        return date.toLocaleDateString("es-ES");
-      },
+        return date.toLocaleDateString("es-ES", { timeZone: "UTC" });
+      }
+
     },
     {
       field: "fechafinal",
@@ -361,8 +363,9 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
       renderCell: (params) => {
         if (!params.value) return "";
         const date = new Date(params.value);
-        return date.toLocaleDateString("es-ES");
-      },
+        return date.toLocaleDateString("es-ES", { timeZone: "UTC" });
+      }
+
     },
     {
       field: "estado_lineamientos",
