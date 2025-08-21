@@ -81,7 +81,7 @@ export const cargaMasivaFormacion = async (req, res) => {
         const mockReq = {
           params: {
             tipo: "formacion",
-            id: 21 // ID fijo para la formación
+            id: 12 // ID fijo para la formación, aqui se modifica el id
           },
           body: body
         };
