@@ -54,6 +54,7 @@ const CambiarContraModal = ({
 
   //const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{5,}$/;
   const passwordRegex = /^.{5,15}$/;
+
   const handleTogglePassword = (field) => {
     setShowPassword({ ...showPassword, [field]: !showPassword[field] });
   };
@@ -64,8 +65,6 @@ const CambiarContraModal = ({
     setErrors({ ...errors, [name]: "" }); // Limpia error al escribir
   };
 
- 
-
   const validate = () => {
     let valid = true;
     const newErrors = { newPassword: "", confirmPassword: "" };
@@ -75,6 +74,7 @@ const CambiarContraModal = ({
             valid = false;
         }
  */
+
     if (!passwordRegex.test(passwords.newPassword)) {
       newErrors.newPassword =
         "La contraseña deve tener entre 5 y 15 caracteres.";

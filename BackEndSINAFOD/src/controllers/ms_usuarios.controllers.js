@@ -92,6 +92,7 @@ export const verificarUsuarioC = async (req, res) => {
 };
 
 export const postUserC = async (req, res) => {
+
   try {
     const { nombre, usuario, correo, idrol, estado, contraseña, creadopor } =
       req.body;
@@ -213,8 +214,90 @@ export const verificarToken = async (req, res) => {
 
 // Controlador para el login
 export const loginC = async (req, res) => {
-  try {
-    const { usuario, contraseña } = req.body;
+
+    try {
+        const { usuario, contraseña } = req.body;
+
+        if (!usuario || !contraseña) {
+            return res.status(400).json({ error: "Faltan datos en la solicitud" });
+        }
+
+        const user = await verificarUsuarioM(usuario);
+
+        if (!user) {
+            return res.status(401).json({ message: "Usuario o contraseña incorrectos" });
+        }
+
+
+        // Verificar si el usuario no tiene rol asignado
+        if (user.estado === "Inactivo" || user.estado === "Bloqueado" ) {
+            return res.status(401).json({ message: "El usuario no tiene permisos para acceder" });
+        }
+
+        // Verificar si el usuario no tiene rol asignado
+        if (user.idrol === null) {
+            return res.status(401).json({ message: "El usuario no tiene un rol asignado" });
+        }
+
+        const contraseñaValida = await bcrypt.compare(contraseña, user.contraseña);
+        if (!contraseñaValida) {
+            return res.status(401).json({ message: "Credenciales incorrectas" });
+        }
+
+        // const contraseñaNuevoUsuario = await bcrypt.compare("NuevoUsuario1*", user.contraseña);
+      /*const contraseñaTemporal = await bcrypt.compare("Temporal1*", user.contraseña); // yano se usa ya que la contraseña es la identidad del usuario
+        const requiereCambio = user.cambiocontraseña === true || contraseñaTemporal;
+
+        if (requiereCambio) {
+            return res.status(403).json({
+                message: "Debe cambiar su contraseña",
+                changePasswordRequired: user.cambiocontraseña,
+                user: {
+                    id: user.id,
+                    usuario: user.usuario,
+                    idrol: user.idrol,
+                    estado: user.estado
+                }
+            });
+        } */
+
+        // Verificar si ya había una sesión activa
+        const yaHabiaSesion = user.sesionactiva !== null;
+
+        //  Generar nuevo token
+        const token = jwt.sign(
+            { id: user.id, usuario: user.usuario, idrol: user.idrol },
+            process.env.JWT_SECRET,
+            { expiresIn: "8h" }
+        );
+
+        //  Guardar nuevo token en BD
+        await pool.query(
+            'UPDATE ms_usuarios SET sesionactiva = $1 WHERE id = $2',
+            [token, user.id]
+        );
+
+        // Responder incluyendo si ya había sesión activa
+        return res.json({
+            message: yaHabiaSesion
+                ? "Inicio de sesión exitoso. Se cerró otra sesión activa."
+                : "Inicio de sesión exitoso.",
+            token,
+            user: {
+                id: user.id,
+                usuario: user.usuario,
+                idrol: user.idrol,
+                sesionactiva: token
+            },
+            yaHabiaSesion
+        });
+
+    } catch (error) {
+        console.error("Error en login: ", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
 
     if (!usuario || !contraseña) {
       return res.status(400).json({ error: "Faltan datos en la solicitud" });

@@ -155,14 +155,14 @@ const Dashboard = ({ children }) => {
 
   const { user, updateUser } = useUser();
 
-  useEffect(() => {
+ useEffect(() => {
     // Verificar si necesita cambio de contraseña solo al cargar el dashboard
     if (user?.requiresPasswordChange) {
       setOpenChangePasswordModal(true);
     }
   }, [user?.requiresPasswordChange]);  // Solo se ejecuta cuando cambia este valor
 
-  const handlePasswordChangeSuccess = () => {
+ const handlePasswordChangeSuccess = () => {
     // Actualizar el estado del usuario para eliminar el requerimiento
     updateUser({ ...user, requiresPasswordChange: false });
     setOpenChangePasswordModal(false);
@@ -232,7 +232,7 @@ const Dashboard = ({ children }) => {
           Propiedad Intelectual del Estado de Honduras
         </Typography>
 
-        <CambiarContraModal
+     <CambiarContraModal
           open={openChangePasswordModal}
           onClose={() =>
             !user?.requiresPasswordChange && setOpenChangePasswordModal(false)
