@@ -314,6 +314,10 @@ export const getFiltroDocentesC = async (req, res) => {
     decimo,
     onceavo,
     doceavo,
+
+
+    soloparticipante,
+
   } = req.body;
 
   console.log("respuesta del servidor: ", req.body);
@@ -328,6 +332,9 @@ export const getFiltroDocentesC = async (req, res) => {
   } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
     idciclosacademicos = 3;
   }
+
+
+  let idparticipantecentropostman = 86; // valor de la relacion del participante que no lleva centro educativo quemado
 
   try {
     // Buscar por identificación de docente y por codigo sace
@@ -351,8 +358,109 @@ export const getFiltroDocentesC = async (req, res) => {
     let form = null;
     let inv = null;
 
+
+    // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
+    if (req.body.soloparticipante === true && !iddocente && !idparticipante) {
+      console.log("CASO 0: Solo insertar participante y la relacion con centro, si no existe en docente ni en participante");
+
+      // Insertar docente
+      const docente = await postDocentesM(
+        codigosace,
+        nombre,
+        apellido,
+        identificacion,
+        correo,
+        iddepartamento,
+        idmunicipio,
+        idaldea,
+        genero,
+        nombreced,
+        codigosaceced,
+        idnivelacademicos,
+        idciclosacademicos,
+        zona
+      );
+      docentes = docente;
+      console.log("iddocente: ", docentes);
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor
+      );
+
+      idPart = participante;
+      console.log("idPart: ", idPart);
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentropostman);
+    }
+
+    // CASO 0.1: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo{
+    else if (req.body.soloparticipante === true && !idparticipante) {
+      console.log("CASO 0.1: Solo inserta el participante y la relacion si no existe participante");
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor
+      );
+
+      idPart = participante;
+      console.log("idPart: ", idPart);
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentropostman);
+    }
+
+    // CASO 0.2: Solo insertar participante si viene el flag
+    else if (req.body.soloparticipante === true) {
+      console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(idformacion, idparticipante, idparticipantecentropostman);
+    }
+
     // CASO 1: No existe docente, ni participante, ni centro educativo
-    if (!iddocente && !idparticipante && !idcentroeducativo) {
+    else if (!iddocente && !idparticipante && !idcentroeducativo) {
       console.log(
         "CASO 1: No existe docente, ni participante, ni centro educativo"
       );
@@ -798,7 +906,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-       // Insertar relación con centro educativo
+        // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentroeducativo,
           idPart,

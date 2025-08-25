@@ -396,10 +396,12 @@ export const getParticipanteCodSACEC = async (req, res) => {
 //filtrar por codigo SACE o por Identificacion
 export const postParticipantesIFCedC = async (req, res) => {
   const {
+
     identificacion,
     codigosace,
     correo,
     nombre,
+    apellido,
     fechanacimiento,
     edad,
     telefono,
@@ -448,6 +450,8 @@ export const postParticipantesIFCedC = async (req, res) => {
 
     idinvestigacion,
     idformacion,
+    soloparticipante, // Nuevo flag para solo insertar participante
+
   } = req.body;
 
   let idciclosacademicos = null;
@@ -458,6 +462,9 @@ export const postParticipantesIFCedC = async (req, res) => {
   } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
     idciclosacademicos = 3;
   }
+
+  let idparticipantecentropostman = 86; // valor de la relacion del participante que no lleva centro educativo quemado
+
 
   try {
     const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
@@ -481,12 +488,139 @@ export const postParticipantesIFCedC = async (req, res) => {
       ced2: null,
     };
 
-    // CASO 1: No existe docente, ni participante, ni centro educativo
-    if (!iddocente && !idparticipante && !idcentroeducativo) {
+
+    // CASO 0: Solo insertar participante si viene el flag
+    if (req.body.soloparticipante === true && !iddocente && !idparticipante) {
+      console.log("CASO 0: Solo insertar participante");
+
       // Insertar docente
       const docente = await postDocentesM(
         codigosace,
         nombre,
+        apellido,
+        identificacion,
+        correo,
+        iddepartamento,
+        idmunicipio,
+        idaldea,
+        genero,
+        nombreced,
+        codigosaceced,
+        idnivelacademicos,
+        idciclosacademicos,
+        zona
+      );
+      response.docentes = docente;
+      const iddocen = response.participantes;
+      console.log("idDocente: ", iddocen);
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor
+      );
+      response.participantes = participante;
+
+      const idPart = response.participantes;
+      console.log("idPart: ", idPart);
+
+
+      // Insertar formaciones
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idPart, idparticipantecentropostman);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
+      }
+    }
+
+    // CASO 0.1: Solo insertar participante si viene el flag
+    else if (req.body.soloparticipante === true && !idparticipante) {
+      console.log("CASO 0.1: Solo insertar participante");
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor
+      );
+      response.participantes = participante;
+
+      const idPart = response.participantes;
+      console.log("idPart: ", idPart);
+
+      // Insertar formaciones
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idPart, idparticipantecentropostman);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
+      }
+
+    }
+
+    // CASO 0.2: Solo insertar participante si viene el flag
+    else if (req.body.soloparticipante === true) {
+      console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
+
+      // Insertar formaciones
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentropostman);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
+      }
+    }
+
+
+    // CASO 1: No existe docente, ni participante, ni centro educativo
+    else if (!iddocente && !idparticipante && !idcentroeducativo) {
+      console.log("CASO 1: No existe docente, ni participante, ni centro educativo");
+      // Insertar docente
+      const docente = await postDocentesM(
+        codigosace,
+        nombre,
+        apellido,
         identificacion,
         correo,
         iddepartamento,
@@ -576,16 +710,18 @@ export const postParticipantesIFCedC = async (req, res) => {
       console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
-          response.formacion.push(r);
-        }
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
+
     // CASO 2: Existe docente, pero no participante ni centro educativo
     else if (iddocente && !idparticipante && !idcentroeducativo) {
+      console.log("CASO 2: Existe docente, pero no participante ni centro educativo");
       const participante = await postParticipanteM(
         identificacion,
         codigosace,
@@ -659,20 +795,22 @@ export const postParticipantesIFCedC = async (req, res) => {
       console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
-          response.formacion.push(r);
-        }
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
 
     // CASO 3: No existe docente, pero sí existe participante y centro educativo
     else if (!iddocente && idparticipante && idcentroeducativo) {
+      console.log("CASO 3: No existe docente, pero sí existe participante y centro educativo");
       const docente = await postDocentesM(
         codigosace,
         nombre,
+        apellido,
         identificacion,
         correo,
         iddepartamento,
@@ -716,16 +854,18 @@ export const postParticipantesIFCedC = async (req, res) => {
       console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
-          response.formacion.push(r);
-        }
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
+
     // CASO 4: Existe docente y participante, pero NO existe centro educativo
     else if (iddocente && idparticipante && !idcentroeducativo) {
+      console.log("CASO 4: Existe docente y participante, pero NO existe centro educativo");
       // Insertar centro educativo
       const centro = await postCentroEducativoM(
         nombreced,
@@ -771,18 +911,19 @@ export const postParticipantesIFCedC = async (req, res) => {
       console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
-          response.formacion.push(r);
-        }
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
 
 
     // CASO 5: Existe docente y centro educativo, pero NO existe participante
     else if (iddocente && !idparticipante && idcentroeducativo) {
+      console.log("CASO 5: Existe docente y centro educativo, pero NO existe participante");
       const participante = await postParticipanteM(
         identificacion,
         codigosace,
@@ -840,16 +981,17 @@ export const postParticipantesIFCedC = async (req, res) => {
       console.log("idparticipantecentro: ", idparticipantecentro);
 
       // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
-          response.formacion.push(r);
-        }
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idPart, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
     // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
     else {
+      console.log("CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario");
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
         idcentroeducativo,
@@ -878,13 +1020,13 @@ export const postParticipantesIFCedC = async (req, res) => {
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
-      // Insertar formaciones
-      if (Array.isArray(idformacion)) {
-        response.formacion = [];
-        for (const form of idformacion) {
-          const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
-          response.formacion.push(r);
-        }
+       // Insertar formaciones
+      const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
+      response.formacion = [];
+      for (const form of idsFormacion) {
+        const r = await postParticipanteFormacionM(form, idparticipante, idparticipantecentro);
+        response.formacion.push(r);
+        console.log("relacion insertada:", r);
       }
     }
 
