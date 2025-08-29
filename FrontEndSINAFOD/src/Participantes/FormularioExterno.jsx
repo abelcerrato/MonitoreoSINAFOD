@@ -102,6 +102,7 @@ const FormularioExterno = () => {
     idaldea: null,
     tipoadministracion: "",
     creadopor: null,
+    
   });
 
   const [camposBloqueados, setCamposBloqueados] = useState({
@@ -157,44 +158,69 @@ const FormularioExterno = () => {
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
 
-    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
     let sanitizedValue =
       type === "checkbox" ? checked : value === null ? "" : value;
 
     setFormData((prevData) => {
-      // Base de la nueva data
       let newData = { ...prevData, [name]: sanitizedValue };
 
+      // Validar años de servicio solo números
       if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
           return prevData;
         }
       }
 
-      // Si es fecha de nacimiento, calcular edad
+      // Validar teléfono: solo números, máximo 8 dígitos
+      setFieldErrors((prevErrors) => {
+        let newErrors = { ...prevErrors };
+        if (name === "telefono") {
+          if (!/^\d*$/.test(value)) {
+            newErrors.telefono =
+              "El teléfono solo debe contener números, sin guiones ni caracteres especiales.";
+          } else if (value.length !== 8) {
+            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+          } else {
+            newErrors.telefono = ""; // sin error
+          }
+        }
+        return newErrors;
+      });
+
+      // Si es fecha de nacimiento, calcular edad y validar que sea mayor de 18
       if (name === "fechanacimiento" && value) {
         const birthDate = new Date(value);
         if (!isNaN(birthDate.getTime())) {
           const today = new Date();
           let age = today.getFullYear() - birthDate.getFullYear();
           const monthDiff = today.getMonth() - birthDate.getMonth();
-
           if (
             monthDiff < 0 ||
             (monthDiff === 0 && today.getDate() < birthDate.getDate())
           ) {
             age--;
           }
-
           newData.edad = age.toString();
+
+          setFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            fechanacimiento:
+              age < 18 ? "El participante debe ser mayor de 18 años." : "",
+          }));
         } else {
-          // Si la fecha no es válida, limpiamos la edad
           newData.edad = "";
+          setFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            fechanacimiento: "Fecha no válida.",
+          }));
         }
       }
+
       return newData;
     });
   };
+
+
 
   // Obtener departamentos del centro educativo
   useEffect(() => {
@@ -617,7 +643,7 @@ const FormularioExterno = () => {
       "idgradoacademicos",
       "idfuncion",
       ...(formData.tienecentro
-        ? [ // ✅ Si es solo participante → pedir también datos del centro educativo
+        ? [
           "tipocentro",
           "nombreced",
           "modalidad",
@@ -628,70 +654,43 @@ const FormularioExterno = () => {
           "jornada",
           "cargo",
         ]
-        : [] // 🚫 Si no, solo lo personal
-      ),
+        : [])
     ];
 
-    // Detectar campos vacíos
     let errors = {};
+
+    // 1️⃣ Detectar campos vacíos
     requiredFields.forEach((field) => {
       if (!formData[field]) {
-        errors[field] = true;
+        errors[field] = "Este campo es obligatorio";
       }
     });
 
+    // 2️⃣ Edad mínima 18
+    if (formData.edad && parseInt(formData.edad, 10) < 18) {
+      errors.fechanacimiento = "Debe ser mayor de 18 años";
+    }
+
+    // 3️⃣ Teléfono: solo números, 8 dígitos
+    if (formData.telefono) {
+      if (!/^\d{8}$/.test(formData.telefono)) {
+        errors.telefono =
+          "El teléfono debe tener exactamente 8 números, sin guiones ni caracteres especiales";
+      }
+    }
+
+    setFieldErrors(errors);
+
+    // 🚫 Si hay errores, no enviar
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-
-      // 🔹 Mapeo de nombres amigables para los campos
-      const getFieldLabel = (field) => {
-        switch (field) {
-          case "identificacion": return "Identificación";
-          case "nombre": return "Nombre";
-          case "apellido": return "Apellido";
-          case "correo": return "Correo electrónico";
-          case "telefono": return "Teléfono";
-          case "fechanacimiento": return "Fecha de nacimiento";
-          case "cargo": return "Cargo que desempeñaen el centro educativo";
-          case "genero": return "Género";
-          case "deptoresidencia": return "Departamento de residencia";
-          case "municipioresidencia": return "Municipio de residencia";
-          case "idnivelacademicos": return "Nivel académico";
-          case "idgradoacademicos": return "Grado académico";
-          case "idfuncion": return "Cargo que desempeña";
-          case "tipocentro": return "Tipo de centro";
-          case "nombreced": return "Nombre del centro educativo";
-          case "modalidad": return "Modalidad";
-          case "zona": return "Zona";
-          case "idmunicipio": return "Municipio";
-          case "iddepartamento": return "Departamento";
-          case "tipoadministracion": return "Tipo de administración";
-          case "jornada": return "Jornada";
-          default: return field;
-        }
-      };
-
-      // 🔹 Crear lista de campos faltantes
-      const camposFaltantes = Object.keys(errors)
-        .map((field) => getFieldLabel(field))
-        .join(", ");
-
-      Swal.fire({
-        title: "Campos obligatorios",
-        text: `Faltan por llenar: ${camposFaltantes}`,
-        icon: "warning",
-        confirmButtonColor: color.primary.rojo,
-        confirmButtonText: "OK",
-      });
       return;
     }
 
     try {
-      // Crear copia de los datos
       let dataToSend = { ...formData };
 
-      // 🚫 Si NO es solo participante, limpiar datos de centro educativo
       if (!formData.tienecentro) {
+        // Limpiar campos de centro educativo
         dataToSend = {
           ...dataToSend,
           prebasica: null,
@@ -724,7 +723,6 @@ const FormularioExterno = () => {
         };
       }
 
-      // Convertir strings vacíos a null
       dataToSend = Object.fromEntries(
         Object.entries(dataToSend).map(([key, value]) => [
           key,
@@ -734,15 +732,11 @@ const FormularioExterno = () => {
         ])
       );
 
-      console.log("Datos a enviar:", dataToSend);
-
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/participante/formacion/${investCap}`,
         dataToSend,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -767,6 +761,7 @@ const FormularioExterno = () => {
       });
     }
   };
+
 
 
   return (
@@ -1064,14 +1059,13 @@ const FormularioExterno = () => {
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
-                  error={fieldErrors.telefono}
-                  helperText={
-                    fieldErrors.telefono ? "Este campo es obligatorio" : ""
-                  }
+                  error={!!fieldErrors.telefono} // true si hay error
+                  helperText={fieldErrors.telefono || ""}
                   InputProps={{
                     readOnly: camposBloqueados.telefono,
                   }}
                 />
+
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl fullWidth error={fieldErrors.idnivelacademicos}>

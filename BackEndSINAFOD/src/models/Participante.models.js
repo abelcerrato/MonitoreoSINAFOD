@@ -360,7 +360,6 @@ SELECT
 export const getParticipanteIdFormacionM = async (id) => {
   try {
     const { rows } = await pool.query(
-
       //pf.idparticipante, - agregue as para que fuera id tanto en investigación como en formación
       `             
 SELECT 
@@ -563,8 +562,8 @@ export const putParticipanteM = async (
                 datoscorrectos=$18, 
                 autorizadatos=$19, 
                 modificadopor=$20,
-                apellido=$21
-                lugardetrabajo=22,
+                apellido=$21,
+                lugardetrabajo=$22
                 WHERE id=$23
                 RETURNING *`,
       [

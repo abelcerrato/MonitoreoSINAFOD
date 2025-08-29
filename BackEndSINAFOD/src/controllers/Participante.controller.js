@@ -471,7 +471,7 @@ export const postParticipantesIFCedC = async (req, res) => {
   }
 
   let idparticipantecentropostman = 86; // valor de la relacion del participante que no lleva centro educativo quemado
-
+  let modificadopor = null; // valor por defecto
 
   try {
     const resultado1 = await getDocenteIdentificacionM(identificacion); // iddocente
@@ -617,7 +617,6 @@ export const postParticipantesIFCedC = async (req, res) => {
         codigosace,
         correo,
         nombre,
-        apellido,
         fechanacimiento,
         edad,
         telefono,
@@ -633,7 +632,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        
+        modificadopor,
+        apellido,
         lugardetrabajo,
         idparticipante
       );
@@ -857,7 +857,6 @@ export const postParticipantesIFCedC = async (req, res) => {
         codigosace,
         correo,
         nombre,
-        apellido,
         fechanacimiento,
         edad,
         telefono,
@@ -873,7 +872,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        
+        modificadopor,
+        apellido,
         lugardetrabajo,
         idparticipante
       );
@@ -949,7 +949,6 @@ export const postParticipantesIFCedC = async (req, res) => {
         codigosace,
         correo,
         nombre,
-        apellido,
         fechanacimiento,
         edad,
         telefono,
@@ -965,7 +964,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        
+        modificadopor,
+        apellido,
         lugardetrabajo,
         idparticipante
       );
@@ -1111,7 +1111,6 @@ export const postParticipantesIFCedC = async (req, res) => {
         codigosace,
         correo,
         nombre,
-        apellido,
         fechanacimiento,
         edad,
         telefono,
@@ -1127,7 +1126,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        
+        modificadopor,
+        apellido,
         lugardetrabajo,
         idparticipante
       );
