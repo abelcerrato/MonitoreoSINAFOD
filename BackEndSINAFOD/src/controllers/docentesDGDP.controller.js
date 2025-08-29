@@ -6,6 +6,7 @@ import {
   postParticipanteFormacionM,
   postParticipanteInvestigacionM,
   postParticipanteM,
+  putParticipanteM,
 } from "../models/Participante.models.js";
 import {
   getIdCentroEducativoSACEM,
@@ -243,6 +244,7 @@ export const getFiltroDocenteC = async (req, res) => {
   }
 };
 
+
 //filtrar por codigo SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
   const { tipo, id } = req.params;
@@ -359,6 +361,7 @@ export const getFiltroDocentesC = async (req, res) => {
     let ced2 = null;
     let form = null;
     let inv = null;
+    let participantes = null;
 
 
     // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
@@ -458,6 +461,35 @@ export const getFiltroDocentesC = async (req, res) => {
     // CASO 0.2: Solo insertar participante si viene el flag
     else if (tienecentro === false) {
       console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
+
+       // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
 
       // Insertar formaciones
       form = await postParticipanteFormacionM(idformacion, idparticipante, idparticipantecentropostman);
@@ -667,6 +699,36 @@ export const getFiltroDocentesC = async (req, res) => {
         "CASO 3: No existe docente, pero sí existe participante y centro educativo"
       );
 
+       // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
+
+
       const docente = await postDocentesM(
         codigosace,
         nombre,
@@ -735,6 +797,35 @@ export const getFiltroDocentesC = async (req, res) => {
       console.log(
         "CASO 4: Existe docente y participante, pero NO existe centro educativo"
       );
+
+       // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
@@ -960,6 +1051,38 @@ export const getFiltroDocentesC = async (req, res) => {
       console.log(
         "CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario"
       );
+
+            // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
+
+
+
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
         // Insertar relación con centro educativo
@@ -1014,6 +1137,7 @@ export const getFiltroDocentesC = async (req, res) => {
       ced2,
       form,
       inv,
+      participantes,
     });
   } catch (error) {
     console.error("Error al obtener datos:", error);

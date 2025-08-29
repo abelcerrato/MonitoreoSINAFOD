@@ -271,7 +271,7 @@ export const putParticipanteC = async (req, res) => {
     decimo,
     onceavo,
     doceavo,
-    superior, 
+    superior,
     lugardetrabajo
   } = req.body;
   console.log("Datos que llega", req.body);
@@ -611,6 +611,37 @@ export const postParticipantesIFCedC = async (req, res) => {
     else if (req.body.tienecentro === false) {
       console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
 
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      response.participantes = Participante;
+
+      const idparticipanteput = Participante;
+      console.log("idparticipante actualizado: ", idparticipanteput);
+
       // Insertar formaciones
       const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
       response.formacion = [];
@@ -820,6 +851,37 @@ export const postParticipantesIFCedC = async (req, res) => {
     // CASO 3: No existe docente, pero sí existe participante y centro educativo
     else if (!iddocente && idparticipante && idcentroeducativo) {
       console.log("CASO 3: No existe docente, pero sí existe participante y centro educativo");
+
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      response.participantes = Participante;
+
+      const idparticipanteput = Participante;
+      console.log("idparticipante actualizado: ", idparticipanteput);
+
       const docente = await postDocentesM(
         codigosace,
         nombre,
@@ -880,6 +942,39 @@ export const postParticipantesIFCedC = async (req, res) => {
     // CASO 4: Existe docente y participante, pero NO existe centro educativo
     else if (iddocente && idparticipante && !idcentroeducativo) {
       console.log("CASO 4: Existe docente y participante, pero NO existe centro educativo");
+
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      response.participantes = Participante;
+
+      const idparticipanteput = Participante;
+      console.log("idparticipante actualizado: ", idparticipanteput);
+
+
       // Insertar centro educativo
       const centro = await postCentroEducativoM(
         nombreced,
@@ -1009,6 +1104,38 @@ export const postParticipantesIFCedC = async (req, res) => {
     // CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario
     else {
       console.log("CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario");
+
+       // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        lugardetrabajo,
+        idparticipante
+      );
+      response.participantes = Participante;
+
+      const idparticipanteput = Participante;
+      console.log("idparticipante actualizado: ", idparticipanteput);
+      
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
         idcentroeducativo,
@@ -1038,7 +1165,7 @@ export const postParticipantesIFCedC = async (req, res) => {
       const idparticipantecentro = relacionCed;
       console.log("idparticipantecentro: ", idparticipantecentro);
 
-       // Insertar formaciones
+      // Insertar formaciones
       const idsFormacion = Array.isArray(idformacion) ? idformacion : [idformacion];
       response.formacion = [];
       for (const form of idsFormacion) {
