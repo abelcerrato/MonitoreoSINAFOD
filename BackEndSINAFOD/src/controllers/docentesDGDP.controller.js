@@ -362,7 +362,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
 
     // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
-    if (req.body.tienecentro === false && !iddocente && !idparticipante) {
+    if (tienecentro === false && !iddocente && !idparticipante) {
       console.log("CASO 0: Solo insertar participante y la relacion con centro, si no existe en docente ni en participante");
 
       // Insertar docente
@@ -419,7 +419,7 @@ export const getFiltroDocentesC = async (req, res) => {
     }
 
     // CASO 0.1: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo{
-    else if (req.body.tienecentro === false && !idparticipante) {
+    else if (tienecentro === false && !idparticipante) {
       console.log("CASO 0.1: Solo inserta el participante y la relacion si no existe participante");
 
       // Insertar participante
@@ -456,7 +456,7 @@ export const getFiltroDocentesC = async (req, res) => {
     }
 
     // CASO 0.2: Solo insertar participante si viene el flag
-    else if (req.body.tienecentro === false) {
+    else if (tienecentro === false) {
       console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
 
       // Insertar formaciones
