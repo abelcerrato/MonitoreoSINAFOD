@@ -484,7 +484,6 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
         lugardetrabajo,
         idparticipante
       );
@@ -721,7 +720,6 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
         lugardetrabajo,
         idparticipante
       );
@@ -820,7 +818,6 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
         lugardetrabajo,
         idparticipante
       );
@@ -1074,7 +1071,6 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
         lugardetrabajo,
         idparticipante
       );

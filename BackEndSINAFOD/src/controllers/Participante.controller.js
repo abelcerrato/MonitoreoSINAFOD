@@ -633,7 +633,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
+        
         lugardetrabajo,
         idparticipante
       );
@@ -873,7 +873,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
+        
         lugardetrabajo,
         idparticipante
       );
@@ -965,7 +965,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
+        
         lugardetrabajo,
         idparticipante
       );
@@ -1127,7 +1127,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        modificadopor,
+        
         lugardetrabajo,
         idparticipante
       );
