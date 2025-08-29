@@ -103,14 +103,14 @@ export const getParticipanteDNIM = async (identificacion) => {
                 mu.usuario as creadopor, p.fechacreacion, 
                 mu2.usuario as modificadopor, p.fechamodificacion 
             FROM participantes p
-            inner join nivelesacademicos n on p.idnivelacademicos = n.id 
-            inner join gradosacademicos g on p.idgradoacademicos = g.id 
-            inner join departamento d on p.deptoresidencia = d.id 
-            inner join municipio m on p.municipioresidencia = m.id 
+            left join nivelesacademicos n on p.idnivelacademicos = n.id 
+            left join gradosacademicos g on p.idgradoacademicos = g.id 
+            left join departamento d on p.deptoresidencia = d.id 
+            left join municipio m on p.municipioresidencia = m.id 
             left join aldeas a on p.aldearesidencia = a.id 
            
             left join cargodesempeña c on p.idfuncion = c.id
-            inner join ms_usuarios mu on p.creadopor = mu.id 
+            left join ms_usuarios mu on p.creadopor = mu.id 
             left join ms_usuarios mu2 on p.modificadopor = mu2.id 
             WHERE p.identificacion=$1
             order by p.id desc
