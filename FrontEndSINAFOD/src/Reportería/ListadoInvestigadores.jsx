@@ -176,7 +176,9 @@ const ListadoInvestigadores = () => {
           item.nombre,
           item.identificacion,
           item.genero,
-          item.fechanacimiento,
+          item.fechanacimiento
+            ? new Date(item.fechanacimiento).toISOString().split("T")[0]
+            : "",
           item.edad,
           item.correo,
           item.telefono,

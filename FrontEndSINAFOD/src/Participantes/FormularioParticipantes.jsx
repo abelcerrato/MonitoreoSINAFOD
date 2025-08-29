@@ -58,7 +58,7 @@ const FormularParticipantes = () => {
     identificacion: "",
     codigosace: "",
     nombre: "",
-apellido: "",
+    apellido: "",
     genero: "",
     añosdeservicio: 0,
     codigodered: "",
@@ -69,12 +69,15 @@ apellido: "",
     idgradoacademicos: null,
     idfuncion: "",
     caserio: "",
+
+    lugardetrabajo : "",
     tipocentro: "",
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
     basica: false,
     media: false,
+    superior: false,
     primero: false,
     segundo: false,
     tercero: false,
@@ -121,12 +124,13 @@ apellido: "",
       idfuncion: "",
       caserio: "",
       tipocentro: "",
-
+      lugardetrabajo : "",
       nombreced: "",
       codigosaceced: "",
       prebasica: false,
       basica: false,
       media: false,
+      superior: false,  
       primero: false,
       segundo: false,
       tercero: false,
@@ -560,11 +564,13 @@ apellido: "",
       aldearesidencia: docente.aldearesidencia || "",
       caserio: docente.caserio || "",
       idfuncion: docente.idfuncion || "",
+      lugardetrabajo : docente.lugardetrabajo || "",
 
       /*Datos del centro educativo */
       prebasica: docente.prebasica || false,
       basica: docente.basica || false,
       media: docente.media || false,
+      superior: docente.superior || false,
       primero: docente.primero || false,
       segundo: docente.segundo || false,
       tercero: docente.tercero || false,
@@ -853,7 +859,7 @@ apellido: "",
                     name="añosdeservicio"
                     value={formData.añosdeservicio || ""}
                     onChange={handleChange}
-                    
+
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -988,6 +994,17 @@ apellido: "",
                   />
                 </Grid>
               </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                <TextField
+                  fullWidth
+                  name="lugardetrabajo"
+                  value={formData.lugardetrabajo}
+                  onChange={handleChange}
+
+                />
+              </Grid>
+              
               {formacioninvest === "investigacion" && (
                 <Box
                   sx={{
@@ -1596,9 +1613,8 @@ apellido: "",
                     }}
                   >
                     <ListItemText
-                      primary={`${docente.nombre || "Sin nombre"} - ${
-                        docente.identificacion || "Sin identificación"
-                      }`}
+                      primary={`${docente.nombre || "Sin nombre"} - ${docente.identificacion || "Sin identificación"
+                        }`}
                       secondary={
                         <>
                           <Box
