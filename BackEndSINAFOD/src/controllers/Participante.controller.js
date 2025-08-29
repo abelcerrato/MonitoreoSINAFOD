@@ -455,7 +455,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
     idinvestigacion,
     idformacion,
-    soloparticipante, // Nuevo flag para solo insertar participante
+    tienecentro, // Nuevo flag para solo insertar participante
 
   } = req.body;
 
@@ -495,7 +495,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
 
     // CASO 0: Solo insertar participante si viene el flag
-    if (req.body.soloparticipante === true && !iddocente && !idparticipante) {
+    if (req.body.tienecentro === false && !iddocente && !idparticipante) {
       console.log("CASO 0: Solo insertar participante");
 
       // Insertar docente
@@ -560,7 +560,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     }
 
     // CASO 0.1: Solo insertar participante si viene el flag
-    else if (req.body.soloparticipante === true && !idparticipante) {
+    else if (req.body.tienecentro === false && !idparticipante) {
       console.log("CASO 0.1: Solo insertar participante");
 
       // Insertar participante
@@ -604,7 +604,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     }
 
     // CASO 0.2: Solo insertar participante si viene el flag
-    else if (req.body.soloparticipante === true) {
+    else if (req.body.tienecentro === false) {
       console.log("CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante");
 
       // Insertar formaciones
