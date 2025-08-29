@@ -270,6 +270,8 @@ export const putParticipanteC = async (req, res) => {
     decimo,
     onceavo,
     doceavo,
+    superior, 
+    lugardetrabajo
   } = req.body;
   console.log("Datos que llega", req.body);
 
@@ -307,6 +309,7 @@ export const putParticipanteC = async (req, res) => {
       datoscorrectos,
       autorizadatos,
       modificadopor,
+      lugardetrabajo,
       id
     );
 
@@ -343,6 +346,7 @@ export const putParticipanteC = async (req, res) => {
       decimo,
       onceavo,
       doceavo,
+      superior,
       idcentropart
     );
 
@@ -435,6 +439,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     prebasica,
     basica,
     media,
+    superior,
     primero,
     segundo,
     tercero,
@@ -691,6 +696,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -776,6 +782,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -835,6 +842,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -892,6 +900,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -962,6 +971,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -1002,6 +1012,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
