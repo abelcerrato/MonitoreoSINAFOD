@@ -285,6 +285,7 @@ export const getFiltroDocentesC = async (req, res) => {
     datoscorrectos,
     autorizadatos,
     creadopor,
+    idetnia,
 
     //datos del cventro educativo
     nombreced,
@@ -409,7 +410,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -452,7 +454,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -558,7 +561,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -648,7 +652,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -932,7 +937,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -1026,7 +1032,8 @@ export const getFiltroDocentesC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;

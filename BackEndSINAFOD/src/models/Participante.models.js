@@ -9,7 +9,7 @@ export const getParticipanteM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
                 
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
@@ -81,6 +81,7 @@ export const getParticipanteM = async () => {
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id  
+                left join etnias e on p.idetnia = e.id
         `);
     //console.log(rows);
     return rows;
@@ -98,7 +99,7 @@ export const getParticipanteDNIM = async (identificacion) => {
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
                 
-                p.idfuncion, c.cargo,
+                p.idfuncion, c.cargo, e.etnia,
                 p.datoscorrectos, p.autorizadatos, 
                 mu.usuario as creadopor, p.fechacreacion, 
                 mu2.usuario as modificadopor, p.fechamodificacion 
@@ -112,6 +113,7 @@ export const getParticipanteDNIM = async (identificacion) => {
             left join cargodesempeña c on p.idfuncion = c.id
             left join ms_usuarios mu on p.creadopor = mu.id 
             left join ms_usuarios mu2 on p.modificadopor = mu2.id 
+            left join etnias e on p.idetnia = e.id
             WHERE p.identificacion=$1
             order by p.id desc
         `,
@@ -136,7 +138,7 @@ export const getParticipanteIdM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion,  c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion,  c.cargo as cargopart, e.etnia,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
@@ -177,6 +179,7 @@ export const getParticipanteIdM = async (id) => {
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
+                left join etnias e on p.idetnia = e.id
             WHERE p.id=$1
             order by p.id desc
         `,
@@ -202,7 +205,7 @@ export const getParticipanteInvestigacionM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -224,6 +227,7 @@ export const getParticipanteInvestigacionM = async () => {
                 left join cargodesempeña c on p.idfuncion = c.id
                 inner join participantesinvestigacion pi on p.id= pi.idparticipante 
                 inner join investigacion i on pi.idinvestigacion =i.id
+                left join etnias e on p.idetnia = e.id
             `
     );
     return rows;
@@ -242,7 +246,7 @@ export const getParticipanteIdInvestM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -264,6 +268,7 @@ export const getParticipanteIdInvestM = async (id) => {
                 left join cargodesempeña c on p.idfuncion = c.id
                 inner join participantesinvestigacion pi on p.id= pi.idparticipante 
                 inner join investigacion i on pi.idinvestigacion =i.id
+                left join etnias e on p.idetnia = e.id
                 WHERE pi.idinvestigacion =  $1;
         `,
       [id]
@@ -285,7 +290,7 @@ SELECT
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
          
                 
                 -------------------DATOS DE LA FORMACION------------------
@@ -347,6 +352,7 @@ SELECT
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
+                left join etnias e on p.idetnia = e.id
 
         `
     );
@@ -368,7 +374,7 @@ SELECT
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
          
                 
                 -------------------DATOS DE LA FORMACION------------------
@@ -430,6 +436,7 @@ SELECT
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
+                left join etnias e on p.idetnia = e.id
             where pf.idformacion =$1
 
         `,
@@ -463,7 +470,8 @@ export const postParticipanteM = async (
   caserio,
   datoscorrectos,
   autorizadatos,
-  creadopor
+  creadopor,
+  idetnia,
 ) => {
   try {
     const { rows } = await pool.query(
@@ -472,9 +480,9 @@ export const postParticipanteM = async (
                 identificacion, codigosace, correo, nombre, apellido, fechanacimiento, edad, telefono, genero, idfuncion,
                 idnivelacademicos, idgradoacademicos, añosdeservicio, codigodered, lugardetrabajo,
                 deptoresidencia, municipioresidencia, aldearesidencia, caserio, datoscorrectos, autorizadatos, 
-                creadopor, fechacreacion, fechamodificacion ) 
+                creadopor, idetnia, fechacreacion, fechamodificacion ) 
             VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22,  CURRENT_TIMESTAMP, null
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23,  CURRENT_TIMESTAMP, null
             ) 
             RETURNING id
         `,
@@ -501,6 +509,7 @@ export const postParticipanteM = async (
         datoscorrectos,
         autorizadatos,
         creadopor,
+        idetnia,
       ]
     );
 
@@ -534,6 +543,7 @@ export const putParticipanteM = async (
   modificadopor,
   apellido,
   lugardetrabajo,
+  idetnia,
   id
 ) => {
   try {
@@ -563,8 +573,9 @@ export const putParticipanteM = async (
                 autorizadatos=$19, 
                 modificadopor=$20,
                 apellido=$21,
-                lugardetrabajo=$22
-                WHERE id=$23
+                lugardetrabajo=$22,
+                idetnia=$23
+                WHERE id=$24
                 RETURNING *`,
       [
         identificacion,
@@ -589,6 +600,7 @@ export const putParticipanteM = async (
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         id,
       ]
     );
@@ -611,7 +623,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered,  p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo, e.etnia,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
@@ -652,6 +664,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 left join departamento dced on ced.iddepartamento = dced.id 
                 left join municipio mced on ced.idmunicipio = mced.id
                 left join aldeas aced on ced.idaldea = aced.id 
+                left join etnias e on p.idetnia = e.id
             WHERE p.identificacion=$1
             order by p.id desc
         `,
@@ -674,7 +687,7 @@ export const getParticipanteCodSACEM = async (filtro) => {
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
                
-                p.idfuncion, c.cargo,
+                p.idfuncion, c.cargo, e.etnia,
                 p.datoscorrectos, p.autorizadatos, 
                 mu.usuario as creadopor, p.fechacreacion, 
                 mu2.usuario as modificadopor, p.fechamodificacion 
@@ -688,6 +701,7 @@ export const getParticipanteCodSACEM = async (filtro) => {
             left join cargodesempeña c on p.idfuncion = c.id
             inner join ms_usuarios mu on p.creadopor = mu.id 
             left join ms_usuarios mu2 on p.modificadopor = mu2.id 
+            left join etnias e on p.idetnia = e.id
             WHERE p.codigosace=$1
             order by p.id desc
         `,
@@ -739,6 +753,21 @@ export const postParticipanteFormacionM = async (
     return rows[0];
   } catch (error) {
     console.error("Error en postParticipanteInvestigacionM:", error.message);
+    throw error;
+  }
+};
+
+
+
+
+//datos de la tabla etnias para el participante
+export const getEtniasM = async () => {
+  try {
+    const { rows } = await pool.query(`
+            SELECT id, etnia FROM etnias ORDER BY id
+        `);
+    return rows;
+  } catch (error) {
     throw error;
   }
 };

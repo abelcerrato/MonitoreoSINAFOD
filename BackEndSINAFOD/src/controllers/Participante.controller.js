@@ -24,6 +24,7 @@ import {
   postParticipanteInvestigacionM,
   getParticipanteFormacionM,
   getParticipanteInvestigacionM,
+  getEtniasM,
 } from "../models/Participante.models.js";
 
 export const getParticipanteC = async (req, res) => {
@@ -32,7 +33,7 @@ export const getParticipanteC = async (req, res) => {
     res.json(Participante);
   } catch (error) {
     console.error(
-      "Error al obtener registros de acitacion del participante:",
+      "Error al obtener registros del participante:",
       error
     );
     res
@@ -177,6 +178,7 @@ export const postParticipanteC = async (req, res) => {
     datoscorrectos,
     autorizadatos,
     creadopor,
+    idetnia,
   } = req.body;
   console.log(req.body);
 
@@ -203,7 +205,8 @@ export const postParticipanteC = async (req, res) => {
       caserio,
       datoscorrectos,
       autorizadatos,
-      creadopor
+      creadopor,
+      idetnia
     );
 
     res.json({
@@ -272,7 +275,8 @@ export const putParticipanteC = async (req, res) => {
     onceavo,
     doceavo,
     superior,
-    lugardetrabajo
+    lugardetrabajo,
+    idetnia
   } = req.body;
   console.log("Datos que llega", req.body);
 
@@ -311,6 +315,7 @@ export const putParticipanteC = async (req, res) => {
       autorizadatos,
       modificadopor,
       lugardetrabajo,
+      idetnia,
       id
     );
 
@@ -424,6 +429,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     datoscorrectos,
     autorizadatos,
     creadopor,
+    idetnia,
 
     nombreced,
     codigosaceced,
@@ -544,7 +550,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
       response.participantes = participante;
 
@@ -589,7 +596,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
       response.participantes = participante;
 
@@ -698,7 +706,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
       response.participantes = participante;
 
@@ -786,7 +795,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
       response.participantes = participante;
 
@@ -1056,7 +1066,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
       response.participantes = participante;
 
@@ -1184,5 +1195,22 @@ export const postParticipantesIFCedC = async (req, res) => {
     return res
       .status(500)
       .json({ mensaje: "Error interno del servidor", error: error.message });
+  }
+};
+
+
+//Trae las etnias para el participante
+export const getEtniasC = async (req, res) => {
+  try {
+    const etnias = await getEtniasM();
+    res.json(etnias);
+  } catch (error) {
+    console.error(
+      "Error al obtener registros de la tabla de Etnias:",
+      error
+    );
+    res
+      .status(500)
+      .json({ error: "Error interno del servidor", message: error.message });
   }
 };
