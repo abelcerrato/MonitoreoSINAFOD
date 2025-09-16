@@ -643,6 +643,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       response.participantes = Participante;
@@ -885,6 +886,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       response.participantes = Participante;
@@ -977,6 +979,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       response.participantes = Participante;
@@ -1140,6 +1143,7 @@ export const postParticipantesIFCedC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       response.participantes = Participante;

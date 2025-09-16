@@ -499,6 +499,7 @@ export const getFiltroDocentesC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       participantes = Participante;
@@ -745,6 +746,7 @@ export const getFiltroDocentesC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       participantes = Participante;
@@ -845,6 +847,7 @@ export const getFiltroDocentesC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       participantes = Participante;
@@ -1111,6 +1114,7 @@ export const getFiltroDocentesC = async (req, res) => {
         modificadopor,
         apellido,
         lugardetrabajo,
+        idetnia,
         idparticipante
       );
       participantes = Participante;
