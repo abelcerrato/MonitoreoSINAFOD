@@ -50,6 +50,7 @@ const FormularParticipantes = () => {
   const [aldeasP, setAldeaP] = useState([]);
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
+  const [etnia, setEtnia] = useState("");
   const [formData, setFormData] = useState({
     correo: "",
     telefono: "",
@@ -69,8 +70,8 @@ const FormularParticipantes = () => {
     idgradoacademicos: null,
     idfuncion: "",
     caserio: "",
-
-    lugardetrabajo : "",
+    idetnia: "",
+    lugardetrabajo: "",
     tipocentro: "",
     nombreced: "",
     codigosaceced: "",
@@ -124,13 +125,13 @@ const FormularParticipantes = () => {
       idfuncion: "",
       caserio: "",
       tipocentro: "",
-      lugardetrabajo : "",
+      lugardetrabajo: "",
       nombreced: "",
       codigosaceced: "",
       prebasica: false,
       basica: false,
       media: false,
-      superior: false,  
+      superior: false,
       primero: false,
       segundo: false,
       tercero: false,
@@ -266,6 +267,36 @@ const FormularParticipantes = () => {
         }
       }
 
+      //Validar y formatear teléfono
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado =
+            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
+        }
+
+        newData.telefono = telefonoFormateado;
+
+        setFieldErrors((prevErrors) => {
+          let newErrors = { ...prevErrors };
+          if (soloNumeros.length !== 8) {
+            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+          } else {
+            newErrors.telefono = "";
+          }
+          return newErrors;
+        });
+      }
+
       // Si es fecha de nacimiento, calcular edad
       if (name === "fechanacimiento" && value) {
         const birthDate = new Date(value);
@@ -290,6 +321,23 @@ const FormularParticipantes = () => {
       return newData;
     });
   };
+
+
+  // Obtener Etnia
+  useEffect(() => {
+    const obtenerEtnia = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/etnias`
+        );
+        setEtnia(response.data);
+      } catch (error) {
+        console.error("Error al obtener los Etnia", error);
+      }
+    };
+
+    obtenerEtnia();
+  }, []);
 
   // Obtener cargos que desempeña del centro educativo
   useEffect(() => {
@@ -481,6 +529,7 @@ const FormularParticipantes = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/filtroDocentes/${filtro}`
       );
+      console.log("ver", response.data);
 
       if (response.data && response.data.length > 0) {
         if (response.data.length === 1) {
@@ -552,6 +601,7 @@ const FormularParticipantes = () => {
       genero: docente.genero || "",
       fechanacimiento: fechaFormateada || "",
       añosdeservicio: docente.añosdeservicio || "",
+      idetnia: docente.idetnia || "",
       zona: docente.zona || "",
       edad: docente.edad || "",
       correo: docente.correo || "",
@@ -564,7 +614,7 @@ const FormularParticipantes = () => {
       aldearesidencia: docente.aldearesidencia || "",
       caserio: docente.caserio || "",
       idfuncion: docente.idfuncion || "",
-      lugardetrabajo : docente.lugardetrabajo || "",
+      lugardetrabajo: docente.lugardetrabajo || "",
 
       /*Datos del centro educativo */
       prebasica: docente.prebasica || false,
@@ -595,6 +645,7 @@ const FormularParticipantes = () => {
       idaldea: docente.idaldea || "",
       datoscorrectos: docente.datoscorrectos || false,
       autorizadatos: docente.autorizadatos || false,
+
     }));
   };
 
@@ -758,12 +809,12 @@ const FormularParticipantes = () => {
                       <FormControlLabel
                         value="Femenino"
                         control={<Radio />}
-                        label="Mujer"
+                        label="Femenino"
                       />
                       <FormControlLabel
                         value="Masculino"
                         control={<Radio />}
-                        label="Hombre"
+                        label="Masculino"
                       />
                     </RadioGroup>
                     {fieldErrors.genero && (
@@ -783,6 +834,10 @@ const FormularParticipantes = () => {
                         value={formData.fechanacimiento}
                         onChange={handleChange}
                         type="date"
+                        error={fieldErrors.fechanacimiento}
+                        helperText={
+                          fieldErrors.fechanacimiento ? "Este campo es obligatorio" : ""
+                        }
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -816,7 +871,38 @@ const FormularParticipantes = () => {
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
+                    error={fieldErrors.telefono}
+                    helperText={
+                      fieldErrors.telefono ? "Este campo es obligatorio" : ""
+                    }
                   />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Etnia
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="idetnia"
+                      value={formData.idetnia}
+                      onChange={handleChange}
+
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione una etnia
+                      </MenuItem>
+                      {etnia.length > 0 ? (
+                        etnia.map((et) => (
+                          <MenuItem key={et.id} value={et.id}>
+                            {et.etnia}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+
+                  </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>
@@ -1004,7 +1090,7 @@ const FormularParticipantes = () => {
 
                 />
               </Grid>
-              
+
               {formacioninvest === "investigacion" && (
                 <Box
                   sx={{

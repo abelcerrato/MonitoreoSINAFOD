@@ -49,6 +49,7 @@ const PreInscripcion = () => {
   const [openDNIModal, setOpenDNIModal] = useState(true);
   const [tempDNI, setTempDNI] = useState("");
   const [dniError, setDniError] = useState("");
+  const [etnia, setEtnia] = useState("");
 
   const [formData, setFormData] = useState({
     idinvestigacion: [],
@@ -72,7 +73,8 @@ const PreInscripcion = () => {
     idfuncion: "",
     caserio: "",
     tipocentro: "",
-
+    idetnia: "",
+    
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
@@ -167,6 +169,36 @@ const PreInscripcion = () => {
         }
       }
 
+      //Validar y formatear teléfono
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado =
+            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
+        }
+
+        newData.telefono = telefonoFormateado;
+
+        setFieldErrors((prevErrors) => {
+          let newErrors = { ...prevErrors };
+          if (soloNumeros.length !== 8) {
+            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+          } else {
+            newErrors.telefono = "";
+          }
+          return newErrors;
+        });
+      }
+
       // Si es fecha de nacimiento, calcular edad
       if (name === "fechanacimiento" && value) {
         const birthDate = new Date(value);
@@ -191,6 +223,23 @@ const PreInscripcion = () => {
       return newData;
     });
   };
+
+  // Obtener Etnia
+  useEffect(() => {
+    const obtenerEtnia = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/etnias`
+        );
+        setEtnia(response.data);
+      } catch (error) {
+        console.error("Error al obtener los Etnia", error);
+      }
+    };
+
+    obtenerEtnia();
+  }, []);
+
   // Obtener departamentos del centro educativo
   useEffect(() => {
     const obtenerDepartamentos = async () => {
@@ -543,7 +592,7 @@ const PreInscripcion = () => {
       idmunicipio: !!docente.idmunicipio,
       iddepartamento: !!docente.iddepartamento,
       idaldea: !!docente.idaldea,
-, */
+ */
     });
   };
 
@@ -819,7 +868,7 @@ const PreInscripcion = () => {
       "idgradoacademicos",
       "idfuncion",
       ...(formData.tienecentro
-        ? [ // ✅ Si es solo participante → pedir también datos del centro educativo
+        ? [ // Si es solo participante → pedir también datos del centro educativo
           "tipocentro",
           "nombreced",
           "modalidad",
@@ -830,7 +879,7 @@ const PreInscripcion = () => {
           "jornada",
           "cargo",
         ]
-        : [] // 🚫 Si no, solo lo personal
+        : [] // Si no, solo lo personal
       ),
     ];
 

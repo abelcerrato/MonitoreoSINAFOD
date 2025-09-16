@@ -57,7 +57,7 @@ const ListadoParticipantes = () => {
   const [grados, setGrados] = useState([]);
 
 
-    useEffect(() => {
+  useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
@@ -73,7 +73,7 @@ const ListadoParticipantes = () => {
         console.error("Error al obtener los datos:", error);
       });
   }, []);
-  
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
@@ -298,92 +298,92 @@ const ListadoParticipantes = () => {
   };
 
   const cargaParaIBERTEL = () => {
-  try {
-    const headers = [
-      "email",
-      "firstname",
-      "lastname",
-      "username",
-      "idnumber",
-      "password",
-      "profile_field_ID",
-      "profile_field_gender",
-      "profile_field_edad",
-      "phone1",
-      "profile_field_cargo",
-      "institution",
-      "profile_field_tipoCentro",
-      "profile_field_SACE",
-      "department",
-      "city",
-      "profile_field_aldea",
-      "profile_field_caserio",
-      "profile_field_jornada",
-      "profile_field_level",
-      "profile_field_Ciclo",
-      "profile_field_zona",
-      "course1",
-    ];
-
-    // Iniciar contenido CSV con encabezados y BOM para UTF-8
-    let csvContent = "\uFEFF" + headers.join(",") + "\n";
-
-    // Agregar cada fila
-    filteredRows.forEach((item) => {
-      const row = [
-        item.correo,
-        item.nombre,
-        item.apellido,
-        `="${item.identificacion}"`, // Forzar formato texto para username
-        `="${item.identificacion}"`, // Forzar formato texto para idnumber
-        `="${item.identificacion}"`, // Password puede mantenerse sin formato
-        `="${item.identificacion}"`, // Forzar formato texto para profile_field_ID
-        item.genero,
-        item.edad,
-        item.telefono,
-        item.cargopart,
-        item.nombreced,
-        item.tipocentro,
-        item.codigosaceced,
-        item.departamentoced,
-        item.municipioced,
-        item.aldeaced,
-        item.caserio,
-        item.jornada,
-        item.nivelacademico_ced,
-        item.gradoacademico_ced,
-        item.zona,
-        item.formacion,
+    try {
+      const headers = [
+        "email",
+        "firstname",
+        "lastname",
+        "username",
+        "idnumber",
+        "password",
+        "profile_field_ID",
+        "profile_field_gender",
+        "profile_field_edad",
+        "phone1",
+        "profile_field_cargo",
+        "institution",
+        "profile_field_tipoCentro",
+        "profile_field_SACE",
+        "department",
+        "city",
+        "profile_field_aldea",
+        "profile_field_caserio",
+        "profile_field_jornada",
+        "profile_field_level",
+        "profile_field_Ciclo",
+        "profile_field_zona",
+        "course1",
       ];
 
-      // Escapar valores con comas o saltos de línea
-      const escapedRow = row.map((value) => {
-        if (value === null || value === undefined) return "";
-        const str = String(value);
-        // Si ya tiene comillas de formato Excel, no agregar más
-        if (str.startsWith('="') && str.endsWith('"')) return str;
-        return str.includes(",") || str.includes("\n") || str.includes('"') 
-          ? `"${str.replace(/"/g, '""')}"` 
-          : str;
+      // Iniciar contenido CSV con encabezados y BOM para UTF-8
+      let csvContent = "\uFEFF" + headers.join(",") + "\n";
+
+      // Agregar cada fila
+      filteredRows.forEach((item) => {
+        const row = [
+          item.correo,
+          item.nombre,
+          item.apellido,
+          `="${item.identificacion}"`, // Forzar formato texto para username
+          `="${item.identificacion}"`, // Forzar formato texto para idnumber
+          `="${item.identificacion}"`, // Password puede mantenerse sin formato
+          `="${item.identificacion}"`, // Forzar formato texto para profile_field_ID
+          item.genero,
+          item.edad,
+          item.telefono,
+          item.cargopart,
+          item.nombreced,
+          item.tipocentro,
+          item.codigosaceced,
+          item.departamentoced,
+          item.municipioced,
+          item.aldeaced,
+          item.caserio,
+          item.jornada,
+          item.nivelacademico_ced,
+          item.gradoacademico_ced,
+          item.zona,
+          item.formacion,
+        ];
+
+        // Escapar valores con comas o saltos de línea
+        const escapedRow = row.map((value) => {
+          if (value === null || value === undefined) return "";
+          const str = String(value);
+          // Si ya tiene comillas de formato Excel, no agregar más
+          if (str.startsWith('="') && str.endsWith('"')) return str;
+          return str.includes(",") || str.includes("\n") || str.includes('"')
+            ? `"${str.replace(/"/g, '""')}"`
+            : str;
+        });
+
+        csvContent += escapedRow.join(",") + "\n";
       });
 
-      csvContent += escapedRow.join(",") + "\n";
-    });
+      // Descargar el archivo CSV con encoding UTF-8
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Participantes_IBERTEL.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error al exportar a CSV:", error);
+    }
+  };
 
-    // Descargar el archivo CSV con encoding UTF-8
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Participantes_IBERTEL.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch (error) {
-    console.error("Error al exportar a CSV:", error);
-  }
-};
-  
   const columns = [
     {
       field: "formacion",
@@ -563,8 +563,8 @@ const ListadoParticipantes = () => {
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Hombre">Hombre</MenuItem>
-                  <MenuItem value="Femenino">Mujer</MenuItem>
+                  <MenuItem value="Masculino">Masculino</MenuItem>
+                  <MenuItem value="Femenino">Femenino</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "zona" ? (

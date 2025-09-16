@@ -46,7 +46,7 @@ const FormularioExterno = () => {
   const [openDNIModal, setOpenDNIModal] = useState(true);
   const [tempDNI, setTempDNI] = useState("");
   const [dniError, setDniError] = useState("");
-
+  const [etnia, setEtnia] = useState("");
 
   const [formData, setFormData] = useState({
     tienecentro: false,
@@ -56,6 +56,7 @@ const FormularioExterno = () => {
     telefono: "",
     apellido: "",
     edad: "",
+    idetnia: "",
     fechanacimiento: "",
     identificacion: "",
     codigosace: "",
@@ -102,7 +103,7 @@ const FormularioExterno = () => {
     idaldea: null,
     tipoadministracion: "",
     creadopor: null,
-    
+
   });
 
   const [camposBloqueados, setCamposBloqueados] = useState({
@@ -171,21 +172,36 @@ const FormularioExterno = () => {
         }
       }
 
-      // Validar teléfono: solo números, máximo 8 dígitos
-      setFieldErrors((prevErrors) => {
-        let newErrors = { ...prevErrors };
-        if (name === "telefono") {
-          if (!/^\d*$/.test(value)) {
-            newErrors.telefono =
-              "El teléfono solo debe contener números, sin guiones ni caracteres especiales.";
-          } else if (value.length !== 8) {
+      //Validar y formatear teléfono
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado =
+            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
+        }
+
+        newData.telefono = telefonoFormateado;
+
+        setFieldErrors((prevErrors) => {
+          let newErrors = { ...prevErrors };
+          if (soloNumeros.length !== 8) {
             newErrors.telefono = "El teléfono debe tener 8 dígitos.";
           } else {
-            newErrors.telefono = ""; // sin error
+            newErrors.telefono = "";
           }
-        }
-        return newErrors;
-      });
+          return newErrors;
+        });
+      }
+
 
       // Si es fecha de nacimiento, calcular edad y validar que sea mayor de 18
       if (name === "fechanacimiento" && value) {
@@ -220,6 +236,21 @@ const FormularioExterno = () => {
     });
   };
 
+  // Obtener Etnia
+  useEffect(() => {
+    const obtenerEtnia = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/etnias`
+        );
+        setEtnia(response.data);
+      } catch (error) {
+        console.error("Error al obtener los Etnia", error);
+      }
+    };
+
+    obtenerEtnia();
+  }, []);
 
 
   // Obtener departamentos del centro educativo
@@ -1068,6 +1099,32 @@ const FormularioExterno = () => {
 
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">
+                  Etnia*
+                </Typography>
+                <FormControl fullWidth>
+                  <Select
+                    name="idetnia"
+                    value={formData.idetnia}
+                    onChange={handleChange}
+
+                  >
+                    <MenuItem value="" disabled>
+                      Seleccione una etnia
+                    </MenuItem>
+                    {etnia.length > 0 ? (
+                      etnia.map((et) => (
+                        <MenuItem key={et.id} value={et.id}>
+                          {et.etnia}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>Cargando...</MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl fullWidth error={fieldErrors.idnivelacademicos}>
                   <Typography variant="subtitle1">Nivel Educativo*</Typography>
                   <Select
@@ -1597,7 +1654,7 @@ const FormularioExterno = () => {
                   <Typography variant="subtitle1">Nivel Educativo*</Typography>
 
                   <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -1610,7 +1667,7 @@ const FormularioExterno = () => {
                         label="Prebásica"
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -1623,7 +1680,7 @@ const FormularioExterno = () => {
                         label="Básica"
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -1636,7 +1693,7 @@ const FormularioExterno = () => {
                         label="Media"
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -1861,7 +1918,7 @@ const FormularioExterno = () => {
 
               </Grid>
             )}
-            <Grid spacing={2} container>
+            <Grid spacing={2} mt={2} container>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControlLabel
                   control={
