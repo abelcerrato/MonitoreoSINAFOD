@@ -9,7 +9,7 @@ export const getParticipanteM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, p.idetnia, e.etnia,
                 
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
@@ -99,7 +99,7 @@ export const getParticipanteDNIM = async (identificacion) => {
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
                 
-                p.idfuncion, c.cargo, e.etnia,
+                p.idfuncion, c.cargo, p.idetnia, e.etnia,
                 p.datoscorrectos, p.autorizadatos, 
                 mu.usuario as creadopor, p.fechacreacion, 
                 mu2.usuario as modificadopor, p.fechamodificacion 
@@ -138,7 +138,7 @@ export const getParticipanteIdM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion,  c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion,  c.cargo as cargopart, p.idetnia, e.etnia,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
@@ -205,7 +205,7 @@ export const getParticipanteInvestigacionM = async () => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, p.idetnia, e.etnia,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -246,7 +246,7 @@ export const getParticipanteIdInvestM = async (id) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, p.idetnia, e.etnia,
                 -------------------DATOS DE LA INVESTIGACION------------------
                 pi.idinvestigacion, i.investigacion, i.tipoactividad, i.existeconvenio,
                 i.institucionconvenio, i.presupuesto, i.duracion, i.funciondirigido, 
@@ -290,7 +290,7 @@ SELECT
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, p.idetnia, e.etnia,
          
                 
                 -------------------DATOS DE LA FORMACION------------------
@@ -374,7 +374,7 @@ SELECT
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo as cargopart, p.idetnia, e.etnia,
          
                 
                 -------------------DATOS DE LA FORMACION------------------
@@ -623,7 +623,7 @@ export const getParticipanteIdentificacionM = async (filtro) => {
                 p.idnivelacademicos, n.nombre as nivelacademico, p.idcicloacademicos, ciclo.nombre as cicloacademico, p.idgradoacademicos, g.nombre as gradoacademico, 
                 p.añosdeservicio, p.codigodered,  p.lugardetrabajo,
                 p.deptoresidencia, dres.nombre as departamento, p.municipioresidencia, mres.nombre as municipio, p.aldearesidencia, ares.nombre as aldea, p.caserio, 
-                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo, e.etnia,
+                p.datoscorrectos, p.autorizadatos, p.creadopor, p.fechacreacion, p.modificadopor, p.fechamodificacion, p.idfuncion, c.cargo, p.idetnia, e.etnia,
                 
 
                 -------------------DATOS DEL CENTRO EDUCATIVO Y LA TABLA DE RELACION ENTRE CENTRO EDUCATIVO Y PARTICIPANTES------------------
@@ -687,7 +687,7 @@ export const getParticipanteCodSACEM = async (filtro) => {
                 p.añosdeservicio, p.codigodered, p.lugardetrabajo,
                 p.deptoresidencia, d.nombre as departamento, p.municipioresidencia, m.nombre as municipio, p.aldearesidencia, a.nombre as aldea,  p.caserio, 
                
-                p.idfuncion, c.cargo, e.etnia,
+                p.idfuncion, c.cargo, p.idetnia, e.etnia,
                 p.datoscorrectos, p.autorizadatos, 
                 mu.usuario as creadopor, p.fechacreacion, 
                 mu2.usuario as modificadopor, p.fechamodificacion 
