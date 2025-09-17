@@ -215,6 +215,14 @@ const ModificarParticipante = () => {
         }
       }
 
+      // Formatear nombre y apellido a Capital Case
+      if (name === "nombre" || name === "apellido") {
+        updatedData[name] = value
+          .toLowerCase()
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        return updatedData;
+      }
+
       // Si es el campo de fecha, validamos el formato
       if (name === "fechanacimiento") {
         // Si el usuario borra el campo, lo limpiamos

@@ -310,17 +310,17 @@ const ListadoParticipantes = () => {
         "profile_field_gender",
         "profile_field_edad",
         "phone1",
-        "profile_field_cargo",
+       // "profile_field_cargo",
         "institution",
         "profile_field_tipoCentro",
         "profile_field_SACE",
         "department",
         "city",
-        "profile_field_aldea",
+       /*  "profile_field_aldea",
         "profile_field_caserio",
-        "profile_field_jornada",
+        "profile_field_jornada", */
         "profile_field_level",
-        "profile_field_Ciclo",
+        //"profile_field_Ciclo",
         "profile_field_zona",
         "course1",
       ];
@@ -334,24 +334,24 @@ const ListadoParticipantes = () => {
           item.correo,
           item.nombre,
           item.apellido,
-          `="${item.identificacion}"`, // Forzar formato texto para username
-          `="${item.identificacion}"`, // Forzar formato texto para idnumber
-          `="${item.identificacion}"`, // Password puede mantenerse sin formato
-          `="${item.identificacion}"`, // Forzar formato texto para profile_field_ID
+          `${item.identificacion}`, // Forzar formato texto para username
+          `${item.identificacion}`, // Forzar formato texto para idnumber
+          `${item.identificacion}`, // Password puede mantenerse sin formato
+          `${item.identificacion}`, // Forzar formato texto para profile_field_ID
           item.genero,
           item.edad,
           item.telefono,
-          item.cargopart,
+          //item.cargopart,
           item.nombreced,
           item.tipocentro,
           item.codigosaceced,
           item.departamentoced,
-          item.municipioced,
+         /*  item.municipioced,
           item.aldeaced,
           item.caserio,
-          item.jornada,
+          item.jornada, */
           item.nivelacademico_ced,
-          item.gradoacademico_ced,
+         // item.gradoacademico_ced,
           item.zona,
           item.formacion,
         ];
@@ -394,7 +394,17 @@ const ListadoParticipantes = () => {
     { field: "nombre", headerName: "Nombre", width: 180 },
     { field: "identificacion", headerName: "Identidad", width: 180 },
     { field: "genero", headerName: "Género", width: 180 },
-    { field: "fechanacimiento", headerName: "Fecha de Nacimiento", width: 180 },
+    {
+      field: "fechanacimiento",
+      headerName: "Fecha de Nacimiento",
+      width: 150,
+      renderCell: (params) => {
+        if (!params.value) return ""; // si no hay fecha, mostrar vacío
+        const date = new Date(params.value);
+        return date.toLocaleDateString('es-ES');
+      },
+    },
+  
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
     { field: "telefono", headerName: "Teléfono", width: 180 },
