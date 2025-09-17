@@ -171,7 +171,7 @@ const FormularioExterno = () => {
           return prevData;
         }
       }
-      
+
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value
@@ -381,7 +381,7 @@ const FormularioExterno = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
-  // Obtener centreos educativos del participante
+  // Obtener centros educativos del participante
   useEffect(() => {
     const obtenerCentrosEducativos = async () => {
       try {
@@ -944,7 +944,7 @@ const FormularioExterno = () => {
                     variant="subtitle1"
                     sx={{ color: color.primary.rojo }}
                   >
-                    Los campos marcados con * son obligatorios.
+                    Los campos marcados con (*) son obligatorios y los que no tienen la marca porfavor dejarlos en blanco.
                   </Typography>
                 </Typography>
               </Grid>
@@ -1497,7 +1497,7 @@ const FormularioExterno = () => {
                           <div>
                             <strong>{option.nombreced}</strong>
                             <div style={{ fontSize: "0.8rem" }}>
-                              {option.departamentoced} - {option.municipioced} |{" "}
+                              {option.codigosace}  | {option.departamentoced} - {option.municipioced} |{" "}
                               {option.nivelacademico}
                             </div>
                           </div>

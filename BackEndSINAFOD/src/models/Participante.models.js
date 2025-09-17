@@ -297,9 +297,9 @@ SELECT
                 f.formacion,   f.tipoactividad, f.existeconvenio, f.institucionconvenio, f.responsablefirmas, f.ambitoformacion, f.tipoformacion, f.modalidad, f.plataforma, f.duracion, f.estado, f.funciondirigido,
                 f.prebasica, f.basica, f.media, 
                     CONCAT_WS(', ',
-                        CASE when f.prebasica THEN 'Prebásica' END,
-                        CASE WHEN f.basica THEN 'Básica' END,
-                        CASE WHEN f.media THEN 'Media' END
+                        CASE when f.prebasica THEN 'Prebásico' END,
+                        CASE WHEN f.basica THEN 'Básico' END,
+                        CASE WHEN f.media THEN 'Medio' END
                     ) AS nivelacademico_form,
                 f.primerciclo, f.segundociclo, f.tercerciclo, 
                     CONCAT_WS(', ',
@@ -314,9 +314,9 @@ SELECT
                 pced.idcentroeducativo, ced.nombreced, ced.codigosace, ced.tipoadministracion, ced.tipocentro, ced.zona, pced.cargo as idcargo, c2.cargo as cargoced, pced.jornada, pced.modalidad, 
                 pced.prebasica, pced.basica, pced.media, pced.superior, pced.primero, pced.segundo, pced.tercero, pced.cuarto, pced.quinto, pced.sexto, pced.septimo, pced.octavo, pced.noveno, pced.decimo, pced.onceavo, pced.doceavo,
                     CONCAT_WS(', ',
-                        CASE WHEN pced.prebasica THEN 'Prebásica' END,
-                        CASE WHEN pced.basica THEN 'Básica' END,
-                        CASE WHEN pced.media THEN 'Media' END,
+                        CASE WHEN pced.prebasica THEN 'Prebásico' END,
+                        CASE WHEN pced.basica THEN 'Básico' END,
+                        CASE WHEN pced.media THEN 'Medio' END,
                         CASE WHEN pced.superior THEN 'Superior' END
                     ) AS nivelacademico_ced,
                     CONCAT_WS(', ',
@@ -471,7 +471,7 @@ export const postParticipanteM = async (
   datoscorrectos,
   autorizadatos,
   creadopor,
-  idetnia,
+  idetnia
 ) => {
   try {
     const { rows } = await pool.query(
@@ -756,9 +756,6 @@ export const postParticipanteFormacionM = async (
     throw error;
   }
 };
-
-
-
 
 //datos de la tabla etnias para el participante
 export const getEtniasM = async () => {
