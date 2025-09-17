@@ -168,6 +168,13 @@ const PreInscripcion = () => {
           return prevData;
         }
       }
+      
+      // Capitalizar nombre y apellido
+      if (name === "nombre" || name === "apellido") {
+        newData[name] = value
+          .toLowerCase()
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+      }
 
       //Validar y formatear teléfono
       if (name === "telefono") {
