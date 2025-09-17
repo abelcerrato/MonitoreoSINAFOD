@@ -43,6 +43,7 @@ const ModificarParticipante = () => {
   const [aldeasP, setAldeaP] = useState([]);
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
+  const [etnia, setEtnia] = useState("");
   const [formData, setFormData] = useState({
     correo: "",
     telefono: "",
@@ -64,7 +65,7 @@ const ModificarParticipante = () => {
     idfuncion: "",
     caserio: "",
     tipocentro: "",
-
+    idetnia: "",
     idcentroeducativo: "",
     idcentropart: "",
 
@@ -157,7 +158,7 @@ const ModificarParticipante = () => {
 
     cargarCentrosEducativos();
   }, [formData.iddepartamento, formData.idmunicipio]);
-  
+
   const handleSave = async () => {
     try {
       console.log("Datos que envio parti", formData);
@@ -259,6 +260,22 @@ const ModificarParticipante = () => {
       return updatedData;
     });
   };
+
+  // Obtener Etnia
+  useEffect(() => {
+    const obtenerEtnia = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/etnias`
+        );
+        setEtnia(response.data);
+      } catch (error) {
+        console.error("Error al obtener los Etnia", error);
+      }
+    };
+
+    obtenerEtnia();
+  }, []);
 
   // Obtener cargos que desempeña del centro educativo
   useEffect(() => {
@@ -528,12 +545,12 @@ const ModificarParticipante = () => {
                       <FormControlLabel
                         value="Femenino"
                         control={<Radio />}
-                        label="Mujer"
+                        label="Femenino"
                       />
                       <FormControlLabel
                         value="Masculino"
                         control={<Radio />}
-                        label="Hombre"
+                        label="Masculino"
                       />
                     </RadioGroup>
                   </FormControl>
@@ -584,6 +601,33 @@ const ModificarParticipante = () => {
                     value={formData?.telefono}
                     onChange={handleChange}
                   />
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Etnia*
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="idetnia"
+                      value={formData.idetnia}
+                      onChange={handleChange}
+
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione una etnia
+                      </MenuItem>
+                      {etnia.length > 0 ? (
+                        etnia.map((et) => (
+                          <MenuItem key={et.id} value={et.id}>
+                            {et.etnia}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+
+                  </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">Nivel Educativo</Typography>

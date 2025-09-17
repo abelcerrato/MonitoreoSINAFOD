@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getEtniasC,
   getParticipanteC,
   getParticipanteFormacionC,
   getParticipanteIdC,
@@ -36,5 +37,8 @@ router.post("/participanteInvFormCed", postParticipantesIFCedC); //ruta que refg
 
 // Nueva ruta para carga masiva
 router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacion);
+
+//ruta para traer las etnias
+router.get("/etnias", getEtniasC);
 
 export default router;

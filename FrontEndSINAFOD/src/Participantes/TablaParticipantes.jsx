@@ -163,6 +163,7 @@ export default function TablaPacticantes({
             <TableCell align="right">Apellido</TableCell>
             <TableCell align="right">Identidad</TableCell>
             <TableCell align="right">Género</TableCell>
+            <TableCell align="right">Etnia</TableCell>
             <TableCell align="right">
               Nivel Académico del Participante
             </TableCell>
@@ -216,6 +217,7 @@ export default function TablaPacticantes({
               <TableCell align="right">{row.apellido}</TableCell>
               <TableCell align="right">{row.identificacion}</TableCell>
               <TableCell align="right">{row.genero}</TableCell>
+              <TableCell align="right">{row.etnia}</TableCell>
               <TableCell align="right">{row.nivelacademico}</TableCell>
               <TableCell align="right">{row.gradoacademico}</TableCell>
               <TableCell align="right">{row.añosdeservicio}</TableCell>

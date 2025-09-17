@@ -6,6 +6,7 @@ import {
   postParticipanteFormacionM,
   postParticipanteInvestigacionM,
   postParticipanteM,
+  putParticipanteM,
 } from "../models/Participante.models.js";
 import {
   getIdCentroEducativoSACEM,
@@ -276,6 +277,7 @@ export const getFiltroDocentesC = async (req, res) => {
     idgradoacademicos,
     añosdeservicio,
     codigodered,
+    lugardetrabajo,
     deptoresidencia,
     municipioresidencia,
     aldearesidencia,
@@ -283,6 +285,7 @@ export const getFiltroDocentesC = async (req, res) => {
     datoscorrectos,
     autorizadatos,
     creadopor,
+    idetnia,
 
     //datos del cventro educativo
     nombreced,
@@ -302,6 +305,7 @@ export const getFiltroDocentesC = async (req, res) => {
     prebasica,
     basica,
     media,
+    superior,
     primero,
     segundo,
     tercero,
@@ -314,6 +318,8 @@ export const getFiltroDocentesC = async (req, res) => {
     decimo,
     onceavo,
     doceavo,
+
+    tienecentro,
   } = req.body;
 
   console.log("respuesta del servidor: ", req.body);
@@ -328,6 +334,9 @@ export const getFiltroDocentesC = async (req, res) => {
   } else if (idgradoacademicos >= 7 && idgradoacademicos <= 9) {
     idciclosacademicos = 3;
   }
+
+  let idparticipantecentropostman = 86; // valor de la relacion del participante que no lleva centro educativo quemado
+  let modificadopor = null; // valor por defecto
 
   try {
     // Buscar por identificación de docente y por codigo sace
@@ -350,9 +359,162 @@ export const getFiltroDocentesC = async (req, res) => {
     let ced2 = null;
     let form = null;
     let inv = null;
+    let participantes = null;
+
+    // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
+    if (tienecentro === false && !iddocente && !idparticipante) {
+      console.log(
+        "CASO 0: Solo insertar participante y la relacion con centro, si no existe en docente ni en participante"
+      );
+
+      // Insertar docente
+      const docente = await postDocentesM(
+        codigosace,
+        nombre,
+        apellido,
+        identificacion,
+        correo,
+        iddepartamento,
+        idmunicipio,
+        idaldea,
+        genero,
+        nombreced,
+        codigosaceced,
+        idnivelacademicos,
+        idciclosacademicos,
+        zona
+      );
+      docentes = docente;
+      console.log("iddocente: ", docentes);
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        lugardetrabajo,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor,
+        idetnia
+      );
+
+      idPart = participante;
+      console.log("idPart: ", idPart);
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(
+        idformacion,
+        idPart,
+        idparticipantecentropostman
+      );
+    }
+
+    // CASO 0.1: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo{
+    else if (tienecentro === false && !idparticipante) {
+      console.log(
+        "CASO 0.1: Solo inserta el participante y la relacion si no existe participante"
+      );
+
+      // Insertar participante
+      const participante = await postParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        apellido,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        lugardetrabajo,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        creadopor,
+        idetnia
+      );
+
+      idPart = participante;
+      console.log("idPart: ", idPart);
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(
+        idformacion,
+        idPart,
+        idparticipantecentropostman
+      );
+    }
+
+    // CASO 0.2: Solo insertar participante si viene el flag
+    else if (tienecentro === false) {
+      console.log(
+        "CASO 0.2: Solo insertar la relacion del participante con la formacion y el centroparticipante"
+      );
+
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        apellido,
+        lugardetrabajo,
+        idetnia,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
+
+      // Insertar formaciones
+      form = await postParticipanteFormacionM(
+        idformacion,
+        idparticipante,
+        idparticipantecentropostman
+      );
+    }
 
     // CASO 1: No existe docente, ni participante, ni centro educativo
-    if (!iddocente && !idparticipante && !idcentroeducativo) {
+    else if (!iddocente && !idparticipante && !idcentroeducativo) {
       console.log(
         "CASO 1: No existe docente, ni participante, ni centro educativo"
       );
@@ -393,13 +555,15 @@ export const getFiltroDocentesC = async (req, res) => {
         idgradoacademicos,
         añosdeservicio,
         codigodered,
+        lugardetrabajo,
         deptoresidencia,
         municipioresidencia,
         aldearesidencia,
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -407,8 +571,6 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-
-
         // Insertar centro educativo
         const centro = await postCentroEducativoM(
           nombreced,
@@ -434,6 +596,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -452,8 +615,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentro);
-
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idPart,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -480,13 +646,15 @@ export const getFiltroDocentesC = async (req, res) => {
         idgradoacademicos,
         añosdeservicio,
         codigodered,
+        lugardetrabajo,
         deptoresidencia,
         municipioresidencia,
         aldearesidencia,
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -494,8 +662,6 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-
-
         const centro = await postCentroEducativoM(
           nombreced,
           codigosaceced,
@@ -520,6 +686,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -538,7 +705,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentro);
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idPart,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -550,6 +721,36 @@ export const getFiltroDocentesC = async (req, res) => {
       console.log(
         "CASO 3: No existe docente, pero sí existe participante y centro educativo"
       );
+
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        apellido,
+        lugardetrabajo,
+        idetnia,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
 
       const docente = await postDocentesM(
         codigosace,
@@ -582,6 +783,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -600,9 +802,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idparticipante, idparticipantecentro);
-
-
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idparticipante,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idparticipante) {
@@ -619,10 +823,38 @@ export const getFiltroDocentesC = async (req, res) => {
         "CASO 4: Existe docente y participante, pero NO existe centro educativo"
       );
 
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        apellido,
+        lugardetrabajo,
+        idetnia,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
+
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
-
-
         // Insertar centro educativo
         const centro = await postCentroEducativoM(
           nombreced,
@@ -648,6 +880,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -666,7 +899,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idparticipante, idparticipantecentro);
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idparticipante,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idparticipante) {
@@ -696,13 +933,15 @@ export const getFiltroDocentesC = async (req, res) => {
         idgradoacademicos,
         añosdeservicio,
         codigodered,
+        lugardetrabajo,
         deptoresidencia,
         municipioresidencia,
         aldearesidencia,
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -720,6 +959,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -738,7 +978,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentro);
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idPart,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -784,13 +1028,15 @@ export const getFiltroDocentesC = async (req, res) => {
         idgradoacademicos,
         añosdeservicio,
         codigodered,
+        lugardetrabajo,
         deptoresidencia,
         municipioresidencia,
         aldearesidencia,
         caserio,
         datoscorrectos,
         autorizadatos,
-        creadopor
+        creadopor,
+        idetnia
       );
 
       idPart = participante;
@@ -798,7 +1044,7 @@ export const getFiltroDocentesC = async (req, res) => {
 
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idPart) {
-       // Insertar relación con centro educativo
+        // Insertar relación con centro educativo
         const relacionCed = await postCentroEducativoParticipanteM(
           idcentroeducativo,
           idPart,
@@ -808,6 +1054,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -826,7 +1073,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idPart, idparticipantecentro);
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idPart,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idPart) {
@@ -838,6 +1089,37 @@ export const getFiltroDocentesC = async (req, res) => {
       console.log(
         "CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario"
       );
+
+      // Actualizar participante
+      const Participante = await putParticipanteM(
+        identificacion,
+        codigosace,
+        correo,
+        nombre,
+        fechanacimiento,
+        edad,
+        telefono,
+        genero,
+        idfuncion,
+        idnivelacademicos,
+        idgradoacademicos,
+        añosdeservicio,
+        codigodered,
+        deptoresidencia,
+        municipioresidencia,
+        aldearesidencia,
+        caserio,
+        datoscorrectos,
+        autorizadatos,
+        modificadopor,
+        apellido,
+        lugardetrabajo,
+        idetnia,
+        idparticipante
+      );
+      participantes = Participante;
+      console.log("idparticipante actualizado: ", participantes);
+
       // Inserciones condicionales según el tipo
       if (tipo === "formacion" && idformacion && idparticipante) {
         // Insertar relación con centro educativo
@@ -850,6 +1132,7 @@ export const getFiltroDocentesC = async (req, res) => {
           prebasica,
           basica,
           media,
+          superior,
           primero,
           segundo,
           tercero,
@@ -868,7 +1151,11 @@ export const getFiltroDocentesC = async (req, res) => {
         const idparticipantecentro = relacionCed;
         console.log("idparticipantecentro: ", idparticipantecentro);
 
-        form = await postParticipanteFormacionM(idformacion, idparticipante, idparticipantecentro);
+        form = await postParticipanteFormacionM(
+          idformacion,
+          idparticipante,
+          idparticipantecentro
+        );
       }
 
       if (tipo === "investigacion" && idinvestigacion && idparticipante) {
@@ -891,6 +1178,7 @@ export const getFiltroDocentesC = async (req, res) => {
       ced2,
       form,
       inv,
+      participantes,
     });
   } catch (error) {
     console.error("Error al obtener datos:", error);
