@@ -42,6 +42,7 @@ export const cargaMasivaFormacion = async (req, res) => {
           datoscorrectos: row.datoscorrectos,
           autorizadatos: row.autorizadatos,
           creadopor: req.user?.id || 1, // Usa el usuario actual o un valor por defecto
+          idetnia: row.idetnia,
 
           // Datos del centro educativo
           nombreced: row.nombreced,

@@ -131,14 +131,15 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced, ced.zona, 
                 pc.cargo, cd.cargo as cargoecentroed, pc.jornada, pc.modalidad, 
-                pc.prebasica, pc.basica, pc.media, 
+                pc.prebasica, pc.basica, pc.media, pc.superior,
                 pc.primero, pc.segundo, pc.tercero, pc.cuarto, pc.quinto, pc.sexto, pc.septimo, pc.octavo, pc.noveno, 
                 pc.decimo, pc.onceavo, pc.doceavo,
                 -- columnas nuevas calculadas
                             CONCAT_WS(', ',
                                 CASE WHEN pc.prebasica THEN 'Prebásica' END,
                                 CASE WHEN pc.basica THEN 'Básica' END,
-                                CASE WHEN pc.media THEN 'Media' END
+                                CASE WHEN pc.media THEN 'Media' END,
+                                CASE WHEN pc.superior THEN 'Superior' END
                             ) AS nivelacademico_ced,
 
                             CONCAT_WS(', ',
@@ -276,6 +277,7 @@ export const postCentroEducativoParticipanteM = async (
   prebasica,
   basica,
   media,
+  superior,
   primero,
   segundo,
   tercero,
@@ -293,9 +295,9 @@ export const postCentroEducativoParticipanteM = async (
     const { rows } = await pool.query(
       `
             INSERT INTO participantescentroeducativo
-                (idcentroeducativo, idparticipante, cargo, jornada, modalidad, prebasica, basica, media, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo)
+                (idcentroeducativo, idparticipante, cargo, jornada, modalidad, prebasica, basica, media, superior, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo)
             VALUES
-                ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+                ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
             RETURNING id`,
       [
         idcentroeducativo,
@@ -306,6 +308,7 @@ export const postCentroEducativoParticipanteM = async (
         prebasica,
         basica,
         media,
+        superior,
         primero,
         segundo,
         tercero,
@@ -351,6 +354,7 @@ export const putCentroEducativoParticipanteM = async (
   decimo,
   onceavo,
   doceavo,
+  superior,
   id
 ) => {
   try {
@@ -361,8 +365,8 @@ export const putCentroEducativoParticipanteM = async (
                     idcentroeducativo=$1 , idparticipante=$2 , cargo=$3 , jornada=$4 , modalidad=$5 , 
                     prebasica=$6 , basica=$7 , media=$8 , 
                     primero=$9 , segundo=$10 , tercero=$11 , cuarto=$12 , quinto=$13 , sexto=$14 , septimo=$15 , octavo=$16 , noveno=$17 , 
-                    decimo=$18 , onceavo=$19 , doceavo=$20
-                WHERE id = $21
+                    decimo=$18 , onceavo=$19 , doceavo=$20, superior=$21
+                WHERE id = $22
                 RETURNING *`,
       [
         idcentroeducativo,
@@ -385,6 +389,7 @@ export const putCentroEducativoParticipanteM = async (
         decimo,
         onceavo,
         doceavo,
+        superior,
         id,
       ]
     );

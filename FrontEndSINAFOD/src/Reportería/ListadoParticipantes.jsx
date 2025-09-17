@@ -57,7 +57,7 @@ const ListadoParticipantes = () => {
   const [grados, setGrados] = useState([]);
 
 
-    useEffect(() => {
+  useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/participanteformacion`)
       .then((response) => {
@@ -73,7 +73,7 @@ const ListadoParticipantes = () => {
         console.error("Error al obtener los datos:", error);
       });
   }, []);
-  
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/departamentos`)
@@ -245,7 +245,9 @@ const ListadoParticipantes = () => {
           item.apellido,
           item.identificacion,
           item.genero,
-          item.fechanacimiento,
+          item.fechanacimiento
+            ? new Date(item.fechanacimiento).toISOString().split("T")[0]
+            : "",
           item.edad,
           item.correo,
           item.telefono,
@@ -323,8 +325,8 @@ const ListadoParticipantes = () => {
         "course1",
       ];
 
-      // Iniciar contenido CSV con encabezados
-      let csvContent = headers.join(",") + "\n";
+      // Iniciar contenido CSV con encabezados y BOM para UTF-8
+      let csvContent = "\uFEFF" + headers.join(",") + "\n";
 
       // Agregar cada fila
       filteredRows.forEach((item) => {
@@ -332,10 +334,10 @@ const ListadoParticipantes = () => {
           item.correo,
           item.nombre,
           item.apellido,
-          item.identificacion,
-          item.identificacion,
-          item.identificacion,
-          item.identificacion,
+          `="${item.identificacion}"`, // Forzar formato texto para username
+          `="${item.identificacion}"`, // Forzar formato texto para idnumber
+          `="${item.identificacion}"`, // Password puede mantenerse sin formato
+          `="${item.identificacion}"`, // Forzar formato texto para profile_field_ID
           item.genero,
           item.edad,
           item.telefono,
@@ -356,14 +358,19 @@ const ListadoParticipantes = () => {
 
         // Escapar valores con comas o saltos de línea
         const escapedRow = row.map((value) => {
-          const str = value != null ? String(value) : "";
-          return str.includes(",") || str.includes("\n") ? `"${str}"` : str;
+          if (value === null || value === undefined) return "";
+          const str = String(value);
+          // Si ya tiene comillas de formato Excel, no agregar más
+          if (str.startsWith('="') && str.endsWith('"')) return str;
+          return str.includes(",") || str.includes("\n") || str.includes('"')
+            ? `"${str.replace(/"/g, '""')}"`
+            : str;
         });
 
         csvContent += escapedRow.join(",") + "\n";
       });
 
-      // Descargar el archivo CSV
+      // Descargar el archivo CSV con encoding UTF-8
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -376,7 +383,7 @@ const ListadoParticipantes = () => {
       console.error("Error al exportar a CSV:", error);
     }
   };
-  
+
   const columns = [
     {
       field: "formacion",
@@ -556,8 +563,8 @@ const ListadoParticipantes = () => {
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
                   <MenuItem value="">Seleccionar genero</MenuItem>
-                  <MenuItem value="Hombre">Hombre</MenuItem>
-                  <MenuItem value="Femenino">Mujer</MenuItem>
+                  <MenuItem value="Masculino">Masculino</MenuItem>
+                  <MenuItem value="Femenino">Femenino</MenuItem>
                 </Select>
               </FormControl>
             ) : filterColumn === "zona" ? (

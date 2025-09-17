@@ -46,13 +46,17 @@ const FormularioExterno = () => {
   const [openDNIModal, setOpenDNIModal] = useState(true);
   const [tempDNI, setTempDNI] = useState("");
   const [dniError, setDniError] = useState("");
+  const [etnia, setEtnia] = useState("");
+
   const [formData, setFormData] = useState({
+    tienecentro: false,
     idformacion: investCap,
     formacion: "",
     correo: "",
     telefono: "",
     apellido: "",
     edad: "",
+    idetnia: "",
     fechanacimiento: "",
     identificacion: "",
     codigosace: "",
@@ -69,12 +73,15 @@ const FormularioExterno = () => {
     idfuncion: "",
     caserio: "",
     tipocentro: "",
+    lugardetrabajo: "",
+
 
     nombreced: "",
     codigosaceced: "",
     prebasica: false,
     basica: false,
     media: false,
+    superior: false,
     primero: false,
     segundo: false,
     tercero: false,
@@ -96,6 +103,7 @@ const FormularioExterno = () => {
     idaldea: null,
     tipoadministracion: "",
     creadopor: null,
+
   });
 
   const [camposBloqueados, setCamposBloqueados] = useState({
@@ -125,6 +133,7 @@ const FormularioExterno = () => {
     prebasica: false,
     basica: false,
     media: false,
+    superior: false,
     primero: false,
     segundo: false,
     tercero: false,
@@ -150,44 +159,99 @@ const FormularioExterno = () => {
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
 
-    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
     let sanitizedValue =
       type === "checkbox" ? checked : value === null ? "" : value;
 
     setFormData((prevData) => {
-      // Base de la nueva data
       let newData = { ...prevData, [name]: sanitizedValue };
 
+      // Validar años de servicio solo números
       if (name === "añosdeservicio") {
         if (!/^\d*$/.test(value)) {
           return prevData;
         }
       }
 
-      // Si es fecha de nacimiento, calcular edad
+      //Validar y formatear teléfono
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado =
+            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
+        }
+
+        newData.telefono = telefonoFormateado;
+
+        setFieldErrors((prevErrors) => {
+          let newErrors = { ...prevErrors };
+          if (soloNumeros.length !== 8) {
+            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+          } else {
+            newErrors.telefono = "";
+          }
+          return newErrors;
+        });
+      }
+
+
+      // Si es fecha de nacimiento, calcular edad y validar que sea mayor de 18
       if (name === "fechanacimiento" && value) {
         const birthDate = new Date(value);
         if (!isNaN(birthDate.getTime())) {
           const today = new Date();
           let age = today.getFullYear() - birthDate.getFullYear();
           const monthDiff = today.getMonth() - birthDate.getMonth();
-
           if (
             monthDiff < 0 ||
             (monthDiff === 0 && today.getDate() < birthDate.getDate())
           ) {
             age--;
           }
-
           newData.edad = age.toString();
+
+          setFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            fechanacimiento:
+              age < 18 ? "El participante debe ser mayor de 18 años." : "",
+          }));
         } else {
-          // Si la fecha no es válida, limpiamos la edad
           newData.edad = "";
+          setFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            fechanacimiento: "Fecha no válida.",
+          }));
         }
       }
+
       return newData;
     });
   };
+
+  // Obtener Etnia
+  useEffect(() => {
+    const obtenerEtnia = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/etnias`
+        );
+        setEtnia(response.data);
+      } catch (error) {
+        console.error("Error al obtener los Etnia", error);
+      }
+    };
+
+    obtenerEtnia();
+  }, []);
+
 
   // Obtener departamentos del centro educativo
   useEffect(() => {
@@ -418,13 +482,15 @@ const FormularioExterno = () => {
     }
   };
 
+
+
   const llenarFormulario = (docente) => {
     let fechaFormateada = "";
     if (docente.fechanacimiento) {
       try {
         const fechaNacimiento = new Date(docente.fechanacimiento);
         if (!isNaN(fechaNacimiento.getTime())) {
-          // Verifica si la fecha es válida
+          // Formato YYYY-MM-DD para inputs de tipo date
           fechaFormateada = fechaNacimiento.toISOString().split("T")[0];
         }
       } catch (e) {
@@ -434,11 +500,14 @@ const FormularioExterno = () => {
 
     setFormData((prev) => ({
       ...prev,
-      /*Datos del participante */
+
+      /* Datos del participante */
+      tienecentro: docente.tienecentro || false,
       codigosace: docente.codigosace || "",
       nombre: docente.nombre || "",
       apellido: docente.apellido || "",
       genero: docente.genero || "",
+      identificacion: docente.identificacion || "",
       fechanacimiento: fechaFormateada || "",
       edad: docente.edad || "",
       correo: docente.correo || "",
@@ -452,11 +521,13 @@ const FormularioExterno = () => {
       aldearesidencia: docente.aldearesidencia || "",
       caserio: docente.caserio || "",
       idfuncion: docente.idfuncion || "",
+      lugardetrabajo: docente.lugardetrabajo || "",
 
-      /*Datos del centro educativo */
+      /* Datos del centro educativo */
       prebasica: docente.prebasica || false,
       basica: docente.basica || false,
       media: docente.media || false,
+      superior: docente.superior || false,
       primero: docente.primero || false,
       segundo: docente.segundo || false,
       tercero: docente.tercero || false,
@@ -480,10 +551,11 @@ const FormularioExterno = () => {
       idmunicipio: docente.idmunicipio || "",
       iddepartamento: docente.iddepartamento || "",
       idaldea: docente.idaldea || "",
+
+      /* Datos de verificación */
       datoscorrectos: docente.datoscorrectos || false,
       autorizadatos: docente.autorizadatos || false,
     }));
-
     setCamposBloqueados({
       codigosace: !!docente.codigosace,
       nombre: !!docente.nombre,
@@ -491,7 +563,8 @@ const FormularioExterno = () => {
       genero: !!docente.genero,
       fechanacimiento: fechaFormateada,
       edad: !!docente.edad,
-      correo: !!docente.correo,
+      identificacion: !!docente.identificacion,
+      /*correo: !!docente.correo,
       telefono: !!docente.telefono,
       idnivelacademicos: !!docente.idnivelacademicos,
       idgradoacademicos: !!docente.idgradoacademicos,
@@ -501,9 +574,9 @@ const FormularioExterno = () => {
       municipioresidencia: !!docente.municipioresidencia,
       aldearesidencia: !!docente.aldearesidencia,
       caserio: !!docente.caserio,
-      idfuncion: !!docente.idfuncion,
+      idfuncion: !!docente.idfuncion,*/
 
-      /*Datos del centro educativo */
+      /*Datos del centro educativo
       prebasica: !!docente.prebasica,
       basica: !!docente.basica,
       media: !!docente.media,
@@ -530,10 +603,11 @@ const FormularioExterno = () => {
       idmunicipio: !!docente.idmunicipio,
       iddepartamento: !!docente.iddepartamento,
       idaldea: !!docente.idaldea,
-      datoscorrectos: !!docente.datoscorrectos,
-      autorizadatos: !!docente.autorizadatos,
+, */
     });
   };
+
+
 
   useEffect(() => {
     // Mostrar modal al cargar el componente
@@ -589,53 +663,99 @@ const FormularioExterno = () => {
     const requiredFields = [
       "identificacion",
       "nombre",
-      "apellido",
       "correo",
+      "apellido",
       "telefono",
       "fechanacimiento",
-      "cargo",
       "genero",
       "deptoresidencia",
       "municipioresidencia",
       "idnivelacademicos",
       "idgradoacademicos",
       "idfuncion",
-      "tipocentro",
-      "nombreced",
-      "modalidad",
-      "zona",
-      "idmunicipio",
-      "iddepartamento",
-      "tipoadministracion",
-      "jornada",
-      "nombreced",
-      "codigosaceced"
+      ...(formData.tienecentro
+        ? [
+          "tipocentro",
+          "nombreced",
+          "modalidad",
+          "zona",
+          "idmunicipio",
+          "iddepartamento",
+          "tipoadministracion",
+          "jornada",
+          "cargo",
+        ]
+        : [])
     ];
 
-    // Detectar campos vacíos
     let errors = {};
+
+    // 1️⃣ Detectar campos vacíos
     requiredFields.forEach((field) => {
       if (!formData[field]) {
-        errors[field] = true;
+        errors[field] = "Este campo es obligatorio";
       }
     });
 
+    // 2️⃣ Edad mínima 18
+    if (formData.edad && parseInt(formData.edad, 10) < 18) {
+      errors.fechanacimiento = "Debe ser mayor de 18 años";
+    }
+
+    // 3️⃣ Teléfono: solo números, 8 dígitos
+    if (formData.telefono) {
+      if (!/^\d{8}$/.test(formData.telefono)) {
+        errors.telefono =
+          "El teléfono debe tener exactamente 8 números, sin guiones ni caracteres especiales";
+      }
+    }
+
+    setFieldErrors(errors);
+
+    // 🚫 Si hay errores, no enviar
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      Swal.fire({
-        title: "Campos obligatorios",
-        text: "Llenar los campos en rojo",
-        icon: "warning",
-        confirmButtonColor: color.primary.rojo,
-        confirmButtonText: "OK",
-      });
       return;
     }
 
     try {
-      // Crear una copia del formData y convertir campos vacíos a null
-      const dataToSend = Object.fromEntries(
-        Object.entries(formData).map(([key, value]) => [
+      let dataToSend = { ...formData };
+
+      if (!formData.tienecentro) {
+        // Limpiar campos de centro educativo
+        dataToSend = {
+          ...dataToSend,
+          prebasica: null,
+          basica: null,
+          media: null,
+          superior: null,
+          primero: null,
+          segundo: null,
+          tercero: null,
+          cuarto: null,
+          quinto: null,
+          sexto: null,
+          septimo: null,
+          octavo: null,
+          noveno: null,
+          decimo: null,
+          onceavo: null,
+          doceavo: null,
+          cargo: null,
+          nombreced: null,
+          codigosaceced: null,
+          tipoadministracion: null,
+          tipocentro: null,
+          jornada: null,
+          modalidad: null,
+          zona: null,
+          idmunicipio: null,
+          iddepartamento: null,
+          idaldea: null,
+        };
+      }
+
+      dataToSend = Object.fromEntries(
+        Object.entries(dataToSend).map(([key, value]) => [
           key,
           value === "" || (typeof value === "string" && value.trim() === "")
             ? null
@@ -643,15 +763,11 @@ const FormularioExterno = () => {
         ])
       );
 
-      console.log("Datos a enviar:", dataToSend);
-
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/participante/formacion/${investCap}`,
         dataToSend,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -676,6 +792,8 @@ const FormularioExterno = () => {
       });
     }
   };
+
+
 
   return (
     <>
@@ -972,14 +1090,39 @@ const FormularioExterno = () => {
                   name="telefono"
                   value={formData.telefono}
                   onChange={handleChange}
-                  error={fieldErrors.telefono}
-                  helperText={
-                    fieldErrors.telefono ? "Este campo es obligatorio" : ""
-                  }
+                  error={!!fieldErrors.telefono} // true si hay error
+                  helperText={fieldErrors.telefono || ""}
                   InputProps={{
                     readOnly: camposBloqueados.telefono,
                   }}
                 />
+
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Typography variant="subtitle1">
+                  Etnia*
+                </Typography>
+                <FormControl fullWidth>
+                  <Select
+                    name="idetnia"
+                    value={formData.idetnia}
+                    onChange={handleChange}
+
+                  >
+                    <MenuItem value="" disabled>
+                      Seleccione una etnia
+                    </MenuItem>
+                    {etnia.length > 0 ? (
+                      etnia.map((et) => (
+                        <MenuItem key={et.id} value={et.id}>
+                          {et.etnia}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>Cargando...</MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl fullWidth error={fieldErrors.idnivelacademicos}>
@@ -1192,545 +1335,590 @@ const FormularioExterno = () => {
                   }}
                 />
               </Grid>
-            </Grid>
-
-            <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ color: color.primary.azul, textAlign: "center", mt: 3 }}
-                >
-                  Datos del Centro Educativo Que Representa
-                </Typography>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Departamento del Centro Educativo*
-                </Typography>
-                <FormControl fullWidth error={fieldErrors.iddepartamento}>
-                  <Select
-                    name="iddepartamento"
-                    value={formData.iddepartamento || ""}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.iddepartamento,
-                    }}
-                  >
-                    <MenuItem value="">Seleccione un departamento</MenuItem>
-                    {departamentos.length > 0 ? (
-                      departamentos.map((dep) => (
-                        <MenuItem key={dep.id} value={dep.id}>
-                          {dep.nombre}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>Cargando...</MenuItem>
-                    )}
-                  </Select>
-                  {fieldErrors.iddepartamento && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Municipio del Centro Educativo*
-                </Typography>
-                <FormControl fullWidth error={fieldErrors.idmunicipio}>
-                  <Select
-                    id="idmunicipio"
-                    name="idmunicipio"
-                    value={formData.idmunicipio || ""}
-                    onChange={handleChange}
-                    disabled={!municipios.length}
-                    inputProps={{
-                      readOnly: camposBloqueados.idmunicipio,
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      Seleccione un municipio
-                    </MenuItem>
-                    {municipios.map((municipio) => (
-                      <MenuItem key={municipio.id} value={municipio.id}>
-                        {municipio.municipio}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {fieldErrors.idmunicipio && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Aldea del Centro Educativo
-                </Typography>
-                <FormControl disabled={camposBloqueados.idaldea} fullWidth>
-                  <Select
-                    name="idaldea"
-                    value={formData.idaldea || ""}
-                    onChange={handleChange}
-                    disabled={!aldeas.length}
-                    inputProps={{
-                      readOnly: camposBloqueados.idaldea,
-                    }}
-                  >
-                    <MenuItem value="">Seleccione una aldea</MenuItem>
-                    {aldeas.length > 0 ? (
-                      aldeas.map((ald) => (
-                        <MenuItem key={ald.id} value={ald.id}>
-                          {ald.aldea}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>Seleccione una aldea</MenuItem>
-                    )}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Centro Educativo*</Typography>
-                <FormControl fullWidth disabled={camposBloqueados.nombreced}>
-                  <Autocomplete
-                    freeSolo
-                    options={centroseducativos}
-                    getOptionLabel={(option) =>
-                      typeof option === "string" ? option : option.nombreced
-                    }
-                    value={formData.nombreced || ""}
-                    onChange={(event, newValue) => {
-                      if (typeof newValue === "object" && newValue !== null) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          nombreced: newValue.nombreced,
-                          codigosaceced: newValue.codigosace,
-                        }));
-                      }
-                    }}
-                    onInputChange={(event, newInputValue) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        nombreced: newInputValue,
-                      }));
-                    }}
-                    renderOption={(props, option) => (
-                      <li {...props}>
-                        <div>
-                          <strong>{option.nombreced}</strong>
-                          <div style={{ fontSize: "0.8rem" }}>
-                            {option.departamentoced} - {option.municipioced} |{" "}
-                            {option.nivelacademico}
-                          </div>
-                        </div>
-                      </li>
-                    )}
-                    renderInput={(params) => <TextField {...params} label="" />}
-                  />
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Código SACE del Centro Educativo
-                </Typography>
+                <Typography variant="subtitle1">Lugar de Trabajo</Typography>
                 <TextField
                   fullWidth
-                  name="codigosaceced"
-                  value={formData.codigosaceced}
+                  name="lugardetrabajo"
+                  value={formData.lugardetrabajo}
                   onChange={handleChange}
-                  error={fieldErrors.codigosaceced}
-                  helperText={
-                    fieldErrors.codigosaceced ? "Este campo es obligatorio" : ""
-                  }
-                  InputProps={{
-                    readOnly: camposBloqueados.codigosaceced,
-                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <FormControl fullWidth>
-                  <Typography variant="subtitle1">
-                    Tipo de Administración*
-                  </Typography>
-                  <RadioGroup
-                    row
-                    name="tipoadministracion"
-                    value={formData.tipoadministracion}
-                    onChange={(e) =>
-                      !camposBloqueados.tipoadministracion &&
-                      setFormData({
-                        ...formData,
-                        tipoadministracion: e.target.value,
-                      })
-                    }
-                  >
-                    <FormControlLabel
-                      value="Gubernamental"
-                      control={<Radio />}
-                      label="Gubernamental"
-                      disabled={camposBloqueados.tipoadministracion}
-                    />
-                    <FormControlLabel
-                      value="No Gubernamental"
-                      control={<Radio />}
-                      label="No Gubernamental"
-                      disabled={camposBloqueados.tipoadministracion}
-                    />
-                  </RadioGroup>
-                  {fieldErrors.tipoadministracion && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <FormControl fullWidth error={fieldErrors.tipocentro}>
-                  <Typography variant="subtitle1">
-                    Tipo de Centro Educativo*
-                  </Typography>
-                  <Select
-                    fullWidth
-                    name="tipocentro"
-                    value={formData.tipocentro || ""}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.tipocentro,
-                    }}
-                  >
-                    <MenuItem value="Unidocente">Unidocente</MenuItem>
-                    <MenuItem value="Bidocente">Bidocente</MenuItem>
-                    <MenuItem value="Multidocente">Multidocente</MenuItem>
-                    <MenuItem value="No es centro educativo">
-                      No es centro educativo
-                    </MenuItem>
-                  </Select>
-                  {fieldErrors.tipocentro && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <FormControl fullWidth error={fieldErrors.jornada}>
-                  <Typography variant="subtitle1">
-                    Jornada que Atiende*
-                  </Typography>
-                  <Select
-                    fullWidth
-                    name="jornada"
-                    value={formData.jornada || ""}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.jornada,
-                    }}
-                  >
-                    <MenuItem value="Matutina">Matutina</MenuItem>
-                    <MenuItem value="Vespertina">Vespertina</MenuItem>
-                    <MenuItem value="Nocturna">Nocturna</MenuItem>
-                    <MenuItem value="Mixta">Mixta</MenuItem>
-                    <MenuItem value="Ninguna">Ninguna</MenuItem>
-                  </Select>
-                  {fieldErrors.jornada && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <FormControl fullWidth error={fieldErrors.modalidad}>
-                  <Typography variant="subtitle1">
-                    Modalidad que Atiende*
-                  </Typography>
-                  <Select
-                    fullWidth
-                    name="modalidad"
-                    value={formData.modalidad || ""}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.modalidad,
-                    }}
-                  >
-                    <MenuItem value="Virtual">Virtual</MenuItem>
-                    <MenuItem value="Presencial">Presencial</MenuItem>
-                    <MenuItem value="Bimodal">Bimodal</MenuItem>
-                  </Select>
-                  {fieldErrors.modalidad && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Zona Centro Educativo*
-                </Typography>
-                <FormControl fullWidth error={fieldErrors.zona}>
-                  <Select
-                    name="zona"
-                    value={formData.zona}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.zona,
-                    }}
-                  >
-                    <MenuItem value="Rural">Rural</MenuItem>
-                    <MenuItem value="Urbana">Urbana</MenuItem>
-                  </Select>
-                  {fieldErrors.zona && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">Nivel Educativo*</Typography>
-
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.prebasica}
-                          onChange={handleChange}
-                          name="prebasica"
-                          disabled={camposBloqueados.prebasica}
-                        />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.tienecentro}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          tienecentro: e.target.checked,
+                        })
                       }
-                      label="Prebásica"
                     />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.basica}
-                          onChange={handleChange}
-                          name="basica"
-                          disabled={camposBloqueados.basica}
-                        />
-                      }
-                      label="Básica"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.media}
-                          onChange={handleChange}
-                          name="media"
-                          disabled={camposBloqueados.media}
-                        />
-                      }
-                      label="Media"
-                    />
-                  </Grid>
-                </Grid>
+                  }
+                  label="¿Representa a un Centro Educativo?"
+                />
               </Grid>
 
-              {formData.basica === true && (
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">
-                    Grados Académicos (Básica)
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.primero}
-                            onChange={handleChange}
-                            name="primero"
-                            disabled={camposBloqueados.primero}
-                          />
-                        }
-                        label="Primero"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.segundo}
-                            onChange={handleChange}
-                            name="segundo"
-                            disabled={camposBloqueados.segundo}
-                          />
-                        }
-                        label="Segundo"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.tercero}
-                            onChange={handleChange}
-                            name="tercero"
-                            disabled={camposBloqueados.tercero}
-                          />
-                        }
-                        label="Tercer"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.cuarto}
-                            onChange={handleChange}
-                            name="cuarto"
-                            disabled={camposBloqueados.cuarto}
-                          />
-                        }
-                        label="Cuarto"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.quinto}
-                            onChange={handleChange}
-                            name="quinto"
-                            disabled={camposBloqueados.quinto}
-                          />
-                        }
-                        label="Quinto"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.sexto}
-                            onChange={handleChange}
-                            name="sexto"
-                            disabled={camposBloqueados.sexto}
-                          />
-                        }
-                        label="Sexto"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.septimo}
-                            onChange={handleChange}
-                            name="septimo"
-                            disabled={camposBloqueados.septimo}
-                          />
-                        }
-                        label="Séptimo"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.octavo}
-                            onChange={handleChange}
-                            name="octavo"
-                            disabled={camposBloqueados.octavo}
-                          />
-                        }
-                        label="Octavo"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.noveno}
-                            onChange={handleChange}
-                            name="noveno"
-                            disabled={camposBloqueados.noveno}
-                          />
-                        }
-                        label="Noveno"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-              {formData.media === true && (
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">
-                    Grados Académicos (Media)
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.decimo}
-                            onChange={handleChange}
-                            name="decimo"
-                            disabled={camposBloqueados.decimo}
-                          />
-                        }
-                        label="Décimo"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.onceavo}
-                            onChange={handleChange}
-                            name="onceavo"
-                            disabled={camposBloqueados.onceavo}
-                          />
-                        }
-                        label="Undécimo"
-                      />
-                    </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.doceavo}
-                            onChange={handleChange}
-                            name="doceavo"
-                            disabled={camposBloqueados.doceavo}
-                          />
-                        }
-                        label="Duodécimo"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">
-                  Cargo que Desempeña en el Centro Educativo*
-                </Typography>
-                <FormControl fullWidth error={fieldErrors.cargo}>
-                  <Select
-                    name="cargo"
-                    value={formData.cargo}
-                    onChange={handleChange}
-                    inputProps={{
-                      readOnly: camposBloqueados.cargo,
-                    }}
+            </Grid>
+
+            {formData.tienecentro && (
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ color: color.primary.azul, textAlign: "center", mt: 3 }}
                   >
-                    <MenuItem value="" disabled>
-                      Seleccione un cargo
-                    </MenuItem>
-                    {cargos.length > 0 ? (
-                      cargos.map((dep) => (
-                        <MenuItem key={dep.id} value={dep.id}>
-                          {dep.cargo}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>Cargando...</MenuItem>
+                    Datos del Centro Educativo Que Representa
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Departamento del Centro Educativo*
+                  </Typography>
+                  <FormControl fullWidth error={fieldErrors.iddepartamento}>
+                    <Select
+                      name="iddepartamento"
+                      value={formData.iddepartamento || ""}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.iddepartamento,
+                      }}
+                    >
+                      <MenuItem value="">Seleccione un departamento</MenuItem>
+                      {departamentos.length > 0 ? (
+                        departamentos.map((dep) => (
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.nombre}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                    {fieldErrors.iddepartamento && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
                     )}
-                  </Select>
-                  {fieldErrors.cargo && (
-                    <FormHelperText>Este campo es obligatorio</FormHelperText>
-                  )}
-                </FormControl>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Municipio del Centro Educativo*
+                  </Typography>
+                  <FormControl fullWidth error={fieldErrors.idmunicipio}>
+                    <Select
+                      id="idmunicipio"
+                      name="idmunicipio"
+                      value={formData.idmunicipio || ""}
+                      onChange={handleChange}
+                      disabled={!municipios.length}
+                      inputProps={{
+                        readOnly: camposBloqueados.idmunicipio,
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione un municipio
+                      </MenuItem>
+                      {municipios.map((municipio) => (
+                        <MenuItem key={municipio.id} value={municipio.id}>
+                          {municipio.municipio}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {fieldErrors.idmunicipio && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Aldea del Centro Educativo
+                  </Typography>
+                  <FormControl disabled={camposBloqueados.idaldea} fullWidth>
+                    <Select
+                      name="idaldea"
+                      value={formData.idaldea || ""}
+                      onChange={handleChange}
+                      disabled={!aldeas.length}
+                      inputProps={{
+                        readOnly: camposBloqueados.idaldea,
+                      }}
+                    >
+                      <MenuItem value="">Seleccione una aldea</MenuItem>
+                      {aldeas.length > 0 ? (
+                        aldeas.map((ald) => (
+                          <MenuItem key={ald.id} value={ald.id}>
+                            {ald.aldea}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Seleccione una aldea</MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">Centro Educativo*</Typography>
+                  <FormControl fullWidth disabled={camposBloqueados.nombreced}>
+                    <Autocomplete
+                      freeSolo
+                      options={centroseducativos}
+                      getOptionLabel={(option) =>
+                        typeof option === "string" ? option : option.nombreced
+                      }
+                      value={formData.nombreced || ""}
+                      onChange={(event, newValue) => {
+                        if (typeof newValue === "object" && newValue !== null) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            nombreced: newValue.nombreced,
+                            codigosaceced: newValue.codigosace,
+                          }));
+                        }
+                      }}
+                      onInputChange={(event, newInputValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          nombreced: newInputValue,
+                        }));
+                      }}
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div>
+                            <strong>{option.nombreced}</strong>
+                            <div style={{ fontSize: "0.8rem" }}>
+                              {option.departamentoced} - {option.municipioced} |{" "}
+                              {option.nivelacademico}
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => <TextField {...params} label="" />}
+                    />
+                  </FormControl>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Código SACE del Centro Educativo
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="codigosaceced"
+                    value={formData.codigosaceced}
+                    onChange={handleChange}
+                    error={fieldErrors.codigosaceced}
+                    helperText={
+                      fieldErrors.codigosaceced ? "Este campo es obligatorio" : ""
+                    }
+                    InputProps={{
+                      readOnly: camposBloqueados.codigosaceced,
+                    }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControl fullWidth>
+                    <Typography variant="subtitle1">
+                      Tipo de Administración*
+                    </Typography>
+                    <RadioGroup
+                      row
+                      name="tipoadministracion"
+                      value={formData.tipoadministracion}
+                      onChange={(e) =>
+                        !camposBloqueados.tipoadministracion &&
+                        setFormData({
+                          ...formData,
+                          tipoadministracion: e.target.value,
+                        })
+                      }
+                    >
+                      <FormControlLabel
+                        value="Gubernamental"
+                        control={<Radio />}
+                        label="Gubernamental"
+                        disabled={camposBloqueados.tipoadministracion}
+                      />
+                      <FormControlLabel
+                        value="No Gubernamental"
+                        control={<Radio />}
+                        label="No Gubernamental"
+                        disabled={camposBloqueados.tipoadministracion}
+                      />
+                    </RadioGroup>
+                    {fieldErrors.tipoadministracion && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControl fullWidth error={fieldErrors.tipocentro}>
+                    <Typography variant="subtitle1">
+                      Tipo de Centro Educativo*
+                    </Typography>
+                    <Select
+                      fullWidth
+                      name="tipocentro"
+                      value={formData.tipocentro || ""}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.tipocentro,
+                      }}
+                    >
+                      <MenuItem value="Unidocente">Unidocente</MenuItem>
+                      <MenuItem value="Bidocente">Bidocente</MenuItem>
+                      <MenuItem value="Multidocente">Multidocente</MenuItem>
+                      <MenuItem value="No es centro educativo">
+                        No es centro educativo
+                      </MenuItem>
+                    </Select>
+                    {fieldErrors.tipocentro && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControl fullWidth error={fieldErrors.jornada}>
+                    <Typography variant="subtitle1">
+                      Jornada que Atiende*
+                    </Typography>
+                    <Select
+                      fullWidth
+                      name="jornada"
+                      value={formData.jornada || ""}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.jornada,
+                      }}
+                    >
+                      <MenuItem value="Matutina">Matutina</MenuItem>
+                      <MenuItem value="Vespertina">Vespertina</MenuItem>
+                      <MenuItem value="Nocturna">Nocturna</MenuItem>
+                      <MenuItem value="Mixta">Mixta</MenuItem>
+                      <MenuItem value="Ninguna">Ninguna</MenuItem>
+                    </Select>
+                    {fieldErrors.jornada && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControl fullWidth error={fieldErrors.modalidad}>
+                    <Typography variant="subtitle1">
+                      Modalidad que Atiende*
+                    </Typography>
+                    <Select
+                      fullWidth
+                      name="modalidad"
+                      value={formData.modalidad || ""}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.modalidad,
+                      }}
+                    >
+                      <MenuItem value="Virtual">Virtual</MenuItem>
+                      <MenuItem value="Presencial">Presencial</MenuItem>
+                      <MenuItem value="Bimodal">Bimodal</MenuItem>
+                    </Select>
+                    {fieldErrors.modalidad && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Zona Centro Educativo*
+                  </Typography>
+                  <FormControl fullWidth error={fieldErrors.zona}>
+                    <Select
+                      name="zona"
+                      value={formData.zona}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.zona,
+                      }}
+                    >
+                      <MenuItem value="Rural">Rural</MenuItem>
+                      <MenuItem value="Urbana">Urbana</MenuItem>
+                    </Select>
+                    {fieldErrors.zona && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">Nivel Educativo*</Typography>
+
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 3 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.prebasica}
+                            onChange={handleChange}
+                            name="prebasica"
+                            disabled={camposBloqueados.prebasica}
+                          />
+                        }
+                        label="Prebásica"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 3 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.basica}
+                            onChange={handleChange}
+                            name="basica"
+                            disabled={camposBloqueados.basica}
+                          />
+                        }
+                        label="Básica"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 3 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.media}
+                            onChange={handleChange}
+                            name="media"
+                            disabled={camposBloqueados.media}
+                          />
+                        }
+                        label="Media"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 3 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.superior}
+                            onChange={handleChange}
+                            name="superior"
+                            disabled={camposBloqueados.superior}
+                          />
+                        }
+                        label="Superior"
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                {formData.basica === true && (
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Grados Académicos (Básica)
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.primero}
+                              onChange={handleChange}
+                              name="primero"
+                              disabled={camposBloqueados.primero}
+                            />
+                          }
+                          label="Primero"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.segundo}
+                              onChange={handleChange}
+                              name="segundo"
+                              disabled={camposBloqueados.segundo}
+                            />
+                          }
+                          label="Segundo"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.tercero}
+                              onChange={handleChange}
+                              name="tercero"
+                              disabled={camposBloqueados.tercero}
+                            />
+                          }
+                          label="Tercer"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.cuarto}
+                              onChange={handleChange}
+                              name="cuarto"
+                              disabled={camposBloqueados.cuarto}
+                            />
+                          }
+                          label="Cuarto"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.quinto}
+                              onChange={handleChange}
+                              name="quinto"
+                              disabled={camposBloqueados.quinto}
+                            />
+                          }
+                          label="Quinto"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.sexto}
+                              onChange={handleChange}
+                              name="sexto"
+                              disabled={camposBloqueados.sexto}
+                            />
+                          }
+                          label="Sexto"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.septimo}
+                              onChange={handleChange}
+                              name="septimo"
+                              disabled={camposBloqueados.septimo}
+                            />
+                          }
+                          label="Séptimo"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.octavo}
+                              onChange={handleChange}
+                              name="octavo"
+                              disabled={camposBloqueados.octavo}
+                            />
+                          }
+                          label="Octavo"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.noveno}
+                              onChange={handleChange}
+                              name="noveno"
+                              disabled={camposBloqueados.noveno}
+                            />
+                          }
+                          label="Noveno"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )}
+                {formData.media === true && (
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">
+                      Grados Académicos (Media)
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.decimo}
+                              onChange={handleChange}
+                              name="decimo"
+                              disabled={camposBloqueados.decimo}
+                            />
+                          }
+                          label="Décimo"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.onceavo}
+                              onChange={handleChange}
+                              name="onceavo"
+                              disabled={camposBloqueados.onceavo}
+                            />
+                          }
+                          label="Undécimo"
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={formData.doceavo}
+                              onChange={handleChange}
+                              name="doceavo"
+                              disabled={camposBloqueados.doceavo}
+                            />
+                          }
+                          label="Duodécimo"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )}
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">
+                    Cargo que Desempeña en el Centro Educativo*
+                  </Typography>
+                  <FormControl fullWidth error={fieldErrors.cargo}>
+                    <Select
+                      name="cargo"
+                      value={formData.cargo}
+                      onChange={handleChange}
+                      inputProps={{
+                        readOnly: camposBloqueados.cargo,
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione un cargo
+                      </MenuItem>
+                      {cargos.length > 0 ? (
+                        cargos.map((dep) => (
+                          <MenuItem key={dep.id} value={dep.id}>
+                            {dep.cargo}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>Cargando...</MenuItem>
+                      )}
+                    </Select>
+                    {fieldErrors.cargo && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
               </Grid>
+            )}
+            <Grid spacing={2} mt={2} container>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControlLabel
                   control={
@@ -1758,7 +1946,6 @@ const FormularioExterno = () => {
                 />
               </Grid>
             </Grid>
-
             <Box
               sx={{ marginTop: 5, display: "flex", justifyContent: "flex-end" }}
             >
