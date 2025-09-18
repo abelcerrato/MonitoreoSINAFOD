@@ -662,3 +662,27 @@ export const getEtniasM = async () => {
     throw error;
   }
 };
+
+
+
+// Verificar si ya existe el participante en la misma formación
+export const getRelacionParticipanteFormacionM = async (idformacion, idparticipante) => {
+  try {
+    const { rows, rowCount } = await pool.query(
+      `
+        SELECT id, idformacion, idparticipante, idparticipantecentro 
+        FROM participantesformacion 
+        WHERE idformacion = $1 AND idparticipante = $2
+      `,
+      [idformacion, idparticipante]
+    );
+
+    if (rowCount === 0) {
+      return null; // No existe
+    }
+
+    return rows[0]; // Retorna el registro encontrado
+  } catch (error) {
+    throw error;
+  }
+};

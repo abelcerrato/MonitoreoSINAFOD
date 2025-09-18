@@ -22,6 +22,7 @@ import {
   putDocentesM,
 } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
+import { getRelacionParticipanteFormacionC } from "./Participante.controller.js";
 
 export const getDocentesC = async (req, res) => {
   try {
@@ -346,6 +347,21 @@ export const getFiltroDocentesC = async (req, res) => {
     let form = null;
     let inv = null;
     let participantes = null;
+
+
+
+    // Validar si ya está inscrito en la formación
+    if (idformacion && idparticipante) {
+      const inscrito = await getRelacionParticipanteFormacionC(idformacion, idparticipante);
+      if (inscrito) {
+        return res.status(400).json({
+          error: "El participante ya fue inscrito en esta formación.",
+          inscrito,
+        });
+      }
+    }
+
+    
 
     // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
     if (tienecentro === false && !iddocente && !idparticipante) {

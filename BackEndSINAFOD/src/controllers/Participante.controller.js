@@ -25,6 +25,7 @@ import {
   getParticipanteFormacionM,
   getParticipanteInvestigacionM,
   getEtniasM,
+  getRelacionParticipanteFormacionM,
 } from "../models/Participante.models.js";
 
 export const getParticipanteC = async (req, res) => {
@@ -259,22 +260,8 @@ export const putParticipanteC = async (req, res) => {
     cargo,
     jornada,
     modalidad,
-    prebasica,
-    basica,
-    media,
-    primero,
-    segundo,
-    tercero,
-    cuarto,
-    quinto,
-    sexto,
-    septimo,
-    octavo,
-    noveno,
-    decimo,
-    onceavo,
-    doceavo,
-    superior,
+    idnivelatiende,
+    idcicloatiende,
     lugardetrabajo,
     idetnia
   } = req.body;
@@ -337,22 +324,8 @@ export const putParticipanteC = async (req, res) => {
       cargo,
       jornada,
       modalidad,
-      prebasica,
-      basica,
-      media,
-      primero,
-      segundo,
-      tercero,
-      cuarto,
-      quinto,
-      sexto,
-      septimo,
-      octavo,
-      noveno,
-      decimo,
-      onceavo,
-      doceavo,
-      superior,
+      idnivelatiende,
+      idcicloatiende,
       idcentropart
     );
 
@@ -488,6 +461,18 @@ export const postParticipantesIFCedC = async (req, res) => {
       ced2: null,
     };
 
+
+     // Validar si ya está inscrito en la formación
+    if (idformacion && idparticipante) {
+      const inscrito = await getRelacionParticipanteFormacionC(idformacion, idparticipante);
+      if (inscrito) {
+        return res.status(400).json({
+          error: "El participante ya fue inscrito en esta formación.",
+          inscrito,
+        });
+      }
+    }
+    
 
     // CASO 0: Solo insertar participante si viene el flag
     if (req.body.tienecentro === false && !iddocente && !idparticipante) {
@@ -1119,5 +1104,39 @@ export const getEtniasC = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error interno del servidor", message: error.message });
+  }
+};
+
+
+
+
+// Verifica si el participante ya existe en la formación
+export const getRelacionParticipanteFormacionC = async (req, res) => {
+  try {
+    const { idformacion, idparticipante } = req.body;
+    console.log(req.body);
+
+    if (!idformacion || !idparticipante) {
+      console.log("Faltan datos en la solicitud");
+      return res.status(400).json({ error: "Faltan datos en la solicitud" });
+    }
+
+    const participante = await getRelacionParticipanteFormacionM(idformacion, idparticipante);
+
+    if (participante) {
+      // Ya existe
+      console.log("El participante ya fue inscrito en esta formación.");
+      return res.status(400).json({
+        error: `El participante ya fue inscrito en esta formación.`,
+        participante,
+      });
+    }
+
+    // No existe, no devolvemos nada o puedes retornar un 200 vacío
+    return res.status(200).json({ message: "OK" });
+
+  } catch (error) {
+    console.error("Error al obtener el registro:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
