@@ -692,19 +692,19 @@ const FormularioExterno = () => {
 
     let errors = {};
 
-    // 1️⃣ Detectar campos vacíos
+    //  Detectar campos vacíos
     requiredFields.forEach((field) => {
       if (!formData[field]) {
         errors[field] = "Este campo es obligatorio";
       }
     });
 
-    // 2️⃣ Edad mínima 18
+    //  Edad mínima 18
     if (formData.edad && parseInt(formData.edad, 10) < 18) {
       errors.fechanacimiento = "Debe ser mayor de 18 años";
     }
 
-    // 3️⃣ Teléfono: solo números, 8 dígitos
+    //  Teléfono: solo números, 8 dígitos
     if (formData.telefono) {
       if (!/^\d{8}$/.test(formData.telefono)) {
         errors.telefono =
@@ -714,7 +714,7 @@ const FormularioExterno = () => {
 
     setFieldErrors(errors);
 
-    // 🚫 Si hay errores, no enviar
+    //  Si hay errores, no enviar
     if (Object.keys(errors).length > 0) {
       return;
     }
@@ -1848,12 +1848,12 @@ const FormularioExterno = () => {
                               Centro Educativo:{" "}
                               {docente.nombreced || "No especificado"}
                             </Box>
-                            <Box component="span" display="block">
+                           {/*  <Box component="span" display="block">
                               Nivel Educativo que Atiende:{" "}
                               {docente.nivelacademico_ced || ""} - Grado
                               Educativo que Atiende:{" "}
                               {docente.gradoacademico_ced || ""}
-                            </Box>
+                            </Box> */}
                           </>
                         }
                       />
