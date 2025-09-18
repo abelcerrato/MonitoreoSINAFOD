@@ -302,22 +302,8 @@ export const getFiltroDocentesC = async (req, res) => {
     cargo,
     jornada,
     modalidad,
-    prebasica,
-    basica,
-    media,
-    superior,
-    primero,
-    segundo,
-    tercero,
-    cuarto,
-    quinto,
-    sexto,
-    septimo,
-    octavo,
-    noveno,
-    decimo,
-    onceavo,
-    doceavo,
+    idnivelatiende,
+    idcicloatiende,
 
     tienecentro,
   } = req.body;
@@ -593,22 +579,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -683,22 +655,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -780,22 +738,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -877,22 +821,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -956,22 +886,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -1051,22 +967,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -1129,22 +1031,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 

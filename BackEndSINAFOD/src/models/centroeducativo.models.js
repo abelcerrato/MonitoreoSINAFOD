@@ -131,31 +131,7 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
                 ced.idmunicipio, m.nombre  as municipioced,
                 ced.idaldea, a.nombre as aldeaced, ced.zona, 
                 pc.cargo, cd.cargo as cargoecentroed, pc.jornada, pc.modalidad, 
-                pc.prebasica, pc.basica, pc.media, pc.superior,
-                pc.primero, pc.segundo, pc.tercero, pc.cuarto, pc.quinto, pc.sexto, pc.septimo, pc.octavo, pc.noveno, 
-                pc.decimo, pc.onceavo, pc.doceavo,
-                -- columnas nuevas calculadas
-                            CONCAT_WS(', ',
-                                CASE WHEN pc.prebasica THEN 'Prebásica' END,
-                                CASE WHEN pc.basica THEN 'Básica' END,
-                                CASE WHEN pc.media THEN 'Media' END,
-                                CASE WHEN pc.superior THEN 'Superior' END
-                            ) AS nivelacademico_ced,
-
-                            CONCAT_WS(', ',
-                                CASE WHEN pc.primero THEN 'Primero' END,
-                                CASE WHEN pc.segundo THEN 'Segundo' END,
-                                CASE WHEN pc.tercero THEN 'Tercero' END,
-                                CASE WHEN pc.cuarto THEN 'Cuarto' END,
-                                CASE WHEN pc.quinto THEN 'Quinto' END,
-                                CASE WHEN pc.sexto THEN 'Sexto' END,
-                                CASE WHEN pc.septimo THEN 'Séptimo' END,
-                                CASE WHEN pc.octavo THEN 'Octavo' END,
-                                CASE WHEN pc.noveno THEN 'Noveno' END,
-                                CASE WHEN pc.decimo THEN 'Decimo' END,
-                                CASE WHEN pc.onceavo THEN 'Onceavo' END,
-                                CASE WHEN pc.doceavo THEN 'Doceavo' END
-                            ) AS gradoacademico_ced
+                pc.idnivelatiende, n2.nombre as nivelatiende, pc.idcicloatiende, ciclo2.nombre as cicloatiende,
             from participantescentroeducativo pc
             LEFT JOIN cargodesempeña c ON pc.cargo = c.id
             ----------------------------------------------------------------
@@ -172,6 +148,8 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
             LEFT JOIN municipio me ON p.municipioresidencia = me.id 
             LEFT JOIN aldeas ae ON p.aldearesidencia = ae.id 
             LEFT JOIN cargodesempeña cd ON p.idfuncion = cd.id
+            left join nivelesacademicos n2 on pc.idnivelatiende = n2.id
+            left join ciclosacademicos ciclo2 on pc.idcicloatiende = ciclo2.id
             where p.identificacion=$1
         `,
       [identificacion]
@@ -191,7 +169,7 @@ export const postCentroEducativoM = async (
   zona,
   iddepartamento,
   idmunicipio,
-  idaldea, 
+  idaldea,
   idnivelacademico
 ) => {
   try {
@@ -212,7 +190,7 @@ export const postCentroEducativoM = async (
         zona,
         iddepartamento,
         idmunicipio,
-        idaldea, 
+        idaldea,
         idnivelacademico
       ]
     );
@@ -274,30 +252,16 @@ export const postCentroEducativoParticipanteM = async (
   cargo,
   jornada,
   modalidad,
-  prebasica,
-  basica,
-  media,
-  superior,
-  primero,
-  segundo,
-  tercero,
-  cuarto,
-  quinto,
-  sexto,
-  septimo,
-  octavo,
-  noveno,
-  decimo,
-  onceavo,
-  doceavo
+  idnivelatiende,
+  idcicloatiende
 ) => {
   try {
     const { rows } = await pool.query(
       `
             INSERT INTO participantescentroeducativo
-                (idcentroeducativo, idparticipante, cargo, jornada, modalidad, prebasica, basica, media, superior, primero, segundo, tercero, cuarto, quinto, sexto, septimo, octavo, noveno, decimo, onceavo, doceavo)
+                (idcentroeducativo, idparticipante, cargo, jornada, modalidad, idnivelatiende, idcicloatiende)
             VALUES
-                ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+                ( $1, $2, $3, $4, $5, $6, $7)
             RETURNING id`,
       [
         idcentroeducativo,
@@ -305,22 +269,8 @@ export const postCentroEducativoParticipanteM = async (
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo,
+        idnivelatiende,
+        idcicloatiende
       ]
     );
     return rows[0].id;
@@ -339,22 +289,8 @@ export const putCentroEducativoParticipanteM = async (
   cargo,
   jornada,
   modalidad,
-  prebasica,
-  basica,
-  media,
-  primero,
-  segundo,
-  tercero,
-  cuarto,
-  quinto,
-  sexto,
-  septimo,
-  octavo,
-  noveno,
-  decimo,
-  onceavo,
-  doceavo,
-  superior,
+  idnivelatiende,
+  idcicloatiende,
   id
 ) => {
   try {
@@ -363,10 +299,8 @@ export const putCentroEducativoParticipanteM = async (
                 UPDATE participantescentroeducativo 
                 SET 
                     idcentroeducativo=$1 , idparticipante=$2 , cargo=$3 , jornada=$4 , modalidad=$5 , 
-                    prebasica=$6 , basica=$7 , media=$8 , 
-                    primero=$9 , segundo=$10 , tercero=$11 , cuarto=$12 , quinto=$13 , sexto=$14 , septimo=$15 , octavo=$16 , noveno=$17 , 
-                    decimo=$18 , onceavo=$19 , doceavo=$20, superior=$21
-                WHERE id = $22
+                    idnivelatiende=$6 , idcicloatiende=$7 
+                WHERE id = $8
                 RETURNING *`,
       [
         idcentroeducativo,
@@ -374,22 +308,8 @@ export const putCentroEducativoParticipanteM = async (
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo,
-        superior,
+        idnivelatiende,
+        idcicloatiende,
         id,
       ]
     );

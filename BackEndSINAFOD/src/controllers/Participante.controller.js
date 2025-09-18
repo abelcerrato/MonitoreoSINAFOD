@@ -444,22 +444,9 @@ export const postParticipantesIFCedC = async (req, res) => {
     cargo,
     jornada,
     modalidad,
-    prebasica,
-    basica,
-    media,
-    superior,
-    primero,
-    segundo,
-    tercero,
-    cuarto,
-    quinto,
-    sexto,
-    septimo,
-    octavo,
-    noveno,
-    decimo,
-    onceavo,
-    doceavo,
+    idnivelatiende,
+    idcicloatiende,
+
 
     idinvestigacion,
     idformacion,
@@ -739,22 +726,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
@@ -827,22 +800,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
@@ -919,22 +878,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
@@ -1011,22 +956,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
@@ -1084,22 +1015,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
@@ -1119,7 +1036,7 @@ export const postParticipantesIFCedC = async (req, res) => {
     else {
       console.log("CASO 6: Ya existen todos, solo agregar relaciones nuevas si es necesario");
 
-       // Actualizar participante
+      // Actualizar participante
       const Participante = await putParticipanteM(
         identificacion,
         codigosace,
@@ -1150,7 +1067,7 @@ export const postParticipantesIFCedC = async (req, res) => {
 
       const idparticipanteput = Participante;
       console.log("idparticipante actualizado: ", idparticipanteput);
-      
+
       // Insertar relación con centro educativo
       const relacionCed = await postCentroEducativoParticipanteM(
         idcentroeducativo,
@@ -1158,22 +1075,8 @@ export const postParticipantesIFCedC = async (req, res) => {
         cargo,
         jornada,
         modalidad,
-        prebasica,
-        basica,
-        media,
-        superior,
-        primero,
-        segundo,
-        tercero,
-        cuarto,
-        quinto,
-        sexto,
-        septimo,
-        octavo,
-        noveno,
-        decimo,
-        onceavo,
-        doceavo
+        idnivelatiende,
+        idcicloatiende
       );
       response.ced2 = relacionCed;
 
