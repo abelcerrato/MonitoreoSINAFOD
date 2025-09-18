@@ -3,6 +3,7 @@ import {
   getParticipanteCodSACEM,
   getParticipanteDNIM,
   getParticipanteIdentificacionM,
+  getRelacionParticipanteFormacionM,
   postParticipanteFormacionM,
   postParticipanteInvestigacionM,
   postParticipanteM,
@@ -351,17 +352,28 @@ export const getFiltroDocentesC = async (req, res) => {
 
 
     // Validar si ya está inscrito en la formación
-    if (idformacion && idparticipante) {
-      const inscrito = await getRelacionParticipanteFormacionC(idformacion, idparticipante);
-      if (inscrito) {
-        return res.status(400).json({
-          error: "El participante ya fue inscrito en esta formación.",
-          inscrito,
-        });
+    if (tipo === "formacion") {
+      try {
+        const inscrito = await getRelacionParticipanteFormacionM(idformacion, idparticipante);
+
+        if (inscrito) {
+          console.log("El participante ya fue inscrito en esta formación.");
+          return res.status(400).json({
+            error: "El participante ya fue inscrito en esta formación.",
+            inscrito,
+          });
+        }
+
+        console.log("El participante no está inscrito, continuar con el flujo.");
+        // Aquí no se retorna nada, simplemente deja que el proceso siga
+      } catch (error) {
+        console.error("Error al validar inscripción:", error);
+        return res.status(500).json({ error: "Error interno al validar inscripción" });
       }
     }
 
-    
+
+
 
     // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
     if (tienecentro === false && !iddocente && !idparticipante) {
