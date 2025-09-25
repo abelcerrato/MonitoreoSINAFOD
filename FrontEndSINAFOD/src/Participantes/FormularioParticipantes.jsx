@@ -54,6 +54,7 @@ const FormularParticipantes = () => {
   const [nivelAtiendeP, setNivelAtiendeP] = useState("");
   const [ciclolAtiendeP, setCicloAtiendeP] = useState("");
   const [formData, setFormData] = useState({
+    tienecentro: false,
     correo: "",
     telefono: "",
     edad: "",
@@ -87,7 +88,7 @@ const FormularParticipantes = () => {
     iddepartamento: "",
     cargo: "",
     idaldea: null,
-    tipoadministracion: "Gubernamental",
+    tipoadministracion: "",
     creadopor: user.id,
   });
 
@@ -176,8 +177,11 @@ const FormularParticipantes = () => {
     // Construir lista de campos requeridos según el tipo
     const requiredFields = [
       ...baseRequiredFields,
-      ...(formacioninvest !== "investigacion" ? conditionalRequiredFields : []),
+      ...(formacioninvest !== "investigacion" && formData.tienecentro
+        ? conditionalRequiredFields
+        : []),
     ];
+
     // Detectar campos vacíos
     let errors = {};
     requiredFields.forEach((field) => {
@@ -750,7 +754,9 @@ const FormularParticipantes = () => {
                   scrollButtons="auto"
                 >
                   <Tab label="Datos Generales del Participante" value="1" />
-                  <Tab label="Datos del Centro Educativo" value="2" />
+                  {formData.tienecentro && (           
+                    <Tab label="Datos del Centro Educativo" value="2" />      
+                  )}
                 </Tabs>
               </>
             )}
@@ -964,7 +970,7 @@ const FormularParticipantes = () => {
                       onChange={handleChange}
                     >
                       <MenuItem value="3">Media</MenuItem>
-                      <MenuItem value="4">Superior</MenuItem>
+                      <MenuItem value="9">Superior</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -1129,7 +1135,7 @@ const FormularParticipantes = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-              </Grid>
+            
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">Lugar de Trabajo</Typography>
                 <TextField
@@ -1140,8 +1146,24 @@ const FormularParticipantes = () => {
 
                 />
               </Grid>
-
-              {formacioninvest === "investigacion" && (
+              <Grid size={{ xs: 12, md: 12 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.tienecentro}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          tienecentro: e.target.checked,
+                        })
+                      }
+                    />
+                  }
+                  label="¿Representa a un Centro Educativo?"
+                />
+              </Grid>
+  </Grid>
+              {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
                   sx={{
                     marginTop: 5,
@@ -1440,14 +1462,14 @@ const FormularParticipantes = () => {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid size={{ xs: 12, md: 12 }}>
+                  <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">Nivel Educativo*</Typography>
-                    <FormControl  fullWidth>
+                    <FormControl fullWidth>
                       <Select
                         name="idnivelatiende"
                         value={formData.idnivelatiende || ""}
                         onChange={handleChange}
-                    
+
                       >
                         <MenuItem value="">Seleccione un nivel educativo</MenuItem>
                         {nivelAtiendeP.length > 0 ? (
@@ -1464,7 +1486,7 @@ const FormularParticipantes = () => {
                   </Grid>
 
                   {formData.idnivelatiende === 2 && (
-                    <Grid size={{ xs: 12, md: 12 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
 
                       <Typography variant="subtitle1">Ciclo Académico*</Typography>
                       <FormControl fullWidth>
@@ -1473,7 +1495,7 @@ const FormularParticipantes = () => {
                           value={formData.idcicloatiende || ""}
                           onChange={handleChange}
                           disabled={!nivelAtiendeP.length}
-                        
+
                         >
                           <MenuItem value="">Seleccione un ciclo académico</MenuItem>
                           {ciclolAtiendeP.length > 0 ? (
@@ -1606,11 +1628,11 @@ const FormularParticipantes = () => {
                             Centro Educativo:{" "}
                             {docente.nombreced || "No especificado"}
                           </Box>
-                          <Box component="span" display="block">
+                          {/* <Box component="span" display="block">
                             Nivel Educativo que Atiende:{" "}
                             {docente.nivelacademico_ced || ""} - Grado Educativo
                             que Atiende: {docente.gradoacademico_ced || ""}
-                          </Box>
+                          </Box> */}
                         </>
                       }
                     />

@@ -2072,12 +2072,12 @@ const PreInscripcion = () => {
                               Centro Educativo:{" "}
                               {docente.nombreced || "No especificado"}
                             </Box>
-                            <Box component="span" display="block">
+                            {/*  <Box component="span" display="block">
                               Nivel Educativo que Atiende:{" "}
                               {docente.nivelacademico_ced || ""} - Grado
                               Educativo que Atiende:{" "}
                               {docente.gradoacademico_ced || ""}
-                            </Box>
+                            </Box> */}
                           </>
                         }
                       />

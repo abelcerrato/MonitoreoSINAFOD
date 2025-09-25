@@ -44,9 +44,10 @@ const ModificarParticipante = () => {
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [etnia, setEtnia] = useState("");
-    const [nivelAtiendeP, setNivelAtiendeP] = useState("");
-    const [ciclolAtiendeP, setCicloAtiendeP] = useState("");
+  const [nivelAtiendeP, setNivelAtiendeP] = useState("");
+  const [ciclolAtiendeP, setCicloAtiendeP] = useState("");
   const [formData, setFormData] = useState({
+    tienecentro: false,
     correo: "",
     telefono: "",
     edad: "",
@@ -82,7 +83,7 @@ const ModificarParticipante = () => {
     idmunicipio: "",
     iddepartamento: "",
     idaldea: null,
-    tipoadministracion: "Gubernamental",
+    tipoadministracion: "",
     creadopor: user.id,
   });
 
@@ -150,7 +151,6 @@ const ModificarParticipante = () => {
 
   const handleSave = async () => {
     try {
-      console.log("Datos que envio parti", formData);
 
       const dataToSend = {
         ...formData,
@@ -518,7 +518,9 @@ const ModificarParticipante = () => {
                   scrollButtons="auto"
                 >
                   <Tab label="Datos Generales del Participante" value="1" />
-                  <Tab label="Datos del Centro Educativo" value="2" />
+                  {formData.tienecentro && (
+                    <Tab label="Datos del Centro Educativo" value="2" />
+                  )}
                 </Tabs>
               </>
             )}
@@ -638,7 +640,7 @@ const ModificarParticipante = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, md: 6}}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
                     Etnia*
                   </Typography>
@@ -675,7 +677,7 @@ const ModificarParticipante = () => {
                       onChange={handleChange}
                     >
                       <MenuItem value="3">Media</MenuItem>
-                      <MenuItem value="4">Superior</MenuItem>
+                      <MenuItem value="9">Superior</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -827,8 +829,35 @@ const ModificarParticipante = () => {
                     onChange={handleChange}
                   />
                 </Grid>
+
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                  <TextField
+                    fullWidth
+                    name="lugardetrabajo"
+                    value={formData.lugardetrabajo}
+                    onChange={handleChange}
+
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.tienecentro}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tienecentro: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="¿Representa a un Centro Educativo?"
+                  />
+                </Grid>
               </Grid>
-              {formacioninvest === "investigacion" && (
+              {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
                   sx={{
                     marginTop: 5,
@@ -1094,7 +1123,7 @@ const ModificarParticipante = () => {
                         name="idnivelatiende"
                         value={formData.idnivelatiende || ""}
                         onChange={handleChange}
-                       
+
                       >
                         <MenuItem value="">Seleccione un nivel educativo</MenuItem>
                         {nivelAtiendeP.length > 0 ? (
@@ -1111,16 +1140,16 @@ const ModificarParticipante = () => {
                   </Grid>
 
                   {formData.idnivelatiende === 2 && (
-                    <Grid size={{ xs: 12, md: 6}}>
+                    <Grid size={{ xs: 12, md: 6 }}>
 
                       <Typography variant="subtitle1">Ciclo Académico*</Typography>
-                      <FormControl  fullWidth>
+                      <FormControl fullWidth>
                         <Select
                           name="idcicloatiende"
                           value={formData.idcicloatiende || ""}
                           onChange={handleChange}
                           disabled={!nivelAtiendeP.length}
-                       
+
                         >
                           <MenuItem value="">Seleccione un ciclo académico</MenuItem>
                           {ciclolAtiendeP.length > 0 ? (
