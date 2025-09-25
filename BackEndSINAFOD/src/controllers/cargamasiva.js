@@ -59,21 +59,8 @@ export const cargaMasivaFormacion = async (req, res) => {
           cargo: row.cargo,
           jornada: row.jornada,
           modalidad: row.modalidad,
-          prebasica: row.prebasica,
-          basica: row.basica,
-          media: row.media,
-          primero: row.primero,
-          segundo: row.segundo,
-          tercero: row.tercero,
-          cuarto: row.cuarto,
-          quinto: row.quinto,
-          sexto: row.sexto,
-          septimo: row.septimo,
-          octavo: row.octavo,
-          noveno: row.noveno,
-          decimo: row.decimo,
-          onceavo: row.onceavo,
-          doceavo: row.doceavo
+          idnivelatiende: row.idnivelatiende,
+          idcicloatiende: row.idcicloatiende
         };
 
         console.log(`Procesando fila: ${JSON.stringify(body)}`);

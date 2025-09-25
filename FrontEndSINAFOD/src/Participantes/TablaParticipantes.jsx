@@ -102,7 +102,7 @@ export default function TablaPacticantes({
   setIsSaved,
   formacioninvest,
 }) {
- 
+
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [page, setPage] = React.useState(0);
@@ -181,7 +181,7 @@ export default function TablaPacticantes({
                 <TableCell align="right">Código SACE del Centro</TableCell>
                 <TableCell align="right">Centro Educativo</TableCell>
                 <TableCell align="right">Nivel Académico que Atiende</TableCell>
-                <TableCell align="right">Grado que Atiende</TableCell>
+                <TableCell align="right">Ciclo que Atiende</TableCell>
                 <TableCell align="right">
                   Cargo que Desempeña en el Centro Educativo
                 </TableCell>
@@ -231,8 +231,8 @@ export default function TablaPacticantes({
                 <>
                   <TableCell align="right">{row.codigosace}</TableCell>
                   <TableCell align="right">{row.nombreced}</TableCell>
-                  <TableCell align="right">{row.nivelacademico_ced}</TableCell>
-                  <TableCell align="right">{row.gradoacademico_ced}</TableCell>
+                  <TableCell align="right">{row.nivelatiende}</TableCell>
+                  <TableCell align="right">{row.cicloatiende}</TableCell>
                   <TableCell align="right">{row.cargoced}</TableCell>
                   <TableCell align="right">{row.tipoadministracion}</TableCell>
                   <TableCell align="right">{row.zona}</TableCell>

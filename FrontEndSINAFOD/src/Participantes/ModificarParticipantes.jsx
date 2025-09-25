@@ -44,7 +44,10 @@ const ModificarParticipante = () => {
   const [cargos, setCargos] = useState([]);
   const [gardoP, setGradoP] = useState([]);
   const [etnia, setEtnia] = useState("");
+  const [nivelAtiendeP, setNivelAtiendeP] = useState("");
+  const [ciclolAtiendeP, setCicloAtiendeP] = useState("");
   const [formData, setFormData] = useState({
+    tienecentro: false,
     correo: "",
     telefono: "",
     edad: "",
@@ -71,21 +74,8 @@ const ModificarParticipante = () => {
 
     nombreced: "",
     codigosaceced: "",
-    prebasica: false,
-    basica: false,
-    media: false,
-    primero: false,
-    segundo: false,
-    tercero: false,
-    cuarto: false,
-    quinto: false,
-    sexto: false,
-    septimo: false,
-    octavo: false,
-    noveno: false,
-    decimo: false,
-    onceavo: false,
-    doceavo: false,
+    idnivelatiende: "",
+    idcicloatiende: "",
     modalidad: "",
     datoscorrectos: false,
     autorizadatos: false,
@@ -93,7 +83,7 @@ const ModificarParticipante = () => {
     idmunicipio: "",
     iddepartamento: "",
     idaldea: null,
-    tipoadministracion: "Gubernamental",
+    tipoadministracion: "",
     creadopor: user.id,
   });
 
@@ -161,7 +151,6 @@ const ModificarParticipante = () => {
 
   const handleSave = async () => {
     try {
-      console.log("Datos que envio parti", formData);
 
       const dataToSend = {
         ...formData,
@@ -422,6 +411,40 @@ const ModificarParticipante = () => {
     obtenergardo();
   }, [formData.idnivelacademicos]);
 
+  // Obtener nivel academico que atiende el participante
+  useEffect(() => {
+
+    const obtenerNivelAtiendeParticipante = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/nivelesAcademicos`
+        );
+        setNivelAtiendeP(response.data);
+      } catch (error) {
+        console.error("Error al obtener los gardo", error);
+      }
+    };
+
+    obtenerNivelAtiendeParticipante();
+  }, []);
+
+  // Obtener ciclo academico que atiende el participante
+  useEffect(() => {
+    if (!formData.idnivelatiende) return;
+    const obtenerCicloAtienteParticipante = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/cicloAcademicoNivel/${formData.idnivelatiende}`
+        );
+        setCicloAtiendeP(response.data);
+      } catch (error) {
+        console.error("Error al obtener los gardo", error);
+      }
+    };
+
+    obtenerCicloAtienteParticipante();
+  }, [formData.idnivelatiende]);
+
   // Obtener funcion que desempeña
   useEffect(() => {
     const obtenerfuncion = async () => {
@@ -495,7 +518,9 @@ const ModificarParticipante = () => {
                   scrollButtons="auto"
                 >
                   <Tab label="Datos Generales del Participante" value="1" />
-                  <Tab label="Datos del Centro Educativo" value="2" />
+                  {formData.tienecentro && (
+                    <Tab label="Datos del Centro Educativo" value="2" />
+                  )}
                 </Tabs>
               </>
             )}
@@ -560,6 +585,11 @@ const ModificarParticipante = () => {
                         control={<Radio />}
                         label="Masculino"
                       />
+                      <FormControlLabel
+                        value="No contestó"
+                        control={<Radio />}
+                        label="Prefiero no decir"
+                      />
                     </RadioGroup>
                   </FormControl>
                 </Grid>
@@ -610,7 +640,7 @@ const ModificarParticipante = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, md: 12 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
                     Etnia*
                   </Typography>
@@ -647,7 +677,7 @@ const ModificarParticipante = () => {
                       onChange={handleChange}
                     >
                       <MenuItem value="3">Media</MenuItem>
-                      <MenuItem value="4">Superior</MenuItem>
+                      <MenuItem value="9">Superior</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -799,8 +829,35 @@ const ModificarParticipante = () => {
                     onChange={handleChange}
                   />
                 </Grid>
+
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                  <TextField
+                    fullWidth
+                    name="lugardetrabajo"
+                    value={formData.lugardetrabajo}
+                    onChange={handleChange}
+
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.tienecentro}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tienecentro: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="¿Representa a un Centro Educativo?"
+                  />
+                </Grid>
               </Grid>
-              {formacioninvest === "investigacion" && (
+              {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
                   sx={{
                     marginTop: 5,
@@ -1060,211 +1117,56 @@ const ModificarParticipante = () => {
                   </Grid>
 
                   <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">Nivel Educativo</Typography>
+                    <Typography variant="subtitle1">Nivel Educativo*</Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name="idnivelatiende"
+                        value={formData.idnivelatiende || ""}
+                        onChange={handleChange}
 
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData?.prebasica}
-                              onChange={handleChange}
-                              name="prebasica"
-                            />
-                          }
-                          label="Prebásica"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData?.basica}
-                              onChange={handleChange}
-                              name="basica"
-                            />
-                          }
-                          label="Básica"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={formData?.media}
-                              onChange={handleChange}
-                              name="media"
-                            />
-                          }
-                          label="Media"
-                        />
-                      </Grid>
-                    </Grid>
+                      >
+                        <MenuItem value="">Seleccione un nivel educativo</MenuItem>
+                        {nivelAtiendeP.length > 0 ? (
+                          nivelAtiendeP.map((ni) => (
+                            <MenuItem key={ni.id} value={ni.id}>
+                              {ni.nombre}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>Seleccione nivel educativo</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
                   </Grid>
 
-                  {formData.basica === true && (
+                  {formData.idnivelatiende === 2 && (
                     <Grid size={{ xs: 12, md: 6 }}>
-                      <Typography variant="subtitle1">
-                        Grados Académicos (Básica)
-                      </Typography>
-                      <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.primero}
-                                onChange={handleChange}
-                                name="primero"
-                              />
-                            }
-                            label="Primer"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.segundo}
-                                onChange={handleChange}
-                                name="segundo"
-                              />
-                            }
-                            label="Segundo"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.tercero}
-                                onChange={handleChange}
-                                name="tercero"
-                              />
-                            }
-                            label="Tercer"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.cuarto}
-                                onChange={handleChange}
-                                name="cuarto"
-                              />
-                            }
-                            label="Cuarto"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.quinto}
-                                onChange={handleChange}
-                                name="quinto"
-                              />
-                            }
-                            label="Quinto"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.sexto}
-                                onChange={handleChange}
-                                name="sexto"
-                              />
-                            }
-                            label="Sexto"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.septimo}
-                                onChange={handleChange}
-                                name="septimo"
-                              />
-                            }
-                            label="Séptimo"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.octavo}
-                                onChange={handleChange}
-                                name="octavo"
-                              />
-                            }
-                            label="Octavo"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.noveno}
-                                onChange={handleChange}
-                                name="noveno"
-                              />
-                            }
-                            label="Noveno"
-                          />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  )}
-                  {formData.media === true && (
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Typography variant="subtitle1">
-                        Grados Académicos (Media)
-                      </Typography>
-                      <Grid container spacing={2}>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.decimo}
-                                onChange={handleChange}
-                                name="decimo"
-                              />
-                            }
-                            label="Décimo"
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.onceavo}
-                                onChange={handleChange}
-                                name="onceavo"
-                              />
-                            }
-                            label="Undécimo"
-                          />
-                        </Grid>
 
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={formData?.doceavo}
-                                onChange={handleChange}
-                                name="doceavo"
-                              />
-                            }
-                            label="Duodécimo"
-                          />
-                        </Grid>
-                      </Grid>
+                      <Typography variant="subtitle1">Ciclo Académico*</Typography>
+                      <FormControl fullWidth>
+                        <Select
+                          name="idcicloatiende"
+                          value={formData.idcicloatiende || ""}
+                          onChange={handleChange}
+                          disabled={!nivelAtiendeP.length}
+
+                        >
+                          <MenuItem value="">Seleccione un ciclo académico</MenuItem>
+                          {ciclolAtiendeP.length > 0 ? (
+                            ciclolAtiendeP.map((ci) => (
+                              <MenuItem key={ci.id} value={ci.id}>
+                                {ci.ciclo}
+                              </MenuItem>
+                            ))
+                          ) : (
+                            <MenuItem disabled>Seleccione ciclo académico</MenuItem>
+                          )}
+                        </Select>
+                      </FormControl>
+
                     </Grid>
                   )}
+
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
                       Cargo que Desempeña en el Centro Educativo*

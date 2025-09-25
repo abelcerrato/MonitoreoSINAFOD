@@ -32,7 +32,6 @@ export const getUsuarioIdC = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Retornar el ID del usuario (suponiendo que el resultado tiene un campo 'id')
     res.json(users);
   } catch (error) {
     console.error("Error al obtener el usuario:", error);

@@ -8,6 +8,7 @@ import {
   getParticipanteIdFormInvestC,
   getParticipanteIdInvestC,
   getParticipanteInvestigacionC,
+  getRelacionParticipanteFormacionC,
   postParticipantesIFCedC,
   putParticipanteC,
 } from "../controllers/Participante.controller.js";
@@ -36,9 +37,12 @@ router.post("/participanteInvFormCed", postParticipantesIFCedC); //ruta que refg
 
 
 // Nueva ruta para carga masiva
-router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacion);
+//router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacion); // no está en uso
 
 //ruta para traer las etnias
 router.get("/etnias", getEtniasC);
+
+
+router.get("/relacionParticipanteFormacion", getRelacionParticipanteFormacionC); //trae los participantes por el id de la Formacion
 
 export default router;
