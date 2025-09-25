@@ -152,13 +152,8 @@ const FormularioExterno = () => {
           .toLowerCase()
           .replace(/\b\w/g, (c) => c.toUpperCase());
       }
-      // Capitalizar nombre y apellido
-      if (name === "nombre" || name === "apellido") {
-        newData[name] = value
-          .toLowerCase()
-          .replace(/\b\w/g, (c) => c.toUpperCase());
-      }
       // eliminar todo lo que no sea número
+        if (name === "telefono") {
         let soloNumeros = value.replace(/\D/g, "");
 
         // limitar a máximo 8 números
