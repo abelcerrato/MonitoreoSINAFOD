@@ -311,6 +311,7 @@ const ListadoParticipantes = () => {
         "profile_field_edad",
         "phone1",
         // "profile_field_cargo",
+
         "institution",
         "profile_field_tipoCentr",
         "profile_field_SACE",

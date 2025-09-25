@@ -324,7 +324,6 @@ const FormularParticipantes = () => {
           return newErrors;
         });
       }
-
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value
@@ -360,7 +359,6 @@ const FormularParticipantes = () => {
           return newErrors;
         });
       }
-
       //Validar y formatear teléfono
       if (name === "telefono") {
         // eliminar todo lo que no sea número
