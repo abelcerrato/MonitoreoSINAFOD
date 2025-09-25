@@ -210,7 +210,7 @@ const ListadoParticipantes = () => {
         "Centro Educativo",
         "Código SACE del Centro Educativo",
         "Nivel Académico que Atiende",
-        "Grado que Atiende",
+        "Ciclo que Atiende",
         "Cargo que Desempeña en el Centro Educativo",
         "Tipo Administración",
         "Tipo de Centro Educativo",
@@ -263,8 +263,8 @@ const ListadoParticipantes = () => {
 
           item.nombreced,
           item.codigosaceced,
-          item.nivelacademico_ced ?? "-",
-          item.gradoacademico_ced ?? "-",
+          item.nivelatiende ?? "-",
+          item.cicloatiende ?? "-",
           item.cargoced,
           item.tipoadministracion,
           item.tipocentro,
@@ -310,15 +310,15 @@ const ListadoParticipantes = () => {
         "profile_field_gender",
         "profile_field_edad",
         "phone1",
-       // "profile_field_cargo",
+        // "profile_field_cargo",
         "institution",
-        "profile_field_tipoCentro",
+        "profile_field_tipoCentr",
         "profile_field_SACE",
         "department",
-        "city",
-       /*  "profile_field_aldea",
-        "profile_field_caserio",
-        "profile_field_jornada", */
+        /* "city",
+         "profile_field_aldea",
+         "profile_field_caserio",
+         "profile_field_jornada", */
         "profile_field_level",
         //"profile_field_Ciclo",
         "profile_field_zona",
@@ -326,7 +326,8 @@ const ListadoParticipantes = () => {
       ];
 
       // Iniciar contenido CSV con encabezados y BOM para UTF-8
-      let csvContent = "\uFEFF" + headers.join(",") + "\n";
+      let csvContent = "\uFEFF" + headers.join(";") + "\n";
+
 
       // Agregar cada fila
       filteredRows.forEach((item) => {
@@ -346,12 +347,12 @@ const ListadoParticipantes = () => {
           item.tipocentro,
           item.codigosaceced,
           item.departamentoced,
-         /*  item.municipioced,
-          item.aldeaced,
-          item.caserio,
-          item.jornada, */
-          item.nivelacademico_ced,
-         // item.gradoacademico_ced,
+          /*  item.municipioced,
+           item.aldeaced,
+           item.caserio,
+           item.jornada, */
+          item.nivelatiende,
+          // item.cicloatiende,
           item.zona,
           item.formacion,
         ];
@@ -367,7 +368,8 @@ const ListadoParticipantes = () => {
             : str;
         });
 
-        csvContent += escapedRow.join(",") + "\n";
+        csvContent += escapedRow.join(";") + "\n";
+
       });
 
       // Descargar el archivo CSV con encoding UTF-8
@@ -404,7 +406,6 @@ const ListadoParticipantes = () => {
         return date.toLocaleDateString('es-ES');
       },
     },
-  
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
     { field: "telefono", headerName: "Teléfono", width: 180 },
@@ -453,14 +454,14 @@ const ListadoParticipantes = () => {
       width: 180,
     },
     {
-      field: "nivelacademico_ced",
+      field: "nivelatiende",
       headerName: "Nivel Académico que Atiende",
       width: 200,
     },
 
     {
-      field: "gradoacademico_ced",
-      headerName: "Grado que Atiende",
+      field: "cicloatiende",
+      headerName: "Ciclo que Atiende",
       width: 230,
     },
     {
@@ -547,12 +548,12 @@ const ListadoParticipantes = () => {
                 </MenuItem>
                 <MenuItem value="aldea">Aldea en el que Reside</MenuItem>
                 <MenuItem value="nombreced">Centro Educativo</MenuItem>
-                <MenuItem value="nivelacademico_ced">
+                <MenuItem value="nivelatiende">
                   Nivel Educativo que Atiende
                 </MenuItem>
 
-                <MenuItem value="gradoacademico_ced">
-                  Grado que Atiende
+                <MenuItem value="cicloatiende">
+                  Ciclo que Atiende
                 </MenuItem>
                 <MenuItem value="tipoadministracion">
                   Tipo Administración

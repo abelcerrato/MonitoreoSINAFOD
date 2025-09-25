@@ -3,6 +3,7 @@ import {
   getParticipanteCodSACEM,
   getParticipanteDNIM,
   getParticipanteIdentificacionM,
+  getRelacionParticipanteFormacionM,
   postParticipanteFormacionM,
   postParticipanteInvestigacionM,
   postParticipanteM,
@@ -22,6 +23,7 @@ import {
   putDocentesM,
 } from "../models/docentesDGDP.models.js";
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
+import { getRelacionParticipanteFormacionC } from "./Participante.controller.js";
 
 export const getDocentesC = async (req, res) => {
   try {
@@ -302,22 +304,8 @@ export const getFiltroDocentesC = async (req, res) => {
     cargo,
     jornada,
     modalidad,
-    prebasica,
-    basica,
-    media,
-    superior,
-    primero,
-    segundo,
-    tercero,
-    cuarto,
-    quinto,
-    sexto,
-    septimo,
-    octavo,
-    noveno,
-    decimo,
-    onceavo,
-    doceavo,
+    idnivelatiende,
+    idcicloatiende,
 
     tienecentro,
   } = req.body;
@@ -360,6 +348,32 @@ export const getFiltroDocentesC = async (req, res) => {
     let form = null;
     let inv = null;
     let participantes = null;
+
+
+
+    // Validar si ya está inscrito en la formación
+    if (tipo === "formacion") {
+      try {
+        const inscrito = await getRelacionParticipanteFormacionM(idformacion, idparticipante);
+
+        if (inscrito) {
+          console.log("El participante ya fue inscrito en esta formación.");
+          return res.status(400).json({
+            error: "El participante ya fue inscrito en esta formación.",
+            inscrito,
+          });
+        }
+
+        console.log("El participante no está inscrito, continuar con el flujo.");
+        // Aquí no se retorna nada, simplemente deja que el proceso siga
+      } catch (error) {
+        console.error("Error al validar inscripción:", error);
+        return res.status(500).json({ error: "Error interno al validar inscripción" });
+      }
+    }
+
+
+
 
     // CASO 0: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo
     if (tienecentro === false && !iddocente && !idparticipante) {
@@ -593,22 +607,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -683,22 +683,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -780,22 +766,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -877,22 +849,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -956,22 +914,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -1051,22 +995,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
@@ -1129,22 +1059,8 @@ export const getFiltroDocentesC = async (req, res) => {
           cargo,
           jornada,
           modalidad,
-          prebasica,
-          basica,
-          media,
-          superior,
-          primero,
-          segundo,
-          tercero,
-          cuarto,
-          quinto,
-          sexto,
-          septimo,
-          octavo,
-          noveno,
-          decimo,
-          onceavo,
-          doceavo
+          idnivelatiende,
+          idcicloatiende
         );
         ced2 = relacionCed;
 
