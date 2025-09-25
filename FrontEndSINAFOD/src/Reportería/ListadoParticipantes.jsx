@@ -312,7 +312,7 @@ const ListadoParticipantes = () => {
         "phone1",
         // "profile_field_cargo",
         "institution",
-        "profile_field_tipoCentro",
+        "profile_field_tipoCentr",
         "profile_field_SACE",
         "department",
         /* "city",
@@ -335,10 +335,10 @@ const ListadoParticipantes = () => {
           item.correo,
           item.nombre,
           item.apellido,
-          `="${item.identificacion}"`, // Forzar formato texto para username
-          `="${item.identificacion}"`, // Forzar formato texto para idnumber
-          `="${item.identificacion}"`, // Password puede mantenerse sin formato
-          `="${item.identificacion}"`, // Forzar formato texto para profile_field_ID
+          `${item.identificacion}`, // Forzar formato texto para username
+          `${item.identificacion}`, // Forzar formato texto para idnumber
+          `${item.identificacion}`, // Password puede mantenerse sin formato
+          `${item.identificacion}`, // Forzar formato texto para profile_field_ID
           item.genero,
           item.edad,
           item.telefono,
@@ -406,7 +406,6 @@ const ListadoParticipantes = () => {
         return date.toLocaleDateString('es-ES');
       },
     },
-
     { field: "edad", headerName: "Edad", width: 180 },
     { field: "correo", headerName: "Correo Electrónico", width: 180 },
     { field: "telefono", headerName: "Teléfono", width: 180 },
