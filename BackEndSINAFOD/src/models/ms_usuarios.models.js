@@ -142,13 +142,13 @@ export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
 
 
 //no está en uso, ya que la contraseña es la identidad del usuario
-export const resetContraseñaM = async (usuario) => {
+export const resetContraseñaM = async (identidad, usuario) => {
     try {
         // Definir la nueva contraseña temporal
-        const nuevaContraseña = "12345678";
+      //  const nuevaContraseña = "12345678";
 
         // Encriptar la contraseña temporal
-        const contraseñaCifrada = await bcrypt.hash(nuevaContraseña, 10);
+       // const contraseñaCifrada = await bcrypt.hash(nuevaContraseña, 10);
 
         // Actualiza la contraseña en la base de datos
         const { rows } = await pool.query(
@@ -156,7 +156,7 @@ export const resetContraseñaM = async (usuario) => {
                 SET contraseña = $1, cambiocontraseña=true
                 WHERE usuario = $2
                 RETURNING id, usuario, correo`,
-            [contraseñaCifrada, usuario]
+            [identidad, usuario]
         );
 
         if (rows.length === 0) {
