@@ -173,7 +173,7 @@ const FormularioExterno = () => {
         setFieldErrors((prevErrors) => {
           let newErrors = { ...prevErrors };
           if (soloNumeros.length !== 9) {
-            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+            newErrors.telefono = "";
           } else {
             newErrors.telefono = "";
           }
