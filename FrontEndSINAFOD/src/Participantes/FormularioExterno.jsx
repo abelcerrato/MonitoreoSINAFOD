@@ -157,8 +157,8 @@ const FormularioExterno = () => {
         let soloNumeros = value.replace(/\D/g, "");
 
         // limitar a máximo 8 números
-        if (soloNumeros.length > 8) {
-          soloNumeros = soloNumeros.slice(0, 8);
+        if (soloNumeros.length > 9) {
+          soloNumeros = soloNumeros.slice(0, 9);
         }
 
         // aplicar formato 0000-0000 si hay más de 4 dígitos
@@ -704,7 +704,7 @@ const FormularioExterno = () => {
 
     //  Teléfono: solo números, 8 dígitos
     if (formData.telefono) {
-      if (!/^\d{8}$/.test(formData.telefono)) {
+      if (!/^\d{9}$/.test(formData.telefono)) {
         errors.telefono =
           "El teléfono debe tener exactamente 8 números, sin guiones ni caracteres especiales";
       }
