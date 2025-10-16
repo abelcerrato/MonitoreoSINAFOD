@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 import { color } from "../Components/color";
 import { FaRegFileExcel, FaFileCsv } from "react-icons/fa";
 import dayjs from "dayjs";
+import { pdf, Document, Page, Text, View, StyleSheet,Image } from "@react-pdf/renderer";
+
 
 
 import LogoCONED from "../Components/img/logos_CONED.png";
@@ -508,6 +510,93 @@ const ListadoParticipantes = () => {
     },
   ];
 
+
+
+
+  const handleGenerarPDF = async () => {
+    if (!filteredRows.length) return console.error("No hay participantes para generar PDF");
+
+    const fondoUrl = "https://thumbs.dreamstime.com/b/papel-de-fondo-plantilla-certificado-colorido-coloreado-modelo-191305080.jpg"; // Cambia por tu URL
+
+    const styles = StyleSheet.create({
+      page: {
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      backgroundContainer: {
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+      },
+      backgroundImage: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      },
+      contenido: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        paddingHorizontal: 40,
+      },
+      nombre: {
+        fontSize: 48,
+        fontWeight: "bold",
+        marginBottom: 20,
+        color: "#000000", // Cambia el color si el fondo lo requiere
+      },
+      detalle: {
+        fontSize: 18,
+        marginBottom: 5,
+        color: "#000000",
+      },
+    });
+
+    try {
+      const doc = (
+        <Document>
+          {filteredRows.map((p, i) => (
+            <Page key={i} size="A4" orientation="landscape" style={styles.page}>
+              {/* Fondo */}
+              <View style={styles.backgroundContainer}>
+                <Image src={fondoUrl} style={styles.backgroundImage} />
+              </View>
+
+              {/* Contenido sobre el fondo */}
+              <View style={styles.contenido}>
+                <Text style={styles.nombre}>
+                  {String(p.nombre || "").normalize("NFC")}{" "}
+                  {String(p.apellido || "").normalize("NFC")}
+                </Text>
+              
+                <Text style={styles.detalle}>{p.formacion}</Text>
+            
+                <Text style={styles.detalle}>Fecha: {new Date().toLocaleDateString()}</Text>
+              </View>
+            </Page>
+          ))}
+        </Document>
+      );
+
+      const asPdf = pdf(doc);
+      const blob = await asPdf.toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Certificados_Participantes.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      console.log("PDF generado correctamente.");
+    } catch (error) {
+      console.error("Error generando PDF:", error);
+    }
+  };
+
+
   return (
     <Dashboard>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
@@ -668,6 +757,16 @@ const ListadoParticipantes = () => {
                 <FaFileCsv />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Exportar PDF">
+              <IconButton
+                onClick={handleGenerarPDF}
+                aria-label="exportar PDF"
+                sx={{ fontSize: 30, color: color.primary.azul }}
+              >
+                📄
+              </IconButton>
+            </Tooltip>
+
           </Grid>
         </Grid>
         <DataGrid
