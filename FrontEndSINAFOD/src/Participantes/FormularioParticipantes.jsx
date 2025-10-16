@@ -265,7 +265,7 @@ const FormularParticipantes = () => {
           .toLowerCase()
           .replace(/\b\w/g, (c) => c.toUpperCase());
       }
-      //Validar y formatear teléfono
+      // Validar y formatear teléfono
       if (name === "telefono") {
         // eliminar todo lo que no sea número
         let soloNumeros = value.replace(/\D/g, "");
@@ -278,16 +278,17 @@ const FormularParticipantes = () => {
         // aplicar formato 0000-0000 si hay más de 4 dígitos
         let telefonoFormateado = soloNumeros;
         if (soloNumeros.length > 4) {
-          telefonoFormateado =
-            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
+          telefonoFormateado = `${soloNumeros.slice(0, 4)}-${soloNumeros.slice(4)}`;
         }
 
+        // asignar el valor formateado
         newData.telefono = telefonoFormateado;
 
+        // validar longitud
         setFieldErrors((prevErrors) => {
-          let newErrors = { ...prevErrors };
+          const newErrors = { ...prevErrors };
           if (soloNumeros.length !== 8) {
-            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
+            newErrors.telefono = "El teléfono debe tener exactamente 8 dígitos (formato 0000-0000).";
           } else {
             newErrors.telefono = "";
           }
@@ -295,35 +296,10 @@ const FormularParticipantes = () => {
         });
       }
 
-      //Validar y formatear teléfono
-      if (name === "telefono") {
-        // eliminar todo lo que no sea número
-        let soloNumeros = value.replace(/\D/g, "");
 
-        // limitar a máximo 8 números
-        if (soloNumeros.length > 8) {
-          soloNumeros = soloNumeros.slice(0, 8);
-        }
 
-        // aplicar formato 0000-0000 si hay más de 4 dígitos
-        let telefonoFormateado = soloNumeros;
-        if (soloNumeros.length > 4) {
-          telefonoFormateado =
-            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
-        }
 
-        newData.telefono = telefonoFormateado;
 
-        setFieldErrors((prevErrors) => {
-          let newErrors = { ...prevErrors };
-          if (soloNumeros.length !== 8) {
-            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
-          } else {
-            newErrors.telefono = "";
-          }
-          return newErrors;
-        });
-      }
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value
