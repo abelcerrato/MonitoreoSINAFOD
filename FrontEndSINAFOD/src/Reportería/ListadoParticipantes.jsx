@@ -4,9 +4,9 @@ import ExcelJS from "exceljs";
 import Dashboard from "../Dashboard/dashboard";
 import PropTypes from "prop-types";
 import { color } from "../Components/color";
-import { FaRegFileExcel, FaFileCsv } from "react-icons/fa";
+import { FaRegFileExcel, FaFileCsv, FaGraduationCap } from "react-icons/fa";
 import dayjs from "dayjs";
-import ReactDOMServer from 'react-dom/server';
+
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -534,7 +534,6 @@ const ListadoParticipantes = () => {
     institutionLogos: [],
     title: "",
     subtitle: "",
-
     bodyText: "",
     includeFormacionName: true,
     fechaLugarText: "",
@@ -564,11 +563,18 @@ const ListadoParticipantes = () => {
     signatureSize: 10,
     // Layout
     logoSize: 80,
-    logoPosition: "center", // left, center, right
+    logoPosition: "center",
     contentMargin: 30,
     logoSpacing: 20,
-    logoMaxWidth: 150,
+    // NUEVAS PROPIEDADES MEJORADAS
+    logoMaxWidth: 350,
+    logoMaxHeight: 100,
+    signatureMaxWidth: 120,
+    signatureMaxHeight: 60,
+    signatureMargin: 20,
   });
+
+
   const [previewParticipant, setPreviewParticipant] = useState(null);
 
   // Estilos para el modal - AGREGAR ESTO
@@ -675,28 +681,24 @@ const ListadoParticipantes = () => {
 
 
 
-  // Función para generar el PDF final - REEMPLAZAR LA EXISTENTE
-  // Componente compartido para vista previa y PDF - ACTUALIZADO
-  // Componente compartido para vista previa y PDF - ACTUALIZADO CON PROPORCIONES
   const CertificateTemplate = ({ participant, config, isPDF = false }) => {
-    // Función para calcular dimensiones manteniendo proporciones
-    const getLogoDimensions = (logoUrl) => {
-      // Valores por defecto
-      const defaultSize = config.logoSize;
-
-      // En un entorno real, necesitarías pre-cargar las imágenes para obtener sus dimensiones
-      // Por ahora usamos un enfoque que mantiene la proporción basado en el ancho
+    // Función mejorada para calcular dimensiones de logos
+    const getLogoDimensions = () => {
       return {
-        width: `${defaultSize}px`,
-        height: `${defaultSize}px`, // Mantenemos cuadrado pero con object-fit: contain
-        objectFit: 'contain' // Esto mantiene las proporciones
+        width: 'auto',
+        height: `${config.logoSize}px`,
+        maxWidth: `${config.logoMaxWidth}px`,
+        maxHeight: `${config.logoMaxHeight}px`,
+        objectFit: 'contain'
       };
     };
 
+    // Función mejorada para dimensiones de firmas
     const getSignatureDimensions = () => {
       return {
-        height: '50px',
-        width: 'auto', // Ancho automático basado en la proporción
+        width: 'auto',
+        height: `${config.signatureMaxHeight}px`,
+        maxWidth: `${config.signatureMaxWidth}px`,
         objectFit: 'contain'
       };
     };
@@ -732,25 +734,29 @@ const ListadoParticipantes = () => {
             marginBottom: '20px',
             width: '100%',
             gap: `${config.logoSpacing}px`,
-            flexWrap: 'nowrap'
+            flexWrap: 'wrap'
           }}>
             {config.institutionLogos.map((logo, index) => (
-              <img
-                key={index}
-                src={logo}
-                alt={`Logo ${index}`}
-                style={{
-                  ...getLogoDimensions(logo),
-                  display: 'block',
-                  flexShrink: 0,
-                  maxWidth: '100%' // Evita que se desborde
-                }}
-              />
+              <div key={index} style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img
+                  src={logo}
+                  alt={`Logo ${index}`}
+                  style={{
+                    ...getLogoDimensions(),
+                    display: 'block',
+                    flexShrink: 0,
+                  }}
+                />
+              </div>
             ))}
           </div>
         )}
 
-        {/* Contenido principal */}
+        {/* Resto del contenido se mantiene igual */}
         <div style={{
           flex: 1,
           display: 'flex',
@@ -855,7 +861,7 @@ const ListadoParticipantes = () => {
               fontSize: `${config.fechaLugarSize}px`,
               textAlign: 'center',
               color: config.fechaLugarColor,
-              marginBottom: '20px',
+              marginBottom: `${config.signatureMargin}px`,
               fontStyle: 'italic',
               fontFamily: config.fechaLugarFont,
               width: '100%',
@@ -878,31 +884,41 @@ const ListadoParticipantes = () => {
             marginTop: 'auto',
             paddingTop: '30px',
             width: '100%',
-            gap: '10px'
+            gap: '10px',
+            flexWrap: 'wrap'
           }}>
             {config.signatures.map((signature, index) => (
               <div key={index} style={{
                 textAlign: 'center',
-                flex: 1,
-                minWidth: '120px'
+                flex: '1 1 auto',
+                minWidth: '120px',
+                maxWidth: `${config.signatureMaxWidth}px`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
               }}>
-                <img
-                  src={signature.image}
-                  alt={`Firma ${index}`}
-                  style={{
-                    ...getSignatureDimensions(),
-                    marginBottom: '8px',
-                    display: 'block',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    maxWidth: '100%'
-                  }}
-                />
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                  width: '100%'
+                }}>
+                  <img
+                    src={signature.image}
+                    alt={`Firma ${index}`}
+                    style={{
+                      ...getSignatureDimensions(),
+                      display: 'block',
+                    }}
+                  />
+                </div>
                 <div style={{
                   fontSize: `${config.signatureSize}px`,
                   color: config.signatureColor,
                   fontFamily: config.signatureFont,
-                  lineHeight: '1.3'
+                  lineHeight: '1.3',
+                  width: '100%'
                 }}>
                   {signature.name && <div style={{ fontWeight: 'bold' }}>{signature.name}</div>}
                   {signature.position && <div>{signature.position}</div>}
@@ -915,7 +931,6 @@ const ListadoParticipantes = () => {
       </div>
     );
   };
-
 
   const handleGenerarPDF = async () => {
     if (!filteredRows.length) {
@@ -947,238 +962,271 @@ const ListadoParticipantes = () => {
 
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
-        // Escribir el contenido HTML directamente
+        // Escribir el contenido HTML directamente CON EL SISTEMA MEJORADO
         iframeDoc.open();
         iframeDoc.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              body { 
-                margin: 0; 
-                padding: 0; 
-                background: white;
-                font-family: Arial, sans-serif;
-              }
-              .certificate-container {
-                width: 297mm;
-                height: 210mm;
-                background: white;
-                ${certificateConfig.backgroundImage ? `
-                  background-image: url('${certificateConfig.backgroundImage}');
-                  background-size: cover;
-                  background-position: center;
-                  background-repeat: no-repeat;
-                ` : ''}
-                padding: ${certificateConfig.contentMargin}px;
-                box-sizing: border-box;
-                border: ${certificateConfig.showBorder ? `2px solid ${certificateConfig.borderColor}` : 'none'};
-                display: flex;
-                flex-direction: column;
-                position: relative;
-                overflow: hidden;
-              }
-              .logos-container {
-                display: flex;
-                justify-content: ${certificateConfig.logoPosition};
-                align-items: center;
-                margin-bottom: 20px;
-                width: 100%;
-                gap: ${certificateConfig.logoSpacing}px;
-                flex-wrap: nowrap;
-              }
-             .logo-img {
-  width: ${certificateConfig.logoSize}px;
-  height: ${certificateConfig.logoSize}px;
-  object-fit: contain; /* MANTIENE PROPORCIONES */
-  display: block;
-  flex-shrink: 0;
-  max-width: 100%; /* EVITA DESBORDAMIENTO */
-}
-
-.signature-img {
-  height: 50px;
-  width: auto; /* ANCHO AUTOMÁTICO */
-  object-fit: contain; /* MANTIENE PROPORCIONES */
-  margin-bottom: 8px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 100%;
-}
-              .content-container {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 20px 0;
-              }
-              .title {
-                font-size: ${certificateConfig.titleSize}px;
-                font-weight: bold;
-                text-align: center;
-                color: ${certificateConfig.titleColor};
-                margin-bottom: 20px;
-                font-family: ${certificateConfig.titleFont};
-                width: 100%;
-                line-height: 1.2;
-                white-space: pre-line;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .subtitle {
-                font-size: ${certificateConfig.subtitleSize}px;
-                text-align: center;
-                color: ${certificateConfig.subtitleColor};
-                margin-bottom: 15px;
-                font-family: ${certificateConfig.subtitleFont};
-                width: 100%;
-                line-height: 1.3;
-                white-space: pre-line;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .participant-prefix {
-                font-size: ${certificateConfig.participantSize - 2}px;
-                text-align: center;
-                color: ${certificateConfig.participantColor};
-                margin-bottom: 8px;
-                font-family: ${certificateConfig.subtitleFont};
-                width: 100%;
-                line-height: 1.3;
-                white-space: pre-line;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .participant-name {
-                font-size: ${certificateConfig.participantSize}px;
-                font-weight: bold;
-                text-align: center;
-                color: ${certificateConfig.participantColor};
-                margin-bottom: 25px;
-                font-family: ${certificateConfig.participantFont};
-                width: 100%;
-                line-height: 1.2;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .body-text {
-                font-size: ${certificateConfig.bodySize}px;
-                text-align: center;
-                color: ${certificateConfig.bodyColor};
-                line-height: 1.5;
-                margin-bottom: 25px;
-                font-family: ${certificateConfig.bodyFont};
-                width: 100%;
-                max-width: 90%;
-                white-space: pre-line;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .fecha-lugar {
-                font-size: ${certificateConfig.fechaLugarSize}px;
-                text-align: center;
-                color: ${certificateConfig.fechaLugarColor};
-                margin-bottom: 20px;
-                font-style: italic;
-                font-family: ${certificateConfig.fechaLugarFont};
-                width: 100%;
-                line-height: 1.3;
-                white-space: pre-line;
-                word-wrap: break-word;
-                padding: 0 20px;
-              }
-              .signatures-container {
-                display: flex;
-                justify-content: space-around;
-                align-items: flex-end;
-                margin-top: auto;
-                padding-top: 30px;
-                width: 100%;
-                gap: 10px;
-              }
-              .signature-item {
-                text-align: center;
-                flex: 1;
-                min-width: 120px;
-              }
-          
-              .signature-text {
-                font-size: ${certificateConfig.signatureSize}px;
-                color: ${certificateConfig.signatureColor};
-                font-family: ${certificateConfig.signatureFont};
-                line-height: 1.3;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="certificate-container">
-              <!-- Logos -->
-              ${certificateConfig.institutionLogos.length > 0 ? `
-                <div class="logos-container">
-                  ${certificateConfig.institutionLogos.map(logo => `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { 
+              margin: 0; 
+              padding: 0; 
+              background: white;
+              font-family: Arial, sans-serif;
+            }
+            .certificate-container {
+              width: 297mm;
+              height: 210mm;
+              background: white;
+              ${certificateConfig.backgroundImage ? `
+                background-image: url('${certificateConfig.backgroundImage}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+              ` : ''}
+              padding: ${certificateConfig.contentMargin}px;
+              box-sizing: border-box;
+              border: ${certificateConfig.showBorder ? `2px solid ${certificateConfig.borderColor}` : 'none'};
+              display: flex;
+              flex-direction: column;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            /* CONTENEDORES MEJORADOS PARA IMÁGENES */
+            .logos-container {
+              display: flex;
+              justify-content: ${certificateConfig.logoPosition};
+              align-items: center;
+              margin-bottom: 20px;
+              width: 100%;
+              gap: ${certificateConfig.logoSpacing}px;
+              flex-wrap: wrap;
+            }
+            
+            .logo-item {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            
+            .logo-img {
+              width: auto;
+              height: ${certificateConfig.logoSize}px;
+              max-width: ${certificateConfig.logoMaxWidth}px;
+              max-height: ${certificateConfig.logoMaxHeight}px;
+              object-fit: contain;
+              display: block;
+              flex-shrink: 0;
+            }
+            
+            .signature-img {
+              width: auto;
+              height: ${certificateConfig.signatureMaxHeight}px;
+              max-width: ${certificateConfig.signatureMaxWidth}px;
+              object-fit: contain;
+              display: block;
+            }
+            
+            .signature-image-container {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-bottom: 8px;
+              width: 100%;
+            }
+            
+            .content-container {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              padding: 20px 0;
+            }
+            
+            .title {
+              font-size: ${certificateConfig.titleSize}px;
+              font-weight: bold;
+              text-align: center;
+              color: ${certificateConfig.titleColor};
+              margin-bottom: 20px;
+              font-family: ${certificateConfig.titleFont};
+              width: 100%;
+              line-height: 1.2;
+              white-space: pre-line;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .subtitle {
+              font-size: ${certificateConfig.subtitleSize}px;
+              text-align: center;
+              color: ${certificateConfig.subtitleColor};
+              margin-bottom: 15px;
+              font-family: ${certificateConfig.subtitleFont};
+              width: 100%;
+              line-height: 1.3;
+              white-space: pre-line;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .participant-prefix {
+              font-size: ${certificateConfig.participantSize - 2}px;
+              text-align: center;
+              color: ${certificateConfig.participantColor};
+              margin-bottom: 8px;
+              font-family: ${certificateConfig.subtitleFont};
+              width: 100%;
+              line-height: 1.3;
+              white-space: pre-line;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .participant-name {
+              font-size: ${certificateConfig.participantSize}px;
+              font-weight: bold;
+              text-align: center;
+              color: ${certificateConfig.participantColor};
+              margin-bottom: 25px;
+              font-family: ${certificateConfig.participantFont};
+              width: 100%;
+              line-height: 1.2;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .body-text {
+              font-size: ${certificateConfig.bodySize}px;
+              text-align: center;
+              color: ${certificateConfig.bodyColor};
+              line-height: 1.5;
+              margin-bottom: 25px;
+              font-family: ${certificateConfig.bodyFont};
+              width: 100%;
+              max-width: 90%;
+              white-space: pre-line;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .fecha-lugar {
+              font-size: ${certificateConfig.fechaLugarSize}px;
+              text-align: center;
+              color: ${certificateConfig.fechaLugarColor};
+              margin-bottom: ${certificateConfig.signatureMargin}px;
+              font-style: italic;
+              font-family: ${certificateConfig.fechaLugarFont};
+              width: 100%;
+              line-height: 1.3;
+              white-space: pre-line;
+              word-wrap: break-word;
+              padding: 0 20px;
+            }
+            
+            .signatures-container {
+              display: flex;
+              justify-content: space-around;
+              align-items: flex-end;
+              margin-top: auto;
+              padding-top: 30px;
+              width: 100%;
+              gap: 10px;
+              flex-wrap: wrap;
+            }
+            
+            .signature-item {
+              text-align: center;
+              flex: 1 1 auto;
+              min-width: 120px;
+              max-width: ${certificateConfig.signatureMaxWidth}px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+            
+            .signature-text {
+              font-size: ${certificateConfig.signatureSize}px;
+              color: ${certificateConfig.signatureColor};
+              font-family: ${certificateConfig.signatureFont};
+              line-height: 1.3;
+              width: 100%;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="certificate-container">
+            <!-- Logos MEJORADO -->
+            ${certificateConfig.institutionLogos.length > 0 ? `
+              <div class="logos-container">
+                ${certificateConfig.institutionLogos.map(logo => `
+                  <div class="logo-item">
                     <img class="logo-img" src="${logo}" crossorigin="anonymous" />
-                  `).join('')}
-                </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            <!-- Contenido principal -->
+            <div class="content-container">
+              <!-- Título -->
+              ${certificateConfig.title ? `
+                <div class="title">${certificateConfig.title}</div>
               ` : ''}
               
-              <!-- Contenido principal -->
-              <div class="content-container">
-                <!-- Título -->
-                ${certificateConfig.title ? `
-                  <div class="title">${certificateConfig.title}</div>
-                ` : ''}
-                
-                <!-- Subtítulo -->
-                ${certificateConfig.subtitle ? `
-                  <div class="subtitle">${certificateConfig.subtitle}</div>
-                ` : ''}
-                
-                <!-- Prefijo del nombre -->
-                ${certificateConfig.participantPrefix ? `
-                  <div class="participant-prefix">${certificateConfig.participantPrefix}</div>
-                ` : ''}
-                
-                <!-- Nombre del participante -->
-                <div class="participant-name">${participant.nombre} ${participant.apellido}</div>
-                
-                <!-- Cuerpo del texto -->
-                ${certificateConfig.bodyText ? `
-                  <div class="body-text">${certificateConfig.bodyText}</div>
-                ` : ''}
-                
-                <!-- Fecha y lugar -->
-                ${certificateConfig.fechaLugarText ? `
-                  <div class="fecha-lugar">${certificateConfig.fechaLugarText}</div>
-                ` : ''}
-              </div>
+              <!-- Subtítulo -->
+              ${certificateConfig.subtitle ? `
+                <div class="subtitle">${certificateConfig.subtitle}</div>
+              ` : ''}
               
-              <!-- Firmas -->
-              ${certificateConfig.signatures.length > 0 ? `
-                <div class="signatures-container">
-                  ${certificateConfig.signatures.map(signature => `
-                    <div class="signature-item">
-                      <img class="signature-img" src="${signature.image}" crossorigin="anonymous" />
-                      <div class="signature-text">
-                        ${signature.name ? `<div style="font-weight: bold;">${signature.name}</div>` : ''}
-                        ${signature.position ? `<div>${signature.position}</div>` : ''}
-                        ${signature.institution ? `<div style="font-style: italic;">${signature.institution}</div>` : ''}
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
+              <!-- Prefijo del nombre -->
+              ${certificateConfig.participantPrefix ? `
+                <div class="participant-prefix">${certificateConfig.participantPrefix}</div>
+              ` : ''}
+              
+              <!-- Nombre del participante -->
+              <div class="participant-name">${participant.nombre} ${participant.apellido}</div>
+              
+              <!-- Cuerpo del texto -->
+              ${certificateConfig.bodyText ? `
+                <div class="body-text">${certificateConfig.bodyText}</div>
+              ` : ''}
+              
+              <!-- Fecha y lugar -->
+              ${certificateConfig.fechaLugarText ? `
+                <div class="fecha-lugar">${certificateConfig.fechaLugarText}</div>
               ` : ''}
             </div>
-          </body>
-        </html>
-      `);
+            
+            <!-- Firmas MEJORADO -->
+            ${certificateConfig.signatures.length > 0 ? `
+              <div class="signatures-container">
+                ${certificateConfig.signatures.map(signature => `
+                  <div class="signature-item">
+                    <div class="signature-image-container">
+                      <img class="signature-img" src="${signature.image}" crossorigin="anonymous" />
+                    </div>
+                    <div class="signature-text">
+                      ${signature.name ? `<div style="font-weight: bold;">${signature.name}</div>` : ''}
+                      ${signature.position ? `<div>${signature.position}</div>` : ''}
+                      ${signature.institution ? `<div style="font-style: italic;">${signature.institution}</div>` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </body>
+      </html>
+    `);
         iframeDoc.close();
 
-        // Esperar a que el contenido se renderice
+        // Resto del código se mantiene igual...
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Esperar específicamente a que las imágenes se carguen
         await new Promise((resolve) => {
           const images = iframeDoc.images;
           let loadedCount = 0;
@@ -1210,26 +1258,19 @@ const ListadoParticipantes = () => {
           }
         });
 
-        // Capturar con html2canvas - CONFIGURACIÓN SIMPLIFICADA
         const canvas = await html2canvas(iframeDoc.body, {
           scale: 2,
           useCORS: true,
           allowTaint: false,
           backgroundColor: '#ffffff',
-          logging: true, // Para debug
-          onclone: (clonedDoc) => {
-            console.log('📋 Documento clonado para captura');
-          }
+          logging: true,
         });
 
         console.log(`✅ Canvas generado para ${participant.nombre}`);
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-        // Limpiar
         document.body.removeChild(iframe);
 
-        // Agregar al PDF
         if (i > 0) {
           pdf.addPage();
         }
@@ -1238,7 +1279,6 @@ const ListadoParticipantes = () => {
         console.log(`✅ Página ${i + 1} agregada al PDF`);
       }
 
-      // Guardar el PDF
       const fileName = `Certificados_${new Date().toISOString().split('T')[0]}.pdf`;
       pdf.save(fileName);
       setModalOpen(false);
@@ -1252,7 +1292,6 @@ const ListadoParticipantes = () => {
     }
   };
 
-
   return (
     <Dashboard>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
@@ -1264,7 +1303,7 @@ const ListadoParticipantes = () => {
         </Typography>
 
         <Grid container spacing={2} marginBottom={3}>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth>
               <Select onChange={(e) => setFilterColumn(e.target.value)}>
                 <MenuItem value="">Seleccionar columna</MenuItem>
@@ -1315,7 +1354,7 @@ const ListadoParticipantes = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} size={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             {filterColumn === "genero" ? (
               <FormControl fullWidth>
                 <Select onChange={(e) => setFilterValue(e.target.value)}>
@@ -1394,7 +1433,7 @@ const ListadoParticipantes = () => {
               />
             )}
           </Grid>
-          <Grid item xs={12} size={4} container justifyContent="flex-end">
+          <Grid size={{ xs: 12, md: 4 }} container justifyContent="flex-end">
             <Tooltip title="Exportar Excel">
               <IconButton
                 onClick={() => exportExcel(rows)}
@@ -1420,7 +1459,7 @@ const ListadoParticipantes = () => {
                 aria-label="generar certificados"
                 sx={{ fontSize: 30, color: color.primary.azul }}
               >
-                📄
+                <FaGraduationCap />
               </IconButton>
             </Tooltip>
 
@@ -1764,7 +1803,7 @@ const ListadoParticipantes = () => {
                     <Grid container spacing={1}>
                       <Grid size={{ xs: 12, md: 6 }} >
                         <TextField
-                          label="Color título"
+                          label="Color instituciones asosiadas"
                           type="color"
                           value={certificateConfig.titleColor}
                           onChange={(e) => setCertificateConfig(prev => ({ ...prev, titleColor: e.target.value }))}
@@ -1809,20 +1848,57 @@ const ListadoParticipantes = () => {
                     <Grid container spacing={1}>
                       <Grid size={{ xs: 12, md: 6 }}>
                         <FormControl fullWidth size="small">
-                          <InputLabel>Fuente título</InputLabel>
+                          <InputLabel>Fuente instituciones asosiadas</InputLabel>
                           <Select
                             value={certificateConfig.titleFont}
-                            label="Fuente título"
+                            label="Fuente instituciones asosiadas"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, titleFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif">Arial</MenuItem>
-                            <MenuItem value="'Times New Roman', serif">Times New Roman</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif">Helvetica</MenuItem>
-                            <MenuItem value="'Georgia', serif">Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif">Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace">Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif">Trebuchet MS</MenuItem>
-                          
+                            {/* 🟦 Sans-serif */}
+                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
+                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
+                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
+                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
+                            <MenuItem value="'Gill Sans', sans-serif" style={{ fontFamily: "'Gill Sans', sans-serif" }}>Gill Sans</MenuItem>
+                            <MenuItem value="'Lucida Sans', sans-serif" style={{ fontFamily: "'Lucida Sans', sans-serif" }}>Lucida Sans</MenuItem>
+                            <MenuItem value="'Tahoma', sans-serif" style={{ fontFamily: "'Tahoma', sans-serif" }}>Tahoma</MenuItem>
+                            <MenuItem value="'Geneva', sans-serif" style={{ fontFamily: "'Geneva', sans-serif" }}>Geneva</MenuItem>
+                            <MenuItem value="'Segoe UI', sans-serif" style={{ fontFamily: "'Segoe UI', sans-serif" }}>Segoe UI</MenuItem>
+                            <MenuItem value="'Futura', sans-serif" style={{ fontFamily: "'Futura', sans-serif" }}>Futura</MenuItem>
+
+                            {/* 🟩 Serif */}
+                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
+                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
+                            <MenuItem value="'Garamond', serif" style={{ fontFamily: "'Garamond', serif" }}>Garamond</MenuItem>
+                            <MenuItem value="'Baskerville', serif" style={{ fontFamily: "'Baskerville', serif" }}>Baskerville</MenuItem>
+                            <MenuItem value="'Palatino Linotype', 'Book Antiqua', Palatino, serif" style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif" }}>Palatino Linotype</MenuItem>
+                            <MenuItem value="'Cambria', serif" style={{ fontFamily: "'Cambria', serif" }}>Cambria</MenuItem>
+                            <MenuItem value="'Didot', serif" style={{ fontFamily: "'Didot', serif" }}>Didot</MenuItem>
+                            <MenuItem value="'Constantia', serif" style={{ fontFamily: "'Constantia', serif" }}>Constantia</MenuItem>
+                            <MenuItem value="'Bookman Old Style', serif" style={{ fontFamily: "'Bookman Old Style', serif" }}>Bookman Old Style</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+
+                            {/* 🟨 Monospace */}
+                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
+                            <MenuItem value="'Lucida Console', monospace" style={{ fontFamily: "'Lucida Console', monospace" }}>Lucida Console</MenuItem>
+                            <MenuItem value="'Consolas', monospace" style={{ fontFamily: "'Consolas', monospace" }}>Consolas</MenuItem>
+                            <MenuItem value="'Monaco', monospace" style={{ fontFamily: "'Monaco', monospace" }}>Monaco</MenuItem>
+                            <MenuItem value="'Andale Mono', monospace" style={{ fontFamily: "'Andale Mono', monospace" }}>Andale Mono</MenuItem>
+
+                            {/* 🟧 Cursive / Script */}
+                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
+                            <MenuItem value="'Comic Sans MS', cursive" style={{ fontFamily: "'Comic Sans MS', cursive" }}>Comic Sans MS</MenuItem>
+                            <MenuItem value="'Lucida Handwriting', cursive" style={{ fontFamily: "'Lucida Handwriting', cursive" }}>Lucida Handwriting</MenuItem>
+                            <MenuItem value="'Segoe Script', cursive" style={{ fontFamily: "'Segoe Script', cursive" }}>Segoe Script</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+
+                            {/* 🟪 Fantasy / Display */}
+                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            <MenuItem value="'Copperplate', fantasy" style={{ fontFamily: "'Copperplate', fantasy" }}>Copperplate</MenuItem>
+                            <MenuItem value="'Impact', fantasy" style={{ fontFamily: "'Impact', fantasy" }}>Impact</MenuItem>
+                            <MenuItem value="'Jokerman', fantasy" style={{ fontFamily: "'Jokerman', fantasy" }}>Jokerman</MenuItem>
+                            <MenuItem value="'Chiller', fantasy" style={{ fontFamily: "'Chiller', fantasy" }}>Chiller</MenuItem>
+
                           </Select>
                         </FormControl>
                       </Grid>
@@ -1834,13 +1910,50 @@ const ListadoParticipantes = () => {
                             label="Fuente cuerpo"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, bodyFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif">Arial</MenuItem>
-                            <MenuItem value="'Times New Roman', serif">Times New Roman</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif">Helvetica</MenuItem>
-                            <MenuItem value="'Georgia', serif">Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif">Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace">Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif">Trebuchet MS</MenuItem>
+                            {/* 🟦 Sans-serif */}
+                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
+                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
+                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
+                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
+                            <MenuItem value="'Gill Sans', sans-serif" style={{ fontFamily: "'Gill Sans', sans-serif" }}>Gill Sans</MenuItem>
+                            <MenuItem value="'Lucida Sans', sans-serif" style={{ fontFamily: "'Lucida Sans', sans-serif" }}>Lucida Sans</MenuItem>
+                            <MenuItem value="'Tahoma', sans-serif" style={{ fontFamily: "'Tahoma', sans-serif" }}>Tahoma</MenuItem>
+                            <MenuItem value="'Geneva', sans-serif" style={{ fontFamily: "'Geneva', sans-serif" }}>Geneva</MenuItem>
+                            <MenuItem value="'Segoe UI', sans-serif" style={{ fontFamily: "'Segoe UI', sans-serif" }}>Segoe UI</MenuItem>
+                            <MenuItem value="'Futura', sans-serif" style={{ fontFamily: "'Futura', sans-serif" }}>Futura</MenuItem>
+
+                            {/* 🟩 Serif */}
+                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
+                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
+                            <MenuItem value="'Garamond', serif" style={{ fontFamily: "'Garamond', serif" }}>Garamond</MenuItem>
+                            <MenuItem value="'Baskerville', serif" style={{ fontFamily: "'Baskerville', serif" }}>Baskerville</MenuItem>
+                            <MenuItem value="'Palatino Linotype', 'Book Antiqua', Palatino, serif" style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif" }}>Palatino Linotype</MenuItem>
+                            <MenuItem value="'Cambria', serif" style={{ fontFamily: "'Cambria', serif" }}>Cambria</MenuItem>
+                            <MenuItem value="'Didot', serif" style={{ fontFamily: "'Didot', serif" }}>Didot</MenuItem>
+                            <MenuItem value="'Constantia', serif" style={{ fontFamily: "'Constantia', serif" }}>Constantia</MenuItem>
+                            <MenuItem value="'Bookman Old Style', serif" style={{ fontFamily: "'Bookman Old Style', serif" }}>Bookman Old Style</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+
+                            {/* 🟨 Monospace */}
+                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
+                            <MenuItem value="'Lucida Console', monospace" style={{ fontFamily: "'Lucida Console', monospace" }}>Lucida Console</MenuItem>
+                            <MenuItem value="'Consolas', monospace" style={{ fontFamily: "'Consolas', monospace" }}>Consolas</MenuItem>
+                            <MenuItem value="'Monaco', monospace" style={{ fontFamily: "'Monaco', monospace" }}>Monaco</MenuItem>
+                            <MenuItem value="'Andale Mono', monospace" style={{ fontFamily: "'Andale Mono', monospace" }}>Andale Mono</MenuItem>
+
+                            {/* 🟧 Cursive / Script */}
+                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
+                            <MenuItem value="'Comic Sans MS', cursive" style={{ fontFamily: "'Comic Sans MS', cursive" }}>Comic Sans MS</MenuItem>
+                            <MenuItem value="'Lucida Handwriting', cursive" style={{ fontFamily: "'Lucida Handwriting', cursive" }}>Lucida Handwriting</MenuItem>
+                            <MenuItem value="'Segoe Script', cursive" style={{ fontFamily: "'Segoe Script', cursive" }}>Segoe Script</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+
+                            {/* 🟪 Fantasy / Display */}
+                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            <MenuItem value="'Copperplate', fantasy" style={{ fontFamily: "'Copperplate', fantasy" }}>Copperplate</MenuItem>
+                            <MenuItem value="'Impact', fantasy" style={{ fontFamily: "'Impact', fantasy" }}>Impact</MenuItem>
+                            <MenuItem value="'Jokerman', fantasy" style={{ fontFamily: "'Jokerman', fantasy" }}>Jokerman</MenuItem>
+                            <MenuItem value="'Chiller', fantasy" style={{ fontFamily: "'Chiller', fantasy" }}>Chiller</MenuItem>
                           </Select>
                         </FormControl>
                       </Grid>
@@ -1852,53 +1965,53 @@ const ListadoParticipantes = () => {
                             label="Fuente participante"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, participantFont: e.target.value }))}
                           >
-                         {/* 🟦 Sans-serif */}
-<MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-<MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-<MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-<MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-<MenuItem value="'Gill Sans', sans-serif" style={{ fontFamily: "'Gill Sans', sans-serif" }}>Gill Sans</MenuItem>
-<MenuItem value="'Lucida Sans', sans-serif" style={{ fontFamily: "'Lucida Sans', sans-serif" }}>Lucida Sans</MenuItem>
-<MenuItem value="'Tahoma', sans-serif" style={{ fontFamily: "'Tahoma', sans-serif" }}>Tahoma</MenuItem>
-<MenuItem value="'Geneva', sans-serif" style={{ fontFamily: "'Geneva', sans-serif" }}>Geneva</MenuItem>
-<MenuItem value="'Segoe UI', sans-serif" style={{ fontFamily: "'Segoe UI', sans-serif" }}>Segoe UI</MenuItem>
-<MenuItem value="'Futura', sans-serif" style={{ fontFamily: "'Futura', sans-serif" }}>Futura</MenuItem>
+                            {/* 🟦 Sans-serif */}
+                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
+                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
+                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
+                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
+                            <MenuItem value="'Gill Sans', sans-serif" style={{ fontFamily: "'Gill Sans', sans-serif" }}>Gill Sans</MenuItem>
+                            <MenuItem value="'Lucida Sans', sans-serif" style={{ fontFamily: "'Lucida Sans', sans-serif" }}>Lucida Sans</MenuItem>
+                            <MenuItem value="'Tahoma', sans-serif" style={{ fontFamily: "'Tahoma', sans-serif" }}>Tahoma</MenuItem>
+                            <MenuItem value="'Geneva', sans-serif" style={{ fontFamily: "'Geneva', sans-serif" }}>Geneva</MenuItem>
+                            <MenuItem value="'Segoe UI', sans-serif" style={{ fontFamily: "'Segoe UI', sans-serif" }}>Segoe UI</MenuItem>
+                            <MenuItem value="'Futura', sans-serif" style={{ fontFamily: "'Futura', sans-serif" }}>Futura</MenuItem>
 
-{/* 🟩 Serif */}
-<MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-<MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-<MenuItem value="'Garamond', serif" style={{ fontFamily: "'Garamond', serif" }}>Garamond</MenuItem>
-<MenuItem value="'Baskerville', serif" style={{ fontFamily: "'Baskerville', serif" }}>Baskerville</MenuItem>
-<MenuItem value="'Palatino Linotype', 'Book Antiqua', Palatino, serif" style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif" }}>Palatino Linotype</MenuItem>
-<MenuItem value="'Cambria', serif" style={{ fontFamily: "'Cambria', serif" }}>Cambria</MenuItem>
-<MenuItem value="'Didot', serif" style={{ fontFamily: "'Didot', serif" }}>Didot</MenuItem>
-<MenuItem value="'Constantia', serif" style={{ fontFamily: "'Constantia', serif" }}>Constantia</MenuItem>
-<MenuItem value="'Bookman Old Style', serif" style={{ fontFamily: "'Bookman Old Style', serif" }}>Bookman Old Style</MenuItem>
-<MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+                            {/* 🟩 Serif */}
+                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
+                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
+                            <MenuItem value="'Garamond', serif" style={{ fontFamily: "'Garamond', serif" }}>Garamond</MenuItem>
+                            <MenuItem value="'Baskerville', serif" style={{ fontFamily: "'Baskerville', serif" }}>Baskerville</MenuItem>
+                            <MenuItem value="'Palatino Linotype', 'Book Antiqua', Palatino, serif" style={{ fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif" }}>Palatino Linotype</MenuItem>
+                            <MenuItem value="'Cambria', serif" style={{ fontFamily: "'Cambria', serif" }}>Cambria</MenuItem>
+                            <MenuItem value="'Didot', serif" style={{ fontFamily: "'Didot', serif" }}>Didot</MenuItem>
+                            <MenuItem value="'Constantia', serif" style={{ fontFamily: "'Constantia', serif" }}>Constantia</MenuItem>
+                            <MenuItem value="'Bookman Old Style', serif" style={{ fontFamily: "'Bookman Old Style', serif" }}>Bookman Old Style</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
 
-{/* 🟨 Monospace */}
-<MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-<MenuItem value="'Lucida Console', monospace" style={{ fontFamily: "'Lucida Console', monospace" }}>Lucida Console</MenuItem>
-<MenuItem value="'Consolas', monospace" style={{ fontFamily: "'Consolas', monospace" }}>Consolas</MenuItem>
-<MenuItem value="'Monaco', monospace" style={{ fontFamily: "'Monaco', monospace" }}>Monaco</MenuItem>
-<MenuItem value="'Andale Mono', monospace" style={{ fontFamily: "'Andale Mono', monospace" }}>Andale Mono</MenuItem>
+                            {/* 🟨 Monospace */}
+                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
+                            <MenuItem value="'Lucida Console', monospace" style={{ fontFamily: "'Lucida Console', monospace" }}>Lucida Console</MenuItem>
+                            <MenuItem value="'Consolas', monospace" style={{ fontFamily: "'Consolas', monospace" }}>Consolas</MenuItem>
+                            <MenuItem value="'Monaco', monospace" style={{ fontFamily: "'Monaco', monospace" }}>Monaco</MenuItem>
+                            <MenuItem value="'Andale Mono', monospace" style={{ fontFamily: "'Andale Mono', monospace" }}>Andale Mono</MenuItem>
 
-{/* 🟧 Cursive / Script */}
-<MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-<MenuItem value="'Comic Sans MS', cursive" style={{ fontFamily: "'Comic Sans MS', cursive" }}>Comic Sans MS</MenuItem>
-<MenuItem value="'Lucida Handwriting', cursive" style={{ fontFamily: "'Lucida Handwriting', cursive" }}>Lucida Handwriting</MenuItem>
-<MenuItem value="'Segoe Script', cursive" style={{ fontFamily: "'Segoe Script', cursive" }}>Segoe Script</MenuItem>
-<MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
+                            {/* 🟧 Cursive / Script */}
+                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
+                            <MenuItem value="'Comic Sans MS', cursive" style={{ fontFamily: "'Comic Sans MS', cursive" }}>Comic Sans MS</MenuItem>
+                            <MenuItem value="'Lucida Handwriting', cursive" style={{ fontFamily: "'Lucida Handwriting', cursive" }}>Lucida Handwriting</MenuItem>
+                            <MenuItem value="'Segoe Script', cursive" style={{ fontFamily: "'Segoe Script', cursive" }}>Segoe Script</MenuItem>
+                            <MenuItem value="'Monotype Corsiva', cursive" style={{ fontFamily: "'Monotype Corsiva', cursive" }}>Monotype Corsiva</MenuItem>
 
-{/* 🟪 Fantasy / Display */}
-<MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
-<MenuItem value="'Copperplate', fantasy" style={{ fontFamily: "'Copperplate', fantasy" }}>Copperplate</MenuItem>
-<MenuItem value="'Impact', fantasy" style={{ fontFamily: "'Impact', fantasy" }}>Impact</MenuItem>
-<MenuItem value="'Jokerman', fantasy" style={{ fontFamily: "'Jokerman', fantasy" }}>Jokerman</MenuItem>
-<MenuItem value="'Chiller', fantasy" style={{ fontFamily: "'Chiller', fantasy" }}>Chiller</MenuItem>
+                            {/* 🟪 Fantasy / Display */}
+                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            <MenuItem value="'Copperplate', fantasy" style={{ fontFamily: "'Copperplate', fantasy" }}>Copperplate</MenuItem>
+                            <MenuItem value="'Impact', fantasy" style={{ fontFamily: "'Impact', fantasy" }}>Impact</MenuItem>
+                            <MenuItem value="'Jokerman', fantasy" style={{ fontFamily: "'Jokerman', fantasy" }}>Jokerman</MenuItem>
+                            <MenuItem value="'Chiller', fantasy" style={{ fontFamily: "'Chiller', fantasy" }}>Chiller</MenuItem>
 
 
-  </Select>
+                          </Select>
                         </FormControl>
                       </Grid>
                       <Grid size={{ xs: 12, md: 6 }}>
@@ -1924,7 +2037,7 @@ const ListadoParticipantes = () => {
                     {/* Tamaños */}
                     <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>Tamaños de texto</Typography>
                     {[
-                      { key: 'titleSize', label: 'Título', min: 1, max: 100 },
+                      { key: 'titleSize', label: 'Instituciones Asosiadas', min: 1, max: 100 },
                       { key: 'subtitleSize', label: 'Subtítulo', min: 1, max: 100 },
                       { key: 'participantSize', label: 'Nombre participante', min: 1, max: 100 },
                       { key: 'bodySize', label: 'Cuerpo', min: 1, max: 100 },
@@ -1978,7 +2091,7 @@ const ListadoParticipantes = () => {
                           logoSpacing: value
                         }))}
                         min={0}
-                        max={300}
+                        max={100}
                         step={5}
                       />
                     </FormControl>
@@ -1994,7 +2107,7 @@ const ListadoParticipantes = () => {
                           logoSize: value
                         }))}
                         min={50}
-                        max={300}
+                        max={100}
                         step={5}
                       />
                     </FormControl>
@@ -2011,6 +2124,62 @@ const ListadoParticipantes = () => {
                         }))}
                         min={50}
                         max={300}
+                        step={5}
+                      />
+                    </FormControl>
+                    {/* En la sección Layout del modal, agrega estos controles */}
+
+                    {/* Control para altura máxima de logos */}
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
+                        Altura máxima de logos: {certificateConfig.logoMaxHeight}px
+                      </Typography>
+                      <Slider
+                        value={certificateConfig.logoMaxHeight}
+                        onChange={(_, value) => setCertificateConfig(prev => ({
+                          ...prev,
+                          logoMaxHeight: value
+                        }))}
+                        min={50}
+                        max={100}
+                        step={5}
+                      />
+                    </FormControl>
+
+
+                    <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>Firmas</Typography>
+                    {/* En la sección Layout del modal, agrega estos controles adicionales */}
+
+                    {/* Control para ancho máximo de firmas */}
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
+                        Ancho máximo de firmas: {certificateConfig.signatureMaxWidth}px
+                      </Typography>
+                      <Slider
+                        value={certificateConfig.signatureMaxWidth}
+                        onChange={(_, value) => setCertificateConfig(prev => ({
+                          ...prev,
+                          signatureMaxWidth: value
+                        }))}
+                        min={80}
+                        max={100}
+                        step={5}
+                      />
+                    </FormControl>
+
+                    {/* Control para espacio entre fecha y firmas */}
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
+                        Espacio entre fecha y firmas: {certificateConfig.signatureMargin}px
+                      </Typography>
+                      <Slider
+                        value={certificateConfig.signatureMargin}
+                        onChange={(_, value) => setCertificateConfig(prev => ({
+                          ...prev,
+                          signatureMargin: value
+                        }))}
+                        min={0}
+                        max={100}
                         step={5}
                       />
                     </FormControl>
