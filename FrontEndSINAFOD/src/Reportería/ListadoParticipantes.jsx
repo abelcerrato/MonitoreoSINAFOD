@@ -700,17 +700,17 @@ const ListadoParticipantes = () => {
   };
 
 
-// Función para generar un solo PDF 
-const generateSinglePDF = async () => {
-  try {
-    const pdf = new jsPDF('landscape', 'mm', 'a4');
-    
-    console.log(`🔄 Generando PDF único con ${filteredRows.length} certificados...`);
+  // Función para generar un solo PDF 
+  const generateSinglePDF = async () => {
+    try {
+      const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-    // Mostrar progreso inicial
-    Swal.fire({
-      title: 'Generando PDF Único...',
-      html: `
+      console.log(`🔄 Generando PDF único con ${filteredRows.length} certificados...`);
+
+      // Mostrar progreso inicial
+      Swal.fire({
+        title: 'Generando PDF Único...',
+        html: `
         <div style="text-align: center;">
           <p>Preparando ${filteredRows.length} certificados en un solo archivo...</p>
           <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
@@ -721,31 +721,31 @@ const generateSinglePDF = async () => {
           </p>
         </div>
       `,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
-    for (let i = 0; i < filteredRows.length; i++) {
-      const participant = filteredRows[i];
-      console.log(`📝 Procesando participante ${i + 1}: ${participant.nombre} ${participant.apellido}`);
+      for (let i = 0; i < filteredRows.length; i++) {
+        const participant = filteredRows[i];
+        console.log(`📝 Procesando participante ${i + 1}: ${participant.nombre} ${participant.apellido}`);
 
-      // Actualizar progreso
-      const progress = Math.round(((i + 1) / filteredRows.length) * 100);
-      setPdfProgress(progress);
+        // Actualizar progreso
+        const progress = Math.round(((i + 1) / filteredRows.length) * 100);
+        setPdfProgress(progress);
 
-      // Actualizar la barra de progreso
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        progressBar.style.width = `${progress}%`;
-      }
+        // Actualizar la barra de progreso
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
 
-      // Actualizar el texto del progreso
-      Swal.update({
-        html: `
+        // Actualizar el texto del progreso
+        Swal.update({
+          html: `
           <div style="text-align: center;">
             <p>Generando certificado: <strong>${i + 1}/${filteredRows.length}</strong></p>
             <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
@@ -759,22 +759,22 @@ const generateSinglePDF = async () => {
             </p>
           </div>
         `
-      });
+        });
 
-      // Crear un contenedor temporal en el DOM en lugar de iframe
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'fixed';
-      tempDiv.style.left = '0';
-      tempDiv.style.top = '0';
-      tempDiv.style.width = '297mm';
-      tempDiv.style.height = '210mm';
-      tempDiv.style.backgroundColor = 'white';
-      tempDiv.style.zIndex = '9999';
-      tempDiv.style.visibility = 'hidden';
-      tempDiv.style.overflow = 'hidden';
+        // Crear un contenedor temporal en el DOM en lugar de iframe
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.left = '0';
+        tempDiv.style.top = '0';
+        tempDiv.style.width = '297mm';
+        tempDiv.style.height = '210mm';
+        tempDiv.style.backgroundColor = 'white';
+        tempDiv.style.zIndex = '9999';
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.overflow = 'hidden';
 
-      // Crear el contenido HTML del certificado
-      tempDiv.innerHTML = `
+        // Crear el contenido HTML del certificado
+        tempDiv.innerHTML = `
         <div class="certificate-container" style="
           width: 297mm;
           height: 210mm;
@@ -981,79 +981,79 @@ const generateSinglePDF = async () => {
         </div>
       `;
 
-      document.body.appendChild(tempDiv);
+        document.body.appendChild(tempDiv);
 
-      // Esperar un poco para que el DOM se actualice
-      await new Promise(resolve => setTimeout(resolve, 100));
+        // Esperar un poco para que el DOM se actualice
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Hacer visible temporalmente para capturar
-      tempDiv.style.visibility = 'visible';
+        // Hacer visible temporalmente para capturar
+        tempDiv.style.visibility = 'visible';
 
-      // Configuración optimizada de html2canvas
-      const canvas = await html2canvas(tempDiv, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        logging: true, // Activar logging para debug
-        onclone: (clonedDoc) => {
-          console.log('Documento clonado para html2canvas');
+        // Configuración optimizada de html2canvas
+        const canvas = await html2canvas(tempDiv, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff',
+          logging: true, // Activar logging para debug
+          onclone: (clonedDoc) => {
+            console.log('Documento clonado para html2canvas');
+          }
+        });
+
+        console.log(`✅ Canvas generado para ${participant.nombre}`, {
+          width: canvas.width,
+          height: canvas.height,
+          dataURL: canvas.toDataURL().substring(0, 100) + '...'
+        });
+
+        // Obtener la imagen como Data URL
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+        // Limpiar el elemento temporal
+        document.body.removeChild(tempDiv);
+
+        // Agregar nueva página si no es la primera
+        if (i > 0) {
+          pdf.addPage();
         }
-      });
 
-      console.log(`✅ Canvas generado para ${participant.nombre}`, {
-        width: canvas.width,
-        height: canvas.height,
-        dataURL: canvas.toDataURL().substring(0, 100) + '...'
-      });
+        // Agregar imagen al PDF
+        pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
 
-      // Obtener la imagen como Data URL
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-      // Limpiar el elemento temporal
-      document.body.removeChild(tempDiv);
-
-      // Agregar nueva página si no es la primera
-      if (i > 0) {
-        pdf.addPage();
+        console.log(`✅ Página ${i + 1} agregada al PDF para: ${participant.nombre}`);
       }
 
-      // Agregar imagen al PDF
-      pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
-      
-      console.log(`✅ Página ${i + 1} agregada al PDF para: ${participant.nombre}`);
-    }
+      // Generar nombre del archivo
+      let nombreFormacion = 'Certificados';
+      if (filterColumn === 'formacion' && filterValue) {
+        nombreFormacion = filterValue;
+      } else if (filteredRows.length > 0 && filteredRows[0].formacion) {
+        nombreFormacion = filteredRows[0].formacion;
+      } else if (certificateConfig.title) {
+        nombreFormacion = certificateConfig.title;
+      }
 
-    // Generar nombre del archivo
-    let nombreFormacion = 'Certificados';
-    if (filterColumn === 'formacion' && filterValue) {
-      nombreFormacion = filterValue;
-    } else if (filteredRows.length > 0 && filteredRows[0].formacion) {
-      nombreFormacion = filteredRows[0].formacion;
-    } else if (certificateConfig.title) {
-      nombreFormacion = certificateConfig.title;
-    }
+      const nombreLimpio = nombreFormacion
+        .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '')
+        .replace(/\s+/g, '_')
+        .trim()
+        .substring(0, 50);
 
-    const nombreLimpio = nombreFormacion
-      .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '')
-      .replace(/\s+/g, '_')
-      .trim()
-      .substring(0, 50);
+      const fechaFormateada = new Date().toISOString().split('T')[0];
+      const fileName = `Certificados_${nombreLimpio}_${fechaFormateada}.pdf`;
 
-    const fechaFormateada = new Date().toISOString().split('T')[0];
-    const fileName = `Certificados_${nombreLimpio}_${fechaFormateada}.pdf`;
+      // Guardar el PDF
+      pdf.save(fileName);
 
-    // Guardar el PDF
-    pdf.save(fileName);
+      // Cerrar SweetAlert de progreso
+      Swal.close();
 
-    // Cerrar SweetAlert de progreso
-    Swal.close();
-
-    // Mostrar mensaje de éxito
-    await Swal.fire({
-      icon: "success",
-      title: "¡Éxito!",
-      html: `
+      // Mostrar mensaje de éxito
+      await Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        html: `
         <div style="text-align: center;">
           <p><strong>PDF único generado exitosamente</strong></p>
           <p>Se generaron <strong>${filteredRows.length} certificados</strong> en un solo archivo</p>
@@ -1062,23 +1062,23 @@ const generateSinglePDF = async () => {
           </p>
         </div>
       `,
-      confirmButtonColor: color.primary.azul,
-      confirmButtonText: 'Aceptar'
-    });
+        confirmButtonColor: color.primary.azul,
+        confirmButtonText: 'Aceptar'
+      });
 
-    console.log("🎉 PDF único generado exitosamente: " + fileName);
+      console.log("🎉 PDF único generado exitosamente: " + fileName);
 
-  } catch (error) {
-    console.error("❌ Error generando PDF único:", error);
+    } catch (error) {
+      console.error("❌ Error generando PDF único:", error);
 
-    // Cerrar SweetAlert en caso de error
-    Swal.close();
+      // Cerrar SweetAlert en caso de error
+      Swal.close();
 
-    // Mostrar error detallado
-    await Swal.fire({
-      icon: "error",
-      title: "¡Error!",
-      html: `
+      // Mostrar error detallado
+      await Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        html: `
         <div style="text-align: center;">
           <p><strong>Error al generar el PDF único</strong></p>
           <p style="font-size: 14px; color: #666; margin-top: 10px;">
@@ -1089,20 +1089,20 @@ const generateSinglePDF = async () => {
           </p>
         </div>
       `,
-      confirmButtonColor: color.primary.azul,
-      confirmButtonText: 'Entendido'
-    });
-  }
-};
-// Función para generar múltiples PDFs individuales
-const generateMultiplePDFs = async () => {
-  try {
-    const zip = new JSZip();
-    
-    // Mostrar progreso inicial
-    Swal.fire({
-      title: 'Generando PDFs Individuales...',
-      html: `
+        confirmButtonColor: color.primary.azul,
+        confirmButtonText: 'Entendido'
+      });
+    }
+  };
+  // Función para generar múltiples PDFs individuales
+  const generateMultiplePDFs = async () => {
+    try {
+      const zip = new JSZip();
+
+      // Mostrar progreso inicial
+      Swal.fire({
+        title: 'Generando PDFs Individuales...',
+        html: `
         <div style="text-align: center;">
           <p>Preparando ${filteredRows.length} certificados individuales...</p>
           <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
@@ -1113,30 +1113,30 @@ const generateMultiplePDFs = async () => {
           </p>
         </div>
       `,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
-    for (let i = 0; i < filteredRows.length; i++) {
-      const participant = filteredRows[i];
-      
-      // Actualizar progreso
-      const progress = Math.round(((i + 1) / filteredRows.length) * 100);
-      setPdfProgress(progress);
+      for (let i = 0; i < filteredRows.length; i++) {
+        const participant = filteredRows[i];
 
-      // Actualizar la barra de progreso
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        progressBar.style.width = `${progress}%`;
-      }
+        // Actualizar progreso
+        const progress = Math.round(((i + 1) / filteredRows.length) * 100);
+        setPdfProgress(progress);
 
-      // Actualizar el texto del progreso
-      Swal.update({
-        html: `
+        // Actualizar la barra de progreso
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
+
+        // Actualizar el texto del progreso
+        Swal.update({
+          html: `
           <div style="text-align: center;">
             <p>Generando certificados individuales: <strong>${i + 1}/${filteredRows.length}</strong></p>
             <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
@@ -1150,28 +1150,28 @@ const generateMultiplePDFs = async () => {
             </p>
           </div>
         `
-      });
+        });
 
-      // Crear PDF individual
-      const pdf = new jsPDF('landscape', 'mm', 'a4');
-      
-      // Crear iframe para el certificado individual
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.left = '-9999px';
-      iframe.style.top = '0';
-      iframe.style.width = '297mm';
-      iframe.style.height = '210mm';
-      iframe.style.border = 'none';
-      iframe.style.visibility = 'visible';
+        // Crear PDF individual
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-      document.body.appendChild(iframe);
+        // Crear iframe para el certificado individual
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.left = '-9999px';
+        iframe.style.top = '0';
+        iframe.style.width = '297mm';
+        iframe.style.height = '210mm';
+        iframe.style.border = 'none';
+        iframe.style.visibility = 'visible';
 
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        document.body.appendChild(iframe);
 
-      // Escribir el contenido HTML para el certificado individual
-      iframeDoc.open();
-      iframeDoc.write(`
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+        // Escribir el contenido HTML para el certificado individual
+        iframeDoc.open();
+        iframeDoc.write(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -1445,110 +1445,110 @@ const generateMultiplePDFs = async () => {
           </body>
         </html>
       `);
-      iframeDoc.close();
+        iframeDoc.close();
 
-      // Esperar a que el contenido se renderice
-      await new Promise(resolve => setTimeout(resolve, 500));
+        // Esperar a que el contenido se renderice
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Esperar específicamente a que las imágenes se carguen
-      await new Promise((resolve) => {
-        const images = iframeDoc.images;
-        let loadedCount = 0;
-        const totalImages = images.length;
+        // Esperar específicamente a que las imágenes se carguen
+        await new Promise((resolve) => {
+          const images = iframeDoc.images;
+          let loadedCount = 0;
+          const totalImages = images.length;
 
-        if (totalImages === 0) {
-          resolve();
-          return;
-        }
-
-        const checkLoaded = () => {
-          loadedCount++;
-          if (loadedCount === totalImages) {
-            setTimeout(resolve, 200);
+          if (totalImages === 0) {
+            resolve();
+            return;
           }
-        };
 
-        for (let img of images) {
-          if (img.complete) {
-            checkLoaded();
-          } else {
-            img.onload = checkLoaded;
-            img.onerror = () => {
-              console.warn(`⚠️ Error cargando imagen: ${img.src}`);
+          const checkLoaded = () => {
+            loadedCount++;
+            if (loadedCount === totalImages) {
+              setTimeout(resolve, 200);
+            }
+          };
+
+          for (let img of images) {
+            if (img.complete) {
               checkLoaded();
-            };
+            } else {
+              img.onload = checkLoaded;
+              img.onerror = () => {
+                console.warn(`⚠️ Error cargando imagen: ${img.src}`);
+                checkLoaded();
+              };
+            }
           }
-        }
-      });
+        });
 
-      // Capturar con html2canvas
-      const canvas = await html2canvas(iframeDoc.body, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        logging: false,
-      });
+        // Capturar con html2canvas
+        const canvas = await html2canvas(iframeDoc.body, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      // Limpiar
-      document.body.removeChild(iframe);
+        // Limpiar
+        document.body.removeChild(iframe);
 
-      // Agregar imagen al PDF individual
-      pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+        // Agregar imagen al PDF individual
+        pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
 
-      // Generar nombre de archivo
-      const participantName = `${participant.nombre}_${participant.apellido}`.replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `Certificado_${participantName}.pdf`;
-      
-      // Agregar al ZIP
-      const pdfBlob = pdf.output('blob');
-      zip.file(fileName, pdfBlob);
-    }
+        // Generar nombre de archivo
+        const participantName = `${participant.nombre}_${participant.apellido}`.replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `Certificado_${participantName}.pdf`;
 
-    // Generar y descargar ZIP
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-    
-    // Obtener nombre para el archivo ZIP
-    let nombreFormacion = 'Certificados';
-    if (filterColumn === 'formacion' && filterValue) {
-      nombreFormacion = filterValue;
-    } else if (filteredRows.length > 0 && filteredRows[0].formacion) {
-      nombreFormacion = filteredRows[0].formacion;
-    } else if (certificateConfig.title) {
-      nombreFormacion = certificateConfig.title;
-    }
+        // Agregar al ZIP
+        const pdfBlob = pdf.output('blob');
+        zip.file(fileName, pdfBlob);
+      }
 
-    const nombreLimpio = nombreFormacion
-      .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '')
-      .replace(/\s+/g, '_')
-      .trim()
-      .substring(0, 50);
+      // Generar y descargar ZIP
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
 
-    const fechaFormateada = new Date().toISOString().split('T')[0];
-    const zipFileName = `Certificados_Individuales_${nombreLimpio}_${fechaFormateada}.zip`;
+      // Obtener nombre para el archivo ZIP
+      let nombreFormacion = 'Certificados';
+      if (filterColumn === 'formacion' && filterValue) {
+        nombreFormacion = filterValue;
+      } else if (filteredRows.length > 0 && filteredRows[0].formacion) {
+        nombreFormacion = filteredRows[0].formacion;
+      } else if (certificateConfig.title) {
+        nombreFormacion = certificateConfig.title;
+      }
 
-    // Cerrar SweetAlert de progreso
-    Swal.close();
+      const nombreLimpio = nombreFormacion
+        .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '')
+        .replace(/\s+/g, '_')
+        .trim()
+        .substring(0, 50);
 
-    // Descargar ZIP
-    saveAs(zipBlob, zipFileName);
-    
-    // Mostrar mensaje de éxito
-    await showSuccessMessage('multiple', filteredRows.length, zipFileName);
-    
-  } catch (error) {
-    console.error("❌ Error generando PDFs individuales:", error);
-    
-    // Cerrar SweetAlert en caso de error
-    Swal.close();
+      const fechaFormateada = new Date().toISOString().split('T')[0];
+      const zipFileName = `Certificados_Individuales_${nombreLimpio}_${fechaFormateada}.zip`;
 
-    // Mostrar error
-    await Swal.fire({
-      icon: "error",
-      title: "¡Error!",
-      html: `
+      // Cerrar SweetAlert de progreso
+      Swal.close();
+
+      // Descargar ZIP
+      saveAs(zipBlob, zipFileName);
+
+      // Mostrar mensaje de éxito
+      await showSuccessMessage('multiple', filteredRows.length, zipFileName);
+
+    } catch (error) {
+      console.error("❌ Error generando PDFs individuales:", error);
+
+      // Cerrar SweetAlert en caso de error
+      Swal.close();
+
+      // Mostrar error
+      await Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        html: `
         <div style="text-align: center;">
           <p><strong>Error al generar los PDFs individuales</strong></p>
           <p style="font-size: 14px; color: #666; margin-top: 10px;">
@@ -1556,112 +1556,112 @@ const generateMultiplePDFs = async () => {
           </p>
         </div>
       `,
-      confirmButtonColor: color.primary.azul,
-      confirmButtonText: 'Entendido'
-    });
-  }
-};
+        confirmButtonColor: color.primary.azul,
+        confirmButtonText: 'Entendido'
+      });
+    }
+  };
 
-// Función para generar ambos formatos 
-const generateBothFormats = async () => {
-  try {
-    // Primero generar PDF único
-    await handleGenerarPDF(filterColumn, filterValue, 'single');
-    
-    // Luego generar PDFs individuales
-    await generateMultiplePDFs();
-    
-    // Mostrar mensaje de éxito combinado
-    await showSuccessMessage('both', filteredRows.length);
-    
-  } catch (error) {
-    console.error("❌ Error generando ambos formatos:", error);
-    
-    await Swal.fire({
-      icon: "error",
-      title: "¡Error!",
-      text: "Error al generar ambos formatos de certificados",
-      confirmButtonColor: color.primary.azul,
-    });
-  }
-};
+  // Función para generar ambos formatos 
+  const generateBothFormats = async () => {
+    try {
+      // Primero generar PDF único
+      await handleGenerarPDF(filterColumn, filterValue, 'single');
 
-// Y modifica la función handleGenerarPDF para que llame a las funciones correctas:
-const handleGenerarPDF = async (filterColumn, filterValue, genType = 'single') => {
-  if (!filteredRows.length) {
-    console.error("No hay participantes para generar PDF");
-    Swal.fire({
-      icon: "error",
-      title: "¡Error!",
-      text: "No hay participantes para generar certificados",
-    });
-    return;
-  }
+      // Luego generar PDFs individuales
+      await generateMultiplePDFs();
 
-  setModalOpen(false);
-  
-  // Mostrar mensaje de confirmación
-  let confirmMessage = '';
-  if (genType === 'single') {
-    confirmMessage = `Vas a generar <strong>${filteredRows.length} certificados en un solo archivo PDF</strong>.<br>Este proceso puede tomar varios minutos.`;
-  } else if (genType === 'multiple') {
-    confirmMessage = `Vas a generar <strong>${filteredRows.length} archivos PDF individuales</strong> que se descargarán en una carpeta comprimida.<br>Este proceso puede tomar varios minutos.`;
-  } else if (genType === 'both') {
-    confirmMessage = `Vas a generar <strong>${filteredRows.length} certificados en ambos formatos</strong>: un PDF único y archivos individuales comprimidos.<br>Este proceso puede tomar más tiempo.`;
-  }
+      // Mostrar mensaje de éxito combinado
+      await showSuccessMessage('both', filteredRows.length);
 
-  if (filteredRows.length > 5) {
-    const result = await Swal.fire({
-      icon: 'info',
-      title: 'Generando Certificados',
-      html: confirmMessage,
-      showCancelButton: true,
-      confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: color.primary.azul,
-    });
+    } catch (error) {
+      console.error("❌ Error generando ambos formatos:", error);
 
-    if (!result.isConfirmed) {
+      await Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        text: "Error al generar ambos formatos de certificados",
+        confirmButtonColor: color.primary.azul,
+      });
+    }
+  };
+
+  // Y modifica la función handleGenerarPDF para que llame a las funciones correctas:
+  const handleGenerarPDF = async (filterColumn, filterValue, genType = 'single') => {
+    if (!filteredRows.length) {
+      console.error("No hay participantes para generar PDF");
+      Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        text: "No hay participantes para generar certificados",
+      });
       return;
     }
-  }
 
-  setGeneratingPDF(true);
-  setPdfProgress(0);
+    setModalOpen(false);
 
-  try {
-    // Llamar a la función correspondiente según el tipo
+    // Mostrar mensaje de confirmación
+    let confirmMessage = '';
     if (genType === 'single') {
-      // Tu lógica existente para PDF único (la que ya funciona)
-      await generateSinglePDF();
+      confirmMessage = `Vas a generar <strong>${filteredRows.length} certificados en un solo archivo PDF</strong>.<br>Este proceso puede tomar varios minutos.`;
     } else if (genType === 'multiple') {
-      await generateMultiplePDFs();
+      confirmMessage = `Vas a generar <strong>${filteredRows.length} archivos PDF individuales</strong> que se descargarán en una carpeta comprimida.<br>Este proceso puede tomar varios minutos.`;
     } else if (genType === 'both') {
-      await generateBothFormats();
+      confirmMessage = `Vas a generar <strong>${filteredRows.length} certificados en ambos formatos</strong>: un PDF único y archivos individuales comprimidos.<br>Este proceso puede tomar más tiempo.`;
     }
-    
-  } catch (error) {
-    console.error("❌ Error en handleGenerarPDF:", error);
-    
-    await Swal.fire({
-      icon: "error",
-      title: "¡Error!",
-      text: "Error al generar los certificados",
-      confirmButtonColor: color.primary.azul,
-    });
-  } finally {
-    setGeneratingPDF(false);
-    setPdfProgress(0);
-  }
-};
 
-// Función para mostrar mensajes de éxito
-const showSuccessMessage = async (type, count, fileName = '') => {
-  let message = '';
-  
-  switch (type) {
-    case 'single':
-      message = `
+    if (filteredRows.length > 5) {
+      const result = await Swal.fire({
+        icon: 'info',
+        title: 'Generando Certificados',
+        html: confirmMessage,
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: color.primary.azul,
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+    }
+
+    setGeneratingPDF(true);
+    setPdfProgress(0);
+
+    try {
+      // Llamar a la función correspondiente según el tipo
+      if (genType === 'single') {
+        // Tu lógica existente para PDF único (la que ya funciona)
+        await generateSinglePDF();
+      } else if (genType === 'multiple') {
+        await generateMultiplePDFs();
+      } else if (genType === 'both') {
+        await generateBothFormats();
+      }
+
+    } catch (error) {
+      console.error("❌ Error en handleGenerarPDF:", error);
+
+      await Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        text: "Error al generar los certificados",
+        confirmButtonColor: color.primary.azul,
+      });
+    } finally {
+      setGeneratingPDF(false);
+      setPdfProgress(0);
+    }
+  };
+
+  // Función para mostrar mensajes de éxito
+  const showSuccessMessage = async (type, count, fileName = '') => {
+    let message = '';
+
+    switch (type) {
+      case 'single':
+        message = `
         <div style="text-align: center;">
           <p><strong>PDF único generado exitosamente</strong></p>
           <p>Se generaron <strong>${count} certificados en un solo archivo</strong></p>
@@ -1670,9 +1670,9 @@ const showSuccessMessage = async (type, count, fileName = '') => {
           </p>
         </div>
       `;
-      break;
-    case 'multiple':
-      message = `
+        break;
+      case 'multiple':
+        message = `
         <div style="text-align: center;">
           <p><strong>Certificados individuales generados exitosamente</strong></p>
           <p>Se generaron <strong>${count} archivos PDF individuales</strong></p>
@@ -1684,9 +1684,9 @@ const showSuccessMessage = async (type, count, fileName = '') => {
           </p>
         </div>
       `;
-      break;
-    case 'both':
-      message = `
+        break;
+      case 'both':
+        message = `
         <div style="text-align: center;">
           <p><strong>Certificados generados exitosamente en ambos formatos</strong></p>
           <p>Se generaron <strong>${count} certificados</strong> en:</p>
@@ -1696,17 +1696,17 @@ const showSuccessMessage = async (type, count, fileName = '') => {
           </ul>
         </div>
       `;
-      break;
-  }
-  
-  await Swal.fire({
-    icon: "success",
-    title: "¡Éxito!",
-    html: message,
-    confirmButtonColor: color.primary.azul,
-    confirmButtonText: 'Aceptar'
-  });
-};
+        break;
+    }
+
+    await Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      html: message,
+      confirmButtonColor: color.primary.azul,
+      confirmButtonText: 'Aceptar'
+    });
+  };
 
   const CertificateTemplate = ({ participant, config, isPDF = false }) => {
     // Función mejorada para calcular dimensiones de logos
@@ -1980,7 +1980,68 @@ const showSuccessMessage = async (type, count, fileName = '') => {
     );
   };
 
-  
+  const fontOptions = [
+    // 🟦 Sans-serif
+    { value: "Arial, sans-serif", label: "Arial", fontFamily: "Arial, sans-serif" },
+    { value: "'Helvetica', sans-serif", label: "Helvetica", fontFamily: "'Helvetica', sans-serif" },
+    { value: "'Verdana', sans-serif", label: "Verdana", fontFamily: "'Verdana', sans-serif" },
+    { value: "'Trebuchet MS', sans-serif", label: "Trebuchet MS", fontFamily: "'Trebuchet MS', sans-serif" },
+    { value: "'Gill Sans', sans-serif", label: "Gill Sans", fontFamily: "'Gill Sans', sans-serif" },
+    { value: "'Lucida Sans', sans-serif", label: "Lucida Sans", fontFamily: "'Lucida Sans', sans-serif" },
+    { value: "'Tahoma', sans-serif", label: "Tahoma", fontFamily: "'Tahoma', sans-serif" },
+    { value: "'Geneva', sans-serif", label: "Geneva", fontFamily: "'Geneva', sans-serif" },
+    { value: "'Segoe UI', sans-serif", label: "Segoe UI", fontFamily: "'Segoe UI', sans-serif" },
+    { value: "'Futura', sans-serif", label: "Futura", fontFamily: "'Futura', sans-serif" },
+    { value: "'Pluto Sans', sans-serif", label: "Pluto Sans", fontFamily: "'Pluto Sans', sans-serif" },
+
+    // 🟩 Serif
+    { value: "'Times New Roman', serif", label: "Times New Roman", fontFamily: "'Times New Roman', serif" },
+    { value: "'Georgia', serif", label: "Georgia", fontFamily: "'Georgia', serif" },
+    { value: "'Garamond', serif", label: "Garamond", fontFamily: "'Garamond', serif" },
+    { value: "'Baskerville', serif", label: "Baskerville", fontFamily: "'Baskerville', serif" },
+    { value: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", label: "Palatino Linotype", fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif" },
+    { value: "'Cambria', serif", label: "Cambria", fontFamily: "'Cambria', serif" },
+    { value: "'Didot', serif", label: "Didot", fontFamily: "'Didot', serif" },
+    { value: "'Constantia', serif", label: "Constantia", fontFamily: "'Constantia', serif" },
+    { value: "'Bookman Old Style', serif", label: "Bookman Old Style", fontFamily: "'Bookman Old Style', serif" },
+
+
+    // 🟨 Monospace
+    { value: "'Courier New', monospace", label: "Courier New", fontFamily: "'Courier New', monospace" },
+    { value: "'Lucida Console', monospace", label: "Lucida Console", fontFamily: "'Lucida Console', monospace" },
+    { value: "'Consolas', monospace", label: "Consolas", fontFamily: "'Consolas', monospace" },
+    { value: "'Monaco', monospace", label: "Monaco", fontFamily: "'Monaco', monospace" },
+    { value: "'Andale Mono', monospace", label: "Andale Mono", fontFamily: "'Andale Mono', monospace" },
+
+    // 🟧 Cursive / Script
+    { value: "'Brush Script MT', cursive", label: "Brush Script MT", fontFamily: "'Brush Script MT', cursive" },
+    { value: "'Comic Sans MS', cursive", label: "Comic Sans MS", fontFamily: "'Comic Sans MS', cursive" },
+    { value: "'Lucida Handwriting', cursive", label: "Lucida Handwriting", fontFamily: "'Lucida Handwriting', cursive" },
+    { value: "'Segoe Script', cursive", label: "Segoe Script", fontFamily: "'Segoe Script', cursive" },
+    { value: "'Monotype Corsiva', cursive", label: "Monotype Corsiva", fontFamily: "'Monotype Corsiva', cursive" },
+    { value: "'Kristen ITC', cursive", label: "Kristen ITC", fontFamily: "'Kristen ITC', cursive" },
+    { value: "'Freestyle Script', cursive", label: "Freestyle Script", fontFamily: "'Freestyle Script', cursive" },
+    { value: "'Edwardian Script ITC', cursive", label: "Edwardian Script ITC", fontFamily: "'Edwardian Script ITC', cursive" },
+    { value: "'Vivaldi', cursive", label: "Vivaldi", fontFamily: "'Vivaldi', cursive" },
+    { value: "'French Script MT', cursive", label: "French Script MT", fontFamily: "'French Script MT', cursive" },
+    { value: "'Dancing Script', cursive", label: "Dancing Script", fontFamily: "'Dancing Script', cursive" },
+    { value: "'Great Vibes', cursive", label: "Great Vibes", fontFamily: "'Great Vibes', cursive" },
+    { value: "'Pacifico', cursive", label: "Pacifico", fontFamily: "'Pacifico', cursive" },
+    { value: "'Satisfy', cursive", label: "Satisfy", fontFamily: "'Satisfy', cursive" },
+    { value: "'Parisienne', cursive", label: "Parisienne", fontFamily: "'Parisienne', cursive" },
+    { value: "'Tangerine', cursive", label: "Tangerine", fontFamily: "'Tangerine', cursive" },
+    { value: "'Allura', cursive", label: "Allura", fontFamily: "'Allura', cursive" },
+    { value: "'Sacramento', cursive", label: "Sacramento", fontFamily: "'Sacramento', cursive" },
+    { value: "'Marck Script', cursive", label: "Marck Script", fontFamily: "'Marck Script', cursive" },
+    { value: "'Cookie', cursive", label: "Cookie", fontFamily: "'Cookie', cursive" },
+
+    // 🟪 Fantasy / Display
+    { value: "'Papyrus', fantasy", label: "Papyrus", fontFamily: "'Papyrus', fantasy" },
+    { value: "'Copperplate', fantasy", label: "Copperplate", fontFamily: "'Copperplate', fantasy" },
+    { value: "'Impact', fantasy", label: "Impact", fontFamily: "'Impact', fantasy" },
+    { value: "'Jokerman', fantasy", label: "Jokerman", fontFamily: "'Jokerman', fantasy" },
+    { value: "'Chiller', fantasy", label: "Chiller", fontFamily: "'Chiller', fantasy" },
+  ];
 
   return (
     <Dashboard>
@@ -2577,15 +2638,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente instituciones asociadas"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, titleFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2599,15 +2660,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente subtítulo"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, subtitleFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2621,15 +2682,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente prefijo del nombre"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, participantPrefixFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2641,15 +2702,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente participante"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, participantFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2663,15 +2724,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente cuerpo"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, bodyFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2685,15 +2746,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente fecha/lugar"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, fechaLugarFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2707,15 +2768,15 @@ const showSuccessMessage = async (type, count, fileName = '') => {
                             label="Fuente firmas"
                             onChange={(e) => setCertificateConfig(prev => ({ ...prev, signatureFont: e.target.value }))}
                           >
-                            <MenuItem value="Arial, sans-serif" style={{ fontFamily: "Arial, sans-serif" }}>Arial</MenuItem>
-                            <MenuItem value="'Helvetica', sans-serif" style={{ fontFamily: "'Helvetica', sans-serif" }}>Helvetica</MenuItem>
-                            <MenuItem value="'Times New Roman', serif" style={{ fontFamily: "'Times New Roman', serif" }}>Times New Roman</MenuItem>
-                            <MenuItem value="'Georgia', serif" style={{ fontFamily: "'Georgia', serif" }}>Georgia</MenuItem>
-                            <MenuItem value="'Verdana', sans-serif" style={{ fontFamily: "'Verdana', sans-serif" }}>Verdana</MenuItem>
-                            <MenuItem value="'Courier New', monospace" style={{ fontFamily: "'Courier New', monospace" }}>Courier New</MenuItem>
-                            <MenuItem value="'Trebuchet MS', sans-serif" style={{ fontFamily: "'Trebuchet MS', sans-serif" }}>Trebuchet MS</MenuItem>
-                            <MenuItem value="'Brush Script MT', cursive" style={{ fontFamily: "'Brush Script MT', cursive" }}>Brush Script MT</MenuItem>
-                            <MenuItem value="'Papyrus', fantasy" style={{ fontFamily: "'Papyrus', fantasy" }}>Papyrus</MenuItem>
+                            {fontOptions.map((font) => (
+                              <MenuItem
+                                key={font.value}
+                                value={font.value}
+                                style={{ fontFamily: font.fontFamily }}
+                              >
+                                {font.label}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -2836,25 +2897,25 @@ const showSuccessMessage = async (type, count, fileName = '') => {
 
 
                     <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>Firmas</Typography>
-        
-    {/* Altura máxima de firmas */}
-    <FormControl fullWidth sx={{ mb: 2 }}>
-      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
-     Tamaño de las Imágenes de Firma: {certificateConfig.signatureMaxHeight}px
-      </Typography>
-      <Slider
-        value={certificateConfig.signatureMaxHeight}
-        onChange={(_, value) => setCertificateConfig(prev => ({
-          ...prev,
-          signatureMaxHeight: value
-        }))}
-        min={40}
-        max={200}
-        step={5}
-        valueLabelDisplay="auto"
-      />
-     
-    </FormControl>
+
+                    {/* Altura máxima de firmas */}
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
+                        Tamaño de las Imágenes de Firma: {certificateConfig.signatureMaxHeight}px
+                      </Typography>
+                      <Slider
+                        value={certificateConfig.signatureMaxHeight}
+                        onChange={(_, value) => setCertificateConfig(prev => ({
+                          ...prev,
+                          signatureMaxHeight: value
+                        }))}
+                        min={40}
+                        max={200}
+                        step={5}
+                        valueLabelDisplay="auto"
+                      />
+
+                    </FormControl>
                     {/* Control para ancho máximo de firmas */}
                     <FormControl fullWidth sx={{ mb: 2 }}>
                       <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
