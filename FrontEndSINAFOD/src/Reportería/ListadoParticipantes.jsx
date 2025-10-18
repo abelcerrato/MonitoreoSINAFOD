@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { color } from "../Components/color";
 import { FaRegFileExcel, FaFileCsv, FaGraduationCap } from "react-icons/fa";
 import dayjs from "dayjs";
+import Swal from "sweetalert2";
 
 
 import html2canvas from 'html2canvas';
@@ -45,6 +46,7 @@ import {
   Switch,
   FormControlLabel,
   InputLabel,
+  CircularProgress
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -529,6 +531,10 @@ const ListadoParticipantes = () => {
 
   // Estados para el modal de certificados - AGREGAR ESTOS ESTADOS
   const [modalOpen, setModalOpen] = useState(false);
+  // Agrega este estado al principio de tu componente, con los otros estados
+  const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState(0);
+
   const [certificateConfig, setCertificateConfig] = useState({
     backgroundImage: null,
     institutionLogos: [],
@@ -560,7 +566,6 @@ const ListadoParticipantes = () => {
     participantSize: 18,
     bodySize: 12,
     fechaLugarSize: 10,
-    signatureSize: 10,
     // Layout
     logoSize: 80,
     logoPosition: "center",
@@ -569,16 +574,19 @@ const ListadoParticipantes = () => {
     // NUEVAS PROPIEDADES MEJORADAS
     logoMaxWidth: 350,
     logoMaxHeight: 100,
-    signatureMaxWidth: 120,
+    // En tu estado certificateConfig, agrega:
+    signatureTextPadding: 15,
+    signatureMaxWidth: 120, // Este controlará el ancho máximo
+    signatureMinWidth: 150, // Puedes agregar este también si quieres
     signatureMaxHeight: 60,
     signatureMargin: 20,
+    signatureSize: 10, // Este controla el tamaño de la letra
   });
 
 
   const [previewParticipant, setPreviewParticipant] = useState(null);
 
-  // Estilos para el modal - AGREGAR ESTO
-  // Estilos para el modal - ACTUALIZAR
+
   // Estilos para el modal - RESPONSIVE
   const modalStyle = {
     position: 'absolute',
@@ -597,6 +605,8 @@ const ListadoParticipantes = () => {
     display: 'flex',
     flexDirection: 'column',
   };
+
+
   // Funciones para manejar archivos - AGREGAR ESTAS FUNCIONES
   const handleBackgroundImageChange = (event) => {
     const file = event.target.files[0];
@@ -678,7 +688,6 @@ const ListadoParticipantes = () => {
       signatures: prev.signatures.filter((_, i) => i !== index)
     }));
   };
-
 
 
   const CertificateTemplate = ({ participant, config, isPDF = false }) => {
@@ -861,47 +870,49 @@ const ListadoParticipantes = () => {
               fontSize: `${config.fechaLugarSize}px`,
               textAlign: 'center',
               color: config.fechaLugarColor,
-              marginBottom: `${config.signatureMargin}px`,
+              marginBottom: `${Math.max(0, config.signatureMargin - 10)}px`, // Reducimos adicionalmente el margen inferior
               fontStyle: 'italic',
               fontFamily: config.fechaLugarFont,
               width: '100%',
               lineHeight: '1.3',
               whiteSpace: 'pre-line',
               wordWrap: 'break-word',
-              padding: '0 20px'
+              padding: '0 20px 5px 20px'
             }}>
               {config.fechaLugarText}
             </div>
           )}
         </div>
 
-        {/* Firmas */}
+        {/* Firmas - CORREGIDO PARA USAR CONFIGURACIÓN DINÁMICA */}
         {config.signatures.length > 0 && (
           <div style={{
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'flex-end',
-            marginTop: 'auto',
-            paddingTop: '30px',
+            marginTop: '10px', // REDUCIDO significativamente
+            paddingTop: '10px', // REDUCIDO significativamente
             width: '100%',
-            gap: '10px',
+            gap: '15px', // Gap configurable pero con valor por defecto
             flexWrap: 'wrap'
           }}>
             {config.signatures.map((signature, index) => (
               <div key={index} style={{
                 textAlign: 'center',
                 flex: '1 1 auto',
-                minWidth: '120px',
-                maxWidth: `${config.signatureMaxWidth}px`,
+                minWidth: `${config.signatureMinWidth || 150}px`, // Usando configuración o valor por defecto
+                maxWidth: `${config.signatureMaxWidth}px`, // USANDO LA CONFIGURACIÓN DINÁMICA
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center'
+                alignItems: 'center',
+                padding: '0 10px',
+                marginBottom: '5px'
               }}>
                 <div style={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: '8px',
+                  marginBottom: '5px',
                   width: '100%'
                 }}>
                   <img
@@ -917,12 +928,31 @@ const ListadoParticipantes = () => {
                   fontSize: `${config.signatureSize}px`,
                   color: config.signatureColor,
                   fontFamily: config.signatureFont,
-                  lineHeight: '1.3',
+                  lineHeight: '1.4',
                   width: '100%'
                 }}>
-                  {signature.name && <div style={{ fontWeight: 'bold' }}>{signature.name}</div>}
-                  {signature.position && <div>{signature.position}</div>}
-                  {signature.institution && <div style={{ fontStyle: 'italic' }}>{signature.institution}</div>}
+                  {signature.name && (
+                    <div style={{
+                      fontWeight: 'bold',
+                      marginBottom: '4px'
+                    }}>
+                      {signature.name}
+                    </div>
+                  )}
+                  {signature.position && (
+                    <div style={{
+                      marginBottom: '4px'
+                    }}>
+                      {signature.position}
+                    </div>
+                  )}
+                  {signature.institution && (
+                    <div style={{
+                      fontStyle: 'italic'
+                    }}>
+                      {signature.institution}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -935,18 +965,92 @@ const ListadoParticipantes = () => {
   const handleGenerarPDF = async () => {
     if (!filteredRows.length) {
       console.error("No hay participantes para generar PDF");
-      alert("No hay participantes para generar certificados");
+      Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        text: "No hay participantes para generar certificados",
+      });
       return;
     }
+
+    // Mostrar mensaje de confirmación para muchos certificados
+    if (filteredRows.length > 10) {
+      const result = await Swal.fire({
+        icon: 'info',
+        title: 'Generando PDF',
+        html: `Vas a generar <strong>${filteredRows.length} certificados</strong>.<br>Este proceso puede tomar varios minutos.`,
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: color.primary.azul,
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+    }
+
+    setGeneratingPDF(true);
+    setPdfProgress(0);
 
     try {
       const pdf = new jsPDF('landscape', 'mm', 'a4');
 
       console.log(`🔄 Generando ${filteredRows.length} certificados...`);
 
+      // Mostrar progreso inicial
+      Swal.fire({
+        title: 'Generando PDF...',
+        html: `
+          <div style="text-align: center;">
+            <p>Procesando certificados: <strong>0/${filteredRows.length}</strong></p>
+            <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
+              <div id="progress-bar" style="background: ${color.primary.azul}; height: 100%; width: 0%; border-radius: 10px; transition: width 0.3s;"></div>
+            </div>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+              Esto puede tomar varios minutos. Por favor no cierre esta ventana.
+            </p>
+          </div>
+        `,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       for (let i = 0; i < filteredRows.length; i++) {
         const participant = filteredRows[i];
         console.log(`📝 Procesando participante ${i + 1}: ${participant.nombre} ${participant.apellido}`);
+
+        // Actualizar progreso
+        const progress = Math.round(((i + 1) / filteredRows.length) * 100);
+        setPdfProgress(progress);
+
+        // Actualizar la barra de progreso en SweetAlert
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
+
+        // Actualizar el texto del progreso
+        Swal.update({
+          html: `
+            <div style="text-align: center;">
+              <p>Procesando certificados: <strong>${i + 1}/${filteredRows.length}</strong></p>
+              <div style="background: #f0f0f0; border-radius: 10px; height: 20px; margin: 10px 0;">
+                <div id="progress-bar" style="background: ${color.primary.azul}; height: 100%; width: ${progress}%; border-radius: 10px; transition: width 0.3s;"></div>
+              </div>
+              <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                Procesando: ${participant.nombre} ${participant.apellido}
+              </p>
+              <p style="font-size: 12px; color: #999;">
+                ${progress}% completado
+              </p>
+            </div>
+          `
+        });
 
         // Crear un iframe en lugar de un div para mejor aislamiento
         const iframe = document.createElement('iframe');
@@ -962,271 +1066,288 @@ const ListadoParticipantes = () => {
 
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
-        // Escribir el contenido HTML directamente CON EL SISTEMA MEJORADO
+        // Escribir el contenido HTML directamente - USANDO LOS MISMOS ESTILOS QUE CertificateTemplate
         iframeDoc.open();
         iframeDoc.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body { 
-              margin: 0; 
-              padding: 0; 
-              background: white;
-              font-family: Arial, sans-serif;
-            }
-            .certificate-container {
-              width: 297mm;
-              height: 210mm;
-              background: white;
-              ${certificateConfig.backgroundImage ? `
-                background-image: url('${certificateConfig.backgroundImage}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-              ` : ''}
-              padding: ${certificateConfig.contentMargin}px;
-              box-sizing: border-box;
-              border: ${certificateConfig.showBorder ? `2px solid ${certificateConfig.borderColor}` : 'none'};
-              display: flex;
-              flex-direction: column;
-              position: relative;
-              overflow: hidden;
-            }
-            
-            /* CONTENEDORES MEJORADOS PARA IMÁGENES */
-            .logos-container {
-              display: flex;
-              justify-content: ${certificateConfig.logoPosition};
-              align-items: center;
-              margin-bottom: 20px;
-              width: 100%;
-              gap: ${certificateConfig.logoSpacing}px;
-              flex-wrap: wrap;
-            }
-            
-            .logo-item {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-            
-            .logo-img {
-              width: auto;
-              height: ${certificateConfig.logoSize}px;
-              max-width: ${certificateConfig.logoMaxWidth}px;
-              max-height: ${certificateConfig.logoMaxHeight}px;
-              object-fit: contain;
-              display: block;
-              flex-shrink: 0;
-            }
-            
-            .signature-img {
-              width: auto;
-              height: ${certificateConfig.signatureMaxHeight}px;
-              max-width: ${certificateConfig.signatureMaxWidth}px;
-              object-fit: contain;
-              display: block;
-            }
-            
-            .signature-image-container {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-bottom: 8px;
-              width: 100%;
-            }
-            
-            .content-container {
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              padding: 20px 0;
-            }
-            
-            .title {
-              font-size: ${certificateConfig.titleSize}px;
-              font-weight: bold;
-              text-align: center;
-              color: ${certificateConfig.titleColor};
-              margin-bottom: 20px;
-              font-family: ${certificateConfig.titleFont};
-              width: 100%;
-              line-height: 1.2;
-              white-space: pre-line;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .subtitle {
-              font-size: ${certificateConfig.subtitleSize}px;
-              text-align: center;
-              color: ${certificateConfig.subtitleColor};
-              margin-bottom: 15px;
-              font-family: ${certificateConfig.subtitleFont};
-              width: 100%;
-              line-height: 1.3;
-              white-space: pre-line;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .participant-prefix {
-              font-size: ${certificateConfig.participantSize - 2}px;
-              text-align: center;
-              color: ${certificateConfig.participantColor};
-              margin-bottom: 8px;
-              font-family: ${certificateConfig.subtitleFont};
-              width: 100%;
-              line-height: 1.3;
-              white-space: pre-line;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .participant-name {
-              font-size: ${certificateConfig.participantSize}px;
-              font-weight: bold;
-              text-align: center;
-              color: ${certificateConfig.participantColor};
-              margin-bottom: 25px;
-              font-family: ${certificateConfig.participantFont};
-              width: 100%;
-              line-height: 1.2;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .body-text {
-              font-size: ${certificateConfig.bodySize}px;
-              text-align: center;
-              color: ${certificateConfig.bodyColor};
-              line-height: 1.5;
-              margin-bottom: 25px;
-              font-family: ${certificateConfig.bodyFont};
-              width: 100%;
-              max-width: 90%;
-              white-space: pre-line;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .fecha-lugar {
-              font-size: ${certificateConfig.fechaLugarSize}px;
-              text-align: center;
-              color: ${certificateConfig.fechaLugarColor};
-              margin-bottom: ${certificateConfig.signatureMargin}px;
-              font-style: italic;
-              font-family: ${certificateConfig.fechaLugarFont};
-              width: 100%;
-              line-height: 1.3;
-              white-space: pre-line;
-              word-wrap: break-word;
-              padding: 0 20px;
-            }
-            
-            .signatures-container {
-              display: flex;
-              justify-content: space-around;
-              align-items: flex-end;
-              margin-top: auto;
-              padding-top: 30px;
-              width: 100%;
-              gap: 10px;
-              flex-wrap: wrap;
-            }
-            
-            .signature-item {
-              text-align: center;
-              flex: 1 1 auto;
-              min-width: 120px;
-              max-width: ${certificateConfig.signatureMaxWidth}px;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-            
-            .signature-text {
-              font-size: ${certificateConfig.signatureSize}px;
-              color: ${certificateConfig.signatureColor};
-              font-family: ${certificateConfig.signatureFont};
-              line-height: 1.3;
-              width: 100%;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="certificate-container">
-            <!-- Logos MEJORADO -->
-            ${certificateConfig.institutionLogos.length > 0 ? `
-              <div class="logos-container">
-                ${certificateConfig.institutionLogos.map(logo => `
-                  <div class="logo-item">
-                    <img class="logo-img" src="${logo}" crossorigin="anonymous" />
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <style>
+                body { 
+                  margin: 0; 
+                  padding: 0; 
+                  background: white;
+                  font-family: Arial, sans-serif;
+                }
+                .certificate-container {
+                  width: 297mm;
+                  height: 210mm;
+                  background: white;
+                  ${certificateConfig.backgroundImage ? `
+                    background-image: url('${certificateConfig.backgroundImage}');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                  ` : ''}
+                  padding: ${certificateConfig.contentMargin}px;
+                  box-sizing: border-box;
+                  border: ${certificateConfig.showBorder ? `2px solid ${certificateConfig.borderColor}` : 'none'};
+                  display: flex;
+                  flex-direction: column;
+                  position: relative;
+                  overflow: hidden;
+                  margin: 0;
+                  font-family: Arial, sans-serif;
+                }
+                
+                .logos-container {
+                  display: flex;
+                  justify-content: ${certificateConfig.logoPosition};
+                  align-items: center;
+                  margin-bottom: 20px;
+                  width: 100%;
+                  gap: ${certificateConfig.logoSpacing}px;
+                  flex-wrap: wrap;
+                }
+                
+                .logo-item {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+                
+                .logo-img {
+                  width: auto;
+                  height: ${certificateConfig.logoSize}px;
+                  max-width: ${certificateConfig.logoMaxWidth}px;
+                  max-height: ${certificateConfig.logoMaxHeight}px;
+                  object-fit: contain;
+                  display: block;
+                  flex-shrink: 0;
+                }
+                
+                .content-container {
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  padding: 20px 0;
+                }
+                
+                .title {
+                  font-size: ${certificateConfig.titleSize}px;
+                  font-weight: bold;
+                  text-align: center;
+                  color: ${certificateConfig.titleColor};
+                  margin-bottom: 20px;
+                  font-family: ${certificateConfig.titleFont};
+                  width: 100%;
+                  line-height: 1.2;
+                  white-space: pre-line;
+                  word-wrap: break-word;
+                  padding: 0 20px;
+                }
+                
+                .subtitle {
+                  font-size: ${certificateConfig.subtitleSize}px;
+                  text-align: center;
+                  color: ${certificateConfig.subtitleColor};
+                  margin-bottom: 15px;
+                  font-family: ${certificateConfig.subtitleFont};
+                  width: 100%;
+                  line-height: 1.3;
+                  white-space: pre-line;
+                  word-wrap: break-word;
+                  padding: 0 20px;
+                }
+                
+                .participant-prefix {
+                  font-size: ${certificateConfig.participantSize - 2}px;
+                  text-align: center;
+                  color: ${certificateConfig.participantColor};
+                  margin-bottom: 8px;
+                  font-family: ${certificateConfig.subtitleFont};
+                  width: 100%;
+                  line-height: 1.3;
+                  white-space: pre-line;
+                  word-wrap: break-word;
+                  padding: 0 20px;
+                }
+                
+                .participant-name {
+                  font-size: ${certificateConfig.participantSize}px;
+                  font-weight: bold;
+                  text-align: center;
+                  color: ${certificateConfig.participantColor};
+                  margin-bottom: 25px;
+                  font-family: ${certificateConfig.participantFont};
+                  width: 100%;
+                  line-height: 1.2;
+                  word-wrap: break-word;
+                  padding: 0 20px;
+                }
+                
+                .body-text {
+                  font-size: ${certificateConfig.bodySize}px;
+                  text-align: center;
+                  color: ${certificateConfig.bodyColor};
+                  line-height: 1.5;
+                  margin-bottom: 25px;
+                  font-family: ${certificateConfig.bodyFont};
+                  width: 100%;
+                  max-width: 90%;
+                  white-space: pre-line;
+                  word-wrap: break-word;
+                  padding: 0 20px;
+                }
+                
+                .fecha-lugar {
+                  font-size: ${certificateConfig.fechaLugarSize}px;
+                  text-align: center;
+                  color: ${certificateConfig.fechaLugarColor};
+                  margin-bottom: ${Math.max(0, certificateConfig.signatureMargin - 10)}px;
+                  font-style: italic;
+                  font-family: ${certificateConfig.fechaLugarFont};
+                  width: 100%;
+                  line-height: 1.3;
+                  white-space: pre-line;
+                  word-wrap: break-word;
+                  padding: 0 20px 5px 20px;
+                }
+                
+                .signatures-container {
+                  display: flex;
+                  justify-content: space-around;
+                  align-items: flex-end;
+                  margin-top: 10px;
+                  padding-top: 10px;
+                  width: 100%;
+                  gap: 15px;
+                  flex-wrap: wrap;
+                }
+                
+                .signature-item {
+                  text-align: center;
+                  flex: 1 1 auto;
+                  min-width: ${certificateConfig.signatureMinWidth || 150}px;
+                  max-width: ${certificateConfig.signatureMaxWidth}px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  padding: 0 10px;
+                  margin-bottom: 5px;
+                }
+                
+                .signature-image-container {
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  margin-bottom: 5px;
+                  width: 100%;
+                }
+                
+                .signature-img {
+                  width: auto;
+                  height: ${certificateConfig.signatureMaxHeight}px;
+                  max-width: ${certificateConfig.signatureMaxWidth}px;
+                  object-fit: contain;
+                  display: block;
+                }
+                
+                .signature-text {
+                  font-size: ${certificateConfig.signatureSize}px;
+                  color: ${certificateConfig.signatureColor};
+                  font-family: ${certificateConfig.signatureFont};
+                  line-height: 1.4;
+                  width: 100%;
+                }
+                
+                .signature-name {
+                  font-weight: bold;
+                  margin-bottom: 4px;
+                }
+                
+                .signature-position {
+                  margin-bottom: 4px;
+                }
+                
+                .signature-institution {
+                  font-style: italic;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="certificate-container">
+                <!-- Logos -->
+                ${certificateConfig.institutionLogos.length > 0 ? `
+                  <div class="logos-container">
+                    ${certificateConfig.institutionLogos.map(logo => `
+                      <div class="logo-item">
+                        <img class="logo-img" src="${logo}" crossorigin="anonymous" />
+                      </div>
+                    `).join('')}
                   </div>
-                `).join('')}
-              </div>
-            ` : ''}
-            
-            <!-- Contenido principal -->
-            <div class="content-container">
-              <!-- Título -->
-              ${certificateConfig.title ? `
-                <div class="title">${certificateConfig.title}</div>
-              ` : ''}
-              
-              <!-- Subtítulo -->
-              ${certificateConfig.subtitle ? `
-                <div class="subtitle">${certificateConfig.subtitle}</div>
-              ` : ''}
-              
-              <!-- Prefijo del nombre -->
-              ${certificateConfig.participantPrefix ? `
-                <div class="participant-prefix">${certificateConfig.participantPrefix}</div>
-              ` : ''}
-              
-              <!-- Nombre del participante -->
-              <div class="participant-name">${participant.nombre} ${participant.apellido}</div>
-              
-              <!-- Cuerpo del texto -->
-              ${certificateConfig.bodyText ? `
-                <div class="body-text">${certificateConfig.bodyText}</div>
-              ` : ''}
-              
-              <!-- Fecha y lugar -->
-              ${certificateConfig.fechaLugarText ? `
-                <div class="fecha-lugar">${certificateConfig.fechaLugarText}</div>
-              ` : ''}
-            </div>
-            
-            <!-- Firmas MEJORADO -->
-            ${certificateConfig.signatures.length > 0 ? `
-              <div class="signatures-container">
-                ${certificateConfig.signatures.map(signature => `
-                  <div class="signature-item">
-                    <div class="signature-image-container">
-                      <img class="signature-img" src="${signature.image}" crossorigin="anonymous" />
-                    </div>
-                    <div class="signature-text">
-                      ${signature.name ? `<div style="font-weight: bold;">${signature.name}</div>` : ''}
-                      ${signature.position ? `<div>${signature.position}</div>` : ''}
-                      ${signature.institution ? `<div style="font-style: italic;">${signature.institution}</div>` : ''}
-                    </div>
+                ` : ''}
+                
+                <!-- Contenido principal -->
+                <div class="content-container">
+                  <!-- Título -->
+                  ${certificateConfig.title ? `
+                    <div class="title">${certificateConfig.title}</div>
+                  ` : ''}
+                  
+                  <!-- Subtítulo -->
+                  ${certificateConfig.subtitle ? `
+                    <div class="subtitle">${certificateConfig.subtitle}</div>
+                  ` : ''}
+                  
+                  <!-- Prefijo del nombre -->
+                  ${certificateConfig.participantPrefix ? `
+                    <div class="participant-prefix">${certificateConfig.participantPrefix}</div>
+                  ` : ''}
+                  
+                  <!-- Nombre del participante -->
+                  <div class="participant-name">${participant.nombre} ${participant.apellido}</div>
+                  
+                  <!-- Cuerpo del texto -->
+                  ${certificateConfig.bodyText ? `
+                    <div class="body-text">${certificateConfig.bodyText}</div>
+                  ` : ''}
+                  
+                  <!-- Fecha y lugar -->
+                  ${certificateConfig.fechaLugarText ? `
+                    <div class="fecha-lugar">${certificateConfig.fechaLugarText}</div>
+                  ` : ''}
+                </div>
+                
+                <!-- Firmas -->
+                ${certificateConfig.signatures.length > 0 ? `
+                  <div class="signatures-container">
+                    ${certificateConfig.signatures.map(signature => `
+                      <div class="signature-item">
+                        <div class="signature-image-container">
+                          <img class="signature-img" src="${signature.image}" crossorigin="anonymous" />
+                        </div>
+                        <div class="signature-text">
+                          ${signature.name ? `<div class="signature-name">${signature.name}</div>` : ''}
+                          ${signature.position ? `<div class="signature-position">${signature.position}</div>` : ''}
+                          ${signature.institution ? `<div class="signature-institution">${signature.institution}</div>` : ''}
+                        </div>
+                      </div>
+                    `).join('')}
                   </div>
-                `).join('')}
+                ` : ''}
               </div>
-            ` : ''}
-          </div>
-        </body>
-      </html>
-    `);
+            </body>
+          </html>
+        `);
         iframeDoc.close();
 
-        // Resto del código se mantiene igual...
+        // Esperar a que el contenido se renderice
         await new Promise(resolve => setTimeout(resolve, 500));
 
+        // Esperar específicamente a que las imágenes se carguen
         await new Promise((resolve) => {
           const images = iframeDoc.images;
           let loadedCount = 0;
@@ -1258,19 +1379,23 @@ const ListadoParticipantes = () => {
           }
         });
 
+        // Capturar con html2canvas
         const canvas = await html2canvas(iframeDoc.body, {
           scale: 2,
           useCORS: true,
           allowTaint: false,
           backgroundColor: '#ffffff',
-          logging: true,
+          logging: false,
         });
 
         console.log(`✅ Canvas generado para ${participant.nombre}`);
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+        // Limpiar
         document.body.removeChild(iframe);
 
+        // Agregar al PDF
         if (i > 0) {
           pdf.addPage();
         }
@@ -1281,14 +1406,62 @@ const ListadoParticipantes = () => {
 
       const fileName = `Certificados_${new Date().toISOString().split('T')[0]}.pdf`;
       pdf.save(fileName);
+
+      // Cerrar SweetAlert de progreso
+      Swal.close();
+
+      // Mostrar mensaje de éxito
+      await Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        html: `
+          <div style="text-align: center;">
+            <p><strong>PDF generado exitosamente</strong></p>
+            <p>Se generaron <strong>${filteredRows.length} certificados</strong></p>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+              Archivo: ${fileName}
+            </p>
+          </div>
+        `,
+        confirmButtonColor: color.primary.azul,
+        confirmButtonText: 'Aceptar'
+      });
+
+      // Cerrar el modal y resetear estados
       setModalOpen(false);
+      setGeneratingPDF(false);
+      setPdfProgress(0);
 
       console.log("🎉 PDF generado exitosamente: " + fileName);
-      alert(`✅ PDF generado exitosamente con ${filteredRows.length} certificados`);
 
     } catch (error) {
       console.error("❌ Error generando PDF:", error);
-      alert("Error al generar el PDF: " + error.message);
+
+      // Cerrar SweetAlert en caso de error
+      Swal.close();
+
+      // Mostrar error
+      await Swal.fire({
+        icon: "error",
+        title: "¡Error!",
+        html: `
+          <div style="text-align: center;">
+            <p><strong>Error al generar el PDF</strong></p>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+              ${error.message}
+            </p>
+            <p style="font-size: 12px; color: #999; margin-top: 5px;">
+              Progreso alcanzado: ${pdfProgress}%
+            </p>
+          </div>
+        `,
+        confirmButtonColor: color.primary.azul,
+        confirmButtonText: 'Entendido'
+      });
+
+      // Resetear estados
+      setGeneratingPDF(false);
+      setPdfProgress(0);
     }
   };
 
@@ -1482,6 +1655,12 @@ const ListadoParticipantes = () => {
           onClose={() => setModalOpen(false)}
           aria-labelledby="certificate-modal"
           aria-describedby="certificate-configuration"
+          sx={{
+            zIndex: 1300,
+            '& .swal2-container': {
+              zIndex: '9999 !important'
+            }
+          }}
         >
           <Box sx={modalStyle}>
             <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
@@ -2153,6 +2332,21 @@ const ListadoParticipantes = () => {
                     {/* Control para ancho máximo de firmas */}
                     <FormControl fullWidth sx={{ mb: 2 }}>
                       <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
+                        Ancho mínimo de firmas: {certificateConfig.signatureMinWidth || 150}px
+                      </Typography>
+                      <Slider
+                        value={certificateConfig.signatureMinWidth || 150}
+                        onChange={(_, value) => setCertificateConfig(prev => ({
+                          ...prev,
+                          signatureMinWidth: value
+                        }))}
+                        min={100}
+                        max={250}
+                        step={5}
+                      />
+                    </FormControl>
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom sx={{ fontSize: { xs: '0.7rem', md: '0.8rem' } }}>
                         Ancho máximo de firmas: {certificateConfig.signatureMaxWidth}px
                       </Typography>
                       <Slider
@@ -2162,7 +2356,7 @@ const ListadoParticipantes = () => {
                           signatureMaxWidth: value
                         }))}
                         min={80}
-                        max={100}
+                        max={300}
                         step={5}
                       />
                     </FormControl>
@@ -2187,7 +2381,7 @@ const ListadoParticipantes = () => {
                 </Card>
               </Box>
 
-              {/* Vista previa - HORIZONTAL CON ELEMENTOS ADENTRO */}
+
               {/* Vista previa - CON DIMENSIONES REALES A4 HORIZONTAL */}
               <Box sx={{
                 width: { xs: '100%', lg: '65%' },
@@ -2197,7 +2391,7 @@ const ListadoParticipantes = () => {
                 minHeight: { xs: '400px', lg: 'auto' }
               }}>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                  Vista Previa (DIMENSIONES REALES A4 Horizontal)
+                  Vista Previa
                 </Typography>
 
                 <Box sx={{
@@ -2251,7 +2445,7 @@ const ListadoParticipantes = () => {
                   color: 'text.secondary',
                   fontSize: { xs: '0.7rem', md: '0.8rem' }
                 }}>
-                  📏 Dimensiones reales: 297mm × 210mm (A4 Horizontal) - Vista escalada para ajustarse al modal
+                  Dimensiones reales: 297mm × 210mm (A4 Horizontal) - Vista escalada para ajustarse al modal
                 </Typography>
               </Box>
 
@@ -2270,21 +2464,30 @@ const ListadoParticipantes = () => {
               >
                 Cancelar
               </Button>
+
               <Button
                 variant="contained"
                 onClick={handleGenerarPDF}
-                disabled={filteredRows.length === 0 || !certificateConfig.title || !certificateConfig.bodyText}
+                disabled={filteredRows.length === 0 || !certificateConfig.title || !certificateConfig.bodyText || generatingPDF}
                 size="medium"
                 sx={{
-                  backgroundColor: color.primary.azul,
+                  backgroundColor: generatingPDF ? '#ccc' : color.primary.azul,
                   '&:hover': {
-                    backgroundColor: color.primary.azul,
-                    opacity: 0.9
+                    backgroundColor: generatingPDF ? '#ccc' : color.primary.azul,
+                    opacity: generatingPDF ? 1 : 0.9
                   }
                 }}
               >
-                Generar {filteredRows.length} Certificados PDF
+                {generatingPDF ? (
+                  <>
+                    <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} />
+                    Generando... {pdfProgress}%
+                  </>
+                ) : (
+                  `Generar ${filteredRows.length} Certificados PDF`
+                )}
               </Button>
+
             </Box>
           </Box>
         </Modal>
