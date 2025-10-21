@@ -20,10 +20,11 @@ import {
   DialogContent,
   Typography,
   Button,
+  Modal,
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import Groups2Icon from '@mui/icons-material/Groups2';
 import IconButton from "@mui/material/IconButton";
 import { PDFViewer } from "@react-pdf/renderer";
 import { color } from "../../Components/color";
@@ -37,6 +38,7 @@ import { useUser } from "../../Components/UserContext";
 import { Add as AddIcon } from "@mui/icons-material";
 import Dashboard from "../../Dashboard/dashboard";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import TablaParticipantes from "../../Participantes/TablaParticipantes";
 import {
   Page,
   Text,
@@ -197,16 +199,14 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
 
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+
   const [qrUrl, setQrUrl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const handleOpen = (id) => {
-    setSelectedId(id);
-    setOpen(true);
-  };
+  const [openParticipantes, setOpenParticipantes] = useState(false);
+  const [selectedFormacionId, setSelectedFormacionId] = useState(null);
 
   useEffect(() => {
     axios
@@ -279,6 +279,18 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     setOpenModal(false);
   };
 
+  const handleOpenParticipantes = (id) => {
+    setSelectedFormacionId(id);
+    setOpenParticipantes(true);
+  };
+
+  const handleCloseParticipantes = () => {
+    setOpenParticipantes(false);
+    setSelectedFormacionId(null);
+  };
+
+
+
   const tienePermiso = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.actualizar === true;
@@ -324,14 +336,15 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
                 </IconButton>
               </Tooltip>
 
-              {/* <Tooltip title="Ver Detalles">
-                  <IconButton
-                    onClick={() => handleOpen(params.id)}
-                    color="info"
-                  >
-                    <RemoveRedEyeIcon />
-                  </IconButton>
-                </Tooltip> */}
+              <Tooltip title="Ver Participantes">
+                <IconButton
+                  color="info"
+                  onClick={() => handleOpenParticipantes(params.id)}
+                >
+                  <Groups2Icon />
+                </IconButton>
+              </Tooltip>
+
             </>
           ),
         },
@@ -414,7 +427,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
         <CardDetalles
           open={open}
           handleClose={() => setOpen(false)}
-          id={selectedId}
+
         />
 
         <Dialog
@@ -498,6 +511,41 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
             )}
           </DialogContent>
         </Dialog>
+
+        <Modal
+          open={openParticipantes}
+          onClose={handleCloseParticipantes}
+          aria-labelledby="modal-participantes-title"
+          aria-describedby="modal-participantes-description"
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "90%",
+              maxHeight: "90vh",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              borderRadius: 2,
+              p: 3,
+              overflowY: "auto",
+            }}
+          >
+            {selectedFormacionId ? (
+              <TablaParticipantes
+                investCap={selectedFormacionId}
+                isSaved={false}
+                setIsSaved={() => { }}
+                formacioninvest={"formacion"}
+              />
+            ) : (
+              <Typography variant="body2">Cargando participantes...</Typography>
+            )}
+          </Box>
+        </Modal>
+
       </Paper>
     </Dashboard>
   );
