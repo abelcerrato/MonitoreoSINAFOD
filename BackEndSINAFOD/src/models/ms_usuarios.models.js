@@ -6,6 +6,7 @@ export const getUserM = async () => {
         const { rows } = await pool.query(` 
         SELECT 
             u.id,
+            u.identidad,
             u.nombre,
             u.correo,
             u.idrol,
@@ -29,7 +30,7 @@ export const getUsuarioIdM = async (usuario) => {
     console.log('Usuario enviado:', usuario);
     try {
         const { rows } = await pool.query(`
-            SELECT id, nombre, correo, idrol, '********' AS contraseña, estado, fechacreacion, creadopor, fechamodificacion, modificadopor 
+            SELECT id, identidad, nombre, correo, idrol, '********' AS contraseña, estado, fechacreacion, creadopor, fechamodificacion, modificadopor 
             FROM ms_usuarios 
             WHERE usuario=$1`, 
             [usuario]);
@@ -45,7 +46,7 @@ export const getUsuarioIdM = async (usuario) => {
 export const getUserIdM = async (id) => {
     try {
         const { rows } = await pool.query(`
-            SELECT nombre,  correo, idrol, '********' AS contraseña, 
+            SELECT identidad, nombre,  correo, idrol, '********' AS contraseña, 
             estado, fechacreacion, creadopor, fechamodificacion, modificadopor, usuario
             FROM ms_usuarios WHERE id=$1`, [id])
 
@@ -64,7 +65,7 @@ export const getUserIdM = async (id) => {
 export const verificarUsuarioM = async (usuario) => {
     try {
 
-        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, nombre, contraseña, correo, sesionactiva, estado, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
+        const { rows, rowCount } = await pool.query('SELECT id, usuario, idrol, identidad, nombre, contraseña, correo, sesionactiva, estado, cambiocontraseña FROM ms_usuarios WHERE usuario = $1', 
             [usuario]);
 
 
@@ -79,18 +80,18 @@ export const verificarUsuarioM = async (usuario) => {
 };
 
 
-export const postUserM = async (nombre, usuario,  correo, idrol, estado, contraseña,  creadopor) => {
+export const postUserM = async (nombre, usuario, correo, idrol, estado,  identidad, creadopor) => {
     try {
         // Definir la nueva contraseña temporal
        // const ContraseñaUsuarioNuevo = "NuevoUsuario1*";  //ya no se usa
 
 
-        const contraseñaCifrada  = await bcrypt.hash(contraseña, 10);
+        const contraseñaCifrada  = await bcrypt.hash(identidad, 10);
         const { rows } = await pool.query(`INSERT INTO ms_usuarios
                                                 (nombre, usuario,  correo, idrol, contraseña,
-                                                estado, creadopor, fechacreacion, fechamodificacion ) 
-                                            VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, null) RETURNING *`,
-            [nombre, usuario,  correo, idrol, contraseñaCifrada,  estado, creadopor])
+                                                estado, identidad, creadopor, fechacreacion, fechamodificacion ) 
+                                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, null) RETURNING *`,
+            [nombre, usuario,  correo, idrol, contraseñaCifrada,  estado, identidad, creadopor])
 
         console.log(rows);
         return rows[0]
@@ -100,14 +101,14 @@ export const postUserM = async (nombre, usuario,  correo, idrol, estado, contras
 }
 
 
-export const updateUserM = async ( nombre,  correo, idrol,  estado, modificadopor, usuario, id) => {
+export const updateUserM = async ( nombre, correo, idrol, estado, modificadopor, usuario, identidad, id) => {
     try {
         const { rows } = await pool.query(`UPDATE ms_usuarios SET 
                                                 nombre=$1, correo=$2, idrol=$3, 
-                                                estado=$4, modificadopor=$5, usuario=$6, 
+                                                estado=$4, modificadopor=$5, usuario=$6, identidad=$7,
                                                 fechamodificacion=CURRENT_TIMESTAMP, fechacreacion=null
-                                            WHERE id=$7 RETURNING *`,
-            [nombre,  correo, idrol,  estado, modificadopor, usuario, id])
+                                            WHERE id=$8 RETURNING *`,
+            [nombre, correo, idrol, estado, modificadopor, usuario, identidad, id])
         return rows[0]
     } catch (error) {
         throw error;
