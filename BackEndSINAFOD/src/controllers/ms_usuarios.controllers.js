@@ -92,7 +92,7 @@ export const verificarUsuarioC = async (req, res) => {
 
 export const postUserC = async (req, res) => {
   try {
-    const { nombre, usuario, correo, idrol, estado, contraseña, creadopor } =
+    const { nombre, usuario, correo, idrol, estado, identidad, creadopor } =
       req.body;
     console.log(req.body);
     const users = await postUserM(
@@ -101,7 +101,7 @@ export const postUserC = async (req, res) => {
       correo,
       idrol,
       estado,
-      contraseña,
+      identidad,
       creadopor
     );
     //res.json(users)
