@@ -333,6 +333,7 @@ const ProjectDrawer = ({ open }) => {
                       }
                     />
                   )}
+                  
                   {tienePermiso(7) && (
                     <MenuItem
                       path="/Reportería/Listado_De_Investigaciones"

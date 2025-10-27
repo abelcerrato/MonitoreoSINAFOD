@@ -144,7 +144,48 @@ const PreInscripcion = () => {
           return prevData;
         }
       }
-      
+
+      // Capitalizar nombre y apellido
+      if (name === "nombre" || name === "apellido") {
+        newData[name] = value
+          .toLowerCase()
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+
+      // Validar y formatear teléfono
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado = `${soloNumeros.slice(0, 4)}-${soloNumeros.slice(4)}`;
+        }
+
+        // asignar el valor formateado
+        newData.telefono = telefonoFormateado;
+
+        // validar longitud
+        setFieldErrors((prevErrors) => {
+          const newErrors = { ...prevErrors };
+          if (soloNumeros.length !== 8) {
+            newErrors.telefono = "El teléfono debe tener exactamente 8 dígitos (formato 0000-0000).";
+          } else {
+            newErrors.telefono = "";
+          }
+          return newErrors;
+        });
+      }
+
+
+
+
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value
@@ -181,73 +222,7 @@ const PreInscripcion = () => {
           return newErrors;
         });
       }
-
       //Validar y formatear teléfono
-      if (name === "telefono") {
-        // eliminar todo lo que no sea número
-        let soloNumeros = value.replace(/\D/g, "");
-
-        // limitar a máximo 8 números
-        if (soloNumeros.length > 8) {
-          soloNumeros = soloNumeros.slice(0, 8);
-        }
-
-        // aplicar formato 0000-0000 si hay más de 4 dígitos
-        let telefonoFormateado = soloNumeros;
-        if (soloNumeros.length > 4) {
-          telefonoFormateado =
-            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
-        }
-
-        newData.telefono = telefonoFormateado;
-
-        setFieldErrors((prevErrors) => {
-          let newErrors = { ...prevErrors };
-          if (soloNumeros.length !== 8) {
-            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
-          } else {
-            newErrors.telefono = "";
-          }
-          return newErrors;
-        });
-      }
-      // Capitalizar nombre y apellido
-      if (name === "nombre" || name === "apellido") {
-        newData[name] = value
-          .toLowerCase()
-          .replace(/\b\w/g, (c) => c.toUpperCase());
-      }
-
-      //Validar y formatear teléfono
-      if (name === "telefono") {
-        // eliminar todo lo que no sea número
-        let soloNumeros = value.replace(/\D/g, "");
-
-        // limitar a máximo 8 números
-        if (soloNumeros.length > 8) {
-          soloNumeros = soloNumeros.slice(0, 8);
-        }
-
-        // aplicar formato 0000-0000 si hay más de 4 dígitos
-        let telefonoFormateado = soloNumeros;
-        if (soloNumeros.length > 4) {
-          telefonoFormateado =
-            soloNumeros.slice(0, 4) + "-" + soloNumeros.slice(4);
-        }
-
-        newData.telefono = telefonoFormateado;
-
-        setFieldErrors((prevErrors) => {
-          let newErrors = { ...prevErrors };
-          if (soloNumeros.length !== 8) {
-            newErrors.telefono = "El teléfono debe tener 8 dígitos.";
-          } else {
-            newErrors.telefono = "";
-          }
-          return newErrors;
-        });
-      }
-     //Validar y formatear teléfono
       if (name === "telefono") {
         // eliminar todo lo que no sea número
         let soloNumeros = value.replace(/\D/g, "");
@@ -1250,15 +1225,15 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography
-                  variant="subtitle1"
-                  sx={{ color: color.primary.azul, textAlign: "center" }}
+                  variant="h4"
+                  sx={{ color: color.primary.azul, textAlign: "center", fontWeight: "bold" }}
                 >
                   Datos Generales del Participante
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Código SACE</Typography>
+                <Typography variant="subtitle1">Código SACE / Identidad</Typography>
                 <TextField
                   fullWidth
                   name="codigosace"
@@ -1271,7 +1246,7 @@ const PreInscripcion = () => {
               </Grid>
 
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Identidad*</Typography>
+                <Typography variant="subtitle1">Identidad <span style={{ color: "red" }}> *</span></Typography>
 
                 <TextField
                   fullWidth
@@ -1290,7 +1265,7 @@ const PreInscripcion = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Nombre*</Typography>
+                <Typography variant="subtitle1">Nombre <span style={{ color: "red" }}> *</span></Typography>
                 <TextField
                   fullWidth
                   name="nombre"
@@ -1306,7 +1281,7 @@ const PreInscripcion = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Apellido*</Typography>
+                <Typography variant="subtitle1">Apellido <span style={{ color: "red" }}> *</span></Typography>
                 <TextField
                   fullWidth
                   name="apellido"
@@ -1323,7 +1298,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl error={fieldErrors.genero}>
-                  <Typography variant="subtitle1">Género*</Typography>
+                  <Typography variant="subtitle1">Género <span style={{ color: "red" }}> *</span></Typography>
                   <RadioGroup
                     row
                     name="genero"
@@ -1358,7 +1333,10 @@ const PreInscripcion = () => {
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Fecha de Nacimiento*
+                      Fecha de Nacimiento <span style={{ color: "red" }}> *</span>
+                    </Typography>
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      Haz clic en el año del calendario para mostrar todos los años.
                     </Typography>
                     <TextField
                       fullWidth
@@ -1373,6 +1351,9 @@ const PreInscripcion = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">Edad</Typography>
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      Se calcula automáticamente al ingresar la fecha de nacimiento.
+                    </Typography>
                     <TextField
                       fullWidth
                       name="edad"
@@ -1410,7 +1391,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Etnia*
+                  Etnia
                 </Typography>
                 <FormControl fullWidth>
                   <Select
@@ -1436,7 +1417,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl fullWidth error={fieldErrors.idnivelacademicos}>
-                  <Typography variant="subtitle1">Nivel Educativo*</Typography>
+                  <Typography variant="subtitle1">Nivel Educativo <span style={{ color: "red" }}> *</span></Typography>
                   <Select
                     fullWidth
                     name="idnivelacademicos"
@@ -1447,7 +1428,7 @@ const PreInscripcion = () => {
                     }}
                   >
                     <MenuItem value="3">Media</MenuItem>
-                    <MenuItem value="4">Superior</MenuItem>
+                    <MenuItem value="9">Superior</MenuItem>
                   </Select>
                   {fieldErrors.idnivelacademicos && (
                     <FormHelperText>Este campo es obligatorio</FormHelperText>
@@ -1455,7 +1436,7 @@ const PreInscripcion = () => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Grado Académico</Typography>
+                <Typography variant="subtitle1">Grado Académico <span style={{ color: "red" }}> *</span></Typography>
                 <FormControl
                   fullWidth
                   disabled={camposBloqueados.idgradoacademicos}
@@ -1483,7 +1464,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Cargo que Desempeña*
+                  Cargo que Desempeña<span style={{ color: "red" }}> *</span>
                 </Typography>
                 <FormControl fullWidth error={fieldErrors.idfuncion}>
                   <Select
@@ -1542,7 +1523,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Departamento de Residencia*
+                  Departamento de Residencia <span style={{ color: "red" }}> *</span>
                 </Typography>
                 <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                   <Select
@@ -1573,7 +1554,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <Typography variant="subtitle1">
-                  Municipio de Residencia*
+                  Municipio de Residencia <span style={{ color: "red" }}> *</span>
                 </Typography>
                 <FormControl
                   disabled={camposBloqueados.municipioresidencia}
@@ -1668,15 +1649,15 @@ const PreInscripcion = () => {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography
-                    variant="subtitle1"
-                    sx={{ color: color.primary.azul, textAlign: "center", mt: 3 }}
+                    variant="h4"
+                    sx={{ color: color.primary.azul, textAlign: "center", fontWeight: "bold" }}
                   >
                     Datos del Centro Educativo Que Representa
                   </Typography>
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Departamento del Centro Educativo*
+                    Departamento del Centro Educativo <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.iddepartamento}>
                     <Select
@@ -1705,7 +1686,7 @@ const PreInscripcion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Municipio del Centro Educativo*
+                    Municipio del Centro Educativo <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.idmunicipio}>
                     <Select
@@ -1760,7 +1741,7 @@ const PreInscripcion = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
-                  <Typography variant="subtitle1">Centro Educativo*</Typography>
+                  <Typography variant="subtitle1">Centro Educativo <span style={{ color: "red" }}> *</span></Typography>
                   <FormControl fullWidth disabled={camposBloqueados.nombreced}>
                     <Autocomplete
                       freeSolo
@@ -1817,7 +1798,7 @@ const PreInscripcion = () => {
                 <Grid size={{ xs: 12, md: 12 }}>
                   <FormControl fullWidth>
                     <Typography variant="subtitle1">
-                      Tipo de Administración*
+                      Tipo de Administración <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <RadioGroup
                       row
@@ -1852,7 +1833,7 @@ const PreInscripcion = () => {
                 <Grid size={{ xs: 12, md: 12 }}>
                   <FormControl fullWidth error={fieldErrors.tipocentro}>
                     <Typography variant="subtitle1">
-                      Tipo de Centro Educativo*
+                      Tipo de Centro Educativo <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <Select
                       fullWidth
@@ -1878,7 +1859,7 @@ const PreInscripcion = () => {
                 <Grid size={{ xs: 12, md: 12 }}>
                   <FormControl fullWidth error={fieldErrors.jornada}>
                     <Typography variant="subtitle1">
-                      Jornada que Atiende*
+                      Jornada que Atiende <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <Select
                       fullWidth
@@ -1903,7 +1884,7 @@ const PreInscripcion = () => {
                 <Grid size={{ xs: 12, md: 12 }}>
                   <FormControl fullWidth error={fieldErrors.modalidad}>
                     <Typography variant="subtitle1">
-                      Modalidad que Atiende*
+                      Modalidad que Atiende <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <Select
                       fullWidth
@@ -1926,7 +1907,7 @@ const PreInscripcion = () => {
 
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Zona Centro Educativo*
+                    Zona Centro Educativo <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.zona}>
                     <Select
@@ -1946,7 +1927,7 @@ const PreInscripcion = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
-                  <Typography variant="subtitle1">Nivel Educativo*</Typography>
+                  <Typography variant="subtitle1">Nivel Educativo <span style={{ color: "red" }}> *</span></Typography>
                   <FormControl disabled={camposBloqueados.idnivelatiende} fullWidth>
                     <Select
                       name="idnivelatiende"
@@ -1973,7 +1954,7 @@ const PreInscripcion = () => {
                 {formData.idnivelatiende === 2 && (
                   <Grid size={{ xs: 12, md: 12 }}>
 
-                    <Typography variant="subtitle1">Ciclo Académico*</Typography>
+                    <Typography variant="subtitle1">Ciclo Académico <span style={{ color: "red" }}> *</span></Typography>
                     <FormControl disabled={camposBloqueados.idcicloatiende} fullWidth>
                       <Select
                         name="idcicloatiende"
@@ -2002,7 +1983,7 @@ const PreInscripcion = () => {
 
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Cargo que Desempeña en el Centro Educativo*
+                    Cargo que Desempeña en el Centro Educativo <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.cargo}>
                     <Select
