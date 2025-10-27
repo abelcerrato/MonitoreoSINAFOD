@@ -161,7 +161,7 @@ export const resetContraseñaUserC = async (req, res) => {
     const { usuario } = req.params;
 
     const users = await getUsuarioIdM(usuario);
-    const identidad = users.identidad;
+    const identidad = users[0].identidad;
     console.log("Identidad del usuario:", identidad);
 
     const usuarioActualizado = await resetContraseñaM(identidad, usuario);
@@ -175,6 +175,7 @@ export const resetContraseñaUserC = async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
 
 export const verificarToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
