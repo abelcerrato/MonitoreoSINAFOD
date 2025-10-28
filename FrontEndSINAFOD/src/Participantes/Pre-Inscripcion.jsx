@@ -952,6 +952,7 @@ const PreInscripcion = () => {
           "tipoadministracion",
           "jornada",
           "cargo",
+          "idnivelatiende",
         ]
         : [] // Si no, solo lo personal
       ),
@@ -964,6 +965,14 @@ const PreInscripcion = () => {
         errors[field] = true;
       }
     });
+    
+    if (
+      formData.tienecentro &&
+      formData.idnivelatiende === 2 &&
+      !formData.idcicloatiende
+    ) {
+      errors.idcicloatiende = "Este campo es obligatorio";
+    }
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -1298,7 +1307,7 @@ const PreInscripcion = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
                 <FormControl error={fieldErrors.genero}>
-                  <Typography variant="subtitle1">Género <span style={{ color: "red" }}> *</span></Typography>
+                  <Typography variant="subtitle1" error={fieldErrors.genero}>Género <span style={{ color: "red" }}> *</span></Typography>
                   <RadioGroup
                     row
                     name="genero"
@@ -1327,6 +1336,9 @@ const PreInscripcion = () => {
                       disabled={camposBloqueados.genero}
                     />
                   </RadioGroup>
+                  {fieldErrors.genero && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
@@ -1347,6 +1359,10 @@ const PreInscripcion = () => {
                       InputProps={{
                         readOnly: camposBloqueados.fechanacimiento,
                       }}
+                      error={fieldErrors.fechanacimiento}
+                      helperText={
+                        fieldErrors.fechanacimiento ? "Este campo es obligatorio" : ""
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -1375,6 +1391,10 @@ const PreInscripcion = () => {
                   InputProps={{
                     readOnly: camposBloqueados.correo,
                   }}
+                  error={fieldErrors.correo}
+                  helperText={
+                    fieldErrors.correo ? "Este campo es obligatorio" : ""
+                  }
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
@@ -1776,14 +1796,21 @@ const PreInscripcion = () => {
                           </div>
                         </li>
                       )}
-                      renderInput={(params) => <TextField {...params} label="" />}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={fieldErrors.nombreced}
+                          helperText={fieldErrors.nombreced ? "Este campo es obligatorio" : ""}
+                        />
+                      )}
                     />
                   </FormControl>
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Código SACE del Centro Educativo
+                    Código SACE del Centro Educativo  <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <TextField
                     fullWidth
@@ -1796,7 +1823,7 @@ const PreInscripcion = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
-                  <FormControl fullWidth>
+                    <FormControl fullWidth error={fieldErrors.tipoadministracion}>
                     <Typography variant="subtitle1">
                       Tipo de Administración <span style={{ color: "red" }}> *</span>
                     </Typography>
@@ -1928,7 +1955,7 @@ const PreInscripcion = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">Nivel Educativo <span style={{ color: "red" }}> *</span></Typography>
-                  <FormControl disabled={camposBloqueados.idnivelatiende} fullWidth>
+                  <FormControl disabled={camposBloqueados.idnivelatiende} fullWidth error={fieldErrors.idnivelatiende}>
                     <Select
                       name="idnivelatiende"
                       value={formData.idnivelatiende || ""}
@@ -1948,6 +1975,9 @@ const PreInscripcion = () => {
                         <MenuItem disabled>Seleccione nivel educativo</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.idnivelatiende && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
 

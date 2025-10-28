@@ -684,6 +684,7 @@ const FormularioExterno = () => {
           "tipoadministracion",
           "jornada",
           "cargo",
+          "idnivelatiende",
         ]
         : [])
     ];
@@ -696,6 +697,14 @@ const FormularioExterno = () => {
         errors[field] = "Este campo es obligatorio";
       }
     });
+    
+    if (
+      formData.tienecentro &&
+      formData.idnivelatiende === 2 &&
+      !formData.idcicloatiende
+    ) {
+      errors.idcicloatiende = "Este campo es obligatorio";
+    }
 
     //  Edad mínima 18
     if (formData.edad && parseInt(formData.edad, 10) < 18) {
@@ -935,7 +944,7 @@ const FormularioExterno = () => {
                   revisar sus respuestas antes de enviarlas.
                   <Typography
                     variant="subtitle1"
-                    sx={{ color: color.primary.rojo, mb:5 }}
+                    sx={{ color: color.primary.rojo, mb: 5 }}
                   >
                     Los campos marcados con (*) son obligatorios y los que no tienen la marca porfavor dejarlos en blanco.
                   </Typography>
@@ -1050,6 +1059,9 @@ const FormularioExterno = () => {
                       disabled={camposBloqueados.genero}
                     />
                   </RadioGroup>
+                  {fieldErrors.genero && (
+                    <FormHelperText>Este campo es obligatorio</FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
@@ -1058,9 +1070,9 @@ const FormularioExterno = () => {
                     <Typography variant="subtitle1">
                       Fecha de Nacimiento  <span style={{ color: "red" }}> *</span>
                     </Typography>
-                      <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                         Haz clic en el año del calendario para mostrar todos los años.
-                      </Typography>
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      Haz clic en el año del calendario para mostrar todos los años.
+                    </Typography>
                     <TextField
                       fullWidth
                       name="fechanacimiento"
@@ -1070,14 +1082,18 @@ const FormularioExterno = () => {
                       InputProps={{
                         readOnly: camposBloqueados.fechanacimiento,
                       }}
+                      error={fieldErrors.fechanacimiento}
+                      helperText={
+                        fieldErrors.fechanacimiento ? "Este campo es obligatorio" : ""
+                      }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">Edad</Typography>
 
-                      <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
                       Se calcula automáticamente al ingresar la fecha de nacimiento.
-                      </Typography>
+                    </Typography>
                     <TextField
                       fullWidth
                       name="edad"
@@ -1388,8 +1404,8 @@ const FormularioExterno = () => {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography
-                      variant="h4"
-                      sx={{ color: color.primary.azul, textAlign: "center", fontWeight: "bold" }}
+                    variant="h4"
+                    sx={{ color: color.primary.azul, textAlign: "center", fontWeight: "bold" }}
                   >
                     Datos del Centro Educativo Que Representa
                   </Typography>
@@ -1517,14 +1533,21 @@ const FormularioExterno = () => {
                           </div>
                         </li>
                       )}
-                      renderInput={(params) => <TextField {...params} label="" />}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={fieldErrors.nombreced}
+                          helperText={fieldErrors.nombreced ? "Este campo es obligatorio" : ""}
+                        />
+                      )}
                     />
                   </FormControl>
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">
-                    Código SACE del Centro Educativo
+                    Código SACE del Centro Educativo  <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <TextField
                     fullWidth
@@ -1541,9 +1564,9 @@ const FormularioExterno = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
-                  <FormControl fullWidth>
+                    <FormControl fullWidth error={fieldErrors.tipoadministracion}>
                     <Typography variant="subtitle1">
-                        Tipo de Administración  <span style={{ color: "red" }}> *</span>
+                      Tipo de Administración  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <RadioGroup
                       row
@@ -1673,7 +1696,7 @@ const FormularioExterno = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="subtitle1">Nivel Educativo  <span style={{ color: "red" }}> *</span></Typography>
-                  <FormControl disabled={camposBloqueados.idnivelatiende} fullWidth>
+                    <FormControl disabled={camposBloqueados.idnivelatiende} fullWidth error={fieldErrors.idnivelatiende}>
                     <Select
                       name="idnivelatiende"
                       value={formData.idnivelatiende || ""}
@@ -1693,6 +1716,9 @@ const FormularioExterno = () => {
                         <MenuItem disabled>Seleccione nivel educativo</MenuItem>
                       )}
                     </Select>
+                    {fieldErrors.idnivelatiende && (
+                      <FormHelperText>Este campo es obligatorio</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
 

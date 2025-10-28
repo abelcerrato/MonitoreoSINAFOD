@@ -166,12 +166,16 @@ const FormularParticipantes = () => {
 
     // Campos condicionales (no obligatorios para investigación)
     const conditionalRequiredFields = [
+      "tipocentro",
       "nombreced",
-      "codigosaceced",
+      "modalidad",
       "zona",
       "idmunicipio",
       "iddepartamento",
       "tipoadministracion",
+      "jornada",
+      "cargo",
+      "idnivelatiende",
     ];
 
     // Construir lista de campos requeridos según el tipo
@@ -190,6 +194,16 @@ const FormularParticipantes = () => {
       }
     });
 
+    // Validación especial para idcicloatiende
+    // Solo es obligatorio cuando idnivelatiende es igual a 2
+    if (
+      formacioninvest !== "investigacion" &&
+      formData.tienecentro &&
+      formData.idnivelatiende === 2 &&
+      !formData.idcicloatiende
+    ) {
+      errors.idcicloatiende = true;
+    }
     // Si hay campos vacíos, actualizar estado y mostrar alerta
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -258,7 +272,7 @@ const FormularParticipantes = () => {
           return prevData;
         }
       }
-      
+
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value
@@ -794,8 +808,8 @@ const FormularParticipantes = () => {
                   scrollButtons="auto"
                 >
                   <Tab label="Datos Generales del Participante" value="1" />
-                  {formData.tienecentro && (           
-                    <Tab label="Datos del Centro Educativo" value="2" />      
+                  {formData.tienecentro && (
+                    <Tab label="Datos del Centro Educativo" value="2" />
                   )}
                 </Tabs>
               </>
@@ -805,7 +819,7 @@ const FormularParticipantes = () => {
             <TabPanel value="1">
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Código SACE</Typography>
+                  <Typography variant="subtitle1">Código SACE / Identidad</Typography>
                   <Grid spacing={2} container>
                     <Grid size={{ xs: 12, md: 12 }}>
                       <TextField
@@ -813,12 +827,7 @@ const FormularParticipantes = () => {
                         name="codigosace"
                         value={formData.codigosace}
                         onChange={handleChange}
-                        error={fieldErrors.codigosace}
-                        helperText={
-                          fieldErrors.codigosace
-                            ? "Este campo es obligatorio"
-                            : ""
-                        }
+
                       />
                     </Grid>
                     {/* <Grid size={{ xs: 12, md: 3 }}>
@@ -958,6 +967,10 @@ const FormularParticipantes = () => {
                     name="correo"
                     value={formData.correo}
                     onChange={handleChange}
+                    error={fieldErrors.correo}
+                    helperText={
+                      fieldErrors.correo ? "Este campo es obligatorio" : ""
+                    }
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -1175,34 +1188,35 @@ const FormularParticipantes = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-            
-              <Grid size={{ xs: 12, md: 12 }}>
-                <Typography variant="subtitle1">Lugar de Trabajo</Typography>
-                <TextField
-                  fullWidth
-                  name="lugardetrabajo"
-                  value={formData.lugardetrabajo}
-                  onChange={handleChange}
 
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formData.tienecentro}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          tienecentro: e.target.checked,
-                        })
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                  <TextField
+                    fullWidth
+                    name="lugardetrabajo"
+                    value={formData.lugardetrabajo}
+                    onChange={handleChange}
+
+                  />
+                </Grid>
+                {formacioninvest !== "investigacion" && (
+                  <Grid size={{ xs: 12, md: 12 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formData.tienecentro}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              tienecentro: e.target.checked,
+                            })
+                          }
+                        />
                       }
+                      label="¿Representa a un Centro Educativo?"
                     />
-                  }
-                  label="¿Representa a un Centro Educativo?"
-                />
+                  </Grid>)}
               </Grid>
-  </Grid>
               {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
                   sx={{
@@ -1354,14 +1368,19 @@ const FormularParticipantes = () => {
                           </li>
                         )}
                         renderInput={(params) => (
-                          <TextField {...params} label="" />
+                          <TextField
+                            {...params}
+                            label=""
+                            error={fieldErrors.nombreced}
+                            helperText={fieldErrors.nombreced ? "Este campo es obligatorio" : ""}
+                          />
                         )}
                       />
                     </FormControl>
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Código SACE del Centro Educativo
+                      Código SACE del Centro Educativo  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <TextField
                       fullWidth
@@ -1377,7 +1396,7 @@ const FormularParticipantes = () => {
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth error={fieldErrors.tipoadministracion}>
                       <Typography variant="subtitle1">
                         Tipo de Administración  <span style={{ color: "red" }}> *</span>
                       </Typography>
@@ -1413,7 +1432,7 @@ const FormularParticipantes = () => {
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.tipocentro}>
-                      <Typography variant="subtitle1">
+                      <Typography variant="subtitle1" error={fieldErrors.tipocentro}>
                         Tipo de Centro Educativo  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <Select
@@ -1504,7 +1523,7 @@ const FormularParticipantes = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">Nivel Educativo  <span style={{ color: "red" }}> *</span></Typography>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth error={fieldErrors.idnivelatiende}>
                       <Select
                         name="idnivelatiende"
                         value={formData.idnivelatiende || ""}
@@ -1522,13 +1541,18 @@ const FormularParticipantes = () => {
                           <MenuItem disabled>Seleccione nivel educativo</MenuItem>
                         )}
                       </Select>
+                      {fieldErrors.idnivelatiende && (
+                        <FormHelperText>
+                          Este campo es obligatorio
+                        </FormHelperText>
+                      )}
                     </FormControl>
                   </Grid>
 
                   {formData.idnivelatiende === 2 && (
                     <Grid size={{ xs: 12, md: 6 }}>
 
-                      <Typography variant="subtitle1">Ciclo Académico  <span style={{ color: "red" }}> *</span></Typography>
+                      <Typography variant="subtitle1">Ciclo Académico <span style={{ color: "red" }}> *</span> </Typography>
                       <FormControl fullWidth>
                         <Select
                           name="idcicloatiende"
