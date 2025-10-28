@@ -833,7 +833,7 @@ const FormularParticipantes = () => {
                   </Grid>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Identidad</Typography>
+                  <Typography variant="subtitle1">Identidad  <span style={{ color: "red" }}> *</span></Typography>
                   <Grid spacing={2} container>
                     <Grid size={{ xs: 12, md: 9 }}>
                       <TextField
@@ -861,7 +861,7 @@ const FormularParticipantes = () => {
                   </Grid>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Nombre</Typography>
+                  <Typography variant="subtitle1">Nombre  <span style={{ color: "red" }}> *</span></Typography>
                   <TextField
                     fullWidth
                     name="nombre"
@@ -874,7 +874,7 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Apellido</Typography>
+                  <Typography variant="subtitle1">Apellido  <span style={{ color: "red" }}> *</span></Typography>
                   <TextField
                     fullWidth
                     name="apellido"
@@ -888,7 +888,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl error={fieldErrors.genero}>
-                    <Typography variant="subtitle1">Género</Typography>
+                    <Typography variant="subtitle1">Género  <span style={{ color: "red" }}> *</span></Typography>
                     <RadioGroup
                       row
                       name="genero"
@@ -922,7 +922,7 @@ const FormularParticipantes = () => {
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Typography variant="subtitle1">
-                        Fecha de Nacimiento
+                        Fecha de Nacimiento  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <TextField
                         fullWidth
@@ -961,7 +961,7 @@ const FormularParticipantes = () => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Teléfono</Typography>
+                  <Typography variant="subtitle1">Teléfono  <span style={{ color: "red" }}> *</span></Typography>
                   <TextField
                     fullWidth
                     name="telefono"
@@ -1001,7 +1001,7 @@ const FormularParticipantes = () => {
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Nivel Educativo</Typography>
+                  <Typography variant="subtitle1">Nivel Educativo  <span style={{ color: "red" }}> *</span></Typography>
 
                   <FormControl fullWidth error={fieldErrors.idnivelacademicos}>
                     <Select
@@ -1057,7 +1057,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Cargo que Desempeña
+                    Cargo que Desempeña  <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.idfuncion}>
                     <Select
@@ -1085,7 +1085,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Departamento de Residencia
+                    Departamento de Residencia  <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl fullWidth error={fieldErrors.deptoresidencia}>
                     <Select
@@ -1113,7 +1113,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Municipio de Residencia
+                    Municipio de Residencia  <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <FormControl
                     fullWidth
@@ -1229,7 +1229,7 @@ const FormularParticipantes = () => {
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Departamento del Centro Educativo
+                      Departamento del Centro Educativo  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.iddepartamento}>
                       <Select
@@ -1260,7 +1260,7 @@ const FormularParticipantes = () => {
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Municipio del Centro Educativo
+                      Municipio del Centro Educativo  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.idmunicipio}>
                       <Select
@@ -1314,7 +1314,7 @@ const FormularParticipantes = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Centro Educativo
+                      Centro Educativo  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <FormControl fullWidth>
                       <Autocomplete
@@ -1379,7 +1379,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth>
                       <Typography variant="subtitle1">
-                        Tipo de Administración
+                        Tipo de Administración  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <RadioGroup
                         row
@@ -1414,7 +1414,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.tipocentro}>
                       <Typography variant="subtitle1">
-                        Tipo de Centro Educativo
+                        Tipo de Centro Educativo  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <Select
                         fullWidth
@@ -1439,7 +1439,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.jornada}>
                       <Typography variant="subtitle1">
-                        Jornada que Atiende
+                        Jornada que Atiende  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <Select
                         fullWidth
@@ -1463,7 +1463,7 @@ const FormularParticipantes = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <FormControl fullWidth error={fieldErrors.modalidad}>
                       <Typography variant="subtitle1">
-                        Modalidad que Atiende
+                        Modalidad que Atiende  <span style={{ color: "red" }}> *</span>
                       </Typography>
                       <Select
                         fullWidth
@@ -1484,7 +1484,7 @@ const FormularParticipantes = () => {
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Zona Centro Educativo
+                      Zona Centro Educativo  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.zona}>
                       <Select
@@ -1503,7 +1503,7 @@ const FormularParticipantes = () => {
                     </FormControl>
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
-                    <Typography variant="subtitle1">Nivel Educativo*</Typography>
+                    <Typography variant="subtitle1">Nivel Educativo  <span style={{ color: "red" }}> *</span></Typography>
                     <FormControl fullWidth>
                       <Select
                         name="idnivelatiende"
@@ -1528,7 +1528,7 @@ const FormularParticipantes = () => {
                   {formData.idnivelatiende === 2 && (
                     <Grid size={{ xs: 12, md: 6 }}>
 
-                      <Typography variant="subtitle1">Ciclo Académico*</Typography>
+                      <Typography variant="subtitle1">Ciclo Académico  <span style={{ color: "red" }}> *</span></Typography>
                       <FormControl fullWidth>
                         <Select
                           name="idcicloatiende"
@@ -1555,7 +1555,7 @@ const FormularParticipantes = () => {
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="subtitle1">
-                      Cargo que Desempeña en el Centro Educativo
+                      Cargo que Desempeña en el Centro Educativo <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <FormControl fullWidth error={fieldErrors.cargo}>
                       <Select
