@@ -951,7 +951,7 @@ const FormularParticipantes = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle1">
-                    Correo Electrónico
+                    Correo Electrónico <span style={{ color: "red" }}> *</span>
                   </Typography>
                   <TextField
                     fullWidth
