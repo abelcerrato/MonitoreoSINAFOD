@@ -1543,7 +1543,7 @@ const FormularioExterno = () => {
                 <Grid size={{ xs: 12, md: 12 }}>
                   <FormControl fullWidth>
                     <Typography variant="subtitle1">
-                      Tipo de Administración*
+                        Tipo de Administración  <span style={{ color: "red" }}> *</span>
                     </Typography>
                     <RadioGroup
                       row
