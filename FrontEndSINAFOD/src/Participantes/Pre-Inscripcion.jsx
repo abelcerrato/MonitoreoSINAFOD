@@ -183,9 +183,6 @@ const PreInscripcion = () => {
         });
       }
 
-
-
-
       // Capitalizar nombre y apellido
       if (name === "nombre" || name === "apellido") {
         newData[name] = value

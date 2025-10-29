@@ -1551,7 +1551,6 @@ const FormularParticipantes = () => {
 
                   {formData.idnivelatiende === 2 && (
                     <Grid size={{ xs: 12, md: 6 }}>
-
                       <Typography variant="subtitle1">Ciclo Académico <span style={{ color: "red" }}> *</span> </Typography>
                       <FormControl fullWidth>
                         <Select
