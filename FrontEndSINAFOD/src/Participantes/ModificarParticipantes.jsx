@@ -321,6 +321,27 @@ const ModificarParticipante = () => {
       }
 
 
+      //  Validar y formatear teléfono (formato 0000-0000)
+      if (name === "telefono") {
+        // eliminar todo lo que no sea número
+        let soloNumeros = value.replace(/\D/g, "");
+
+        // limitar a máximo 8 números
+        if (soloNumeros.length > 8) {
+          soloNumeros = soloNumeros.slice(0, 8);
+        }
+
+        // aplicar formato 0000-0000 si hay más de 4 dígitos
+        let telefonoFormateado = soloNumeros;
+        if (soloNumeros.length > 4) {
+          telefonoFormateado = `${soloNumeros.slice(0, 4)}-${soloNumeros.slice(4)}`;
+        }
+
+        updatedData.telefono = telefonoFormateado;
+        return updatedData;
+      }
+
+
       // Si es el campo de fecha, validamos el formato
       if (name === "fechanacimiento") {
         // Si el usuario borra el campo, lo limpiamos
