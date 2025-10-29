@@ -54,7 +54,6 @@ import logoSE from "../../Components/img/LogoEducacion.png";
 import marcaH from "../../Components/img/5 estrellas y H.png";
 
 // Estilos para el PDF
-
 const styles = StyleSheet.create({
   page: {
     position: "relative",
@@ -159,7 +158,7 @@ const FormationPDF = ({
           <Text style={styles.label}>Fecha de Inicio:</Text>
           <Text style={styles.value}>
             {fechainicio
-              ? new Date(fechainicio).toLocaleDateString("es-ES")
+              ? new Date(fechainicio).toLocaleDateString("es-ES", { timeZone: "UTC" })
               : "No especificada"}
           </Text>
         </View>
@@ -168,7 +167,7 @@ const FormationPDF = ({
           <Text style={styles.label}>Fecha de Finalización:</Text>
           <Text style={styles.value}>
             {fechafinal
-              ? new Date(fechafinal).toLocaleDateString("es-ES")
+              ? new Date(fechafinal).toLocaleDateString("es-ES", { timeZone: "UTC" })
               : "No especificada"}
           </Text>
         </View>
