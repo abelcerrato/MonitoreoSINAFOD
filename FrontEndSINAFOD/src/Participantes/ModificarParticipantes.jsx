@@ -278,7 +278,7 @@ const ModificarParticipante = () => {
           .replace(/\b\w/g, (c) => c.toUpperCase());
         return updatedData;
       }
-      
+
       //  Validar y formatear teléfono (formato 0000-0000)
       if (name === "telefono") {
         // eliminar todo lo que no sea número
@@ -979,34 +979,37 @@ const ModificarParticipante = () => {
                     onChange={handleChange}
                   />
                 </Grid>
+                {formacioninvest !== "investigacion" && (
+                  <>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                      <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                      <TextField
+                        fullWidth
+                        name="lugardetrabajo"
+                        value={formData.lugardetrabajo}
+                        onChange={handleChange}
 
-                <Grid size={{ xs: 12, md: 12 }}>
-                  <Typography variant="subtitle1">Lugar de Trabajo</Typography>
-                  <TextField
-                    fullWidth
-                    name="lugardetrabajo"
-                    value={formData.lugardetrabajo}
-                    onChange={handleChange}
-
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 12 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={formData.tienecentro}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            tienecentro: e.target.checked,
-                          })
-                        }
                       />
-                    }
-                    label="¿Representa a un Centro Educativo?"
-                  />
-                </Grid>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.tienecentro}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                tienecentro: e.target.checked,
+                              })
+                            }
+                          />
+                        }
+                        label="¿Representa a un Centro Educativo?"
+                      />
+                    </Grid>
+                  </>)}
               </Grid>
+
               {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
                   sx={{
