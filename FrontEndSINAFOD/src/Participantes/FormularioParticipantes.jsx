@@ -1188,34 +1188,37 @@ const FormularParticipantes = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-
-                <Grid size={{ xs: 12, md: 12 }}>
-                  <Typography variant="subtitle1">Lugar de Trabajo</Typography>
-                  <TextField
-                    fullWidth
-                    name="lugardetrabajo"
-                    value={formData.lugardetrabajo}
-                    onChange={handleChange}
-
-                  />
-                </Grid>
                 {formacioninvest !== "investigacion" && (
-                  <Grid size={{ xs: 12, md: 12 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.tienecentro}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              tienecentro: e.target.checked,
-                            })
-                          }
-                        />
-                      }
-                      label="¿Representa a un Centro Educativo?"
-                    />
-                  </Grid>)}
+                  <>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                      <Typography variant="subtitle1">Lugar de Trabajo</Typography>
+                      <TextField
+                        fullWidth
+                        name="lugardetrabajo"
+                        value={formData.lugardetrabajo}
+                        onChange={handleChange}
+
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 12 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formData.tienecentro}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                tienecentro: e.target.checked,
+                              })
+                            }
+                          />
+                        }
+                        label="¿Representa a un Centro Educativo?"
+                      />
+                    </Grid>
+
+                  </>)}
               </Grid>
               {(formacioninvest === "investigacion" || !formData.tienecentro) && (
                 <Box
