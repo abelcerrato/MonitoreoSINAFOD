@@ -143,9 +143,12 @@ const Dashboard = ({ children }) => {
   const [showPreview, setShowPreview] = useState(false);
   const location = useLocation();
   const pathname = location.pathname;
+  const { permissions } = useUser();
 
-  const mostrarBotonQR =
-    pathname === "/Listado_De_Acciones_Formativas" || pathname === "/dashboard";
+  const mostrarBotonQR = pathname === "/Listado_De_Acciones_Formativas" || pathname === "/dashboard";
+
+  const mostrarTablero = pathname === "/dashboard";
+
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -155,14 +158,14 @@ const Dashboard = ({ children }) => {
 
   const { user, updateUser } = useUser();
 
- useEffect(() => {
+  useEffect(() => {
     // Verificar si necesita cambio de contraseña solo al cargar el dashboard
     if (user?.requiresPasswordChange) {
       setOpenChangePasswordModal(true);
     }
-  }, [user?.requiresPasswordChange]);  // Solo se ejecuta cuando cambia este valor
+  }, [user?.requiresPasswordChange]); // Solo se ejecuta cuando cambia este valor
 
- const handlePasswordChangeSuccess = () => {
+  const handlePasswordChangeSuccess = () => {
     // Actualizar el estado del usuario para eliminar el requerimiento
     updateUser({ ...user, requiresPasswordChange: false });
     setOpenChangePasswordModal(false);
@@ -182,6 +185,11 @@ const Dashboard = ({ children }) => {
       console.error("Error generando QR:", error);
     }
   };
+
+  const tienePermisosModulo = (idModulo) => {
+    return permissions?.some((p) => p.idmodulo === idModulo && p.consultar);
+  };
+
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -220,8 +228,22 @@ const Dashboard = ({ children }) => {
             </IconButton>
           </Tooltip>
         )}
-        {children}
 
+        {children}
+        {mostrarTablero && (
+          <>
+            {tienePermisosModulo(2) && (
+              <iframe
+                title="SINAFOD"
+                width="100%"
+                height="100%"
+                src="https://app.powerbi.com/view?r=eyJrIjoiOWZjOGM1NDctZTA5Yy00NjM1LThmNDAtNjlmZDJlZTYzNThlIiwidCI6IjI5MjY3MDJhLWZhZTctNDY5Yi04OWVmLTQwOGY2ZTJkMzliNiJ9"
+                frameborder="0"
+                allowFullScreen="true"
+              ></iframe>
+            )}
+          </>
+        )}
         <Typography
           variant="body2"
           color="text.secondary"
@@ -232,7 +254,7 @@ const Dashboard = ({ children }) => {
           Propiedad Intelectual del Estado de Honduras
         </Typography>
 
-     <CambiarContraModal
+        <CambiarContraModal
           open={openChangePasswordModal}
           onClose={() =>
             !user?.requiresPasswordChange && setOpenChangePasswordModal(false)
