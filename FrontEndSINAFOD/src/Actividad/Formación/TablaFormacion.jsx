@@ -105,6 +105,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
+  labelMensaje: {
+    fontSize: 10,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
+    color: "red",
+  },
   value: {
     fontSize: 12,
     marginBottom: 15,
@@ -171,7 +178,9 @@ const FormationPDF = ({
               : "No especificada"}
           </Text>
         </View>
-
+        <View style={styles.section}>
+          <Text style={styles.labelMensaje}>Este código QR tiene una vigencia de 24 horas a partir del momento en que fue generado.</Text>
+        </View> 
         <View style={styles.qrContainer}>
           <Text style={styles.label}>Código QR para participantes:</Text>
           <Image
@@ -268,7 +277,11 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
 
   const handleOpenQrModal = (id) => {
     const selectedRow = rows.find((row) => row.id === id);
-    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}`;
+
+    // Agregar timestamp de expiración (ej: 24 horas)
+    const expirationTime = Date.now() + (15 * 60 * 1000); // 24 horas en milisegundos
+    const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}?expires=${expirationTime}`;
+
     setQrUrl(qrLink);
     setCurrentRow(selectedRow);
     setOpenModal(true);

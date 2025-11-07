@@ -14,7 +14,7 @@ import {
 } from "../controllers/Participante.controller.js";
 import { getFiltroDocentesC } from "../controllers/docentesDGDP.controller.js";
 
-import { cargaMasivaFormacion } from "../controllers/cargamasiva.js";
+import { cargaMasivaFormacion, cargaMasivaFormacionParticipantes } from "../controllers/cargamasiva.js";
 import multer from 'multer';
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -38,6 +38,8 @@ router.post("/participanteInvFormCed", postParticipantesIFCedC); //ruta que refg
 
 // Nueva ruta para carga masiva
 //router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacion); // no está en uso
+router.post('/carga-masiva-formacion', upload.single('archivo'), cargaMasivaFormacionParticipantes); 
+
 
 //ruta para traer las etnias
 router.get("/etnias", getEtniasC);

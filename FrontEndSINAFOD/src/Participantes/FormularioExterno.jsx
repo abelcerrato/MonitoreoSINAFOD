@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 
 import axios from "axios";
 import {
@@ -28,6 +28,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import Swal from "sweetalert2";
 
 const FormularioExterno = () => {
+  const [searchParams] = useSearchParams();
+  const expires = searchParams.get('expires');
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [docentesEncontrados, setDocentesEncontrados] = useState([]);
@@ -658,6 +660,16 @@ const FormularioExterno = () => {
     }
   }, [formSubmitted, investCap]);
  */
+
+
+  if (!expires || Date.now() > parseInt(expires)) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>QR Expirado</h2>
+        <p>Este código QR ha caducado. Por favor, solicita uno nuevo.</p>
+      </div>
+    );
+  }
 
   const handleSave = async () => {
     const requiredFields = [
