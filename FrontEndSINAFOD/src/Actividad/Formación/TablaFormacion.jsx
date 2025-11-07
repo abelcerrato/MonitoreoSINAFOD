@@ -180,7 +180,7 @@ const FormationPDF = ({
         </View>
         <View style={styles.section}>
           <Text style={styles.labelMensaje}>Este código QR tiene una vigencia de 24 horas a partir del momento en que fue generado.</Text>
-        </View> 
+        </View>
         <View style={styles.qrContainer}>
           <Text style={styles.label}>Código QR para participantes:</Text>
           <Image
@@ -279,7 +279,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     const selectedRow = rows.find((row) => row.id === id);
 
     // Agregar timestamp de expiración (ej: 24 horas)
-    const expirationTime = Date.now() + (15 * 60 * 1000); // 24 horas en milisegundos
+    const expirationTime = Date.now() + (24 * 60 * 60 * 1000); // 24 horas en milisegundos
     const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}?expires=${expirationTime}`;
 
     setQrUrl(qrLink);
