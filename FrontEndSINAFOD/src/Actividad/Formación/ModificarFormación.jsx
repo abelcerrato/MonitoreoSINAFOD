@@ -89,16 +89,13 @@ const ModificarFormacion = () => {
 
         setFormData({
           ...data,
-          horas: data.duracion?.hours || 0,
-          minutos: data.duracion?.minutes || 0,
-          duracion: `${String(horas).padStart(2, "0")}:${String(
-            minutos
-          ).padStart(2, "0")}`,
+          horas: horas,
+          minutos: minutos,
+          duracion: `${horas}:${minutos.toString().padStart(2, "0")}`, // "90:00"
           fechainicio: data.fechainicio ? data.fechainicio.split("T")[0] : "",
           fechafinal: data.fechafinal ? data.fechafinal.split("T")[0] : "",
         });
 
-        //console.log(response.data);
       } catch (error) {
         console.error("Error al obtener los datos", error);
       }
@@ -260,7 +257,6 @@ const ModificarFormacion = () => {
       "tipoactividad",
       "fechainicio",
       "fechafinal",
-      "socializaron",
     ];
     // Detectar campos vacíos
     let errors = {};
@@ -385,6 +381,16 @@ const ModificarFormacion = () => {
   function formatDuracionForDisplay(duracion) {
     if (!duracion) return "00 horas 00 minutos";
 
+    // Si ya viene en formato "HH:MM" (como "90:00")
+    if (duracion.includes(":")) {
+      const partes = duracion.split(":");
+      const horas = partes[0] || "0";
+      const minutos = partes[1] || "0";
+
+      return `${horas.padStart(2, "0")} horas ${minutos.padStart(2, "0")} minutos`;
+    }
+
+    // Si viene en formato antiguo "X horas Y minutos" (por si acaso)
     const partes = duracion.split(" ");
     const horas = partes[0] || "0";
     const minutos = partes[2] || "0";
@@ -393,6 +399,7 @@ const ModificarFormacion = () => {
       .toString()
       .padStart(2, "0")} minutos`;
   }
+
 
   return (
     <>
@@ -633,22 +640,22 @@ const ModificarFormacion = () => {
             </Grid>
             {(formData.modalidad === "Virtual" ||
               formData.modalidad === "Bimodal") && (
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">
-                  Plataforma en la que se Realizará la Actividad
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="plataforma"
-                  value={formData.plataforma}
-                  onChange={handleChange}
-                  error={fieldErrors.plataforma}
-                  helperText={
-                    fieldErrors.plataforma ? "Este campo es obligatorio" : ""
-                  }
-                />
-              </Grid>
-            )}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Plataforma en la que se Realizará la Actividad
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="plataforma"
+                    value={formData.plataforma}
+                    onChange={handleChange}
+                    error={fieldErrors.plataforma}
+                    helperText={
+                      fieldErrors.plataforma ? "Este campo es obligatorio" : ""
+                    }
+                  />
+                </Grid>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Duración</Typography>
               <Grid container spacing={2}>
@@ -868,37 +875,37 @@ const ModificarFormacion = () => {
             </Grid>
             {(formData.modalidad === "Presencial" ||
               formData.modalidad === "Bimodal") && (
-              <>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Espacio Físico</Typography>
-                  <TextField
-                    fullWidth
-                    name="espaciofisico"
-                    value={formData.espaciofisico}
-                    onChange={handleChange}
-                    error={fieldErrors.espaciofisico}
-                    helperText={
-                      fieldErrors.espaciofisico
-                        ? "Este campo es obligatorio"
-                        : ""
-                    }
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Dirección</Typography>
-                  <TextField
-                    fullWidth
-                    name="direccion"
-                    value={formData.direccion}
-                    onChange={handleChange}
-                    error={fieldErrors.direccion}
-                    helperText={
-                      fieldErrors.direccion ? "Este campo es obligatorio" : ""
-                    }
-                  />
-                </Grid>
-              </>
-            )}
+                <>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Espacio Físico</Typography>
+                    <TextField
+                      fullWidth
+                      name="espaciofisico"
+                      value={formData.espaciofisico}
+                      onChange={handleChange}
+                      error={fieldErrors.espaciofisico}
+                      helperText={
+                        fieldErrors.espaciofisico
+                          ? "Este campo es obligatorio"
+                          : ""
+                      }
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Dirección</Typography>
+                    <TextField
+                      fullWidth
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                      error={fieldErrors.direccion}
+                      helperText={
+                        fieldErrors.direccion ? "Este campo es obligatorio" : ""
+                      }
+                    />
+                  </Grid>
+                </>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth error={fieldErrors.zona}>
