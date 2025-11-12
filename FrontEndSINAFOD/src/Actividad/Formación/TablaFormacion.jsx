@@ -279,7 +279,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     const selectedRow = rows.find((row) => row.id === id);
 
     // Agregar timestamp de expiración (ej: 24 horas)
-    const expirationTime = Date.now() + (15 * 60 * 1000); // 24 horas en milisegundos
+    const expirationTime = Date.now() + (24 * 60 * 60 * 1000); // 24 horas en milisegundos
     const qrLink = `${process.env.REACT_APP_DOMINIO}/Formulario-De-Participante/${id}?expires=${expirationTime}`;
 
     setQrUrl(qrLink);
