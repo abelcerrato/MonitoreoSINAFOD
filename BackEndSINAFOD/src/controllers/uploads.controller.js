@@ -1,9 +1,9 @@
-import path from "path";
-import fs from "fs";
-import multer from "multer";
-import mime from 'mime-types';
-import admin from 'firebase-admin';
-import { bucket } from '../firebase.config.js';
+import path from "path"; // Importar el módulo path para manejar rutas de archivos
+import fs from "fs"; // Importar el módulo fs para manejar el sistema de archivos
+import multer from "multer"; // Importar multer para manejar la subida de archivos
+import mime from 'mime-types'; // Importar mime-types para manejar tipos MIME
+import admin from 'firebase-admin'; // Importar el SDK de Firebase Admin
+import { bucket } from '../firebase.config.js'; // Importar la configuración de Firebase
 
 
 //NO SE USA, YA QUE SON PARA CARGAR DOCUMENTOS DE FORMA LOCAL

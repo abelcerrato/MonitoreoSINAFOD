@@ -1,4 +1,4 @@
-import { pool } from '../db.js'
+import { pool } from '../db.js' // Importa la conexión a la base de datos
 
 // Obtener todos los objetos
 export const getObjetosM = async () => {

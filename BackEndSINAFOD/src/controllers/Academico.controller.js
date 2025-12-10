@@ -1,4 +1,4 @@
-import { getNivelesAcademicosM, getNivelAcademicoM, getCiclosAcademicosM, getCicloAcademicoM, getGradosAcademicosM, getGradoAcademicoM, getCicloAcademicoIdNivelM, getGradoAcademicoIdCicloM, getGradoAcademicoIdNivelM } from "../models/Academico.models.js";
+import { getNivelesAcademicosM, getNivelAcademicoM, getCiclosAcademicosM, getCicloAcademicoM, getGradosAcademicosM, getGradoAcademicoM, getCicloAcademicoIdNivelM, getGradoAcademicoIdCicloM, getGradoAcademicoIdNivelM } from "../models/Academico.models.js"; // Importar los modelos para los niveles, ciclos y grados academicos
 
 //Trae todos los niveles academicos
 export const getNivelesAcademicosC = async (req, res) => {

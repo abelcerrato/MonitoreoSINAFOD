@@ -1,12 +1,8 @@
-import { bucket } from "../firebase.config.js";
-import { getStorage } from "firebase-admin/storage";
-import { v4 as uuidv4 } from "uuid";
-import multer from "multer";
-import { pool } from "../db.js";
-import {
-  getCicloAcademicoM,
-  getNivelAcademicoM,
-} from "../models/Academico.models.js";
+import { bucket } from "../firebase.config.js"; // Importar la configuración de Firebase
+import { getStorage } from "firebase-admin/storage"; // Importar el módulo de almacenamiento de Firebase
+import { v4 as uuidv4 } from "uuid"; // Importar la librería para generar UUIDs
+import multer from "multer"; // Importar multer para manejar la subida de archivos
+import { pool } from "../db.js"; // Importar la conexión a la base de datos
 import {
   getIdInvestigacionM,
   getInvestigacionM,
@@ -14,7 +10,8 @@ import {
   postLineamientosInvesatigacionM,
   putInvestigacionM,
   putLineamientosInvesatigacionM,
-} from "../models/investigacion.models.js";
+} from "../models/investigacion.models.js"; // Importar los modelos para la investigación
+
 
 //-----------------------------------------------------------------------------------------------------------
 // Obtener investigacion o capacitacion

@@ -1,4 +1,4 @@
-import { getMunicipiosIdM, getMunicipiosM } from "../models/municipos.models.js";
+import { getMunicipiosIdM, getMunicipiosM } from "../models/municipos.models.js"; // Importar el modelo para los municipios
 
 // Trae todos los municipios mediante el ID del registro
 export const getMunicipiosIdC = async (req, res) => {

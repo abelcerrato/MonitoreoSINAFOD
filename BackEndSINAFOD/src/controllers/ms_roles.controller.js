@@ -1,4 +1,4 @@
-import { getRolesM, getRolIdM, postRolesM, putRolesM } from "../models/ms_roles.models.js";
+import { getRolesM, getRolIdM, postRolesM, putRolesM } from "../models/ms_roles.models.js"; // Importar el modelo para los roles
 
 //Trae todos los roles
 export const getRolesC = async (req, res) => {

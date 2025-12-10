@@ -1,4 +1,8 @@
-import { getAldeasIdM } from "../models/aldeas.models.js";
+import { getAldeasIdM } from "../models/aldeas.models.js"; // Importar el modelo para las aldeas
+
+//---------------------------------------------------------
+//                  ALDEAS
+//---------------------------------------------------------
 
 // Trae todas las aldeas mediante el ID del registro
 export const getAldeasIdC = async (req, res) => {

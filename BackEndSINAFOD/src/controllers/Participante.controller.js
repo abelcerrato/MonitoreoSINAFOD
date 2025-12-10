@@ -4,12 +4,12 @@ import {
   postCentroEducativoParticipanteM,
   putCentroEducativoM,
   putCentroEducativoParticipanteM,
-} from "../models/centroeducativo.models.js";
+} from "../models/centroeducativo.models.js"; // Importar los modelos para los centros educativos
 import {
   getDocenteCodSACEM,
   getDocenteIdentificacionM,
   postDocentesM,
-} from "../models/docentesDGDP.models.js";
+} from "../models/docentesDGDP.models.js"; // Importar los modelos para los docentes DGDP
 import {
   getParticipanteIdInvestM,
   getParticipanteIdM,
@@ -26,7 +26,7 @@ import {
   getParticipanteInvestigacionM,
   getEtniasM,
   getRelacionParticipanteFormacionM,
-} from "../models/Participante.models.js";
+} from "../models/Participante.models.js"; // Importar los modelos para los participantes
 
 
 //Trae todos los participantes

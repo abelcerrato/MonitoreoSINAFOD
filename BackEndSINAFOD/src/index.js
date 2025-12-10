@@ -1,5 +1,7 @@
-import express from "express";
-import {PORT} from './config.js'
+import express from "express"; // Importar express para crear el servidor
+import {PORT} from './config.js' // Importar el puerto desde la configuración
+
+// Importar las rutas
 import userRoutes from './routes/ms_usuarios.routes.js'
 import Investigacion from "./routes/investigacion.routes.js";
 import Formacion from "./routes/formacion.routes.js";
@@ -20,17 +22,19 @@ import ms_permisosRoutes from "./routes/ms_permisos.routes.js"
 import CargoDesempeña from "./routes/cargodesempeña.routes.js"
 
 
-import cors from "cors"
+import cors from "cors" // Importar cors para manejar solicitudes entre dominios
 
-import 'dotenv/config'; 
-
-
-const app = express()
-app.use(cors());
+import 'dotenv/config'; // Cargar las variables de entorno
 
 
+const app = express() // Crear una instancia de la aplicación express
+app.use(cors()); // Habilitar CORS para todas las rutas
 
+
+// Middleware para parsear JSON
 app.use(express.json())
+
+// Usar las rutas importadas
 app.use(userRoutes)
 app.use(Investigacion)
 app.use(Formacion)
@@ -43,7 +47,6 @@ app.use(Aldeas)
 app.use(DocentesDGDP)
 app.use(uploadRoutes)
 
-
 app.use(ms_rolesRoutes)
 app.use(ms_modulosRoutes)
 app.use(ms_objetosRoutes)
@@ -53,7 +56,8 @@ app.use(CargoDesempeña)
 
 console.log("DB_USER:", process.env.DB_USER); // Prueba si se está cargando correctamente
 
+// Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`Servidor corriendo en el puerto ${PORT}`); // Mensaje de confirmación al iniciar el servidor
 });
 

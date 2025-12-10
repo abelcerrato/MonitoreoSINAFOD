@@ -1,4 +1,4 @@
-import { pool } from '../db.js'
+import { pool } from '../db.js' // Importa la conexión a la base de datos
 
 // Trae todos los cargos que desempeña
 export const getCargoDesempeñaM = async () => {

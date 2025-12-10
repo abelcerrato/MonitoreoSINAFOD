@@ -1,4 +1,3 @@
-import { getCicloAcademicoM } from "../models/Academico.models.js";
 import {
   getParticipanteCodSACEM,
   getParticipanteDNIM,
@@ -8,12 +7,12 @@ import {
   postParticipanteInvestigacionM,
   postParticipanteM,
   putParticipanteM,
-} from "../models/Participante.models.js";
+} from "../models/Participante.models.js"; // Importar los modelos para los participantes
 import {
   getIdCentroEducativoSACEM,
   postCentroEducativoM,
   postCentroEducativoParticipanteM,
-} from "../models/centroeducativo.models.js";
+} from "../models/centroeducativo.models.js"; // Importar los modelos para los centros educativos
 import {
   getDocenteCodSACEM,
   getDocenteIdentificacionM,
@@ -21,9 +20,7 @@ import {
   getDocentesM,
   postDocentesM,
   putDocentesM,
-} from "../models/docentesDGDP.models.js";
-import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
-import { getRelacionParticipanteFormacionC } from "./Participante.controller.js";
+} from "../models/docentesDGDP.models.js"; // Importar los modelos para los docentes
 
 
 //Trae todos los docentes

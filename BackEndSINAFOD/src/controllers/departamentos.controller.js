@@ -1,4 +1,8 @@
-import { getDepartamentosM } from "../models/departamentos.models.js";
+import { getDepartamentosM } from "../models/departamentos.models.js"; // Importar el modelo para los departamentos
+
+//---------------------------------------------------------
+//                  DEPARTAMENTIOS
+//---------------------------------------------------------
 
 //Trae todos los departamentos
 export const getDepartamentosC = async (req, res) => {

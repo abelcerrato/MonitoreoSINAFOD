@@ -1,4 +1,4 @@
-import { getObjetoIdM, getObjetosM, postObjetosM, putObjetosM } from "../models/ms_objetos.models.js";
+import { getObjetoIdM, getObjetosM, postObjetosM, putObjetosM } from "../models/ms_objetos.models.js"; // Importar el modelo para los objetos
 
 //Trae todos los objetos de la tabla ms_objetos
 export const getObjetosC = async (req, res) => {

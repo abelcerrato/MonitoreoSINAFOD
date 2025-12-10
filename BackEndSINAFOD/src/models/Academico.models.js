@@ -1,5 +1,5 @@
-import { pool } from "../db.js";
-
+import { pool } from "../db.js"; // Importa la conexión a la base de datos
+ 
 //Trae todos los niveles academicos
 export const getNivelesAcademicosM = async () => {
   try {

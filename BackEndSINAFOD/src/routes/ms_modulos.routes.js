@@ -1,12 +1,12 @@
-import {Router} from "express";
-import { getModuloIdC, getModulosC, postModuloC, putModuloC } from "../controllers/ms_modulos.controller.js";
+import {Router} from "express"; // Importar el enrutador de express
+import { getModuloIdC, getModulosC, postModuloC, putModuloC } from "../controllers/ms_modulos.controller.js"; // Importar los controladores para los módulos
+
+const router=Router(); //Crear una instancia del router de express
+
+router.get('/modulos', getModulosC) // Obtener todos los registros de módulos
+router.get('/modulo/:id', getModuloIdC ) // Obtener un registro de módulo por ID
+router.post('/modulo', postModuloC) // Crear un nuevo registro de módulo
+router.put('/modulo/:id', putModuloC) // Actualizar un registro de módulo por ID
 
 
-const router=Router();
-router.get('/modulos', getModulosC)
-router.get('/modulo/:id', getModuloIdC )
-router.post('/modulo', postModuloC)
-router.put('/modulo/:id', putModuloC)
-
-
-export default router;
+export default router; // Exportar el enrutador

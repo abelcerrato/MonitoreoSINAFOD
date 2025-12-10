@@ -1,4 +1,4 @@
-import { getCentroEducativoParticipanteM, getCentroEducativoM, getIdCentroEducativoM, postCentroEducativoM, putCentroEducativoM, getIdCentroEducativoIdDeptoM } from "../models/centroeducativo.models.js";
+import { getCentroEducativoParticipanteM, getCentroEducativoM, getIdCentroEducativoM, postCentroEducativoM, putCentroEducativoM, getIdCentroEducativoIdDeptoM } from "../models/centroeducativo.models.js"; // Importar los modelos para los centros educativos
 
 //Trae todos los centros educativos
 export const getCentroEducativoC = async (req, res) => {

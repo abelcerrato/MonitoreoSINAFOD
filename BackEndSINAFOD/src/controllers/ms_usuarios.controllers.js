@@ -11,7 +11,7 @@ import {
   verificarUsuarioM,
   updateContraseñaM,
   resetContraseñaM,
-} from "../models/ms_usuarios.models.js";
+} from "../models/ms_usuarios.models.js"; // Importa las funciones del modelo de usuarios
 
 
 //Trae todos los usuarios

@@ -1,4 +1,4 @@
-import { getCargoDesempeñaIdM, getCargoDesempeñaM, postCargoDesempeñaM, putCargoDesempeñaM } from "../models/cargodesempeña.models.js";
+import { getCargoDesempeñaIdM, getCargoDesempeñaM, postCargoDesempeñaM, putCargoDesempeñaM } from "../models/cargodesempeña.models.js"; // Importar los modelos para los cargos que desempeña
 
 //Trae todos los cargos que desempeña
 export const getCargoDesempeñaC = async (req, res) => {

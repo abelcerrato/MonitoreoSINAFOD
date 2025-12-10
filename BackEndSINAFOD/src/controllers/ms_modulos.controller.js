@@ -1,5 +1,5 @@
 //Importa las funciones del modelo
-import { getModuloIdM, getModulosM, postModuloM, putModuloM } from "../models/ms_modulos.models.js";
+import { getModuloIdM, getModulosM, postModuloM, putModuloM } from "../models/ms_modulos.models.js"; 
 
 //Trae todos los modulos
 export const getModulosC = async (req, res) => {

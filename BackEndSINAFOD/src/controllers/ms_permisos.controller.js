@@ -1,5 +1,5 @@
-import { getPermisosIdRolM, getPermisosM, postRolyPermisosM, putRolyPermisosM } from "../models/ms_permisos.models.js";
-import { getRolIdM } from "../models/ms_roles.models.js";
+import { getPermisosIdRolM, getPermisosM, postRolyPermisosM, putRolyPermisosM } from "../models/ms_permisos.models.js"; // Importar el modelo para los permisos
+import { getRolIdM } from "../models/ms_roles.models.js"; // Importar el modelo para los roles
 
 //Trae todos los permisos de los roles
 export const getPermisosC = async (req, res) => {

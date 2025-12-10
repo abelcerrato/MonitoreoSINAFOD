@@ -1,32 +1,24 @@
-import {Router} from "express";
-import {pool} from '../db.js'
+import {Router} from "express"; // Importar el enrutador de express
+
+// Importar los controladores para los usuarios
 import { verificarToken,  getUserC, getUserIdC, loginC, logoutC, postUserC, resetContraseñaUserC, updateContraseñaC, updateUserC, verificarUsuarioC} from "../controllers/ms_usuarios.controllers.js";
 
-const router=Router();
+const router=Router(); //Crear una instancia del router de express
 
-router.get('/usuarios', getUserC)
+router.get('/usuarios', getUserC) // Obtener todos los registros de usuarios
+router.get('/usuario/:id', getUserIdC) // Obtener un registro de usuario por ID
+router.post('/verificarUsuario', verificarUsuarioC) //verifica si el usuario existe
 
-router.get('/usuario/:id', getUserIdC)
+router.post('/insertarUsuarios', postUserC) // Crear un nuevo registro de usuario
+router.put('/actualizarUsuarios/:id', updateUserC) // Actualizar un registro de usuario por ID
 
-router.post('/verificarUsuario', verificarUsuarioC)
+router.put('/resetearContra/:usuario', resetContraseñaUserC) //Resetea la contraseña y asigna la identidad como contraseña temporal
+router.put('/actualizarContra/:usuario', updateContraseñaC)//Actualiza la contraseña en caso que sea temporal o nuevo usuario
 
-router.post('/insertarUsuarios', postUserC)
-
-router.put('/actualizarUsuarios/:id', updateUserC)
-
-router.put('/resetearContra/:usuario', resetContraseñaUserC) //resetea la contraseña y asigna la identidad como contraseña temporal
-
-router.post('/inicioSesion', loginC)//hace login y verifica si la contraseña es temporal
+router.post('/inicioSesion', loginC) //Hace login y verifica si la contraseña es temporal
+router.put('/cierreSesion/:id', logoutC)//Cambia el estado de sesionactiva a false
 
 router.get("/verify-token", verificarToken); //verifica si el token es valido y si el usuario tiene sesion activa
 
 
-router.put('/actualizarContra/:usuario', updateContraseñaC)//actualiza la contraseña en caso que sea temporal o nuevo usuario
-
-router.put('/cierreSesion/:id', logoutC)//cambie el estado se sesionactiva a false
-
-
-
-
-
-export default router;
+export default router; // Exportar el enrutador

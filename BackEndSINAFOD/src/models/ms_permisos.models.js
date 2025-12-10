@@ -1,4 +1,4 @@
-import { pool } from "../db.js";
+import { pool } from "../db.js"; // Importa la conexión a la base de datos
 
 // Trae todos los permisos con sus roles y objetos
 export const getPermisosM = async () => {

@@ -1,6 +1,6 @@
-import XLSX from 'xlsx';
+import XLSX from 'xlsx'; // Librería para manejar archivos Excel
 import { getFiltroDocentesC } from './docentesDGDP.controller.js'; // Importa tu controlador existente
-import { postFormacionM } from "../models/formacion.models.js";
+import { postFormacionM } from "../models/formacion.models.js"; // Importa el modelo para crear formaciones
 
 
 //No está en uso

@@ -1,22 +1,22 @@
-// backend/src/config/firebase.config.js
-import admin from 'firebase-admin';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { readFileSync } from 'fs';
+import admin from 'firebase-admin'; // Importa el SDK de Firebase Admin
+import { join, dirname } from 'path'; // Importa funciones para manejar rutas de archivos
+import { fileURLToPath } from 'url'; // Importa función para convertir URL de archivo a ruta de archivo
+import { readFileSync } from 'fs'; // Importa función para leer archivos del sistema de archivos
 
-let serviceAccount;
-let initializationError = null;
+let serviceAccount; // Variable para almacenar las credenciales del servicio de Firebase
+let initializationError = null; // Variable para almacenar cualquier error de inicialización
 
+// Cargar las credenciales de Firebase según el entorno
 try {
   if (process.env.FIREBASE_CONFIG) {
-    // For production (Vercel): use environment variable
+    //Para producción (Vercel): se usa una variable de entorno
     try {
       serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
     } catch (error) {
       throw new Error('Failed to parse FIREBASE_CONFIG environment variable. Make sure it contains valid JSON.');
     }
   } else {
-    // For local development: use JSON file
+    // Para desarrollo local: se usa un archivo JSON
     const __dirname = dirname(fileURLToPath(import.meta.url));
     serviceAccount = JSON.parse(
       readFileSync(join(__dirname, './monitoreosinafod-firebase-adminsdk-fbsvc-c2060cd83f.json'))
@@ -33,6 +33,6 @@ try {
   initializationError = error;
 }
 
-// Export services with error handling
-export const bucket = initializationError ? null : admin.storage().bucket();
-export default admin;
+//Exporta el servicio de autenticación de Firebase, o null si hubo un error
+export const bucket = initializationError ? null : admin.storage().bucket(); // Exporta el bucket de almacenamiento de Firebase
+export default admin; // Exporta la instancia de Firebase Admin

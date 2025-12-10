@@ -1,4 +1,4 @@
-import { pool } from '../db.js'
+import { pool } from '../db.js' // Importa la conexión a la base de datos
 
 //Trae todas las aldeas mediante el ID del registro
 export const getAldeasIdM = async (id) => {
