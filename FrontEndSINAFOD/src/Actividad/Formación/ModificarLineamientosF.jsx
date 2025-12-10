@@ -1,3 +1,9 @@
+/* 
+ * Este archivo contiene el código del formulario para actualizar los lineamientos 
+ * asociados a una acción formativa registrada en el sistema.
+ * Permite editar el nombre de la formación, visualizar documentos cargados,
+ * reemplazarlos, eliminarlos, previsualizarlos y descargarlos.
+ */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -6,13 +12,9 @@ import {
   Grid,
   Paper,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
   Box,
   IconButton,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
 } from "@mui/material";
@@ -26,11 +28,15 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
 import DescriptionIcon from "@mui/icons-material/Description";
 
+
+/* 
+ * Estilo para un input tipo file invisible, 
+ * usado dentro de botones personalizados.
+ */
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -44,8 +50,11 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const ModificarLineamientos = () => {
-  const { user } = useUser();
-  const { id } = useParams();
+  const { user } = useUser();   // Datos del usuario logueado
+  const { id } = useParams();  // ID del registro a editar
+ const navigate = useNavigate();
+
+  // Estado principal del formulario
   const [formData, setFormData] = useState({
     formacion: "",
     criteriosfactibilidadurl: null,
@@ -53,16 +62,24 @@ const ModificarLineamientos = () => {
     criterioseticosurl: null,
     formacioninvest: "",
   });
+
+  // Archivos existentes almacenados previamente en el servidor
   const [existingFiles, setExistingFiles] = useState({
     criteriosfactibilidadurl: null,
     requisitostecnicosurl: null,
     criterioseticosurl: null,
   });
+
+  // Vista previa de archivos
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState(null);
   const [currentPreviewField, setCurrentPreviewField] = useState(null);
-  const navigate = useNavigate();
+ 
 
+  /*
+   * Al cargar el componente, se obtienen los detalles del registro
+   * incluyendo el nombre y los archivos previamente subidos.
+   */
   useEffect(() => {
     const obtenerDetalles = async () => {
       try {
@@ -93,6 +110,7 @@ const ModificarLineamientos = () => {
     obtenerDetalles();
   }, [id]);
 
+  /* Manejo de cambios de campos de texto */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -101,6 +119,13 @@ const ModificarLineamientos = () => {
     }));
   };
 
+  /*
+ * Manejo de carga de archivos:
+ * - Valida formato permitido
+ * - Valida tamaño
+ * - Actualiza el estado con el nuevo archivo
+ * - Limpia el archivo anterior si existía
+ */
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -211,6 +236,11 @@ const ModificarLineamientos = () => {
           }
       }; */
 
+
+  /*
+* Descargar archivo desde el backend.
+* Tiene manejo de nombre real del archivo.
+*/
   const handleDownload = async (filename) => {
     try {
       // 1. Codificar el nombre del archivo para la URL
@@ -259,6 +289,10 @@ const ModificarLineamientos = () => {
     }
   };
 
+  /*
+ * Elimina un archivo subido (existente o nuevo).
+ * Confirma antes de borrar.
+ */
   const handleDeleteFile = (fieldName) => {
     Swal.fire({
       title: "¿Estás seguro?",
@@ -284,6 +318,13 @@ const ModificarLineamientos = () => {
     });
   };
 
+
+  /*
+ * Envía toda la información:
+ * - Nombre de la formación
+ * - Archivos nuevos o existentes
+ * - Controla que haya al menos 3 archivos cargados
+ */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -364,6 +405,14 @@ const ModificarLineamientos = () => {
     }
   };
 
+
+  /*
+  * Renderiza cada campo de archivo con:
+  * - Subida
+  * - Vista previa
+  * - Descarga
+  * - Eliminación
+  */
   const renderFileField = (fieldName, label) => {
     const existingFile = existingFiles[fieldName];
     const newFile = formData[fieldName];
@@ -545,6 +594,13 @@ const ModificarLineamientos = () => {
          }
      }; */
 
+
+  /*
+* Vista previa de archivos:
+* - PDF dentro de iframe
+* - Imágenes
+* - Otros archivos con opción a descarga
+*/
   const handlePreview = async (file, fieldName) => {
     setCurrentPreviewField(fieldName);
 
@@ -696,76 +752,7 @@ const ModificarLineamientos = () => {
           </Button>
         </Box>
 
-        {/* Modal de vista previa 
-                <Dialog
-                    open={previewOpen}
-                    onClose={() => setPreviewOpen(false)}
-                    maxWidth="md"
-                    fullWidth
-                >
-                    <DialogTitle>
-                        Vista previa del documento
-                        <IconButton
-                            onClick={() => setPreviewOpen(false)}
-                            sx={{
-                                position: 'absolute',
-                                right: 8,
-                                top: 8,
-                                color: (theme) => theme.palette.grey[500],
-                            }}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        {previewContent?.type === 'pdf' && (
-                            <iframe
-                                src={previewContent.url}
-                                width="100%"
-                                height="500px"
-                                style={{ border: 'none' }}
-                                title="Vista previa PDF"
-                            />
-                        )}
-                        {previewContent?.type === 'image' && (
-                            <img
-                                src={previewContent.url}
-                                alt="Vista previa"
-                                style={{ maxWidth: '100%', maxHeight: '500px', display: 'block', margin: '0 auto' }}
-                            />
-                        )}
-                        {previewContent?.type === 'other' && (
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '200px',
-                                textAlign: 'center'
-                            }}>
-                                <DescriptionIcon sx={{ fontSize: 60, color: color.primary.azul }} />
-                                <Typography variant="h6" sx={{ mt: 2 }}>
-                                    {previewContent.name}
-                                </Typography>
-                                <Typography variant="body2" sx={{ mt: 1 }}>
-                                    No hay vista previa disponible para este tipo de archivo
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    sx={{ mt: 2, backgroundColor: color.primary.azul }}
-                                    onClick={() => handleDownload(
-                                        existingFiles[currentPreviewField] ||
-                                        (formData[currentPreviewField] instanceof File ?
-                                            formData[currentPreviewField].name :
-                                            formData[currentPreviewField])
-                                    )}
-                                >
-                                    Descargar archivo
-                                </Button>
-                            </Box>
-                        )}
-                    </DialogContent>
-                </Dialog>*/}
+    
         <Dialog
           open={previewOpen}
           onClose={() => setPreviewOpen(false)}

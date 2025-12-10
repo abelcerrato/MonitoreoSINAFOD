@@ -1,3 +1,13 @@
+/* 
+ * Este archivo contiene el código encargado de registrar las formaciones 
+ * dentro del sistema.
+ * Incluye validaciones, control de estado, manejo de fechas,
+ * gestión de modalidad (virtual/presencial/bimodal),
+ * limpieza automática de campos, validación de duración,
+ * y confirmaciones con SweetAlert.
+ */
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -24,15 +34,18 @@ import { useUser } from "../../Components/UserContext";
 import Swal from "sweetalert2";
 
 const Formacion = () => {
-  const { user } = useUser();
-  const location = useLocation();
-  const [isSaved, setIsSaved] = useState(false);
-  const [investCapId, setInvestCapId] = useState(null);
-  const [errorM, setErrorM] = useState("");
-  const [error, setError] = useState("");
-  const [isFromLineamientos, setIsFromLineamientos] = useState(false);
+  const { user } = useUser(); // Obtiene la info del usuario autenticado desde contexto
+  const location = useLocation(); // Captura datos enviados desde otra pantalla mediante navigate()
+  const [isSaved, setIsSaved] = useState(false); // Controla si la formación ya fue guardada
+  const [investCapId, setInvestCapId] = useState(null); // ID existente cuando viene desde lineamientos
+  const [errorM, setErrorM] = useState(""); // Error específico para los minutos > 59
+  const [error, setError] = useState(""); // Error general para fechas
+  const [isFromLineamientos, setIsFromLineamientos] = useState(false); // Indica si viene desde el módulo de lineamientos
+
+  // Datos enviados desde screen anterior para validar lineamientos obligatorios
   const { uploadedFilesCount, totalRequiredFiles } = location.state || {};
 
+  // Estado principal del formulario
   const [formData, setFormData] = useState({
     formacion: location.state?.formacion || "",
     tipoactividad: "",
@@ -68,6 +81,8 @@ const Formacion = () => {
     creadopor: user.id,
     modificadopor: user.id,
   });
+
+  // Controla errores en campos específicos
   const [fieldErrors, setFieldErrors] = useState({
     fechainicio: false,
     fechafinal: false,
@@ -75,15 +90,23 @@ const Formacion = () => {
 
   const navigate = useNavigate();
 
-  // Manejar cambios en campos de texto y selects
+
+  /* 
+     Manejador general de cambios (inputs, selects y checkboxes)
+     Incluye:
+     - limpieza de valores
+     - validación de fechas
+     - validación de números
+     - manejo dinámico según modalidad
+   */
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
 
-    // 1) Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
+    //  Manejar checkboxes (Material-UI usa `checked` en lugar de `value`)
     let sanitizedValue =
       type === "checkbox" ? checked : value === null ? "" : value;
 
-    // 2) Validación para "participantesprog" (solo números)
+    //  Validación para "participantesprog" (solo números)
     if (name === "participantesprog") {
       sanitizedValue = sanitizedValue.replace(/[^0-9]/g, "");
     }
@@ -133,7 +156,7 @@ const Formacion = () => {
         newData.tercerciclo = false;
       }
 
-      // 2) Validación de campo vacío (solo aplica si no es checkbox)
+      //Validación de campo vacío (solo aplica si no es checkbox)
       if (type !== "checkbox") {
         const isEmpty = String(sanitizedValue || "").trim() === "";
         setFieldErrors((prevErrors) => ({
@@ -142,7 +165,7 @@ const Formacion = () => {
         }));
       }
 
-      // 3) Validación de fechas (tu lógica original)
+      //  Validación de fechas (tu lógica original)
       if (name === "fechainicio" || name === "fechafinal") {
         const isValidDate =
           sanitizedValue && !isNaN(new Date(sanitizedValue).getTime());
@@ -171,7 +194,7 @@ const Formacion = () => {
         }
       }
 
-      // 4) Limpiar campos de convenio (tu lógica original)
+      // Limpiar campos de convenio (tu lógica original)
       if (name === "tipoactividad" && sanitizedValue === "Interna") {
         newData.institucionconvenio = "";
         newData.existeconvenio = "";
@@ -182,14 +205,14 @@ const Formacion = () => {
         }));
       }
 
-      // 5) Validación de minutos (tu lógica original)
+      //  Validación de minutos (tu lógica original)
       if (name === "minutos") {
         setErrorM(
           Number(sanitizedValue) > 59 ? "Solo se admiten minutos hasta 59." : ""
         );
       }
 
-      // 6) Recalcular duración en HH:MM (si aplica)
+      //  Recalcular duración en HH:MM (si aplica)
       if (name === "horas" || name === "minutos") {
         const horas = Number(newData.horas) || 0;
         const minutos = Number(newData.minutos) || 0;
@@ -200,8 +223,9 @@ const Formacion = () => {
     });
   };
 
-  // Efecto para capturar el ID si viene del flujo "Guardar"
-
+  /* 
+   * Efecto para cargar información cuando llega desde Lineamientos
+   */
   useEffect(() => {
     if (location.state?.investCap) {
       setInvestCapId(location.state.investCap);
@@ -216,6 +240,12 @@ const Formacion = () => {
     }
   }, [location.state]);
 
+
+
+  /*
+ * Validación general y guardado (POST/PUT)
+ * Incluye confirmación por lineamientos incompletos
+ */
   const handleSave = async () => {
     // Lista de campos obligatorios
     const requiredFields = [
@@ -357,6 +387,7 @@ const Formacion = () => {
     }
   };
 
+  // Formatea duración para mostrar en el input visual
   function formatDuracionForDisplay(duracion) {
     if (!duracion) return "00 horas 00 minutos";
 
@@ -561,22 +592,22 @@ const Formacion = () => {
             </Grid>
             {(formData.modalidad === "Virtual" ||
               formData.modalidad === "Bimodal") && (
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography variant="subtitle1">
-                  Plataforma en la que se Realizará la Actividad
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="plataforma"
-                  value={formData.plataforma}
-                  onChange={handleChange}
-                  error={fieldErrors.plataforma}
-                  helperText={
-                    fieldErrors.plataforma ? "Este campo es obligatorio" : ""
-                  }
-                />
-              </Grid>
-            )}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1">
+                    Plataforma en la que se Realizará la Actividad
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="plataforma"
+                    value={formData.plataforma}
+                    onChange={handleChange}
+                    error={fieldErrors.plataforma}
+                    helperText={
+                      fieldErrors.plataforma ? "Este campo es obligatorio" : ""
+                    }
+                  />
+                </Grid>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Duración</Typography>
 
@@ -877,37 +908,37 @@ const Formacion = () => {
             </Grid>
             {(formData.modalidad === "Presencial" ||
               formData.modalidad === "Bimodal") && (
-              <>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Espacio Físico</Typography>
-                  <TextField
-                    fullWidth
-                    name="espaciofisico"
-                    value={formData.espaciofisico}
-                    onChange={handleChange}
-                    error={fieldErrors.espaciofisico}
-                    helperText={
-                      fieldErrors.espaciofisico
-                        ? "Este campo es obligatorio"
-                        : ""
-                    }
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="subtitle1">Dirección</Typography>
-                  <TextField
-                    fullWidth
-                    name="direccion"
-                    value={formData.direccion}
-                    onChange={handleChange}
-                    error={fieldErrors.direccion}
-                    helperText={
-                      fieldErrors.direccion ? "Este campo es obligatorio" : ""
-                    }
-                  />
-                </Grid>
-              </>
-            )}
+                <>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Espacio Físico</Typography>
+                    <TextField
+                      fullWidth
+                      name="espaciofisico"
+                      value={formData.espaciofisico}
+                      onChange={handleChange}
+                      error={fieldErrors.espaciofisico}
+                      helperText={
+                        fieldErrors.espaciofisico
+                          ? "Este campo es obligatorio"
+                          : ""
+                      }
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Typography variant="subtitle1">Dirección</Typography>
+                    <TextField
+                      fullWidth
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                      error={fieldErrors.direccion}
+                      helperText={
+                        fieldErrors.direccion ? "Este campo es obligatorio" : ""
+                      }
+                    />
+                  </Grid>
+                </>
+              )}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="subtitle1">Zona</Typography>
               <FormControl fullWidth error={fieldErrors.zona}>

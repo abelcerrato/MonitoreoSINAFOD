@@ -1,3 +1,9 @@
+/* 
+ * Este componente permite actualizar los datos de una Acción Formativa existente.
+ * Carga la información desde la API utilizando el ID recibido por URL,
+ * llena el formulario con esos datos y permite modificar cada campo con validación.
+ */
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -10,15 +16,10 @@ import {
   MenuItem,
   FormControl,
   Box,
-  Radio,
-  RadioGroup,
   FormControlLabel,
-  Tab,
-  Tabs,
   FormHelperText,
   Checkbox,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -27,12 +28,12 @@ import { useUser } from "../../Components/UserContext";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import Swal from "sweetalert2";
 import Groups2OutlinedIcon from "@mui/icons-material/Groups2Outlined";
-import Formacion from "./Formacion";
+
 
 const ModificarFormacion = () => {
-  const { user } = useUser();
-  const { id } = useParams();
-  const location = useLocation();
+  const { user } = useUser(); // Obtiene la info del usuario autenticado desde contexto
+  const { id } = useParams(); // Captura el ID de la formación desde la URL
+  const location = useLocation(); // Captura datos enviados desde otra pantalla mediante navigate()
   const [errorM, setErrorM] = useState("");
   const [error, setError] = useState("");
   const [isFromLineamientos, setIsFromLineamientos] = useState(false);
@@ -77,6 +78,17 @@ const ModificarFormacion = () => {
     modificadopor: user.id,
   });
 
+  
+  /**
+ * Este efecto se ejecuta una vez que cambia el `id` (obtenido de la URL)
+ * y tiene como objetivo cargar los datos de la acción formativa desde la API.
+ * Los datos obtenidos se utilizan para llenar el estado `formData`,
+ *
+ * Notas importantes:
+ * - La duración se transforma a un formato legible para mostrar en el formulario.
+ * - Las fechas se normalizan para ser compatibles con los campos tipo `date` de Material-UI.
+ */
+
   useEffect(() => {
     const obtenerDetalles = async () => {
       try {
@@ -103,6 +115,7 @@ const ModificarFormacion = () => {
 
     obtenerDetalles();
   }, [id]);
+
 
   const [fieldErrors, setFieldErrors] = useState({
     fechainicio: false,
@@ -250,6 +263,47 @@ const ModificarFormacion = () => {
     }
   }, [location.state]);
 
+  /**
+ * Esta función se encarga de validar y enviar los datos del formulario
+ * a la API para actualizar un registro existente.
+ *
+ * Pasos principales:
+ *
+ * 1) Validación de campos obligatorios:
+ *    - Se define un arreglo `requiredFields` con los nombres de los campos
+ *      que no pueden estar vacíos.
+ *    - Se recorre el arreglo y se marca en `errors` cualquier campo vacío.
+ *
+ * 2) Validación de duración:
+ *    - Se asegura que al menos uno de los campos "horas" o "minutos" tenga valor.
+ *    - Se verifica que los minutos no excedan 59.
+ *
+ * 3) Validación de fechas:
+ *    - Se comprueba que la fecha de inicio no sea posterior a la fecha de finalización.
+ *
+ * 4) Verificación de campos booleanos de lineamientos:
+ *    - `criteriosfactibilidad`, `requisitostecnicos` y `criterioseticos`.
+ *    - Si hay menos de 3 marcados como true, se pide confirmación al usuario
+ *      mediante Swal antes de continuar.
+ *
+ * 5) Preparación de datos para enviar:
+ *    - Se convierte cualquier string vacío en `null`.
+ *    - Se actualiza el campo `modificadopor` con el ID del usuario actual.
+ *
+ * 6) Envío de la solicitud:
+ *    - Se hace una petición PUT a la API con los datos limpios.
+ *    - Si la actualización es exitosa, se muestra un mensaje de éxito.
+ *    - Luego se redirige al listado de acciones formativas.
+ *
+ * 7) Manejo de errores:
+ *    - Si falla la solicitud, se imprime en consola y se muestra un
+ *      mensaje de error mediante Swal.
+ *
+ * Notas importantes:
+ * - Se utiliza SweetAlert (Swal) para mostrar alertas, confirmaciones y errores.
+ * - Se asegura que el usuario tenga control sobre actualizaciones incompletas
+ *   mediante confirmación explícita si faltan lineamientos.
+ */
   const handleSave = async () => {
     // Lista de campos obligatorios
     const requiredFields = [
@@ -377,6 +431,33 @@ const ModificarFormacion = () => {
       Swal.fire("¡Error!", "Error al guardar datos", "error");
     }
   };
+
+
+  /**
+ * formatDuracionForDisplay - Formatea una duración para mostrarla en "HH horas MM minutos"
+ * --------------------------------------------------------------------------------------
+ * Esta función toma un string que representa la duración de una acción formativa
+ * y lo convierte en un formato legible: "HH horas MM minutos".
+ *
+ * Lógica:
+ * 1) Si `duracion` es nulo o vacío, retorna "00 horas 00 minutos".
+ *
+ * 2) Si `duracion` viene en formato "HH:MM" (por ejemplo "90:00"):
+ *    - Se separa por ":" para obtener horas y minutos.
+ *    - Se asegura que ambos tengan al menos 2 dígitos usando padStart.
+ *    - Retorna un string en formato "HH horas MM minutos".
+ *
+ * 3) Si `duracion` viene en formato antiguo "X horas Y minutos":
+ *    - Se separa por espacios y se asume que el primer valor es horas
+ *      y el tercero es minutos.
+ *    - Se convierte cada valor en string de 2 dígitos y se construye
+ *      el string final.
+ *
+ * Uso:
+ *   formatDuracionForDisplay("90:05")   -> "90 horas 05 minutos"
+ *   formatDuracionForDisplay("1 horas 30 minutos") -> "01 horas 30 minutos"
+ *   formatDuracionForDisplay("")        -> "00 horas 00 minutos"
+ */
 
   function formatDuracionForDisplay(duracion) {
     if (!duracion) return "00 horas 00 minutos";

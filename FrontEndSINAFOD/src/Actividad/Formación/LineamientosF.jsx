@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+/* 
+ * Componente encargado de gestionar el registro de lineamientos para acciones formativas.
+ * Implementa manejo de estado, validación de campos, carga de archivos, alertas con SweetAlert,
+ * integración con el contexto de usuario y envío de datos mediante Axios.
+ */
+
+import React, { useState } from "react";
 import axios from "axios";
 import {
   TextField,
@@ -6,31 +12,22 @@ import {
   Grid,
   Paper,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
   Box,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Tab,
-  Tabs,
-  FormHelperText,
   IconButton,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
+
 import { color } from "../../Components/color";
 import SaveIcon from "@mui/icons-material/Save";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "../../Dashboard/dashboard";
 import { useUser } from "../../Components/UserContext";
-import TablaPacticantes from "../../Participantes/TablaParticipantes";
 import Swal from "sweetalert2";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+// Input escondido para cargar archivos
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -44,14 +41,18 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const LineamientosF = () => {
-  const { user } = useUser();
+  const { user } = useUser();  // Obtener datos del usuario autenticado
+
+  // Estado principal del formulario
   const [formData, setFormData] = useState({
     formacion: "",
     criteriosfactibilidadurl: null,
     requisitostecnicosurl: null,
     criterioseticosurl: null,
     formacioninvest: "",
-  });
+  }); 
+
+  // Estado para manejar errores de validación
   const [errors, setErrors] = useState({
     formacion: false,
     criterioseticosurl: false,
@@ -68,6 +69,7 @@ const LineamientosF = () => {
     }));
   };
 
+  // Quita un archivo cargado del formulario
   const handleRemoveFile = (fieldName) => {
     setFormData((prev) => ({
       ...prev,
@@ -80,6 +82,7 @@ const LineamientosF = () => {
     }
   };
 
+  // Maneja carga de archivos con validaciones
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -136,11 +139,27 @@ const LineamientosF = () => {
     }));
   };
 
+  // Referencias para limpiar los inputs de archivo
   const fileInputRefs = {
     criteriosfactibilidadurl: React.useRef(null),
     requisitostecnicosurl: React.useRef(null),
     criterioseticosurl: React.useRef(null),
   };
+
+  /*
+ * Maneja el envío del formulario de lineamientos.
+ * 
+ * - Previene el comportamiento por defecto del formulario.
+ * - Valida los campos obligatorios y muestra alertas si hay errores.
+ * - Construye un objeto FormData para enviar texto y archivos.
+ * - Verifica cuántos documentos han sido cargados y alerta si faltan.
+ * - Permite continuar con el registro incluso si no se subieron todos los archivos,
+ *   previa confirmación del usuario.
+ * - Envía los datos al servidor mediante Axios usando multipart/form-data.
+ * - Si la operación es exitosa, redirige a la creación de la Acción Formativa
+ *   enviando datos relevantes al siguiente formulario.
+ * - Si ocurre un error en la petición, muestra una alerta de error y detiene el proceso.
+ */
 
   const handleSubmit = async (e) => {
     e.preventDefault();

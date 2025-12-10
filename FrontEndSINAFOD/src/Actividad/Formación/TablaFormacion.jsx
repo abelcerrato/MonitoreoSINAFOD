@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableFooter,
-  TablePagination,
   Paper,
   Tooltip,
   Dialog,
@@ -131,18 +121,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const FormationPDF = ({
-  formacion,
-  modalidad,
-  estado,
-  fechainicio,
-  fechafinal,
-  qrUrl,
-}) => (
+
+// --- Componente FormationPDF ---
+// Este componente genera un PDF con la información de una acción formativa
+const FormationPDF = ({ formacion, modalidad, fechainicio, fechafinal, qrUrl }) => (
   <Document>
     <Page size="LETTER" style={styles.page}>
+      {/* Columna de fondo azul */}
       <View style={styles.backgroundColumn} />
 
+      {/* Logos en la parte superior */}
       <View style={styles.logoContainer}>
         <Image style={styles.logo} src={logoDGDP} />
         <Image style={styles.logo} src={logoSE} />
@@ -151,6 +139,7 @@ const FormationPDF = ({
       <View style={styles.content}>
         <Text style={styles.title}>Información de la Formación</Text>
 
+        {/* Secciones de información */}
         <View style={styles.section}>
           <Text style={styles.label}>Nombre de la Formación:</Text>
           <Text style={styles.value}>{formacion || "No especificado"}</Text>
@@ -164,58 +153,56 @@ const FormationPDF = ({
         <View style={styles.section}>
           <Text style={styles.label}>Fecha de Inicio:</Text>
           <Text style={styles.value}>
-            {fechainicio
-              ? new Date(fechainicio).toLocaleDateString("es-ES", { timeZone: "UTC" })
-              : "No especificada"}
+            {fechainicio ? new Date(fechainicio).toLocaleDateString("es-ES", { timeZone: "UTC" }) : "No especificada"}
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>Fecha de Finalización:</Text>
           <Text style={styles.value}>
-            {fechafinal
-              ? new Date(fechafinal).toLocaleDateString("es-ES", { timeZone: "UTC" })
-              : "No especificada"}
+            {fechafinal ? new Date(fechafinal).toLocaleDateString("es-ES", { timeZone: "UTC" }) : "No especificada"}
           </Text>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.labelMensaje}>Este código QR tiene una vigencia de 24 horas a partir del momento en que fue generado.</Text>
-        </View> 
+          <Text style={styles.labelMensaje}>
+            Este código QR tiene una vigencia de 24 horas a partir del momento en que fue generado.
+          </Text>
+        </View>
+
+        {/* Código QR */}
         <View style={styles.qrContainer}>
           <Text style={styles.label}>Código QR para participantes:</Text>
           <Image
             style={styles.qrImage}
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-              qrUrl
-            )}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`}
           />
           <Text style={styles.url}>{qrUrl}</Text>
         </View>
       </View>
+
+      {/* Marca de agua */}
       <Image style={styles.marcaH} src={marcaH} />
     </Page>
   </Document>
 );
 
+
 export default function TablaActividad({ isSaved, setIsSaved }) {
-  const navigate = useNavigate();
-  const [paginationModel, setPaginationModel] = useState({
-    pageSize: 10,
-    page: 0,
-  });
-  const { permissions } = useUser();
+  const navigate = useNavigate(); // Para navegar a otras páginas
+  const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 }); // Control de paginación
+  const { permissions } = useUser(); // Obtener permisos del usuario actual
 
-  const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState([]); // Datos de la tabla
+  const [open, setOpen] = useState(false); // Modal de detalles
+  const [qrUrl, setQrUrl] = useState(null); // URL del QR generado
+  const [openModal, setOpenModal] = useState(false); // Modal QR
+  const [currentRow, setCurrentRow] = useState(null); // Fila seleccionada
+  const [showPreview, setShowPreview] = useState(false); // Mostrar preview PDF
+  const [openParticipantes, setOpenParticipantes] = useState(false); // Modal de participantes
+  const [selectedFormacionId, setSelectedFormacionId] = useState(null); // ID acción formativa seleccionada
 
-  const [qrUrl, setQrUrl] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-  const [currentRow, setCurrentRow] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
-
-  const [openParticipantes, setOpenParticipantes] = useState(false);
-  const [selectedFormacionId, setSelectedFormacionId] = useState(null);
-
+  // --- Obtener datos de acciones formativas desde la API ---
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/formacion`)
@@ -227,6 +214,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
       });
   }, [isSaved]);
 
+  // --- Función para validar lineamientos antes de actualizar ---
   const checkLineamientos = async (id) => {
     const selectedRow = rows.find((row) => row.id === id);
 
@@ -263,6 +251,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     return true;
   };
 
+  // --- Funciones de navegación ---
   const handleFormacion = async (id) => {
     const shouldContinue = await checkLineamientos(id);
     if (!shouldContinue) return;
@@ -275,6 +264,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     navigate(`/Actualizar_Lineamientos_De_La_Acción_Formativa/${id}`);
   };
 
+  // --- Generación de QR ---
   const handleOpenQrModal = (id) => {
     const selectedRow = rows.find((row) => row.id === id);
 
@@ -287,6 +277,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     setOpenModal(true);
   };
 
+  // --- Modal de participantes ---
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -302,7 +293,7 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
   };
 
 
-
+  // --- Funciones para validar permisos ---
   const tienePermiso = (idobjeto) => {
     const permiso = permissions?.find((p) => p.idobjeto === idobjeto);
     return permiso?.actualizar === true;
@@ -313,6 +304,8 @@ export default function TablaActividad({ isSaved, setIsSaved }) {
     return permiso?.insertar === true;
   };
 
+
+  // --- Columnas de la tabla ---
   const columns = [
     ...(tienePermiso(2)
       ? [
