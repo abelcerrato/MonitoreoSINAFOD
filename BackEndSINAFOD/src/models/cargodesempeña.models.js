@@ -1,5 +1,6 @@
 import { pool } from '../db.js'
 
+// Trae todos los cargos que desempeña
 export const getCargoDesempeñaM = async () => {
     try {
         const { rows } = await pool.query(`
@@ -11,9 +12,7 @@ export const getCargoDesempeñaM = async () => {
     }
 };
 
-
-
-
+// Trae un cargo que desempeña por su id
 export const getCargoDesempeñaIdM = async (id) => {
     try {
         const { rows } = await pool.query
@@ -27,8 +26,7 @@ export const getCargoDesempeñaIdM = async (id) => {
     }
 };
 
-
-
+// Crea un nuevo cargo que desempeña
 export const postCargoDesempeñaM = async ( cargo ) => {
     try {
         const { rows } = await pool.query(`
@@ -44,8 +42,7 @@ export const postCargoDesempeñaM = async ( cargo ) => {
     }
 };
 
-
-
+// Actualiza un cargo que desempeña por su id
 export const putCargoDesempeñaM = async (cargo, id) => {
     try {
         const { rows } = await pool.query(`

@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+//Trae todos los niveles academicos
 export const getNivelesAcademicosM = async () => {
   try {
     const { rows } = await pool.query(
@@ -11,6 +12,7 @@ export const getNivelesAcademicosM = async () => {
   }
 };
 
+//Trae el id del nivel academico mediante el nombre
 export const getNivelAcademicoM = async (NivelAcademico) => {
   try {
     const { rows } = await pool.query(
@@ -26,6 +28,7 @@ export const getNivelAcademicoM = async (NivelAcademico) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Trae todos los ciclos academicos
 export const getCiclosAcademicosM = async () => {
   try {
     const { rows } = await pool.query(
@@ -37,6 +40,7 @@ export const getCiclosAcademicosM = async () => {
   }
 };
 
+//Trae el id del ciclo academico mediante el nombre
 export const getCicloAcademicoM = async (CicloAcademico) => {
   try {
     const { rows } = await pool.query(
@@ -66,7 +70,7 @@ export const getCicloAcademicoIdNivelM = async (IdNivel) => {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//Trae todos los grados academicos
 export const getGradosAcademicosM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -81,6 +85,7 @@ export const getGradosAcademicosM = async () => {
   }
 };
 
+//Trae el id grado academico mediante el nombre
 export const getGradoAcademicoM = async (GradoAcademico) => {
   try {
     const { rows } = await pool.query(
@@ -113,7 +118,6 @@ export const getGradoAcademicoIdCicloM = async (Ciclo) => {
 };
 
 //Trae el grado academico mediante el id del nivel academico
-
 export const getGradoAcademicoIdNivelM = async (IdNivel) => {
   try {
     const { rows } = await pool.query(

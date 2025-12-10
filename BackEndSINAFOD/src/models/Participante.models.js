@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+// Trae todos los participantes
 export const getParticipanteM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -65,13 +66,13 @@ export const getParticipanteM = async () => {
                 left join nivelesacademicos n2 on pced.idnivelatiende = n2.id
                 lefyt join ciclosacademicos ciclo2 on pced.idcicloatiende = ciclo2.id
         `);
-    //console.log(rows);
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
+// Trae el id del participante por su DNI
 export const getParticipanteDNIM = async (identificacion) => {
   try {
     const { rows } = await pool.query(
@@ -110,6 +111,8 @@ export const getParticipanteDNIM = async (identificacion) => {
   }
 };
 
+
+// Trae un participante por su id
 export const getParticipanteIdM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -157,7 +160,7 @@ export const getParticipanteIdM = async (id) => {
   }
 };
 
-//datos del participante y la investigación
+//Datos del participante y la investigación
 export const getParticipanteInvestigacionM = async () => {
   try {
     const { rows } = await pool.query(
@@ -200,7 +203,7 @@ export const getParticipanteInvestigacionM = async () => {
   }
 };
 
-//datos del participante y por id de la investigación
+//Datos del participante y por id de la investigación
 export const getParticipanteIdInvestM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -243,7 +246,7 @@ export const getParticipanteIdInvestM = async (id) => {
   }
 };
 
-//datos del participante y la formación
+//Datos del participante y la formación
 export const getParticipanteFormacionM = async () => {
   try {
     const { rows } = await pool.query(
@@ -302,7 +305,8 @@ export const getParticipanteFormacionM = async () => {
   }
 };
 
-//datos del participante por id de la formación
+
+//Datos del participante por id de la formación
 export const getParticipanteIdFormacionM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -355,7 +359,6 @@ export const getParticipanteIdFormacionM = async (id) => {
                 left join nivelesacademicos n2 on pced.idnivelatiende = n2.id
                 left join ciclosacademicos ciclo2 on pced.idcicloatiende = ciclo2.id
             where pf.idformacion =$1
-
         `,
       [id]
     );
@@ -365,6 +368,7 @@ export const getParticipanteIdFormacionM = async (id) => {
   }
 };
 
+// Crear un nuevo participante
 export const postParticipanteM = async (
   identificacion,
   codigosace,
@@ -429,7 +433,6 @@ export const postParticipanteM = async (
         idetnia,
       ]
     );
-
     return rows[0].id;
   } catch (error) {
     console.error("Error en postParticipanteM:", error.message);
@@ -437,6 +440,7 @@ export const postParticipanteM = async (
   }
 };
 
+// Actualizar un participante existente
 export const putParticipanteM = async (
   identificacion,
   codigosace,
@@ -520,19 +524,17 @@ export const putParticipanteM = async (
         id,
       ]
     );
-
     return rows[0];
   } catch (error) {
     throw error;
   }
 };
 
-//para buscar por identificacion en tabla de docentesdgdp
-
+//Para buscar por identificacion en tabla de docentesdgdp
 export const getParticipanteIdentificacionM = async (filtro) => {
   try {
     const { rows } = await pool.query(
-      `
+        `
             SELECT 
                 -------------------DATOS DEL PARTICIPANTE------------------------
                 p.id, p.identificacion, p.codigosace, p.correo, p.nombre, p.apellido, p.fechanacimiento, p.edad, p.telefono, p.genero, 
@@ -566,15 +568,13 @@ export const getParticipanteIdentificacionM = async (filtro) => {
         `,
       [filtro]
     );
-    //console.log(rows);
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
-//para buscar por codigo SACE en tabla de docentesdgdp
-
+//Para buscar por código SACE en tabla de docentesdgdp
 export const getParticipanteCodSACEM = async (filtro) => {
   try {
     const { rows } = await pool.query(
@@ -601,13 +601,13 @@ export const getParticipanteCodSACEM = async (filtro) => {
         `,
       [filtro]
     );
-    //console.log(rows);
     return rows;
   } catch (error) {
     throw error;
   }
 };
 
+// Crear relación entre participante e investigación
 export const postParticipanteInvestigacionM = async (
   idinvestigacion,
   idparticipante
@@ -621,7 +621,6 @@ export const postParticipanteInvestigacionM = async (
         `,
       [idinvestigacion, idparticipante]
     );
-
     return rows[0];
   } catch (error) {
     console.error("Error en postParticipanteInvestigacionM:", error.message);
@@ -629,6 +628,7 @@ export const postParticipanteInvestigacionM = async (
   }
 };
 
+// Crear relación entre participante y formación
 export const postParticipanteFormacionM = async (
   idformacion,
   idparticipante,
@@ -651,7 +651,8 @@ export const postParticipanteFormacionM = async (
   }
 };
 
-//datos de la tabla etnias para el participante
+
+//Datos de la tabla etnias para el participante
 export const getEtniasM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -662,7 +663,6 @@ export const getEtniasM = async () => {
     throw error;
   }
 };
-
 
 
 // Verificar si ya existe el participante en la misma formación

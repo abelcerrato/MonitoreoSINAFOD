@@ -1,5 +1,7 @@
 import { pool } from "../db.js";
 
+
+// Trae los municipios por el id del departamento
 export const getMunicipiosIdM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -21,6 +23,8 @@ export const getMunicipiosIdM = async (id) => {
   }
 };
 
+
+// Trae un municipio por su id de departamento
 export const getMunicipioxIdDepto = async (municipioced) => {
   console.log("Municipio enviado:", municipioced);
   try {
@@ -37,13 +41,14 @@ export const getMunicipioxIdDepto = async (municipioced) => {
   }
 };
 
+
+// Trae todos los municipios
 export const getMunicipiosM = async () => {
   try {
     const { rows } = await pool.query(`
             select m.id, m.nombre as municipio 
             from municipio m 
             order by m.nombre asc`);
-
     return rows;
   } catch (error) {
     throw error;

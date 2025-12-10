@@ -1,19 +1,9 @@
 import { pool } from "../db.js";
 
+// Trae todos los permisos con sus roles y objetos
 export const getPermisosM = async () => {
   try {
-    /*  const { rows } = await pool.query(`
-         select
-             p.id, p.idrol, mr.rol, p.idobjeto, mo.objeto, 
-             p.consultar, p.insertar, p.actualizar, 
-             muc.nombre as creadopor, p.fechacreacion, mum.nombre as modificadopor, p.fechamodificacion 
-         FROM ms_permisos p
-             left join ms_roles mr on p.idrol =mr.id 
-             left join ms_objetos mo on p.idobjeto = mo.id 
-             left join ms_usuarios muc on p.creadopor = muc.id 
-             left join ms_usuarios mum on p.modificadopor = mum.id `) */
-
-    const { rows } = await pool.query(`
+      const { rows } = await pool.query(`
                 SELECT 
                     mr.id AS idrol,
                     mr.descripcion,
@@ -36,7 +26,6 @@ export const getPermisosM = async () => {
                 LEFT JOIN ms_usuarios muc ON p.creadopor = muc.id
                 GROUP BY mr.id, mr.rol, mr.estado, muc.nombre;
                 `);
-    // console.log(rows);
     return rows;
   } catch (error) {
     throw error;
@@ -62,10 +51,6 @@ export const getPermisosIdRolM = async (id) => {
             p.idrol=$1 `,
       [id]
     );
-    /*  console.log(
-      "Resultado de la consulta de los permisos que tiene el Rol:",
-      rows
-    ); */
     return rows;
   } catch (error) {
     console.error("Error al obtener los permisos que tiene el Rol:", error);
@@ -73,6 +58,7 @@ export const getPermisosIdRolM = async (id) => {
   }
 };
 
+// Crea un nuevo rol y sus permisos
 export const postRolyPermisosM = async (
   rol,
   estado,
@@ -80,8 +66,8 @@ export const postRolyPermisosM = async (
   creadopor,
   permisos
 ) => {
-  // console.log(req.body);
   try {
+    // Iniciar la transacción
     await pool.query("BEGIN");
     //insertar en roles
     const result = await pool.query(
@@ -124,10 +110,9 @@ export const postRolyPermisosM = async (
                 VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, null, null) RETURNING id;`,
         permisosValues
       );
-
-      //const idpermisos = permisosQuery.rows[0].id;
     }
 
+    // Finalizar la transacción
     await pool.query("COMMIT");
     return { message: "Rol y permisos creados correctamente", idrol };
   } catch (error) {
@@ -137,6 +122,7 @@ export const postRolyPermisosM = async (
   }
 };
 
+// Actualiza un rol y sus permisos
 export const putRolyPermisosM = async (
   rol,
   estado,
@@ -146,6 +132,7 @@ export const putRolyPermisosM = async (
   idrol
 ) => {
   try {
+    // Iniciar la transacción
     await pool.query("BEGIN");
     //insertar en roles
     const result = await pool.query(
@@ -189,6 +176,8 @@ export const putRolyPermisosM = async (
         idrol,
       ]);
     }
+
+    // Finalizar la transacción
     await pool.query("COMMIT");
     return {
       message: "Rol y permisos actualizados correctamente",

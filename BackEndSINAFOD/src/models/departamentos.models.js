@@ -1,5 +1,7 @@
 import { pool } from '../db.js'
 
+
+// Trae todos los departamentos
 export const getDepartamentosM= async () => {
     try {
         const { rows } = await pool.query('SELECT * FROM departamento')
@@ -10,7 +12,7 @@ export const getDepartamentosM= async () => {
     }
 }
 
-
+// Trae un departamento por su id
 export const getDepartamentoId= async (departamentoced) => {
     console.log('Municipio enviado:', departamentoced);
     try {

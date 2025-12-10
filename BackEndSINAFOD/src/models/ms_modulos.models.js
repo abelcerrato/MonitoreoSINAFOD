@@ -1,5 +1,6 @@
 import { pool } from '../db.js'
 
+// Trae todos los módulos
 export const getModulosM = async () => {
     try {
         const { rows } = await pool.query(`
@@ -9,7 +10,6 @@ export const getModulosM = async () => {
         left join ms_usuarios muc on mm.creadopor = muc.id 
         left join ms_usuarios mum on mm.modificadopor = mum.id
         order by mm.id asc`)
-        //console.log(rows);
         return rows;
     } catch (error) {
         throw error;
@@ -17,6 +17,7 @@ export const getModulosM = async () => {
 }
 
 
+// Trae un módulo por su id
 export const getModuloIdM = async (id) => {
     console.log('Modulo enviado:', id);
     try {
@@ -34,7 +35,7 @@ export const getModuloIdM = async (id) => {
 }
 
 
-
+// Crea un nuevo módulo
 export const postModuloM = async (modulo, descripcion, creadopor) => {
     try {
         const { rows } = await pool.query(`
@@ -49,6 +50,7 @@ export const postModuloM = async (modulo, descripcion, creadopor) => {
     }
 }
 
+// Actualiza un módulo por su id
 export const putModuloM = async (modulo, descripcion, modificadopor, id) => {
     try {
         const { rows } = await pool.query(`

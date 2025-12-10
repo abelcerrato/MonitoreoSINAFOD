@@ -1,6 +1,6 @@
 import { pool } from '../db.js'
 
-
+//Trae todas las aldeas mediante el ID del registro
 export const getAldeasIdM = async (id) => {
     try {
         const { rows } = await pool.query(`

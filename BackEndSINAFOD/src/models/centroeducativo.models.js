@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+//get de todos los centros educativos
 export const getCentroEducativoM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -71,16 +72,11 @@ export const getIdCentroEducativoIdDeptoM = async (iddepto, idmuni) => {
         `,
       [iddepto, idmuni]
     );
-    /*          WHERE (ced.iddepartamento = $1 OR $1 IS NULL)
-              AND (ced.idmunicipio = $2 OR $2 IS NULL) */
     return rows;
   } catch (error) {
     throw error;
   }
 };
-
-
-
 
 
 //get de centros educativos por id del registro del centro educativo
@@ -111,6 +107,7 @@ export const getIdCentroEducativoSACEM = async (codigosace) => {
     throw error;
   }
 };
+
 
 //get de centros educativos por identificacion del participante
 export const getCentroEducativoParticipanteM = async (identificacion) => {
@@ -161,6 +158,8 @@ export const getCentroEducativoParticipanteM = async (identificacion) => {
   }
 };
 
+
+// Crea un nuevo centro educativo
 export const postCentroEducativoM = async (
   nombreced,
   codigosaceced,
@@ -204,6 +203,8 @@ export const postCentroEducativoM = async (
   }
 };
 
+
+// Actualiza un centro educativo por su id
 export const putCentroEducativoM = async (
   nombreced,
   codigosaceced,
@@ -243,9 +244,8 @@ export const putCentroEducativoM = async (
   }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// CETRO EDUCATIVO Y PARTICIPANTE
 
+// CETRO EDUCATIVO Y PARTICIPANTE
 export const postCentroEducativoParticipanteM = async (
   idcentroeducativo,
   idparticipante,
@@ -283,6 +283,8 @@ export const postCentroEducativoParticipanteM = async (
   }
 };
 
+
+// Actualiza un centro educativo y participante por su id
 export const putCentroEducativoParticipanteM = async (
   idcentroeducativo,
   idparticipante,

@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+// Trae todos los registros de formacion
 export const getFormacionM = async () => {
     try {
         const { rows } = await pool.query(`
@@ -53,6 +54,8 @@ export const getFormacionM = async () => {
     }
 };
 
+
+// Trae un registro de formacion por su id
 export const getIdFormacionM = async (id) => {
     try {
         const { rows } = await pool.query(
@@ -77,6 +80,8 @@ export const getIdFormacionM = async (id) => {
     }
 };
 
+
+// Crea un nuevo registro de formación
 export const postFormacionM = async (
     formacion,
     tipoactividad,
@@ -154,6 +159,8 @@ export const postFormacionM = async (
     }
 };
 
+
+// Actualiza un registro de formación por su id
 export const putFormacionM = async (
     formacion,
     tipoactividad,
@@ -259,8 +266,7 @@ export const putFormacionM = async (
     }
 };
 
-////////////////////////////////////////////////////
-
+// Crea un nuevo registro de lineamientos de formación
 export const postLineamientosFormacionM = async (
     formacion,
     criteriosfactibilidad,
@@ -296,6 +302,8 @@ export const postLineamientosFormacionM = async (
     }
 };
 
+
+// Actualiza un registro de lineamientos de formación por su id
 export const putLineamientosFormacionM = async (
     formacion,
     criteriosfactibilidad,

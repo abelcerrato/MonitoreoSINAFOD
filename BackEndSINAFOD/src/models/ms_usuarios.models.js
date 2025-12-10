@@ -1,6 +1,7 @@
 import { pool } from '../db.js'
 import bcrypt from 'bcrypt'; // Para cifrar contraseñas
 
+// Trae todos los usuarios
 export const getUserM = async () => {
     try {
         const { rows } = await pool.query(` 
@@ -25,7 +26,7 @@ export const getUserM = async () => {
     }
 }
 
-
+// Trae un usuario por su nombre de usuario
 export const getUsuarioIdM = async (usuario) => {
     console.log('Usuario enviado:', usuario);
     try {
@@ -43,6 +44,7 @@ export const getUsuarioIdM = async (usuario) => {
 }
 
 
+// Trae un usuario por su id
 export const getUserIdM = async (id) => {
     try {
         const { rows } = await pool.query(`
@@ -58,10 +60,10 @@ export const getUserIdM = async (id) => {
 
         throw error;
     }
-
-
 }
 
+
+// Verifica las credenciales del usuario para el inicio de sesión
 export const verificarUsuarioM = async (usuario) => {
     try {
 
@@ -79,14 +81,10 @@ export const verificarUsuarioM = async (usuario) => {
     }
 };
 
-
+// Crea un nuevo usuario
 export const postUserM = async (nombre, usuario, correo, idrol, estado,  identidad, creadopor) => {
     try {
-        // Definir la nueva contraseña temporal
-       // const ContraseñaUsuarioNuevo = "NuevoUsuario1*";  //ya no se usa
-
-
-        const contraseñaCifrada  = await bcrypt.hash(identidad, 10);
+        const contraseñaCifrada  = await bcrypt.hash(identidad, 10); // Cifra la identidad para usarla como contraseña inicial
         const { rows } = await pool.query(`INSERT INTO ms_usuarios
                                                 (nombre, usuario,  correo, idrol, contraseña,
                                                 estado, identidad, creadopor, fechacreacion, fechamodificacion ) 
@@ -100,9 +98,10 @@ export const postUserM = async (nombre, usuario, correo, idrol, estado,  identid
     }
 }
 
-
+// Actualiza un usuario por su id
 export const updateUserM = async ( nombre, correo, idrol, estado, modificadopor, usuario, identidad, id) => {
     try {
+        // Actualizar los datos del usuario
         const { rows } = await pool.query(`UPDATE ms_usuarios SET 
                                                 nombre=$1, correo=$2, idrol=$3, 
                                                 estado=$4, modificadopor=$5, usuario=$6, identidad=$7,
@@ -116,7 +115,7 @@ export const updateUserM = async ( nombre, correo, idrol, estado, modificadopor,
 
 }
 
-//no está en uso, ya que la contraseña es la identidad del usuario
+// Actualiza la contraseña de un usuario
 export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
     try {
         // Encriptar la nueva contraseña
@@ -141,12 +140,9 @@ export const updateContraseñaM = async (nuevaContraseña, usuario ) => {
     }
 };
 
-
-//no está en uso, ya que la contraseña es la identidad del usuario
+// Resetea la contraseña de un usuario a su número de identidad
 export const resetContraseñaM = async (identidad, usuario) => {
     try {
-        // Definir la nueva contraseña temporal
-        //  const nuevaContraseña = "12345678";
 
         // Encriptar la contraseña temporal
         const contraseñaCifrada = await bcrypt.hash(identidad, 10);

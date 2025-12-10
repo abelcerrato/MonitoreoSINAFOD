@@ -1,5 +1,6 @@
 import { pool } from '../db.js'
 
+// Trae todos los roles
 export const getRolesM = async () => {
     try {
         const { rows } = await pool.query(`
@@ -9,18 +10,17 @@ export const getRolesM = async () => {
         left join ms_usuarios muc on r.creadopor = muc.id 
         left join ms_usuarios mum on r.modificadopor = mum.id
         order by r.id asc`)
-        // console.log(rows);
         return rows;
     } catch (error) {
         throw error;
     }
 }
 
+// Trae un rol por su id
 export const getRolIdM = async (id) => {
     console.log('Rol enviada:', id);
     try {
         const { rows } = await pool.query('SELECT rol, estado, descripcion FROM ms_roles WHERE id=$1', [id]);
-        //console.log('Resultado de la consulta del Rol:', rows);
         return rows[0];
     } catch (error) {
         console.error('Error al obtener el Rol:', error);
@@ -28,6 +28,7 @@ export const getRolIdM = async (id) => {
     }
 }
 
+// Crea un nuevo rol
 export const postRolesM = async (rol, estado, descripcion, creadopor) => {
     try {
         const { rows } = await pool.query(`
@@ -41,6 +42,7 @@ export const postRolesM = async (rol, estado, descripcion, creadopor) => {
     }
 }
 
+// Actualiza un rol por su id
 export const putRolesM = async (rol,  estado, descripcion, modificadopor, id) => {
     try {
         const { rows } = await pool.query(`

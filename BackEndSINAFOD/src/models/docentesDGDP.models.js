@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 
+// Trae todos los docentes DGDP
 export const getDocentesM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -25,6 +26,8 @@ export const getDocentesM = async () => {
   }
 };
 
+
+// Trae un docente DGDP por su identificacion
 export const getDocentesIdM = async (identificacion) => {
   try {
     const { rows } = await pool.query(
@@ -55,6 +58,8 @@ export const getDocentesIdM = async (identificacion) => {
   }
 };
 
+
+// Crea un nuevo docente DGDP
 export const postDocentesM = async (
   codigosace,
   nombre,
@@ -94,14 +99,13 @@ export const postDocentesM = async (
         zona,
       ]
     );
-    // Log for debugging
-    //console.log(rows);
     return rows[0].id;
   } catch (error) {
     throw error;
   }
 };
 
+// Actualiza un docente DGDP por su identificacion
 export const putDocentesM = async (
   codigosace,
   nombre,
@@ -148,7 +152,8 @@ export const putDocentesM = async (
   }
 };
 
-//para buscar por identificacion en tabla de docentesdgdp
+
+//Para buscar por identificacion en tabla de docentesdgdp
 export const getDocenteIdentificacionM = async (filtro) => {
   //console.log(filtro);
 
@@ -183,7 +188,7 @@ export const getDocenteIdentificacionM = async (filtro) => {
   }
 };
 
-//para buscar por codigo SACE en tabla de docentesdgdp
+//Para buscar por codigo SACE en tabla de docentesdgdp
 export const getDocenteCodSACEM = async (filtro) => {
   try {
     const { rows } = await pool.query(

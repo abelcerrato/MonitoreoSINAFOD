@@ -1,9 +1,6 @@
 import { pool } from "../db.js";
 
-/**
-tipoactividad, existeconvenio, institucionconvenio, presentoprotocolo, presentoprotocolourl, estadoprotocolo, monitoreoyevaluacion, monitoreoyevaluacionurl, aplicacionevaluacion, aplicacionevaluacionurl
- */
-
+// Trae todos los registros de investigación
 export const getInvestigacionM = async () => {
   try {
     const { rows } = await pool.query(`
@@ -51,6 +48,8 @@ export const getInvestigacionM = async () => {
   }
 };
 
+
+// Trae un registro de investigación por su id
 export const getIdInvestigacionM = async (id) => {
   try {
     const { rows } = await pool.query(
@@ -72,7 +71,7 @@ export const getIdInvestigacionM = async (id) => {
   }
 };
 
-/////////////////////////////
+// Crea un nuevo registro de investigación
 export const postInvestigacionM = async (
   investigacion,
   tipoactividad,
@@ -127,6 +126,7 @@ export const postInvestigacionM = async (
   }
 };
 
+// Actualiza un registro de investigación por su id
 export const putInvestigacionM = async (
   investigacion,
   tipoactividad,
@@ -199,8 +199,8 @@ export const putInvestigacionM = async (
   }
 };
 
-////////////////////////////////////////////////////
 
+// Crea un nuevo registro de lineamientos de investigación
 export const postLineamientosInvesatigacionM = async (
   investigacion,
   presentoprotocolo,
@@ -244,6 +244,7 @@ export const postLineamientosInvesatigacionM = async (
   }
 };
 
+// Actualiza un registro de lineamientos de investigación por su id
 export const putLineamientosInvesatigacionM = async (
   investigacion,
   presentoprotocolo,
