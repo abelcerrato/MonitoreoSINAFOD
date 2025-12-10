@@ -1,6 +1,6 @@
 import { getObjetoIdM, getObjetosM, postObjetosM, putObjetosM } from "../models/ms_objetos.models.js";
 
-
+//Trae todos los objetos de la tabla ms_objetos
 export const getObjetosC = async (req, res) => {
     try {
         const objetos = await getObjetosM();
@@ -11,7 +11,7 @@ export const getObjetosC = async (req, res) => {
     }
 }
 
-
+//Trae los objetos por el id de la tabla ms_objetos
 export const getObjetoIdC = async (req, res) => {
     try {
         const { id } = req.params
@@ -29,7 +29,7 @@ export const getObjetoIdC = async (req, res) => {
     }
 }
 
-
+//Inserta un nuevo objeto en la tabla ms_objetos
 export const postObjetosC = async (req, res) => {
     try {
         const { objeto, idmodulo, descripcion, creadopor } = req.body;
@@ -50,7 +50,7 @@ export const postObjetosC = async (req, res) => {
     }
 }
 
-
+//Actualiza un objeto en la tabla ms_objetos
 export const putObjetosC = async (req, res) => {
     try {
         const { id } = req.params;

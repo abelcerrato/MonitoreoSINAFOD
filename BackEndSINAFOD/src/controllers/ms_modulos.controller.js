@@ -1,7 +1,7 @@
-
+//Importa las funciones del modelo
 import { getModuloIdM, getModulosM, postModuloM, putModuloM } from "../models/ms_modulos.models.js";
 
-
+//Trae todos los modulos
 export const getModulosC = async (req, res) => {
     try {
         const modulos = await getModulosM();
@@ -12,7 +12,7 @@ export const getModulosC = async (req, res) => {
     }
 }
 
-
+//Trae los modulos por el id
 export const getModuloIdC = async (req, res) => {
     try {
         const { id } = req.params
@@ -30,7 +30,7 @@ export const getModuloIdC = async (req, res) => {
     }
 }
 
-
+//Inserta un nuevo modulo
 export const postModuloC = async (req, res) => {
     try {
         const { modulo, descripcion, creadopor } = req.body;
@@ -51,7 +51,7 @@ export const postModuloC = async (req, res) => {
     }
 }
 
-
+//Actualiza un modulo
 export const putModuloC = async (req, res) => {
     try {
         const { id } = req.params;

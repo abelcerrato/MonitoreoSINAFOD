@@ -14,7 +14,7 @@ router.post('/insertarUsuarios', postUserC)
 
 router.put('/actualizarUsuarios/:id', updateUserC)
 
-router.put('/resetearContra/:usuario', resetContraseñaUserC) //resetea la contraseña y asigna Temporal1*
+router.put('/resetearContra/:usuario', resetContraseñaUserC) //resetea la contraseña y asigna la identidad como contraseña temporal
 
 router.post('/inicioSesion', loginC)//hace login y verifica si la contraseña es temporal
 

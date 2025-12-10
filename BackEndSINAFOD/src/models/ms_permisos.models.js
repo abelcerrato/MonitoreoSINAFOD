@@ -137,7 +137,7 @@ export const postRolyPermisosM = async (
   }
 };
 
-export const putPerfilPermisosM = async (
+export const putRolyPermisosM = async (
   rol,
   estado,
   descripcion,

@@ -25,6 +25,8 @@ import {
 import { getUsuarioIdM } from "../models/ms_usuarios.models.js";
 import { getRelacionParticipanteFormacionC } from "./Participante.controller.js";
 
+
+//Trae todos los docentes
 export const getDocentesC = async (req, res) => {
   try {
     const docentes = await getDocentesM();
@@ -35,6 +37,8 @@ export const getDocentesC = async (req, res) => {
   }
 };
 
+
+//Trae los docentes por el id
 export const getDocentesIdC = async (req, res) => {
   const { identificacion } = req.params;
   try {
@@ -50,6 +54,8 @@ export const getDocentesIdC = async (req, res) => {
   }
 };
 
+
+//Inserta un nuevo docente
 export const postDocentesC = async (req, res) => {
   const {
     codigosace,
@@ -91,9 +97,10 @@ export const postDocentesC = async (req, res) => {
   }
 };
 
+
+//Actualiza un docente
 export const putDocentesC = async (req, res) => {
   try {
-    //const { id } = req.params;
     const {
       codigosace,
       nombre,
@@ -171,9 +178,8 @@ export const getDocenteCodSACEC = async (req, res) => {
   }
 };
 
-//filtrar por codigo SACE o por Identificacion
 
-/* 
+/*  NO ESTÁ EN USO
 export const getFiltroDocenteC = async (req, res) => {
     const { filtro } = req.params;
     try {
@@ -212,16 +218,15 @@ export const getFiltroDocenteC = async (req, res) => {
 }
  */
 
-//filtrar por codigo SACE o por Identificacion
+
+
+//Filtrar por codigo SACE o por Identificacion
 export const getFiltroDocenteC = async (req, res) => {
   const { filtro } = req.params;
   try {
-    // const docentes = await getDocenteIdentificacionM(filtro);
     const resultados = await Promise.all([
-      //getParticipanteCodSACEM(filtro),
       getParticipanteIdentificacionM(filtro),
       getDocenteIdentificacionM(filtro),
-      // getDocenteCodSACEM(filtro)
     ]);
 
     // Buscar el primer resultado que no esté vacío o null
@@ -235,8 +240,6 @@ export const getFiltroDocenteC = async (req, res) => {
       return res.json(resultadoValido);
     }
 
-    // console.log("respuesta back", getDocenteIdentificacionM);
-
     return res.status(202).json({
       mensaje: "No se encontraron registros para el filtro proporcionado.",
     });
@@ -246,7 +249,8 @@ export const getFiltroDocenteC = async (req, res) => {
   }
 };
 
-//filtrar por codigo SACE o por Identificacion
+
+//Filtrar por código SACE o por Identificacion
 export const getFiltroDocentesC = async (req, res) => {
   const { tipo, id } = req.params;
 
@@ -329,8 +333,8 @@ export const getFiltroDocentesC = async (req, res) => {
   try {
     // Buscar por identificación de docente y por codigo sace
     const resultado1 = await getDocenteIdentificacionM(identificacion);
-    const resultado3 = await getParticipanteDNIM(identificacion); // idparticipante
-    const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); // idcentroeducativo
+    const resultado3 = await getParticipanteDNIM(identificacion); 
+    const resultado4 = await getIdCentroEducativoSACEM(codigosaceced); 
 
     const iddocente = resultado1;
     const idparticipante = resultado3;
@@ -439,7 +443,8 @@ export const getFiltroDocentesC = async (req, res) => {
       );
     }
 
-    // CASO 0.1: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 que es sin centro educativo{
+    // CASO 0.1: Solo insertar participante si viene el flag, y se deja quemado el id del centroeducativo en 58 
+    // que es el id que se muestra en la base de datos que es sin centro educativo
     else if (tipo === "formacion" && idformacion && tienecentro === false && !idparticipante) {
       console.log(
         "CASO 0.1: Solo inserta el participante y la relacion si no existe participante"
@@ -626,6 +631,7 @@ export const getFiltroDocentesC = async (req, res) => {
         inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
       }
     }
+
     // CASO 2: Existe docente, pero no participante ni centro educativo
     else if (!idparticipante && !idcentroeducativo && iddocente) {
       console.log(
@@ -702,6 +708,7 @@ export const getFiltroDocentesC = async (req, res) => {
         inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
       }
     }
+
     // CASO 3: No existe docente, pero sí existe participante y centro educativo
     else if (!iddocente && idparticipante && idcentroeducativo) {
       console.log(
@@ -871,6 +878,7 @@ export const getFiltroDocentesC = async (req, res) => {
         );
       }
     }
+
     // CASO 5: Existe docente y centro educativo, pero NO existe participante
     else if (!idparticipante && iddocente && idcentroeducativo) {
       console.log(
@@ -933,6 +941,8 @@ export const getFiltroDocentesC = async (req, res) => {
         inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
       }
     }
+
+
     // CASO 6: Existe en centro educativo, pero NO existe participante ni en docente
     else if (!iddocente && !idparticipante && idcentroeducativo) {
       console.log(
@@ -1014,6 +1024,7 @@ export const getFiltroDocentesC = async (req, res) => {
         inv = await postParticipanteInvestigacionM(idinvestigacion, idPart);
       }
     }
+
     // CASO 7: Ya existen todos, solo agregar relaciones nuevas si es necesario
     else {
       console.log(
@@ -1082,7 +1093,7 @@ export const getFiltroDocentesC = async (req, res) => {
       }
     }
 
-    // Al final del try, ya todas las variables necesarias estarán definidas correctamente
+    // Retornar todas las variables en la respuesta
     return res.status(201).json({
       message: "Proceso completado exitosamente.",
       docentes,

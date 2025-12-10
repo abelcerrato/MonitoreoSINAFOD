@@ -1,6 +1,6 @@
 import { getCentroEducativoParticipanteM, getCentroEducativoM, getIdCentroEducativoM, postCentroEducativoM, putCentroEducativoM, getIdCentroEducativoIdDeptoM } from "../models/centroeducativo.models.js";
 
-
+//Trae todos los centros educativos
 export const getCentroEducativoC = async (req, res) => {
     try {
         const CentroEducativo = await getCentroEducativoM();
@@ -72,7 +72,7 @@ export const getCentroEducativoPartC = async (req, res) => {
 
 
 
-
+//Inserta un nuevo centro educativo
 export const postCentroEducativoC = async (req, res) => {
     const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico } = req.body
     console.log('Centro educativo a insertar:', req.body);
@@ -89,7 +89,7 @@ export const postCentroEducativoC = async (req, res) => {
 
 
 
-
+//Actualiza un centro educativo
 export const putCentroEducativoC = async (req, res) => {
     const { id } = req.params;
     const { nombreced, codigosaceCed, tipoadministracion, tipocentro, zona, iddepartamento, idmunicipio, idaldea, idnivelacademico } = req.body

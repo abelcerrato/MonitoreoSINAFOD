@@ -1,6 +1,6 @@
 import { getDepartamentosM } from "../models/departamentos.models.js";
 
-
+//Trae todos los departamentos
 export const getDepartamentosC = async (req, res) => {
     try {
         const departamentos = await getDepartamentosM();

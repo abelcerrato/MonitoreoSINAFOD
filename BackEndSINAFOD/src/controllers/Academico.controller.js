@@ -1,5 +1,3 @@
-
-
 import { getNivelesAcademicosM, getNivelAcademicoM, getCiclosAcademicosM, getCicloAcademicoM, getGradosAcademicosM, getGradoAcademicoM, getCicloAcademicoIdNivelM, getGradoAcademicoIdCicloM, getGradoAcademicoIdNivelM } from "../models/Academico.models.js";
 
 //Trae todos los niveles academicos

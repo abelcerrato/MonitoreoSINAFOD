@@ -48,7 +48,6 @@ export const getIdInvestigacionC = async (req, res) => {
 
 //-------------------------------------------------------------------------------------------------------------------------
 // Crear investigacion sin lineamientos
-
 export const postInvestigacionC = async (req, res) => {
   const {
     investigacion,

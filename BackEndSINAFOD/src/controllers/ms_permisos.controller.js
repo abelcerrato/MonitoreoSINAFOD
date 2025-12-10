@@ -1,6 +1,7 @@
-import { getPermisosIdRolM, getPermisosM, postRolyPermisosM, putPerfilPermisosM } from "../models/ms_permisos.models.js";
+import { getPermisosIdRolM, getPermisosM, postRolyPermisosM, putRolyPermisosM } from "../models/ms_permisos.models.js";
 import { getRolIdM } from "../models/ms_roles.models.js";
 
+//Trae todos los permisos de los roles
 export const getPermisosC = async (req, res) => {
     try {
         const permisos = await getPermisosM();
@@ -42,7 +43,7 @@ export const getPermisosIdRolC = async (req, res) => {
 }
 
 
-
+//Inserta un nuevo rol y sus permisos
 export const postRolyPermisosC = async (req, res) => {
     const { rol, estado, descripcion, creadopor, permisos } = req.body;
     console.log(req.body);
@@ -62,8 +63,8 @@ export const postRolyPermisosC = async (req, res) => {
 };
 
 
-
-export const putPerfilPermisosC = async (req, res) => {
+//Actualiza un rol y sus permisos
+export const putRolyPermisosC = async (req, res) => {
     try {
         const { rol, estado, descripcion,  modificadopor, permisos, idrol } = req.body;
         console.log(req.body);
@@ -72,7 +73,7 @@ export const putPerfilPermisosC = async (req, res) => {
             return res.status(400).json({ message: 'Faltan campos obligatorios' });
         }
 
-        const resultado = await putPerfilPermisosM( rol, estado, descripcion, modificadopor, permisos, idrol);
+        const resultado = await putRolyPermisosM( rol, estado, descripcion, modificadopor, permisos, idrol);
 
         res.status(200).json(resultado);
     } catch (error) {

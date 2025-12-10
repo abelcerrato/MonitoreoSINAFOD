@@ -1,5 +1,6 @@
 import { getAldeasIdM } from "../models/aldeas.models.js";
 
+// Trae todas las aldeas mediante el ID del registro
 export const getAldeasIdC = async (req, res) => {
     try {
         const { id } = req.params;

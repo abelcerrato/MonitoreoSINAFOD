@@ -1,5 +1,6 @@
 import { getCargoDesempeñaIdM, getCargoDesempeñaM, postCargoDesempeñaM, putCargoDesempeñaM } from "../models/cargodesempeña.models.js";
 
+//Trae todos los cargos que desempeña
 export const getCargoDesempeñaC = async (req, res) => {
     try {
         const cargodes = await getCargoDesempeñaM();
@@ -12,7 +13,7 @@ export const getCargoDesempeñaC = async (req, res) => {
 }
 
 
-//Trae los cagos por el id
+//Trae los cargos por el id
 export const getCargoDesempeñaIdC = async (req, res) => {
     try {
         const { id } = req.params
@@ -31,7 +32,7 @@ export const getCargoDesempeñaIdC = async (req, res) => {
 }
 
 
-
+//Inserta un nuevo cargo que desempeña
 export const postCargoDesempeñaC = async (req, res) => {
     const { cargo } = req.body
     console.log(req.body);
@@ -44,7 +45,7 @@ export const postCargoDesempeñaC = async (req, res) => {
     }
 }
 
-
+//Actualiza un cargo que desempeña
 export const putCargoDesempeñaC = async (req, res) => {
     const { id } = req.params;
     const { cargo } = req.body

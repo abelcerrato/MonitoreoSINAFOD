@@ -28,6 +28,8 @@ import {
   getRelacionParticipanteFormacionM,
 } from "../models/Participante.models.js";
 
+
+//Trae todos los participantes
 export const getParticipanteC = async (req, res) => {
   try {
     const Participante = await getParticipanteM();
@@ -59,7 +61,7 @@ export const getParticipanteIdC = async (req, res) => {
   }
 };
 
-//Trae los participantes por el id de la investigacion
+//Trae los participantes por el id de la investigación
 export const getParticipanteIdInvestC = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,7 +78,7 @@ export const getParticipanteIdInvestC = async (req, res) => {
   }
 };
 
-//Trae los participantes por formacion
+//Trae los participantes por formación
 export const getParticipanteFormacionC = async (req, res) => {
   try {
     const Participante = await getParticipanteFormacionM();
@@ -92,7 +94,7 @@ export const getParticipanteFormacionC = async (req, res) => {
   }
 };
 
-//Trae los participantes por el id de la Formacion
+//Trae los participantes por el id de la Formación
 export const getParticipanteIdFormacionC = async (req, res) => {
   try {
     const { id } = req.params;
@@ -109,7 +111,7 @@ export const getParticipanteIdFormacionC = async (req, res) => {
   }
 };
 
-//Trae los participantes por formacion
+//Trae los participantes por formación
 export const getParticipanteInvestigacionC = async (req, res) => {
   try {
     const Participante = await getParticipanteInvestigacionM();
@@ -125,7 +127,7 @@ export const getParticipanteInvestigacionC = async (req, res) => {
   }
 };
 
-// Trae los participantes por el id de la Formacion o de la Investigacion
+// Trae los participantes por el id de la Formación o de la Investigación
 export const getParticipanteIdFormInvestC = async (req, res) => {
   try {
     const { tipo, id } = req.params;
@@ -153,6 +155,7 @@ export const getParticipanteIdFormInvestC = async (req, res) => {
   }
 };
 
+//Inserta un nuevo participante
 export const postParticipanteC = async (req, res) => {
   const {
     identificacion,
@@ -217,6 +220,8 @@ export const postParticipanteC = async (req, res) => {
   }
 };
 
+
+//Actualiza un participante
 export const putParticipanteC = async (req, res) => {
   const { id } = req.params;
   const {
@@ -339,7 +344,7 @@ export const putParticipanteC = async (req, res) => {
   }
 };
 
-//para buscar por identificacion en tabla de docentesdgdp
+//Para buscar por identificacion en tabla de docentesdgdp
 export const getParticipanteIdentificacionC = async (req, res) => {
   try {
     const { filtro } = req.params;
@@ -356,7 +361,7 @@ export const getParticipanteIdentificacionC = async (req, res) => {
   }
 };
 
-//para buscar por codigo SACE en tabla de docentesdgdp
+//Para buscar por codigo SACE en tabla de docentesdgdp
 export const getParticipanteCodSACEC = async (req, res) => {
   try {
     const { filtro } = req.params;
@@ -373,7 +378,7 @@ export const getParticipanteCodSACEC = async (req, res) => {
   }
 };
 
-//filtrar por codigo SACE o por Identificacion
+//Filtrar por codigo SACE o por Identificacion
 export const postParticipantesIFCedC = async (req, res) => {
   const {
     identificacion,
@@ -1178,7 +1183,6 @@ export const getRelacionParticipanteFormacionC = async (req, res) => {
     );
 
     if (participante) {
-      // Ya existe
       console.log("El participante ya fue inscrito en esta formación.");
       return res.status(400).json({
         error: `El participante ya fue inscrito en esta formación.`,
@@ -1186,7 +1190,6 @@ export const getRelacionParticipanteFormacionC = async (req, res) => {
       });
     }
 
-    // No existe, no devolvemos nada o puedes retornar un 200 vacío
     return res.status(200).json({ message: "OK" });
   } catch (error) {
     console.error("Error al obtener el registro:", error);

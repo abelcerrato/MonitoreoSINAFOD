@@ -1,6 +1,6 @@
-import { pool } from "../db.js";
+import { pool } from "../db.js"; // Importa la conexión a la base de datos
 import bcrypt from "bcrypt"; // Para cifrar contraseñas
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"; // Para manejar tokens JWT
 
 import {
   getUserM,
@@ -13,6 +13,8 @@ import {
   resetContraseñaM,
 } from "../models/ms_usuarios.models.js";
 
+
+//Trae todos los usuarios
 export const getUserC = async (req, res) => {
   try {
     const users = await getUserM();
@@ -23,6 +25,8 @@ export const getUserC = async (req, res) => {
   }
 };
 
+
+//Trae los usuarios por el nombre de usuario
 export const getUsuarioIdC = async (req, res) => {
   try {
     const { usuario } = req.params;
@@ -39,6 +43,8 @@ export const getUsuarioIdC = async (req, res) => {
   }
 };
 
+
+//Trae los usuarios por el id
 export const getUserIdC = async (req, res) => {
   try {
     const { id } = req.params;
@@ -55,6 +61,8 @@ export const getUserIdC = async (req, res) => {
   }
 };
 
+
+//Verifica el usuario y la contraseña para el login
 export const verificarUsuarioC = async (req, res) => {
   try {
     const { usuario, contraseña } = req.body;
@@ -90,6 +98,8 @@ export const verificarUsuarioC = async (req, res) => {
   }
 };
 
+
+//Inserta un nuevo usuario
 export const postUserC = async (req, res) => {
   try {
     const { nombre, usuario, correo, idrol, estado, identidad, creadopor } =
@@ -104,7 +114,6 @@ export const postUserC = async (req, res) => {
       identidad,
       creadopor
     );
-    //res.json(users)
     res.json({ message: "Usuario Agregado Exitosamente", user: users });
   } catch (error) {
     console.error("Error al insertar el usuario:", error);
@@ -112,6 +121,8 @@ export const postUserC = async (req, res) => {
   }
 };
 
+
+//Actualiza un usuario
 export const updateUserC = async (req, res) => {
   try {
     const { id } = req.params;
@@ -135,7 +146,8 @@ export const updateUserC = async (req, res) => {
   }
 };
 
-//no está en uso, ya que la contraseña es la identidad del usuario
+
+//Actualiza la contraseña del usuario
 export const updateContraseñaC = async (req, res) => {
   try {
     console.log("Entro a la función de actualizar contraseña");
@@ -155,7 +167,7 @@ export const updateContraseñaC = async (req, res) => {
   }
 };
 
-//no está en uso, ya que la contraseña es la identidad del usuario
+//Resetea la contraseña del usuario a su identidad
 export const resetContraseñaUserC = async (req, res) => {
   try {
     const { usuario } = req.params;
@@ -176,7 +188,7 @@ export const resetContraseñaUserC = async (req, res) => {
   }
 };
 
-
+//Verifica el token JWT
 export const verificarToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 
@@ -210,6 +222,7 @@ export const verificarToken = async (req, res) => {
       .json({ valid: false, message: "Token inválido o expirado" });
   }
 };
+
 
 // Controlador para el login
 export const loginC = async (req, res) => {
@@ -303,6 +316,8 @@ export const loginC = async (req, res) => {
   }
 };
 
+
+// Controlador para el logout
 export const logoutC = async (req, res) => {
   try {
     const { id } = req.params;

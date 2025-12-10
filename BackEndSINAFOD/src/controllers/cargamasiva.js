@@ -3,8 +3,9 @@ import { getFiltroDocentesC } from './docentesDGDP.controller.js'; // Importa tu
 import { postFormacionM } from "../models/formacion.models.js";
 
 
-//no está en uso
-export const cargaMasivaFormacion = async (req, res) => {
+//No está en uso
+//Carga masiva de formacion de participantes pa una fromación específica
+/* export const cargaMasivaFormacion = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No se ha subido ningún archivo" });
@@ -107,9 +108,11 @@ export const cargaMasivaFormacion = async (req, res) => {
     return res.status(500).json({ error: "Error al procesar el archivo" });
   }
 };
+ */
 
 
-//Carga masiva de formacion con los participantes pertenecientes a cada formacion
+
+//Carga masiva de formación con los participantes pertenecientes a cada formación
 export const cargaMasivaFormacionParticipantes = async (req, res) => {
   try {
     if (!req.file) {
@@ -127,16 +130,17 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
       return res.status(400).json({ error: "El archivo está vacío" });
     }
 
-    const creadopor = req.user?.id || 1;
+    const creadopor = req.user?.id || 1; // Usa el usuario actual o un valor por defecto
 
     // --- 1 Detectar formaciones únicas ---
     // Usamos un Map para evitar duplicados por nombre
     const formacionesMap = new Map();
 
     for (const row of data) {
-      const claveFormacion = row.formacion?.trim();
+      const claveFormacion = row.formacion?.trim();// clave única basada en el nombre de la formación
       if (!claveFormacion) continue; // saltar filas vacías
 
+      // Si no existe esta formación, la agregamos al Map
       if (!formacionesMap.has(claveFormacion)) {
         formacionesMap.set(claveFormacion, {
           formacion: row.formacion,
@@ -173,9 +177,10 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
 
     console.log(`Se detectaron ${formacionesMap.size} formaciones únicas en el archivo.`);
 
-    // --- 2 Insertar todas las formaciones y guardar sus IDs ---
+    // --- 2 Insertar todas las formaciones y guardar sus Ids ---
     const idFormaciones = {};
 
+    // Insertar cada formación y guardar el ID asignado
     for (const [clave, formacionData] of formacionesMap.entries()) {
       try {
         const nuevaFormacion = await postFormacionM(...Object.values(formacionData));
@@ -190,6 +195,7 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
     let exitosos = 0;
     let fallidos = 0;
 
+    // Procesar cada fila del Excel
     for (const row of data) {
       try {
         const idFormacion = idFormaciones[row.formacion?.trim()];
@@ -243,12 +249,14 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
           idcicloatiende: row.idcicloatiende
         };
 
+        // Crear un objeto request simulado para cada participante
         const mockReq = {
           params: { tipo: "formacion", id: idFormacion },
           body,
           user: req.user,
         };
 
+        // Crear un objeto response simulado para capturar la respuesta
         const mockRes = {
           status: (code) => ({
             json: (data) => {
@@ -258,6 +266,7 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
           }),
         };
 
+        // Llamar al controlador existente con los datos de este participante
         await getFiltroDocentesC(mockReq, mockRes);
         exitosos++;
       } catch (error) {
@@ -266,6 +275,7 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
       }
     }
 
+    // Responder con un resumen de la carga
     return res.status(200).json({
       message: "Carga masiva se completó exitosamente",
       totalFormaciones: formacionesMap.size,
@@ -274,6 +284,7 @@ export const cargaMasivaFormacionParticipantes = async (req, res) => {
       fallidos,
     });
 
+    //--- FIN ---
   } catch (error) {
     console.error("Error en carga masiva:", error);
     return res.status(500).json({ error: "Error al procesar el archivo" });

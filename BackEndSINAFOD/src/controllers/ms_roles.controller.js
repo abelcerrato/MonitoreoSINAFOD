@@ -1,5 +1,6 @@
 import { getRolesM, getRolIdM, postRolesM, putRolesM } from "../models/ms_roles.models.js";
 
+//Trae todos los roles
 export const getRolesC = async (req, res) => {
     try {
         const roles = await getRolesM();
@@ -10,7 +11,7 @@ export const getRolesC = async (req, res) => {
     }
 }
 
-
+//Trae los roles por el id
 export const getRolIdC = async (req, res) => {
     try {
         const { id } = req.params
@@ -28,7 +29,7 @@ export const getRolIdC = async (req, res) => {
     }
 }
 
-
+//Inserta un nuevo rol
 export const postRolesC = async (req, res) => {
     try {
         const { rol, estado, descripcion, creadopor } = req.body;
@@ -49,7 +50,7 @@ export const postRolesC = async (req, res) => {
     }
 }
 
-
+//Actualiza un rol
 export const putRolesC = async (req, res) => {
     try {
         const { id } = req.params;

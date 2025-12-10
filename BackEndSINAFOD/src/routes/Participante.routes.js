@@ -14,7 +14,7 @@ import {
 } from "../controllers/Participante.controller.js";
 import { getFiltroDocentesC } from "../controllers/docentesDGDP.controller.js";
 
-import { cargaMasivaFormacion, cargaMasivaFormacionParticipantes } from "../controllers/cargamasiva.js";
+import { /* cargaMasivaFormacion, */ cargaMasivaFormacionParticipantes } from "../controllers/cargamasiva.js";
 import multer from 'multer';
 const upload = multer({ storage: multer.memoryStorage() });
 

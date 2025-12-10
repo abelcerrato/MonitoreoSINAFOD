@@ -49,7 +49,7 @@ export const getIdFormacionC = async (req, res) => {
 };
 
 //-------------------------------------------------------------------------------------------------------------------------
-// Crearformacion sin lineamientos
+// Crear formacion sin lineamientos
 
 export const postFormacionC = async (req, res) => {
   const {
@@ -227,6 +227,8 @@ const ALLOWED_MIME_TYPES = [
 // Tamaño máximo de archivo (10MB)
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
+
+//Insertar lineamientos de formacion con archivos
 export const postLineamientosFormacionC = async (req, res) => {
   const {
     formacion,
@@ -236,8 +238,11 @@ export const postLineamientosFormacionC = async (req, res) => {
     creadopor,
   } = req.body;
 
+
   const files = req.files || {};
   const d = new Date();
+
+  // Formatear la fecha como DD-MM-YY
   const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
     .map((n) => n.toString().padStart(2, "0"))
     .join("-");
@@ -246,18 +251,21 @@ export const postLineamientosFormacionC = async (req, res) => {
     const usuario = creadopor;
 
     // 2. Validar archivos
+    //Recorre todos los archivos que llegaron
     for (const fieldName in files) {
-      if (files[fieldName]?.[0]) {
-        const file = files[fieldName][0];
+      if (files[fieldName]?.[0]) { // Verifica que el archivo exista
+        const file = files[fieldName][0];// Toma el primer archivo (ya que maxCount es 1)
 
+        // Valida el tipo de archivo
         if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-          return res.status(400).json({
+          return res.status(400).json({ 
             success: false,
             error: `Tipo de archivo no permitido para ${fieldName}: ${file.mimetype}`,
             allowedTypes: ALLOWED_MIME_TYPES,
           });
         }
 
+        //Verifica el tamaño del archivo
         if (file.size > MAX_FILE_SIZE) {
           return res.status(400).json({
             success: false,
@@ -285,13 +293,16 @@ export const postLineamientosFormacionC = async (req, res) => {
     const idformacion = result.id;
 
     // 4. Subir archivos a Firebase
-    const fileUpdates = {};
+    // Crea dos objetos vacíos
+    const fileUpdates = {}; 
     const booleanUpdates = {};
 
+    // Función para subir un archivo a Firebase
     const uploadFileToFirebase = async (fileBuffer, filename, mimeType) => {
-      const file = bucket.file(filename);
-      const token = uuidv4();
+      const file = bucket.file(filename); //Busca donde guardar el archivo en firebase
+      const token = uuidv4(); //Genera un token único para el archivo
 
+      // Guarda el archivo en Firebase con los metadatos
       await file.save(fileBuffer, {
         metadata: {
           contentType: mimeType,
@@ -304,18 +315,22 @@ export const postLineamientosFormacionC = async (req, res) => {
       });
 
       // return `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-      return filename;
+      return filename; // Retorna el nombre del archivo en lugar de la URL completa
     };
 
+    //Crea un array de promesas para subir los archivos
     const uploadPromises = [];
-    for (const fieldName in files) {
+    for (const fieldName in files) { // Recorre los archivos subidos
+      // Si el archivo existe, lo toma y lo sube
       if (files[fieldName]?.[0]) {
         const file = files[fieldName][0];
-        const filename = `${idformacion}_${date}-${file.originalname}`;
+        const filename = `${idformacion}_${date}-${file.originalname}`; //Crea un nombre único para el archivo
 
+        // Agrega la promesa de subida al array
         uploadPromises.push(
           uploadFileToFirebase(file.buffer, filename, file.mimetype).then(
             (url) => {
+              // Guarda la URL del archivo y marca el booleano como true
               fileUpdates[fieldName] = url;
               booleanUpdates[fieldName.replace("url", "")] = true;
             }
@@ -356,7 +371,7 @@ export const postLineamientosFormacionC = async (req, res) => {
 };
 
 //-----------------------------------------------------------------------------------------------------------
-
+// Actualizar lineamientos de formacion con archivos
 export const putLineamientosFormacionC = async (req, res) => {
   const { id } = req.params;
   const { modificadopor, formacion } = req.body;
@@ -409,11 +424,12 @@ export const putLineamientosFormacionC = async (req, res) => {
       });
     }
 
-    // 4. Función para subir archivos (tu código actual está bien)
+    // 4. Función para subir archivos a Firebase
     const uploadFileToFirebase = async (fileBuffer, filename, mimeType) => {
       const file = bucket.file(filename);
       const token = uuidv4();
 
+      // Guarda el archivo en Firebase con los metadatos
       await file.save(fileBuffer, {
         metadata: {
           contentType: mimeType,

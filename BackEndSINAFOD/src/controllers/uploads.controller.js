@@ -6,6 +6,8 @@ import admin from 'firebase-admin';
 import { bucket } from '../firebase.config.js';
 
 
+//NO SE USA, YA QUE SON PARA CARGAR DOCUMENTOS DE FORMA LOCAL
+
 /* // Crear la carpeta uploads si no existe
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -75,6 +77,8 @@ const storage = multer.diskStorage({
   fileStream.pipe(res);
 }; */
 
+
+// Controlador para manejar la descarga de documentos desde Firebase Storage
 export const downloadDocumento = async (req, res) => {
   const { filename } = req.params;
   console.log(req.params);
@@ -113,6 +117,8 @@ export const downloadDocumento = async (req, res) => {
   }
 };
 
+
+//NO SE USA, YA QUE SON PARA CARGAR DOCUMENTOS DE FORMA LOCAL
 /* export const previewDocumento = (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(process.cwd(), 'uploads', filename);
@@ -145,7 +151,7 @@ export const downloadDocumento = async (req, res) => {
 };
  */
 
-
+// Controlador para previsualizar documentos desde Firebase Storage
 export const previewDocumento = async (req, res) => {
   const { filename } = req.params;
   console.log(req.params);
@@ -186,6 +192,8 @@ export const previewDocumento = async (req, res) => {
   }
 };
 
+
+// Controlador para eliminar documentos desde Firebase Storage
 export const deleteDocumento = (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(process.cwd(), 'uploads', filename);
