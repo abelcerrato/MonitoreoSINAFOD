@@ -3,8 +3,8 @@ import { previewDocumento, downloadDocumento, deleteDocumento } from "../control
 
 const router = express.Router(); // Crear una instancia del router de express
 
-router.get('/download/:filename', downloadDocumento); // Ruta para descargar un documento
-router.delete('/delete/:filename', deleteDocumento); // Ruta para eliminar un documento
-router.get('/preview/:filename', previewDocumento); // Ruta para previsualizar un documento
+router.get("/documento/download/:tipo/:filename", downloadDocumento);// Ruta para descargar un documento
+router.delete("/documento/:tipo/:filename", deleteDocumento); // Ruta para eliminar un documento
+router.get("/documento/preview/:tipo/:filename", previewDocumento); // Ruta para previsualizar un documento
 
 export default router; // Exportar el enrutador

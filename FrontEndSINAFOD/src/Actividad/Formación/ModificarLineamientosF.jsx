@@ -1,8 +1,8 @@
-/* 
- * Este archivo contiene el código del formulario para actualizar los lineamientos 
+/*
+ * Este archivo contiene el código del formulario para actualizar los lineamientos
  * asociados a una acción formativa registrada en el sistema.
  * Permite editar el nombre de la formación, visualizar documentos cargados,
- * reemplazarlos, eliminarlos, previsualizarlos y descargarlos.
+ * reemplazarlos, eliminarlos y descargarlos.
  */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -32,9 +32,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
 import DescriptionIcon from "@mui/icons-material/Description";
 
-
-/* 
- * Estilo para un input tipo file invisible, 
+/*
+ * Estilo para un input tipo file invisible,
  * usado dentro de botones personalizados.
  */
 const VisuallyHiddenInput = styled("input")({
@@ -50,9 +49,9 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const ModificarLineamientos = () => {
-  const { user } = useUser();   // Datos del usuario logueado
-  const { id } = useParams();  // ID del registro a editar
- const navigate = useNavigate();
+  const { user } = useUser(); // Datos del usuario logueado
+  const { id } = useParams(); // ID del registro a editar
+  const navigate = useNavigate();
 
   // Estado principal del formulario
   const [formData, setFormData] = useState({
@@ -74,7 +73,6 @@ const ModificarLineamientos = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState(null);
   const [currentPreviewField, setCurrentPreviewField] = useState(null);
- 
 
   /*
    * Al cargar el componente, se obtienen los detalles del registro
@@ -84,7 +82,7 @@ const ModificarLineamientos = () => {
     const obtenerDetalles = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/investformacionC/${id}`
+          `${process.env.REACT_APP_API_URL}/investformacionC/${id}`,
         );
         const data = response.data[0];
 
@@ -120,12 +118,12 @@ const ModificarLineamientos = () => {
   };
 
   /*
- * Manejo de carga de archivos:
- * - Valida formato permitido
- * - Valida tamaño
- * - Actualiza el estado con el nuevo archivo
- * - Limpia el archivo anterior si existía
- */
+   * Manejo de carga de archivos:
+   * - Valida formato permitido
+   * - Valida tamaño
+   * - Actualiza el estado con el nuevo archivo
+   * - Limpia el archivo anterior si existía
+   */
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -189,110 +187,43 @@ const ModificarLineamientos = () => {
     }));
   };
 
-  /*   const handleDownload = async (filename) => {
-          try {
-              // Codificar el nombre del archivo para la URL
-              const encodedFilename = encodeURIComponent(filename);
-  
-              const response = await axios.get(
-                  `${process.env.REACT_APP_API_URL}/download/${encodedFilename}`,
-                  {
-                      responseType: "blob",
-                      headers: {
-                          "Content-Type": "application/octet-stream",
-                      },
-                  }
-              );
-  
-              // Extraer el nombre original del archivo del Content-Disposition
-              const contentDisposition = response.headers["content-disposition"];
-              let downloadFilename = filename;
-  
-              if (contentDisposition) {
-                  const filenameMatch = contentDisposition.match(
-                      /filename="?(.+?)"?(;|$)/
-                  );
-                  if (filenameMatch && filenameMatch[1]) {
-                      downloadFilename = filenameMatch[1];
-                  }
-              }
-  
-              // Crear el enlace de descarga
-              const url = window.URL.createObjectURL(new Blob([response.data]));
-              const link = document.createElement("a");
-              link.href = url;
-              link.setAttribute("download", downloadFilename);
-              document.body.appendChild(link);
-              link.click();
-  
-              // Limpieza
-              setTimeout(() => {
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-              }, 100);
-          } catch (error) {
-              console.error("Error al descargar:", error);
-              Swal.fire("Error", "No se pudo descargar el archivo", "error");
-          }
-      }; */
+  /*
+   * Descargar archivo desde el backend.
+   * Tiene manejo de nombre real del archivo.
+   */
+  const handleDownload = async (file) => {
+  try {
 
+    const filename = file.split("/").pop();
+
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/documento/download/formacion/${encodeURIComponent(filename)}`,
+      { responseType: "blob" }
+    );
+
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 100);
+  } catch (error) {
+    console.error("Error al descargar:", error);
+    Swal.fire("Error", "No se pudo descargar el archivo", "error");
+  }
+};
 
   /*
-* Descargar archivo desde el backend.
-* Tiene manejo de nombre real del archivo.
-*/
-  const handleDownload = async (filename) => {
-    try {
-      // 1. Codificar el nombre del archivo para la URL
-      const encodedFilename = encodeURIComponent(filename);
-
-      // 2. Hacer la petición al backend
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/download/${encodedFilename}`,
-        {
-          responseType: "blob", // Mantenemos blob para compatibilidad
-          headers: {
-            "Content-Type": "application/octet-stream",
-          },
-        }
-      );
-
-      // 3. Extraer el nombre original del archivo
-      const contentDisposition = response.headers["content-disposition"];
-      let downloadFilename = filename.split("-").slice(3).join("-"); // Nombre original
-
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(
-          /filename="?(.+?)"?(;|$)/
-        );
-        if (filenameMatch && filenameMatch[1]) {
-          downloadFilename = filenameMatch[1];
-        }
-      }
-
-      // 4. Crear el enlace de descarga
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", downloadFilename);
-      document.body.appendChild(link);
-      link.click();
-
-      // 5. Limpieza
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
-    } catch (error) {
-      console.error("Error al descargar:", error);
-      Swal.fire("Error", "No se pudo descargar el archivo", "error");
-    }
-  };
-
-  /*
- * Elimina un archivo subido (existente o nuevo).
- * Confirma antes de borrar.
- */
+   * Elimina un archivo subido (existente o nuevo).
+   * Confirma antes de borrar.
+   */
   const handleDeleteFile = (fieldName) => {
     Swal.fire({
       title: "¿Estás seguro?",
@@ -318,13 +249,12 @@ const ModificarLineamientos = () => {
     });
   };
 
-
   /*
- * Envía toda la información:
- * - Nombre de la formación
- * - Archivos nuevos o existentes
- * - Controla que haya al menos 3 archivos cargados
- */
+   * Envía toda la información:
+   * - Nombre de la formación
+   * - Archivos nuevos o existentes
+   * - Controla que haya al menos 3 archivos cargados
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -386,7 +316,7 @@ const ModificarLineamientos = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       Swal.fire({
@@ -405,21 +335,23 @@ const ModificarLineamientos = () => {
     }
   };
 
-
   /*
-  * Renderiza cada campo de archivo con:
-  * - Subida
-  * - Vista previa
-  * - Descarga
-  * - Eliminación
-  */
+   * Renderiza cada campo de archivo con:
+   * - Subida
+   * - Vista previa
+   * - Descarga
+   * - Eliminación
+   */
   const renderFileField = (fieldName, label) => {
     const existingFile = existingFiles[fieldName];
     const newFile = formData[fieldName];
 
     const getDisplayName = (filePath) => {
       if (!filePath) return "";
-      return filePath.split("/").pop().split("-").slice(3).join("-");
+      // Obtener solo la última parte de la ruta
+      const filename = filePath.split("/").pop();
+      // Separar por "-" y quitar el primer segmento (timestamp)
+      return filename.split("-").slice(1).join("-");
     };
 
     return (
@@ -525,155 +457,48 @@ const ModificarLineamientos = () => {
     );
   };
 
-  /*  const handlePreview = async (file, fieldName) => {
-         setCurrentPreviewField(fieldName);
-         try {
-             if (file instanceof File) {
-                 // Procesamiento para archivos nuevos (sin cambios)
-                 if (file.type === "application/pdf") {
-                     const fileUrl = URL.createObjectURL(file);
-                     setPreviewContent({
-                         type: 'pdf',
-                         url: fileUrl
-                     });
-                 } else if (file.type.includes("image/")) {
-                     const reader = new FileReader();
-                     reader.onload = (e) => {
-                         setPreviewContent({
-                             type: 'image',
-                             url: e.target.result
-                         });
-                     };
-                     reader.readAsDataURL(file);
-                 } else {
-                     setPreviewContent({
-                         type: 'other',
-                         name: file.name
-                     });
-                 }
-             } else {
-                 // Procesamiento para archivos existentes (corregido)
-                 let fileUrl;
- 
-                 // Primero decodifica el URI para manejar caracteres especiales
-                 const decodedFileName = decodeURIComponent(file);
- 
-                 // Elimina espacios adicionales y caracteres problemáticos
-                 const cleanedFileName = decodedFileName.trim();
- 
-                 // Verifica si la URL ya es completa (empieza con http)
-                 if (cleanedFileName.startsWith('http')) {
-                     fileUrl = cleanedFileName;
-                 } else {
-                     // Construye la URL correctamente
-                     fileUrl = `${process.env.REACT_APP_API_URL}/preview/${encodeURIComponent(cleanedFileName)}`
-                 }
- 
-                 // Determina el tipo de archivo
-                 if (cleanedFileName.toLowerCase().endsWith('.pdf')) {
-                     setPreviewContent({
-                         type: 'pdf',
-                         url: fileUrl
-                     });
-                 } else if (cleanedFileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                     setPreviewContent({
-                         type: 'image',
-                         url: fileUrl
-                     });
-                 } else {
-                     setPreviewContent({
-                         type: 'other',
-                         name: cleanedFileName.split('/').pop() || cleanedFileName
-                     });
-                 }
-             }
-             setPreviewOpen(true);
-         } catch (error) {
-             console.error("Error al generar vista previa:", error);
-             Swal.fire("Error", "No se pudo generar la vista previa", "error");
-         }
-     }; */
-
-
   /*
-* Vista previa de archivos:
-* - PDF dentro de iframe
-* - Imágenes
-* - Otros archivos con opción a descarga
-*/
-  const handlePreview = async (file, fieldName) => {
-    setCurrentPreviewField(fieldName);
+   * Vista previa de archivos:
+   * - PDF dentro de iframe
+   * - Imágenes
+   * - Otros archivos con opción a descarga
+   */
+const handlePreview = async (file, fieldName) => {
+  setCurrentPreviewField(fieldName);
 
-    try {
-      if (file instanceof File) {
-        // 1. Procesamiento para archivos nuevos (sin cambios)
-        if (file.type === "application/pdf") {
-          const fileUrl = URL.createObjectURL(file);
-          setPreviewContent({
-            type: "pdf",
-            url: fileUrl,
-          });
-        } else if (file.type.includes("image/")) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setPreviewContent({
-              type: "image",
-              url: e.target.result,
-            });
-          };
-          reader.readAsDataURL(file);
-        } else {
-          setPreviewContent({
-            type: "other",
-            name: file.name,
-          });
-        }
+  try {
+    if (file instanceof File) {
+      // Archivos nuevos
+      if (file.type === "application/pdf") {
+        setPreviewContent({ type: "pdf", url: URL.createObjectURL(file) });
+      } else if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) =>
+          setPreviewContent({ type: "image", url: e.target.result });
+        reader.readAsDataURL(file);
       } else {
-        // 2. Procesamiento para archivos existentes en Firebase Storage
-        let fileUrl;
-        const decodedFileName = decodeURIComponent(file);
-        const cleanedFileName = decodedFileName.trim();
-
-        fileUrl = `${
-          process.env.REACT_APP_API_URL
-        }/preview/${encodeURIComponent(cleanedFileName)}`;
-
-        console.log(cleanedFileName);
-
-        // Determinar el tipo de contenido
-        const fileExtension = cleanedFileName.split(".").pop().toLowerCase();
-
-        if (fileExtension === "pdf") {
-          setPreviewContent({
-            type: "pdf",
-            url: fileUrl,
-          });
-        } else if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
-          setPreviewContent({
-            type: "image",
-            url: fileUrl,
-          });
-        } else {
-          setPreviewContent({
-            type: "other",
-            name: cleanedFileName.split("/").pop() || cleanedFileName,
-            url: fileUrl, // Incluimos la URL para descarga
-          });
-        }
+        setPreviewContent({ type: "other", name: file.name });
       }
+    } else {
+      // Archivos ya subidos
+      //  Extraer tipo y nombre del archivo
+      const filename = file.split("/").pop();
 
-      setPreviewOpen(true);
-    } catch (error) {
-      console.error("Error al generar vista previa:", error);
-      Swal.fire({
-        title: "Error",
-        text: "No se pudo generar la vista previa",
-        icon: "error",
-        confirmButtonColor: color.primary.azul,
-      });
+      const fileUrl = `${process.env.REACT_APP_API_URL}/documento/preview/formacion/${encodeURIComponent(filename)}`;
+
+      const ext = filename.split(".").pop().toLowerCase();
+      if (ext === "pdf") setPreviewContent({ type: "pdf", url: fileUrl });
+      else if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
+        setPreviewContent({ type: "image", url: fileUrl });
+      else setPreviewContent({ type: "other", name: filename, url: fileUrl });
     }
-  };
 
+    setPreviewOpen(true);
+  } catch (error) {
+    console.error("Error al generar vista previa:", error);
+    Swal.fire("Error", "No se pudo generar la vista previa", "error");
+  }
+};
   return (
     <Dashboard>
       <Paper sx={{ padding: 3, marginBottom: 3 }}>
@@ -720,16 +545,16 @@ const ModificarLineamientos = () => {
 
           {renderFileField(
             "criteriosfactibilidadurl",
-            "Documento de Cumplimientos de los Criterios de Factibilidad"
+            "Documento de Cumplimientos de los Criterios de Factibilidad",
           )}
 
           {renderFileField(
             "requisitostecnicosurl",
-            "Documento de Cumplimiento de los Requisitos Técnicos"
+            "Documento de Cumplimiento de los Requisitos Técnicos",
           )}
           {renderFileField(
             "criterioseticosurl",
-            " Documento de Cumplimientos de los Criterios Éticos"
+            " Documento de Cumplimientos de los Criterios Éticos",
           )}
         </Grid>
 
@@ -752,7 +577,6 @@ const ModificarLineamientos = () => {
           </Button>
         </Box>
 
-    
         <Dialog
           open={previewOpen}
           onClose={() => setPreviewOpen(false)}

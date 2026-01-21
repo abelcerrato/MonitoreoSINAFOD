@@ -1,6 +1,5 @@
-import { bucket } from "../firebase.config.js"; // Importar la configuración de Firebase
-import { getStorage } from "firebase-admin/storage"; // Importar el módulo de almacenamiento de Firebase
-import { v4 as uuidv4 } from "uuid"; // Importar la librería para generar UUIDs
+import path from "path"; // Importar path para manejar rutas de archivos
+import fs from "fs"; // Importar fs para manejar el sistema de archivos
 import multer from "multer"; // Importar multer para manejar la subida de archivos
 import { pool } from "../db.js"; // Importar la conexión a la base de datos
 import {
@@ -12,6 +11,52 @@ import {
   putLineamientosFormacionM,
 } from "../models/formacion.models.js"; // Importar los modelos para la formación
  
+
+// ======================================================
+// CONFIGURACIÓN DE UPLOAD LOCAL
+// ======================================================
+
+const UPLOAD_DIR = path.resolve("uploads/formacion");
+
+// Crear carpeta si no existe
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+export const upload = multer({ storage });
+
+export const uploadLineamientosFormacion = upload.fields([
+  { name: "criteriosfactibilidadurl", maxCount: 1 },
+  { name: "requisitostecnicosurl", maxCount: 1 },
+  { name: "criterioseticosurl", maxCount: 1 },
+]);
+
+// ======================================================
+// VALIDACIONES
+// ======================================================
+
+const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+
+
 //-----------------------------------------------------------------------------------------------------------
 // Obtener formacion
 export const getFormacionC = async (req, res) => {
@@ -200,144 +245,47 @@ export const putFormacionC = async (req, res) => {
   }
 };
 
-// Configuración de multer para manejar la subida de archivos en memoria
-const storage = multer.memoryStorage();
-export const upload = multer({ storage });
-
-// Middleware para manejar la subida de archivos
-export const uploadLineamientosFormacion = upload.fields([
-  { name: "criteriosfactibilidadurl", maxCount: 1 },
-  { name: "requisitostecnicosurl", maxCount: 1 },
-  { name: "criterioseticosurl", maxCount: 1 },
-]);
-
-// Configuración de tipos de archivo permitidos
-const ALLOWED_MIME_TYPES = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-
-// Tamaño máximo de archivo (10MB)
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
 
 //Insertar lineamientos de formacion con archivos
 export const postLineamientosFormacionC = async (req, res) => {
-  const {
-    formacion,
-    criteriosfactibilidad,
-    requisitostecnicos,
-    criterioseticos,
-    creadopor,
-  } = req.body;
-
-
   const files = req.files || {};
-  const d = new Date();
-
-  // Formatear la fecha como DD-MM-YY
-  const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
-    .map((n) => n.toString().padStart(2, "0"))
-    .join("-");
+  const { formacion, criteriosfactibilidad, requisitostecnicos, criterioseticos, creadopor } = req.body;
 
   try {
-    const usuario = creadopor;
-
-    // 2. Validar archivos
-    //Recorre todos los archivos que llegaron
-    for (const fieldName in files) {
-      if (files[fieldName]?.[0]) { // Verifica que el archivo exista
-        const file = files[fieldName][0];// Toma el primer archivo (ya que maxCount es 1)
-
-        // Valida el tipo de archivo
-        if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-          return res.status(400).json({ 
-            success: false,
-            error: `Tipo de archivo no permitido para ${fieldName}: ${file.mimetype}`,
-            allowedTypes: ALLOWED_MIME_TYPES,
-          });
-        }
-
-        //Verifica el tamaño del archivo
-        if (file.size > MAX_FILE_SIZE) {
-          return res.status(400).json({
-            success: false,
-            error: `Archivo demasiado grande para ${fieldName}: ${(
-              file.size /
-              (1024 * 1024)
-            ).toFixed(2)}MB`,
-          });
-        }
+    // Validar archivos
+    for (const key in files) {
+      const file = files[key][0];
+      if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+        return res.status(400).json({ error: "Tipo de archivo no permitido" });
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        return res.status(400).json({ error: "Archivo excede 10MB" });
       }
     }
 
-    // 3. Inserción inicial en BD
+    // Insert inicial
     const result = await postLineamientosFormacionM(
       formacion,
       criteriosfactibilidad,
-      null, // criteriosfactibilidadurl
+      null,
       requisitostecnicos,
-      null, // requisitostecnicosurl
+      null,
       criterioseticos,
-      null, // criterioseticosurl
-      usuario
+      null,
+      creadopor
     );
 
     const idformacion = result.id;
 
-    // 4. Subir archivos a Firebase
-    // Crea dos objetos vacíos
-    const fileUpdates = {}; 
+    const fileUpdates = {};
     const booleanUpdates = {};
 
-    // Función para subir un archivo a Firebase
-    const uploadFileToFirebase = async (fileBuffer, filename, mimeType) => {
-      const file = bucket.file(filename); //Busca donde guardar el archivo en firebase
-      const token = uuidv4(); //Genera un token único para el archivo
-
-      // Guarda el archivo en Firebase con los metadatos
-      await file.save(fileBuffer, {
-        metadata: {
-          contentType: mimeType,
-          metadata: {
-            firebaseStorageDownloadTokens: token,
-            uploader: usuario,
-            uploadDate: new Date().toISOString(),
-          },
-        },
-      });
-
-      // return `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-      return filename; // Retorna el nombre del archivo en lugar de la URL completa
-    };
-
-    //Crea un array de promesas para subir los archivos
-    const uploadPromises = [];
-    for (const fieldName in files) { // Recorre los archivos subidos
-      // Si el archivo existe, lo toma y lo sube
-      if (files[fieldName]?.[0]) {
-        const file = files[fieldName][0];
-        const filename = `${idformacion}_${date}-${file.originalname}`; //Crea un nombre único para el archivo
-
-        // Agrega la promesa de subida al array
-        uploadPromises.push(
-          uploadFileToFirebase(file.buffer, filename, file.mimetype).then(
-            (url) => {
-              // Guarda la URL del archivo y marca el booleano como true
-              fileUpdates[fieldName] = url;
-              booleanUpdates[fieldName.replace("url", "")] = true;
-            }
-          )
-        );
-      }
+    for (const key in files) {
+      const file = files[key][0];
+      fileUpdates[key] = `uploads/formacion/${file.filename}`;
+      booleanUpdates[key.replace("url", "")] = true;
     }
 
-    await Promise.all(uploadPromises);
-
-    // 5. Actualizar BD con URLs
     await putLineamientosFormacionM(
       formacion,
       booleanUpdates.criteriosfactibilidad || false,
@@ -346,190 +294,90 @@ export const postLineamientosFormacionC = async (req, res) => {
       fileUpdates.requisitostecnicosurl || null,
       booleanUpdates.criterioseticos || false,
       fileUpdates.criterioseticosurl || null,
-      usuario,
+      creadopor,
       idformacion
     );
+
     res.json({
       success: true,
-      message: "Lineamientos de formacion actualizados correctamente",
       id: idformacion,
       files: fileUpdates,
-      flags: booleanUpdates,
     });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
+
 //-----------------------------------------------------------------------------------------------------------
 // Actualizar lineamientos de formacion con archivos
+
 export const putLineamientosFormacionC = async (req, res) => {
   const { id } = req.params;
   const { modificadopor, formacion } = req.body;
-
   const files = req.files || {};
-  const d = new Date();
-  const date = [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100]
-    .map((n) => n.toString().padStart(2, "0"))
-    .join("-");
 
   try {
-    const usuario = modificadopor;
-
-    // 2. Validar archivos (tu código actual está bien)
-    for (const fieldName in files) {
-      if (files[fieldName]?.[0]) {
-        const file = files[fieldName][0];
-
-        if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-          return res.status(400).json({
-            success: false,
-            error: `Tipo de archivo no permitido para ${fieldName}: ${file.mimetype}`,
-            allowedTypes: ALLOWED_MIME_TYPES,
-          });
-        }
-
-        if (file.size > MAX_FILE_SIZE) {
-          return res.status(400).json({
-            success: false,
-            error: `Archivo demasiado grande para ${fieldName}: ${(
-              file.size /
-              (1024 * 1024)
-            ).toFixed(2)}MB`,
-          });
-        }
-      }
-    }
-
-    // 3. Obtener datos actuales
-    const currentDataResponse = await pool.query(
+    const current = await pool.query(
       "SELECT * FROM formacion WHERE id = $1",
       [id]
     );
-    const currentData = currentDataResponse.rows[0];
 
-    if (!currentData) {
-      return res.status(404).json({
-        success: false,
-        message: "Registro no encontrado",
-      });
+    if (!current.rows[0]) {
+      return res.status(404).json({ message: "Registro no encontrado" });
     }
 
-    // 4. Función para subir archivos a Firebase
-    const uploadFileToFirebase = async (fileBuffer, filename, mimeType) => {
-      const file = bucket.file(filename);
-      const token = uuidv4();
-
-      // Guarda el archivo en Firebase con los metadatos
-      await file.save(fileBuffer, {
-        metadata: {
-          contentType: mimeType,
-          metadata: {
-            firebaseStorageDownloadTokens: token,
-            uploader: usuario,
-            uploadDate: new Date().toISOString(),
-          },
-        },
-      });
-
-      return filename;
-    };
-
-    // 5. Procesar archivos nuevos y solicitudes de eliminación
+    const currentData = current.rows[0];
     const fileUpdates = {};
     const booleanUpdates = {};
-    const uploadPromises = [];
 
-    // Campos de archivos que pueden ser actualizados
-    const fileFields = [
+    const fields = [
       "criteriosfactibilidadurl",
       "requisitostecnicosurl",
       "criterioseticosurl",
     ];
 
-    // Procesar cada campo de archivo
-    fileFields.forEach((fieldName) => {
-      const fieldValue = req.body[fieldName];
-
-      // Caso 1: Se subió un nuevo archivo
-      if (files[fieldName]?.[0]) {
-        const file = files[fieldName][0];
-        const filename = `${id}_${date}-${file.originalname}`;
-
-        uploadPromises.push(
-          uploadFileToFirebase(file.buffer, filename, file.mimetype).then(
-            (url) => {
-              fileUpdates[fieldName] = url;
-              booleanUpdates[fieldName.replace("url", "")] = true;
-            }
-          )
-        );
+    for (const field of fields) {
+      // Nuevo archivo
+      if (files[field]) {
+        const file = files[field][0];
+        fileUpdates[field] = `uploads/formacion/${file.filename}`;
+        booleanUpdates[field.replace("url", "")] = true;
       }
-      // Caso 2: Se solicitó eliminar el archivo (valor 'null' como string)
-      else if (fieldValue === "null") {
-        fileUpdates[fieldName] = null;
-        booleanUpdates[fieldName.replace("url", "")] = false;
+      // Eliminar archivo
+      else if (req.body[field] === "null" && currentData[field]) {
+        const oldPath = path.resolve(currentData[field]);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        fileUpdates[field] = null;
+        booleanUpdates[field.replace("url", "")] = false;
       }
-      // Caso 3: Mantener el archivo existente
-      else if (currentData[fieldName]) {
-        fileUpdates[fieldName] = currentData[fieldName];
-        booleanUpdates[fieldName.replace("url", "")] = true;
-      }
-      // Caso 4: No hay archivo existente ni nuevo
+      // Mantener existente
       else {
-        fileUpdates[fieldName] = null;
-        booleanUpdates[fieldName.replace("url", "")] = false;
+        fileUpdates[field] = currentData[field];
+        booleanUpdates[field.replace("url", "")] =
+          currentData[field] !== null;
       }
-    });
+    }
 
-    await Promise.all(uploadPromises);
-
-    // 6. Preparar datos finales para actualización
-    const updateData = {
-      formacion: formacion || currentData.formacion,
-      criteriosfactibilidad:
-        booleanUpdates.criteriosfactibilidad ??
-        currentData.criteriosfactibilidad,
-      criteriosfactibilidadurl: fileUpdates.criteriosfactibilidadurl ?? null,
-      requisitostecnicos:
-        booleanUpdates.requisitostecnicos ?? currentData.requisitostecnicos,
-      requisitostecnicosurl: fileUpdates.requisitostecnicosurl ?? null,
-      criterioseticos:
-        booleanUpdates.criterioseticos ?? currentData.criterioseticos,
-      criterioseticosurl: fileUpdates.criterioseticosurl ?? null,
-    };
-
-    // 7. Actualizar en la base de datos
-    const updatedData = await putLineamientosFormacionM(
-      updateData.formacion,
-      updateData.criteriosfactibilidad,
-      updateData.criteriosfactibilidadurl,
-      updateData.requisitostecnicos,
-      updateData.requisitostecnicosurl,
-      updateData.criterioseticos,
-      updateData.criterioseticosurl,
-      usuario,
+    await putLineamientosFormacionM(
+      formacion || currentData.formacion,
+      booleanUpdates.criteriosfactibilidad,
+      fileUpdates.criteriosfactibilidadurl,
+      booleanUpdates.requisitostecnicos,
+      fileUpdates.requisitostecnicosurl,
+      booleanUpdates.criterioseticos,
+      fileUpdates.criterioseticosurl,
+      modificadopor,
       id
     );
 
     res.json({
       success: true,
-      message: "Lineamientos de formacion actualizados correctamente",
-      data: updatedData,
       files: fileUpdates,
-      flags: booleanUpdates,
     });
   } catch (error) {
-    console.error("Error al actualizar lineamientos de la formacion:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
+
+

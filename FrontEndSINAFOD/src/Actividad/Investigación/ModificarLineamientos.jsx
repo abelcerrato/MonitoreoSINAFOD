@@ -1,3 +1,9 @@
+/*
+ * Este archivo contiene el código del formulario para actualizar los lineamientos
+ * asociados a una investigación registrada en el sistema.
+ * Permite editar el nombre de la investigación, visualizar documentos cargados,
+ * reemplazarlos, eliminarlos y descargarlos.
+ */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -6,14 +12,9 @@ import {
   Grid,
   Paper,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
   Box,
   IconButton,
-  FormHelperText,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
 } from "@mui/material";
@@ -27,11 +28,14 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
 import DescriptionIcon from "@mui/icons-material/Description";
 
+/*
+ * Estilo para un input tipo file invisible,
+ * usado dentro de botones personalizados.
+ */
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -45,9 +49,11 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const LineamientosI = () => {
-  const { user } = useUser();
-  const { id } = useParams();
+  const { user } = useUser(); // Datos del usuario logueado
+  const { id } = useParams(); // ID del registro a editar
+  const navigate = useNavigate();
 
+  // Estado principal del formulario
   const [formData, setFormData] = useState({
     investigacion: "",
     estadoprotocolo: "",
@@ -57,23 +63,28 @@ const LineamientosI = () => {
     divulgacionresultadosurl: null,
     formacioninvest: "",
   });
+
+  // Archivos existentes almacenados previamente en el servidor
   const [existingFiles, setExistingFiles] = useState({
     presentoprotocolourl: null,
     monitoreoyevaluacionurl: null,
     aplicacionevaluacionurl: null,
     divulgacionresultadosurl: null,
   });
-
+  // Vista previa de archivos
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState(null);
   const [currentPreviewField, setCurrentPreviewField] = useState(null);
-  const navigate = useNavigate();
 
+  /*
+   * Al cargar el componente, se obtienen los detalles del registro
+   * incluyendo el nombre y los archivos previamente subidos.
+   */
   useEffect(() => {
     const obtenerDetalles = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/investigacion/${id}`
+          `${process.env.REACT_APP_API_URL}/investigacion/${id}`,
         );
         const data = response.data[0];
 
@@ -97,6 +108,7 @@ const LineamientosI = () => {
     obtenerDetalles();
   }, [id]);
 
+  /* Manejo de cambios de campos de texto */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -105,6 +117,13 @@ const LineamientosI = () => {
     }));
   };
 
+  /*
+   * Manejo de carga de archivos:
+   * - Valida formato permitido
+   * - Valida tamaño
+   * - Actualiza el estado con el nuevo archivo
+   * - Limpia el archivo anterior si existía
+   */
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -168,53 +187,43 @@ const LineamientosI = () => {
     }));
   };
 
-  const handleDownload = async (filename) => {
-    try {
-      // Codificar el nombre del archivo para la URL
-      const encodedFilename = encodeURIComponent(filename);
+  /*
+   * Descargar archivo desde el backend.
+   * Tiene manejo de nombre real del archivo.
+   */
+ const handleDownload = async (file) => {
+  try {
+   
+    const filename = file.split("/").pop();
 
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/download/${encodedFilename}`,
-        {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/octet-stream",
-          },
-        }
-      );
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/documento/download/investigacion/${encodeURIComponent(filename)}`,
+      { responseType: "blob" }
+    );
 
-      // Extraer el nombre original del archivo del Content-Disposition
-      const contentDisposition = response.headers["content-disposition"];
-      let downloadFilename = filename;
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
 
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(
-          /filename="?(.+?)"?(;|$)/
-        );
-        if (filenameMatch && filenameMatch[1]) {
-          downloadFilename = filenameMatch[1];
-        }
-      }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
 
-      // Crear el enlace de descarga
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", downloadFilename);
-      document.body.appendChild(link);
-      link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 100);
+  } catch (error) {
+    console.error("Error al descargar:", error);
+    Swal.fire("Error", "No se pudo descargar el archivo", "error");
+  }
+};
 
-      // Limpieza
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
-    } catch (error) {
-      console.error("Error al descargar:", error);
-      Swal.fire("Error", "No se pudo descargar el archivo", "error");
-    }
-  };
-
+  /*
+   * Elimina un archivo subido (existente o nuevo).
+   * Confirma antes de borrar.
+   */
   const handleDeleteFile = (fieldName) => {
     Swal.fire({
       title: "¿Estás seguro?",
@@ -250,6 +259,12 @@ const LineamientosI = () => {
     });
   };
 
+  /*
+   * Envía toda la información:
+   * - Nombre de la investigación
+   * - Archivos nuevos o existentes
+   * - Controla que haya al menos 4 archivos cargados
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -267,7 +282,7 @@ const LineamientosI = () => {
       formData.presentoprotocolourl || existingFiles.presentoprotocolourl;
     formDataToSend.append(
       "estadoprotocolo",
-      hasProtocoloFile ? "Completo" : "Incompleto"
+      hasProtocoloFile ? "Completo" : "Incompleto",
     );
 
     // Contador de archivos subidos
@@ -319,102 +334,84 @@ const LineamientosI = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       Swal.fire({
-                title: "¡Actualización!",
-                text: "Lineamientos actualizados correctamente",
-                icon: "success",
-                timer: 6000,
-                confirmButtonColor: color.primary.azul,
+        title: "¡Actualización!",
+        text: "Lineamientos actualizados correctamente",
+        icon: "success",
+        timer: 6000,
+        confirmButtonColor: color.primary.azul,
       });
-      //   navigate(`/Actualizar_Investigación/${id}`);
-      navigate("/dashboard");
+
+      navigate("/Listado_De_Investigaciones");
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       Swal.fire("Error", "Hubo un problema al guardar los datos", "error");
     }
   };
 
-  const handlePreview = async (file, fieldName) => {
-    setCurrentPreviewField(fieldName);
-    try {
-      if (file instanceof File) {
-        // Procesamiento para archivos nuevos (sin cambios)
-        if (file.type === "application/pdf") {
-          const fileUrl = URL.createObjectURL(file);
-          setPreviewContent({
-            type: "pdf",
-            url: fileUrl,
-          });
-        } else if (file.type.includes("image/")) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setPreviewContent({
-              type: "image",
-              url: e.target.result,
-            });
-          };
-          reader.readAsDataURL(file);
-        } else {
-          setPreviewContent({
-            type: "other",
-            name: file.name,
-          });
-        }
+  /*
+   * Vista previa de archivos:
+   * - PDF dentro de iframe
+   * - Imágenes
+   * - Otros archivos con opción a descarga
+   */
+const handlePreview = async (file, fieldName) => {
+  setCurrentPreviewField(fieldName);
+
+  try {
+    if (file instanceof File) {
+      // Archivos nuevos
+      if (file.type === "application/pdf") {
+        setPreviewContent({ type: "pdf", url: URL.createObjectURL(file) });
+      } else if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) =>
+          setPreviewContent({ type: "image", url: e.target.result });
+        reader.readAsDataURL(file);
       } else {
-        // Procesamiento para archivos existentes (corregido)
-        let fileUrl;
-
-        // Primero decodifica el URI para manejar caracteres especiales
-        const decodedFileName = decodeURIComponent(file);
-
-        // Elimina espacios adicionales y caracteres problemáticos
-        const cleanedFileName = decodedFileName.trim();
-
-        // Verifica si la URL ya es completa (empieza con http)
-        if (cleanedFileName.startsWith("http")) {
-          fileUrl = cleanedFileName;
-        } else {
-          // Construye la URL correctamente
-          fileUrl = `${
-            process.env.REACT_APP_API_URL
-          }/preview/${encodeURIComponent(cleanedFileName)}`;
-        }
-
-        // Determina el tipo de archivo
-        if (cleanedFileName.toLowerCase().endsWith(".pdf")) {
-          setPreviewContent({
-            type: "pdf",
-            url: fileUrl,
-          });
-        } else if (cleanedFileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
-          setPreviewContent({
-            type: "image",
-            url: fileUrl,
-          });
-        } else {
-          setPreviewContent({
-            type: "other",
-            name: cleanedFileName.split("/").pop() || cleanedFileName,
-          });
-        }
+        setPreviewContent({ type: "other", name: file.name });
       }
-      setPreviewOpen(true);
-    } catch (error) {
-      console.error("Error al generar vista previa:", error);
-      Swal.fire("Error", "No se pudo generar la vista previa", "error");
-    }
-  };
+    } else {
+      // Archivos ya subidos
+      // 1️⃣ Extraer tipo y nombre del archivo
 
+      const filename = file.split("/").pop();
+
+      const fileUrl = `${process.env.REACT_APP_API_URL}/documento/preview/investigacion/${encodeURIComponent(filename)}`;
+
+      const ext = filename.split(".").pop().toLowerCase();
+      if (ext === "pdf") setPreviewContent({ type: "pdf", url: fileUrl });
+      else if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
+        setPreviewContent({ type: "image", url: fileUrl });
+      else setPreviewContent({ type: "other", name: filename, url: fileUrl });
+    }
+
+    setPreviewOpen(true);
+  } catch (error) {
+    console.error("Error al generar vista previa:", error);
+    Swal.fire("Error", "No se pudo generar la vista previa", "error");
+  }
+};
+  /*
+   * Renderiza cada campo de archivo con:
+   * - Subida
+   * - Vista previa
+   * - Descarga
+   * - Eliminación
+   */
   const renderFileField = (fieldName, label) => {
     const existingFile = existingFiles[fieldName];
     const newFile = formData[fieldName];
 
     const getDisplayName = (filePath) => {
       if (!filePath) return "";
-      return filePath.split("/").pop().split("-").slice(3).join("-");
+      // Obtener solo la última parte de la ruta
+      const filename = filePath.split("/").pop();
+      // Separar por "-" y quitar el primer segmento (timestamp)
+      return filename.split("-").slice(1).join("-");
     };
 
     return (
@@ -423,22 +420,22 @@ const LineamientosI = () => {
           {label}
         </Typography>
         {!(existingFile || newFile) && (
-        <Button
-          component="label"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          sx={{ mb: 2, backgroundColor: color.primary.azul }}
-        >
-          Seleccionar archivo
-          <VisuallyHiddenInput
-            type="file"
-            name={fieldName}
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleFileChange}
-          />
-        </Button>
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            sx={{ mb: 2, backgroundColor: color.primary.azul }}
+          >
+            Seleccionar archivo
+            <VisuallyHiddenInput
+              type="file"
+              name={fieldName}
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={handleFileChange}
+            />
+          </Button>
         )}
-        
+
         {(existingFile || newFile) && (
           <Grid
             sx={{
@@ -578,7 +575,7 @@ const LineamientosI = () => {
 
             {renderFileField(
               "presentoprotocolourl",
-              "Documento del Protocolo del Proyecto de Investigación Educativa"
+              "Documento del Protocolo del Proyecto de Investigación Educativa",
             )}
           </Grid>
         </Paper>
@@ -605,15 +602,15 @@ const LineamientosI = () => {
           <Grid container spacing={2}>
             {renderFileField(
               "monitoreoyevaluacionurl",
-              "Documento de Monitoreo y Evaluación"
+              "Documento de Monitoreo y Evaluación",
             )}
             {renderFileField(
               "aplicacionevaluacionurl",
-              "Documento de Aplicación de Investigación"
+              "Documento de Aplicación de Investigación",
             )}
             {renderFileField(
               "divulgacionresultadosurl",
-              "Lineamientos para la Difusión y Divulgación de Resultados"
+              "Lineamientos para la Difusión y Divulgación de Resultados",
             )}
           </Grid>
 
@@ -709,7 +706,7 @@ const LineamientosI = () => {
                       existingFiles[currentPreviewField] ||
                         (formData[currentPreviewField] instanceof File
                           ? formData[currentPreviewField].name
-                          : formData[currentPreviewField])
+                          : formData[currentPreviewField]),
                     )
                   }
                 >
